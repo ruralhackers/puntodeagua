@@ -158,10 +158,15 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.PlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
 exports.Prisma.CommunityScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  plan: 'plan'
+  planId: 'planId'
 };
 
 exports.Prisma.WaterPointScalarFieldEnum = {
@@ -204,6 +209,7 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   User: 'User',
   VerificationToken: 'VerificationToken',
+  Plan: 'Plan',
   Community: 'Community',
   WaterPoint: 'WaterPoint'
 };

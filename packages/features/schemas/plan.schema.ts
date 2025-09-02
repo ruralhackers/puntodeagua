@@ -1,7 +1,9 @@
-import { z } from "zod";
 import { IdSchema } from "core";
+import { z } from "zod";
 
-export const PlanSchema = z.object({
+export type PlanSchema = z.infer<typeof planSchema>;
+
+export const planSchema = z.object({
 	id: IdSchema,
 	name: z.string(),
 });

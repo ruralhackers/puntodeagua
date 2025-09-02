@@ -34,6 +34,11 @@ export type User = $Result.DefaultSelection<Prisma.$UserPayload>
  */
 export type VerificationToken = $Result.DefaultSelection<Prisma.$VerificationTokenPayload>
 /**
+ * Model Plan
+ * 
+ */
+export type Plan = $Result.DefaultSelection<Prisma.$PlanPayload>
+/**
  * Model Community
  * 
  */
@@ -201,6 +206,16 @@ export class PrismaClient<
     * ```
     */
   get verificationToken(): Prisma.VerificationTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.plan`: Exposes CRUD operations for the **Plan** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Plans
+    * const plans = await prisma.plan.findMany()
+    * ```
+    */
+  get plan(): Prisma.PlanDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.community`: Exposes CRUD operations for the **Community** model.
@@ -665,6 +680,7 @@ export namespace Prisma {
     Session: 'Session',
     User: 'User',
     VerificationToken: 'VerificationToken',
+    Plan: 'Plan',
     Community: 'Community',
     WaterPoint: 'WaterPoint'
   };
@@ -685,7 +701,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "user" | "verificationToken" | "community" | "waterPoint"
+      modelProps: "account" | "session" | "user" | "verificationToken" | "plan" | "community" | "waterPoint"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -985,6 +1001,80 @@ export namespace Prisma {
           }
         }
       }
+      Plan: {
+        payload: Prisma.$PlanPayload<ExtArgs>
+        fields: Prisma.PlanFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlanFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlanFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          findFirst: {
+            args: Prisma.PlanFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlanFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          findMany: {
+            args: Prisma.PlanFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>[]
+          }
+          create: {
+            args: Prisma.PlanCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          createMany: {
+            args: Prisma.PlanCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlanCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>[]
+          }
+          delete: {
+            args: Prisma.PlanDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          update: {
+            args: Prisma.PlanUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlanDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlanUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlanUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlanUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlanPayload>
+          }
+          aggregate: {
+            args: Prisma.PlanAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlan>
+          }
+          groupBy: {
+            args: Prisma.PlanGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlanGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlanCountArgs<ExtArgs>
+            result: $Utils.Optional<PlanCountAggregateOutputType> | number
+          }
+        }
+      }
       Community: {
         payload: Prisma.$CommunityPayload<ExtArgs>
         fields: Prisma.CommunityFieldRefs
@@ -1229,6 +1319,7 @@ export namespace Prisma {
     session?: SessionOmit
     user?: UserOmit
     verificationToken?: VerificationTokenOmit
+    plan?: PlanOmit
     community?: CommunityOmit
     waterPoint?: WaterPointOmit
   }
@@ -1347,15 +1438,46 @@ export namespace Prisma {
 
 
   /**
+   * Count Type PlanCountOutputType
+   */
+
+  export type PlanCountOutputType = {
+    communities: number
+  }
+
+  export type PlanCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    communities?: boolean | PlanCountOutputTypeCountCommunitiesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlanCountOutputType without action
+   */
+  export type PlanCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlanCountOutputType
+     */
+    select?: PlanCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlanCountOutputType without action
+   */
+  export type PlanCountOutputTypeCountCommunitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityWhereInput
+  }
+
+
+  /**
    * Count Type CommunityCountOutputType
    */
 
   export type CommunityCountOutputType = {
-    WaterPoint: number
+    waterPoints: number
   }
 
   export type CommunityCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    WaterPoint?: boolean | CommunityCountOutputTypeCountWaterPointArgs
+    waterPoints?: boolean | CommunityCountOutputTypeCountWaterPointsArgs
   }
 
   // Custom InputTypes
@@ -1372,7 +1494,7 @@ export namespace Prisma {
   /**
    * CommunityCountOutputType without action
    */
-  export type CommunityCountOutputTypeCountWaterPointArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type CommunityCountOutputTypeCountWaterPointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WaterPointWhereInput
   }
 
@@ -5703,6 +5825,1037 @@ export namespace Prisma {
 
 
   /**
+   * Model Plan
+   */
+
+  export type AggregatePlan = {
+    _count: PlanCountAggregateOutputType | null
+    _min: PlanMinAggregateOutputType | null
+    _max: PlanMaxAggregateOutputType | null
+  }
+
+  export type PlanMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+  }
+
+  export type PlanMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+  }
+
+  export type PlanCountAggregateOutputType = {
+    id: number
+    name: number
+    _all: number
+  }
+
+
+  export type PlanMinAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type PlanMaxAggregateInputType = {
+    id?: true
+    name?: true
+  }
+
+  export type PlanCountAggregateInputType = {
+    id?: true
+    name?: true
+    _all?: true
+  }
+
+  export type PlanAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Plan to aggregate.
+     */
+    where?: PlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plans to fetch.
+     */
+    orderBy?: PlanOrderByWithRelationInput | PlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Plans
+    **/
+    _count?: true | PlanCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlanMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlanMaxAggregateInputType
+  }
+
+  export type GetPlanAggregateType<T extends PlanAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlan]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlan[P]>
+      : GetScalarType<T[P], AggregatePlan[P]>
+  }
+
+
+
+
+  export type PlanGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlanWhereInput
+    orderBy?: PlanOrderByWithAggregationInput | PlanOrderByWithAggregationInput[]
+    by: PlanScalarFieldEnum[] | PlanScalarFieldEnum
+    having?: PlanScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlanCountAggregateInputType | true
+    _min?: PlanMinAggregateInputType
+    _max?: PlanMaxAggregateInputType
+  }
+
+  export type PlanGroupByOutputType = {
+    id: string
+    name: string
+    _count: PlanCountAggregateOutputType | null
+    _min: PlanMinAggregateOutputType | null
+    _max: PlanMaxAggregateOutputType | null
+  }
+
+  type GetPlanGroupByPayload<T extends PlanGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlanGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlanGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlanGroupByOutputType[P]>
+            : GetScalarType<T[P], PlanGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    communities?: boolean | Plan$communitiesArgs<ExtArgs>
+    _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["plan"]>
+
+  export type PlanSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+  }, ExtArgs["result"]["plan"]>
+
+  export type PlanSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+  }, ExtArgs["result"]["plan"]>
+
+  export type PlanSelectScalar = {
+    id?: boolean
+    name?: boolean
+  }
+
+  export type PlanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name", ExtArgs["result"]["plan"]>
+  export type PlanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    communities?: boolean | Plan$communitiesArgs<ExtArgs>
+    _count?: boolean | PlanCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PlanIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type PlanIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $PlanPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Plan"
+    objects: {
+      communities: Prisma.$CommunityPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+    }, ExtArgs["result"]["plan"]>
+    composites: {}
+  }
+
+  type PlanGetPayload<S extends boolean | null | undefined | PlanDefaultArgs> = $Result.GetResult<Prisma.$PlanPayload, S>
+
+  type PlanCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlanFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlanCountAggregateInputType | true
+    }
+
+  export interface PlanDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Plan'], meta: { name: 'Plan' } }
+    /**
+     * Find zero or one Plan that matches the filter.
+     * @param {PlanFindUniqueArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlanFindUniqueArgs>(args: SelectSubset<T, PlanFindUniqueArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Plan that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlanFindUniqueOrThrowArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlanFindUniqueOrThrowArgs>(args: SelectSubset<T, PlanFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Plan that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanFindFirstArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlanFindFirstArgs>(args?: SelectSubset<T, PlanFindFirstArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Plan that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanFindFirstOrThrowArgs} args - Arguments to find a Plan
+     * @example
+     * // Get one Plan
+     * const plan = await prisma.plan.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlanFindFirstOrThrowArgs>(args?: SelectSubset<T, PlanFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Plans that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Plans
+     * const plans = await prisma.plan.findMany()
+     * 
+     * // Get first 10 Plans
+     * const plans = await prisma.plan.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const planWithIdOnly = await prisma.plan.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlanFindManyArgs>(args?: SelectSubset<T, PlanFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Plan.
+     * @param {PlanCreateArgs} args - Arguments to create a Plan.
+     * @example
+     * // Create one Plan
+     * const Plan = await prisma.plan.create({
+     *   data: {
+     *     // ... data to create a Plan
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlanCreateArgs>(args: SelectSubset<T, PlanCreateArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Plans.
+     * @param {PlanCreateManyArgs} args - Arguments to create many Plans.
+     * @example
+     * // Create many Plans
+     * const plan = await prisma.plan.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlanCreateManyArgs>(args?: SelectSubset<T, PlanCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Plans and returns the data saved in the database.
+     * @param {PlanCreateManyAndReturnArgs} args - Arguments to create many Plans.
+     * @example
+     * // Create many Plans
+     * const plan = await prisma.plan.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Plans and only return the `id`
+     * const planWithIdOnly = await prisma.plan.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlanCreateManyAndReturnArgs>(args?: SelectSubset<T, PlanCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Plan.
+     * @param {PlanDeleteArgs} args - Arguments to delete one Plan.
+     * @example
+     * // Delete one Plan
+     * const Plan = await prisma.plan.delete({
+     *   where: {
+     *     // ... filter to delete one Plan
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlanDeleteArgs>(args: SelectSubset<T, PlanDeleteArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Plan.
+     * @param {PlanUpdateArgs} args - Arguments to update one Plan.
+     * @example
+     * // Update one Plan
+     * const plan = await prisma.plan.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlanUpdateArgs>(args: SelectSubset<T, PlanUpdateArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Plans.
+     * @param {PlanDeleteManyArgs} args - Arguments to filter Plans to delete.
+     * @example
+     * // Delete a few Plans
+     * const { count } = await prisma.plan.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlanDeleteManyArgs>(args?: SelectSubset<T, PlanDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Plans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Plans
+     * const plan = await prisma.plan.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlanUpdateManyArgs>(args: SelectSubset<T, PlanUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Plans and returns the data updated in the database.
+     * @param {PlanUpdateManyAndReturnArgs} args - Arguments to update many Plans.
+     * @example
+     * // Update many Plans
+     * const plan = await prisma.plan.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Plans and only return the `id`
+     * const planWithIdOnly = await prisma.plan.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlanUpdateManyAndReturnArgs>(args: SelectSubset<T, PlanUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Plan.
+     * @param {PlanUpsertArgs} args - Arguments to update or create a Plan.
+     * @example
+     * // Update or create a Plan
+     * const plan = await prisma.plan.upsert({
+     *   create: {
+     *     // ... data to create a Plan
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Plan we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlanUpsertArgs>(args: SelectSubset<T, PlanUpsertArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Plans.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanCountArgs} args - Arguments to filter Plans to count.
+     * @example
+     * // Count the number of Plans
+     * const count = await prisma.plan.count({
+     *   where: {
+     *     // ... the filter for the Plans we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlanCountArgs>(
+      args?: Subset<T, PlanCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlanCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Plan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlanAggregateArgs>(args: Subset<T, PlanAggregateArgs>): Prisma.PrismaPromise<GetPlanAggregateType<T>>
+
+    /**
+     * Group by Plan.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlanGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlanGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlanGroupByArgs['orderBy'] }
+        : { orderBy?: PlanGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlanGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlanGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Plan model
+   */
+  readonly fields: PlanFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Plan.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    communities<T extends Plan$communitiesArgs<ExtArgs> = {}>(args?: Subset<T, Plan$communitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Plan model
+   */
+  interface PlanFieldRefs {
+    readonly id: FieldRef<"Plan", 'String'>
+    readonly name: FieldRef<"Plan", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Plan findUnique
+   */
+  export type PlanFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter, which Plan to fetch.
+     */
+    where: PlanWhereUniqueInput
+  }
+
+  /**
+   * Plan findUniqueOrThrow
+   */
+  export type PlanFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter, which Plan to fetch.
+     */
+    where: PlanWhereUniqueInput
+  }
+
+  /**
+   * Plan findFirst
+   */
+  export type PlanFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter, which Plan to fetch.
+     */
+    where?: PlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plans to fetch.
+     */
+    orderBy?: PlanOrderByWithRelationInput | PlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Plans.
+     */
+    cursor?: PlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Plans.
+     */
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * Plan findFirstOrThrow
+   */
+  export type PlanFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter, which Plan to fetch.
+     */
+    where?: PlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plans to fetch.
+     */
+    orderBy?: PlanOrderByWithRelationInput | PlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Plans.
+     */
+    cursor?: PlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plans.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Plans.
+     */
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * Plan findMany
+   */
+  export type PlanFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter, which Plans to fetch.
+     */
+    where?: PlanWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Plans to fetch.
+     */
+    orderBy?: PlanOrderByWithRelationInput | PlanOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Plans.
+     */
+    cursor?: PlanWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Plans from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Plans.
+     */
+    skip?: number
+    distinct?: PlanScalarFieldEnum | PlanScalarFieldEnum[]
+  }
+
+  /**
+   * Plan create
+   */
+  export type PlanCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Plan.
+     */
+    data: XOR<PlanCreateInput, PlanUncheckedCreateInput>
+  }
+
+  /**
+   * Plan createMany
+   */
+  export type PlanCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Plans.
+     */
+    data: PlanCreateManyInput | PlanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Plan createManyAndReturn
+   */
+  export type PlanCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * The data used to create many Plans.
+     */
+    data: PlanCreateManyInput | PlanCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Plan update
+   */
+  export type PlanUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Plan.
+     */
+    data: XOR<PlanUpdateInput, PlanUncheckedUpdateInput>
+    /**
+     * Choose, which Plan to update.
+     */
+    where: PlanWhereUniqueInput
+  }
+
+  /**
+   * Plan updateMany
+   */
+  export type PlanUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Plans.
+     */
+    data: XOR<PlanUpdateManyMutationInput, PlanUncheckedUpdateManyInput>
+    /**
+     * Filter which Plans to update
+     */
+    where?: PlanWhereInput
+    /**
+     * Limit how many Plans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Plan updateManyAndReturn
+   */
+  export type PlanUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * The data used to update Plans.
+     */
+    data: XOR<PlanUpdateManyMutationInput, PlanUncheckedUpdateManyInput>
+    /**
+     * Filter which Plans to update
+     */
+    where?: PlanWhereInput
+    /**
+     * Limit how many Plans to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Plan upsert
+   */
+  export type PlanUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Plan to update in case it exists.
+     */
+    where: PlanWhereUniqueInput
+    /**
+     * In case the Plan found by the `where` argument doesn't exist, create a new Plan with this data.
+     */
+    create: XOR<PlanCreateInput, PlanUncheckedCreateInput>
+    /**
+     * In case the Plan was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlanUpdateInput, PlanUncheckedUpdateInput>
+  }
+
+  /**
+   * Plan delete
+   */
+  export type PlanDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+    /**
+     * Filter which Plan to delete.
+     */
+    where: PlanWhereUniqueInput
+  }
+
+  /**
+   * Plan deleteMany
+   */
+  export type PlanDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Plans to delete
+     */
+    where?: PlanWhereInput
+    /**
+     * Limit how many Plans to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Plan.communities
+   */
+  export type Plan$communitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Community
+     */
+    select?: CommunitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Community
+     */
+    omit?: CommunityOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunityInclude<ExtArgs> | null
+    where?: CommunityWhereInput
+    orderBy?: CommunityOrderByWithRelationInput | CommunityOrderByWithRelationInput[]
+    cursor?: CommunityWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommunityScalarFieldEnum | CommunityScalarFieldEnum[]
+  }
+
+  /**
+   * Plan without action
+   */
+  export type PlanDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Plan
+     */
+    select?: PlanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Plan
+     */
+    omit?: PlanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlanInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Community
    */
 
@@ -5715,19 +6868,19 @@ export namespace Prisma {
   export type CommunityMinAggregateOutputType = {
     id: string | null
     name: string | null
-    plan: string | null
+    planId: string | null
   }
 
   export type CommunityMaxAggregateOutputType = {
     id: string | null
     name: string | null
-    plan: string | null
+    planId: string | null
   }
 
   export type CommunityCountAggregateOutputType = {
     id: number
     name: number
-    plan: number
+    planId: number
     _all: number
   }
 
@@ -5735,19 +6888,19 @@ export namespace Prisma {
   export type CommunityMinAggregateInputType = {
     id?: true
     name?: true
-    plan?: true
+    planId?: true
   }
 
   export type CommunityMaxAggregateInputType = {
     id?: true
     name?: true
-    plan?: true
+    planId?: true
   }
 
   export type CommunityCountAggregateInputType = {
     id?: true
     name?: true
-    plan?: true
+    planId?: true
     _all?: true
   }
 
@@ -5826,7 +6979,7 @@ export namespace Prisma {
   export type CommunityGroupByOutputType = {
     id: string
     name: string
-    plan: string
+    planId: string
     _count: CommunityCountAggregateOutputType | null
     _min: CommunityMinAggregateOutputType | null
     _max: CommunityMaxAggregateOutputType | null
@@ -5849,46 +7002,55 @@ export namespace Prisma {
   export type CommunitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    plan?: boolean
-    WaterPoint?: boolean | Community$WaterPointArgs<ExtArgs>
+    planId?: boolean
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
+    waterPoints?: boolean | Community$waterPointsArgs<ExtArgs>
     _count?: boolean | CommunityCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["community"]>
 
   export type CommunitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    plan?: boolean
+    planId?: boolean
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["community"]>
 
   export type CommunitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
-    plan?: boolean
+    planId?: boolean
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["community"]>
 
   export type CommunitySelectScalar = {
     id?: boolean
     name?: boolean
-    plan?: boolean
+    planId?: boolean
   }
 
-  export type CommunityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "plan", ExtArgs["result"]["community"]>
+  export type CommunityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "planId", ExtArgs["result"]["community"]>
   export type CommunityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    WaterPoint?: boolean | Community$WaterPointArgs<ExtArgs>
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
+    waterPoints?: boolean | Community$waterPointsArgs<ExtArgs>
     _count?: boolean | CommunityCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type CommunityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type CommunityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type CommunityIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
+  }
+  export type CommunityIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    plan?: boolean | PlanDefaultArgs<ExtArgs>
+  }
 
   export type $CommunityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Community"
     objects: {
-      WaterPoint: Prisma.$WaterPointPayload<ExtArgs>[]
+      plan: Prisma.$PlanPayload<ExtArgs>
+      waterPoints: Prisma.$WaterPointPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
-      plan: string
+      planId: string
     }, ExtArgs["result"]["community"]>
     composites: {}
   }
@@ -6283,7 +7445,8 @@ export namespace Prisma {
    */
   export interface Prisma__CommunityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    WaterPoint<T extends Community$WaterPointArgs<ExtArgs> = {}>(args?: Subset<T, Community$WaterPointArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WaterPointPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    plan<T extends PlanDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlanDefaultArgs<ExtArgs>>): Prisma__PlanClient<$Result.GetResult<Prisma.$PlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    waterPoints<T extends Community$waterPointsArgs<ExtArgs> = {}>(args?: Subset<T, Community$waterPointsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WaterPointPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6315,7 +7478,7 @@ export namespace Prisma {
   interface CommunityFieldRefs {
     readonly id: FieldRef<"Community", 'String'>
     readonly name: FieldRef<"Community", 'String'>
-    readonly plan: FieldRef<"Community", 'String'>
+    readonly planId: FieldRef<"Community", 'String'>
   }
     
 
@@ -6565,6 +7728,10 @@ export namespace Prisma {
      */
     data: CommunityCreateManyInput | CommunityCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunityIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6635,6 +7802,10 @@ export namespace Prisma {
      * Limit how many Communities to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunityIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -6704,9 +7875,9 @@ export namespace Prisma {
   }
 
   /**
-   * Community.WaterPoint
+   * Community.waterPoints
    */
-  export type Community$WaterPointArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Community$waterPointsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the WaterPoint
      */
@@ -7881,10 +9052,18 @@ export namespace Prisma {
   export type VerificationTokenScalarFieldEnum = (typeof VerificationTokenScalarFieldEnum)[keyof typeof VerificationTokenScalarFieldEnum]
 
 
+  export const PlanScalarFieldEnum: {
+    id: 'id',
+    name: 'name'
+  };
+
+  export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
   export const CommunityScalarFieldEnum: {
     id: 'id',
     name: 'name',
-    plan: 'plan'
+    planId: 'planId'
   };
 
   export type CommunityScalarFieldEnum = (typeof CommunityScalarFieldEnum)[keyof typeof CommunityScalarFieldEnum]
@@ -8274,21 +9453,63 @@ export namespace Prisma {
     expires?: DateTimeWithAggregatesFilter<"VerificationToken"> | Date | string
   }
 
+  export type PlanWhereInput = {
+    AND?: PlanWhereInput | PlanWhereInput[]
+    OR?: PlanWhereInput[]
+    NOT?: PlanWhereInput | PlanWhereInput[]
+    id?: StringFilter<"Plan"> | string
+    name?: StringFilter<"Plan"> | string
+    communities?: CommunityListRelationFilter
+  }
+
+  export type PlanOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    communities?: CommunityOrderByRelationAggregateInput
+  }
+
+  export type PlanWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlanWhereInput | PlanWhereInput[]
+    OR?: PlanWhereInput[]
+    NOT?: PlanWhereInput | PlanWhereInput[]
+    name?: StringFilter<"Plan"> | string
+    communities?: CommunityListRelationFilter
+  }, "id">
+
+  export type PlanOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    _count?: PlanCountOrderByAggregateInput
+    _max?: PlanMaxOrderByAggregateInput
+    _min?: PlanMinOrderByAggregateInput
+  }
+
+  export type PlanScalarWhereWithAggregatesInput = {
+    AND?: PlanScalarWhereWithAggregatesInput | PlanScalarWhereWithAggregatesInput[]
+    OR?: PlanScalarWhereWithAggregatesInput[]
+    NOT?: PlanScalarWhereWithAggregatesInput | PlanScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Plan"> | string
+    name?: StringWithAggregatesFilter<"Plan"> | string
+  }
+
   export type CommunityWhereInput = {
     AND?: CommunityWhereInput | CommunityWhereInput[]
     OR?: CommunityWhereInput[]
     NOT?: CommunityWhereInput | CommunityWhereInput[]
     id?: StringFilter<"Community"> | string
     name?: StringFilter<"Community"> | string
-    plan?: StringFilter<"Community"> | string
-    WaterPoint?: WaterPointListRelationFilter
+    planId?: StringFilter<"Community"> | string
+    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
+    waterPoints?: WaterPointListRelationFilter
   }
 
   export type CommunityOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
-    plan?: SortOrder
-    WaterPoint?: WaterPointOrderByRelationAggregateInput
+    planId?: SortOrder
+    plan?: PlanOrderByWithRelationInput
+    waterPoints?: WaterPointOrderByRelationAggregateInput
   }
 
   export type CommunityWhereUniqueInput = Prisma.AtLeast<{
@@ -8297,14 +9518,15 @@ export namespace Prisma {
     OR?: CommunityWhereInput[]
     NOT?: CommunityWhereInput | CommunityWhereInput[]
     name?: StringFilter<"Community"> | string
-    plan?: StringFilter<"Community"> | string
-    WaterPoint?: WaterPointListRelationFilter
+    planId?: StringFilter<"Community"> | string
+    plan?: XOR<PlanScalarRelationFilter, PlanWhereInput>
+    waterPoints?: WaterPointListRelationFilter
   }, "id">
 
   export type CommunityOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
-    plan?: SortOrder
+    planId?: SortOrder
     _count?: CommunityCountOrderByAggregateInput
     _max?: CommunityMaxOrderByAggregateInput
     _min?: CommunityMinOrderByAggregateInput
@@ -8316,7 +9538,7 @@ export namespace Prisma {
     NOT?: CommunityScalarWhereWithAggregatesInput | CommunityScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Community"> | string
     name?: StringWithAggregatesFilter<"Community"> | string
-    plan?: StringWithAggregatesFilter<"Community"> | string
+    planId?: StringWithAggregatesFilter<"Community"> | string
   }
 
   export type WaterPointWhereInput = {
@@ -8651,50 +9873,88 @@ export namespace Prisma {
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PlanCreateInput = {
+    id?: string
+    name: string
+    communities?: CommunityCreateNestedManyWithoutPlanInput
+  }
+
+  export type PlanUncheckedCreateInput = {
+    id?: string
+    name: string
+    communities?: CommunityUncheckedCreateNestedManyWithoutPlanInput
+  }
+
+  export type PlanUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    communities?: CommunityUpdateManyWithoutPlanNestedInput
+  }
+
+  export type PlanUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    communities?: CommunityUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type PlanCreateManyInput = {
+    id?: string
+    name: string
+  }
+
+  export type PlanUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlanUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
   export type CommunityCreateInput = {
     id?: string
     name: string
-    plan: string
-    WaterPoint?: WaterPointCreateNestedManyWithoutCommunityInput
+    plan: PlanCreateNestedOneWithoutCommunitiesInput
+    waterPoints?: WaterPointCreateNestedManyWithoutCommunityInput
   }
 
   export type CommunityUncheckedCreateInput = {
     id?: string
     name: string
-    plan: string
-    WaterPoint?: WaterPointUncheckedCreateNestedManyWithoutCommunityInput
+    planId: string
+    waterPoints?: WaterPointUncheckedCreateNestedManyWithoutCommunityInput
   }
 
   export type CommunityUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
-    WaterPoint?: WaterPointUpdateManyWithoutCommunityNestedInput
+    plan?: PlanUpdateOneRequiredWithoutCommunitiesNestedInput
+    waterPoints?: WaterPointUpdateManyWithoutCommunityNestedInput
   }
 
   export type CommunityUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
-    WaterPoint?: WaterPointUncheckedUpdateManyWithoutCommunityNestedInput
+    planId?: StringFieldUpdateOperationsInput | string
+    waterPoints?: WaterPointUncheckedUpdateManyWithoutCommunityNestedInput
   }
 
   export type CommunityCreateManyInput = {
     id?: string
     name: string
-    plan: string
+    planId: string
   }
 
   export type CommunityUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
   }
 
   export type CommunityUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
   }
 
   export type WaterPointCreateInput = {
@@ -8703,7 +9963,7 @@ export namespace Prisma {
     location: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    community: CommunityCreateNestedOneWithoutWaterPointInput
+    community: CommunityCreateNestedOneWithoutWaterPointsInput
   }
 
   export type WaterPointUncheckedCreateInput = {
@@ -8721,7 +9981,7 @@ export namespace Prisma {
     location?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    community?: CommunityUpdateOneRequiredWithoutWaterPointNestedInput
+    community?: CommunityUpdateOneRequiredWithoutWaterPointsNestedInput
   }
 
   export type WaterPointUncheckedUpdateInput = {
@@ -9113,6 +10373,36 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type CommunityListRelationFilter = {
+    every?: CommunityWhereInput
+    some?: CommunityWhereInput
+    none?: CommunityWhereInput
+  }
+
+  export type CommunityOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlanCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type PlanMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type PlanMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+  }
+
+  export type PlanScalarRelationFilter = {
+    is?: PlanWhereInput
+    isNot?: PlanWhereInput
+  }
+
   export type WaterPointListRelationFilter = {
     every?: WaterPointWhereInput
     some?: WaterPointWhereInput
@@ -9126,19 +10416,19 @@ export namespace Prisma {
   export type CommunityCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    plan?: SortOrder
+    planId?: SortOrder
   }
 
   export type CommunityMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    plan?: SortOrder
+    planId?: SortOrder
   }
 
   export type CommunityMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
-    plan?: SortOrder
+    planId?: SortOrder
   }
 
   export type CommunityScalarRelationFilter = {
@@ -9309,6 +10599,54 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type CommunityCreateNestedManyWithoutPlanInput = {
+    create?: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput> | CommunityCreateWithoutPlanInput[] | CommunityUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: CommunityCreateOrConnectWithoutPlanInput | CommunityCreateOrConnectWithoutPlanInput[]
+    createMany?: CommunityCreateManyPlanInputEnvelope
+    connect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+  }
+
+  export type CommunityUncheckedCreateNestedManyWithoutPlanInput = {
+    create?: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput> | CommunityCreateWithoutPlanInput[] | CommunityUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: CommunityCreateOrConnectWithoutPlanInput | CommunityCreateOrConnectWithoutPlanInput[]
+    createMany?: CommunityCreateManyPlanInputEnvelope
+    connect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+  }
+
+  export type CommunityUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput> | CommunityCreateWithoutPlanInput[] | CommunityUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: CommunityCreateOrConnectWithoutPlanInput | CommunityCreateOrConnectWithoutPlanInput[]
+    upsert?: CommunityUpsertWithWhereUniqueWithoutPlanInput | CommunityUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: CommunityCreateManyPlanInputEnvelope
+    set?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    disconnect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    delete?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    connect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    update?: CommunityUpdateWithWhereUniqueWithoutPlanInput | CommunityUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: CommunityUpdateManyWithWhereWithoutPlanInput | CommunityUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: CommunityScalarWhereInput | CommunityScalarWhereInput[]
+  }
+
+  export type CommunityUncheckedUpdateManyWithoutPlanNestedInput = {
+    create?: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput> | CommunityCreateWithoutPlanInput[] | CommunityUncheckedCreateWithoutPlanInput[]
+    connectOrCreate?: CommunityCreateOrConnectWithoutPlanInput | CommunityCreateOrConnectWithoutPlanInput[]
+    upsert?: CommunityUpsertWithWhereUniqueWithoutPlanInput | CommunityUpsertWithWhereUniqueWithoutPlanInput[]
+    createMany?: CommunityCreateManyPlanInputEnvelope
+    set?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    disconnect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    delete?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    connect?: CommunityWhereUniqueInput | CommunityWhereUniqueInput[]
+    update?: CommunityUpdateWithWhereUniqueWithoutPlanInput | CommunityUpdateWithWhereUniqueWithoutPlanInput[]
+    updateMany?: CommunityUpdateManyWithWhereWithoutPlanInput | CommunityUpdateManyWithWhereWithoutPlanInput[]
+    deleteMany?: CommunityScalarWhereInput | CommunityScalarWhereInput[]
+  }
+
+  export type PlanCreateNestedOneWithoutCommunitiesInput = {
+    create?: XOR<PlanCreateWithoutCommunitiesInput, PlanUncheckedCreateWithoutCommunitiesInput>
+    connectOrCreate?: PlanCreateOrConnectWithoutCommunitiesInput
+    connect?: PlanWhereUniqueInput
+  }
+
   export type WaterPointCreateNestedManyWithoutCommunityInput = {
     create?: XOR<WaterPointCreateWithoutCommunityInput, WaterPointUncheckedCreateWithoutCommunityInput> | WaterPointCreateWithoutCommunityInput[] | WaterPointUncheckedCreateWithoutCommunityInput[]
     connectOrCreate?: WaterPointCreateOrConnectWithoutCommunityInput | WaterPointCreateOrConnectWithoutCommunityInput[]
@@ -9321,6 +10659,14 @@ export namespace Prisma {
     connectOrCreate?: WaterPointCreateOrConnectWithoutCommunityInput | WaterPointCreateOrConnectWithoutCommunityInput[]
     createMany?: WaterPointCreateManyCommunityInputEnvelope
     connect?: WaterPointWhereUniqueInput | WaterPointWhereUniqueInput[]
+  }
+
+  export type PlanUpdateOneRequiredWithoutCommunitiesNestedInput = {
+    create?: XOR<PlanCreateWithoutCommunitiesInput, PlanUncheckedCreateWithoutCommunitiesInput>
+    connectOrCreate?: PlanCreateOrConnectWithoutCommunitiesInput
+    upsert?: PlanUpsertWithoutCommunitiesInput
+    connect?: PlanWhereUniqueInput
+    update?: XOR<XOR<PlanUpdateToOneWithWhereWithoutCommunitiesInput, PlanUpdateWithoutCommunitiesInput>, PlanUncheckedUpdateWithoutCommunitiesInput>
   }
 
   export type WaterPointUpdateManyWithoutCommunityNestedInput = {
@@ -9351,18 +10697,18 @@ export namespace Prisma {
     deleteMany?: WaterPointScalarWhereInput | WaterPointScalarWhereInput[]
   }
 
-  export type CommunityCreateNestedOneWithoutWaterPointInput = {
-    create?: XOR<CommunityCreateWithoutWaterPointInput, CommunityUncheckedCreateWithoutWaterPointInput>
-    connectOrCreate?: CommunityCreateOrConnectWithoutWaterPointInput
+  export type CommunityCreateNestedOneWithoutWaterPointsInput = {
+    create?: XOR<CommunityCreateWithoutWaterPointsInput, CommunityUncheckedCreateWithoutWaterPointsInput>
+    connectOrCreate?: CommunityCreateOrConnectWithoutWaterPointsInput
     connect?: CommunityWhereUniqueInput
   }
 
-  export type CommunityUpdateOneRequiredWithoutWaterPointNestedInput = {
-    create?: XOR<CommunityCreateWithoutWaterPointInput, CommunityUncheckedCreateWithoutWaterPointInput>
-    connectOrCreate?: CommunityCreateOrConnectWithoutWaterPointInput
-    upsert?: CommunityUpsertWithoutWaterPointInput
+  export type CommunityUpdateOneRequiredWithoutWaterPointsNestedInput = {
+    create?: XOR<CommunityCreateWithoutWaterPointsInput, CommunityUncheckedCreateWithoutWaterPointsInput>
+    connectOrCreate?: CommunityCreateOrConnectWithoutWaterPointsInput
+    upsert?: CommunityUpsertWithoutWaterPointsInput
     connect?: CommunityWhereUniqueInput
-    update?: XOR<XOR<CommunityUpdateToOneWithWhereWithoutWaterPointInput, CommunityUpdateWithoutWaterPointInput>, CommunityUncheckedUpdateWithoutWaterPointInput>
+    update?: XOR<XOR<CommunityUpdateToOneWithWhereWithoutWaterPointsInput, CommunityUpdateWithoutWaterPointsInput>, CommunityUncheckedUpdateWithoutWaterPointsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -9784,6 +11130,68 @@ export namespace Prisma {
     expires?: DateTimeFilter<"Session"> | Date | string
   }
 
+  export type CommunityCreateWithoutPlanInput = {
+    id?: string
+    name: string
+    waterPoints?: WaterPointCreateNestedManyWithoutCommunityInput
+  }
+
+  export type CommunityUncheckedCreateWithoutPlanInput = {
+    id?: string
+    name: string
+    waterPoints?: WaterPointUncheckedCreateNestedManyWithoutCommunityInput
+  }
+
+  export type CommunityCreateOrConnectWithoutPlanInput = {
+    where: CommunityWhereUniqueInput
+    create: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput>
+  }
+
+  export type CommunityCreateManyPlanInputEnvelope = {
+    data: CommunityCreateManyPlanInput | CommunityCreateManyPlanInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CommunityUpsertWithWhereUniqueWithoutPlanInput = {
+    where: CommunityWhereUniqueInput
+    update: XOR<CommunityUpdateWithoutPlanInput, CommunityUncheckedUpdateWithoutPlanInput>
+    create: XOR<CommunityCreateWithoutPlanInput, CommunityUncheckedCreateWithoutPlanInput>
+  }
+
+  export type CommunityUpdateWithWhereUniqueWithoutPlanInput = {
+    where: CommunityWhereUniqueInput
+    data: XOR<CommunityUpdateWithoutPlanInput, CommunityUncheckedUpdateWithoutPlanInput>
+  }
+
+  export type CommunityUpdateManyWithWhereWithoutPlanInput = {
+    where: CommunityScalarWhereInput
+    data: XOR<CommunityUpdateManyMutationInput, CommunityUncheckedUpdateManyWithoutPlanInput>
+  }
+
+  export type CommunityScalarWhereInput = {
+    AND?: CommunityScalarWhereInput | CommunityScalarWhereInput[]
+    OR?: CommunityScalarWhereInput[]
+    NOT?: CommunityScalarWhereInput | CommunityScalarWhereInput[]
+    id?: StringFilter<"Community"> | string
+    name?: StringFilter<"Community"> | string
+    planId?: StringFilter<"Community"> | string
+  }
+
+  export type PlanCreateWithoutCommunitiesInput = {
+    id?: string
+    name: string
+  }
+
+  export type PlanUncheckedCreateWithoutCommunitiesInput = {
+    id?: string
+    name: string
+  }
+
+  export type PlanCreateOrConnectWithoutCommunitiesInput = {
+    where: PlanWhereUniqueInput
+    create: XOR<PlanCreateWithoutCommunitiesInput, PlanUncheckedCreateWithoutCommunitiesInput>
+  }
+
   export type WaterPointCreateWithoutCommunityInput = {
     id?: string
     name: string
@@ -9808,6 +11216,27 @@ export namespace Prisma {
   export type WaterPointCreateManyCommunityInputEnvelope = {
     data: WaterPointCreateManyCommunityInput | WaterPointCreateManyCommunityInput[]
     skipDuplicates?: boolean
+  }
+
+  export type PlanUpsertWithoutCommunitiesInput = {
+    update: XOR<PlanUpdateWithoutCommunitiesInput, PlanUncheckedUpdateWithoutCommunitiesInput>
+    create: XOR<PlanCreateWithoutCommunitiesInput, PlanUncheckedCreateWithoutCommunitiesInput>
+    where?: PlanWhereInput
+  }
+
+  export type PlanUpdateToOneWithWhereWithoutCommunitiesInput = {
+    where?: PlanWhereInput
+    data: XOR<PlanUpdateWithoutCommunitiesInput, PlanUncheckedUpdateWithoutCommunitiesInput>
+  }
+
+  export type PlanUpdateWithoutCommunitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PlanUncheckedUpdateWithoutCommunitiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type WaterPointUpsertWithWhereUniqueWithoutCommunityInput = {
@@ -9838,44 +11267,44 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"WaterPoint"> | Date | string
   }
 
-  export type CommunityCreateWithoutWaterPointInput = {
+  export type CommunityCreateWithoutWaterPointsInput = {
     id?: string
     name: string
-    plan: string
+    plan: PlanCreateNestedOneWithoutCommunitiesInput
   }
 
-  export type CommunityUncheckedCreateWithoutWaterPointInput = {
+  export type CommunityUncheckedCreateWithoutWaterPointsInput = {
     id?: string
     name: string
-    plan: string
+    planId: string
   }
 
-  export type CommunityCreateOrConnectWithoutWaterPointInput = {
+  export type CommunityCreateOrConnectWithoutWaterPointsInput = {
     where: CommunityWhereUniqueInput
-    create: XOR<CommunityCreateWithoutWaterPointInput, CommunityUncheckedCreateWithoutWaterPointInput>
+    create: XOR<CommunityCreateWithoutWaterPointsInput, CommunityUncheckedCreateWithoutWaterPointsInput>
   }
 
-  export type CommunityUpsertWithoutWaterPointInput = {
-    update: XOR<CommunityUpdateWithoutWaterPointInput, CommunityUncheckedUpdateWithoutWaterPointInput>
-    create: XOR<CommunityCreateWithoutWaterPointInput, CommunityUncheckedCreateWithoutWaterPointInput>
+  export type CommunityUpsertWithoutWaterPointsInput = {
+    update: XOR<CommunityUpdateWithoutWaterPointsInput, CommunityUncheckedUpdateWithoutWaterPointsInput>
+    create: XOR<CommunityCreateWithoutWaterPointsInput, CommunityUncheckedCreateWithoutWaterPointsInput>
     where?: CommunityWhereInput
   }
 
-  export type CommunityUpdateToOneWithWhereWithoutWaterPointInput = {
+  export type CommunityUpdateToOneWithWhereWithoutWaterPointsInput = {
     where?: CommunityWhereInput
-    data: XOR<CommunityUpdateWithoutWaterPointInput, CommunityUncheckedUpdateWithoutWaterPointInput>
+    data: XOR<CommunityUpdateWithoutWaterPointsInput, CommunityUncheckedUpdateWithoutWaterPointsInput>
   }
 
-  export type CommunityUpdateWithoutWaterPointInput = {
+  export type CommunityUpdateWithoutWaterPointsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    plan?: PlanUpdateOneRequiredWithoutCommunitiesNestedInput
   }
 
-  export type CommunityUncheckedUpdateWithoutWaterPointInput = {
+  export type CommunityUncheckedUpdateWithoutWaterPointsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    plan?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
   }
 
   export type AccountCreateManyUserInput = {
@@ -9960,6 +11389,28 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     sessionToken?: StringFieldUpdateOperationsInput | string
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityCreateManyPlanInput = {
+    id?: string
+    name: string
+  }
+
+  export type CommunityUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    waterPoints?: WaterPointUpdateManyWithoutCommunityNestedInput
+  }
+
+  export type CommunityUncheckedUpdateWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    waterPoints?: WaterPointUncheckedUpdateManyWithoutCommunityNestedInput
+  }
+
+  export type CommunityUncheckedUpdateManyWithoutPlanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type WaterPointCreateManyCommunityInput = {

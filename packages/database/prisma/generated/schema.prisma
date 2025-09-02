@@ -59,12 +59,23 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Plan {
+  id   String @id @default(cuid())
+  name String
+
+  communities Community[]
+}
+
 model Community {
   id   String @id @default(cuid())
   name String
-  plan String
 
-  WaterPoint WaterPoint[]
+  plan   Plan   @relation(fields: [planId], references: [id])
+  planId String @map("plan_id")
+
+  waterPoints WaterPoint[]
+
+  @@index([planId])
 }
 
 model WaterPoint {

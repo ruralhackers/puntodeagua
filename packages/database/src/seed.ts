@@ -3,7 +3,7 @@ import { client } from './client'
 const prisma = client
 
 async function main() {
-  const communityId = await seedCommunity()
+  const communityId = await seedPlanAndCommunity()
   await seedWaterPoints(communityId)
 }
 
@@ -17,16 +17,25 @@ main()
   })
 
 
-async function seedCommunity(){
+async function seedPlanAndCommunity(){
+  const plan = await prisma.plan.create({
+    data: {
+      name: 'Aguas de Galicia',
+    },
+  })
+
   const COMMUNITY = {
     name: 'Anceu',
-    plan: 'Plan A',
+    planId: plan.id,
   }
+
   const community = await prisma.community.create({
     data: COMMUNITY
   })
   return community.id
 }
+
+
 
 const WATER_POINTS = [
   {
@@ -38,8 +47,6 @@ const WATER_POINTS = [
     location: 'Location 2',
   }
 ]
-
-
 
 async function seedWaterPoints(communityId: string) {
   await prisma.waterPoint.deleteMany({})

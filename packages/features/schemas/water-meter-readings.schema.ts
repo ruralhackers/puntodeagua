@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { IdSchema } from "core";
-import {decimalSchema, locationSchema} from "./location.schema.ts";
+import { decimalSchema, locationSchema } from "./location.schema.ts";
 
 export const WaterMeterReadingsSchema = z.object({
 	id: IdSchema,

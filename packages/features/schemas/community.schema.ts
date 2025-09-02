@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {IdSchema} from "core";
+import { z } from "zod";
+import { IdSchema } from "core";
 
 export const CommunitySchema = z.object({
 	id: IdSchema,

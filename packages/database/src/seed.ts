@@ -35,8 +35,6 @@ async function seedPlanAndCommunity(){
   return community.id
 }
 
-
-
 const WATER_POINTS = [
   {
     name: 'Water Point 1',

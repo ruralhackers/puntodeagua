@@ -6,10 +6,17 @@ To install dependencies:
 bun install
 ```
 
-To run:
+# Todo
 
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.21. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+- [ ] Prisma + Postgres @carolina
+- [ ] Auth con NextAuth 
+- [ ] Despliegue con Vercel y CI @agus
+- [ ] Configurar Biome en pre commit
+- [ ] Configurar CI con Github Actions
+- [ ] Configuración PWA
+- [ ] Roles y permisos. Resolver a nivel de middleware con foco en permisos granulares @cesalberca
+- [ ] Integrar container @cesalberca
+- [ ] Multiidoma con Next Intl
+- [ ] Test con BunTest
+- [ ] Test con Playwright
+- [ ] Creación Punto de Agua

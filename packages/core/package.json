@@ -1,16 +1,12 @@
 {
-  "name": "puntodeagua",
+  "name": "core",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/luxon": "3.7.1"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "5"
-  },
-  "dependencies": {
-    "luxon": "3.7.1"
   }
 }

@@ -1,6 +1,6 @@
+import { Id } from "../../core/value-object/id.ts";
 import type { WaterPointSchema } from "../schemas/water-point.schema.ts";
 import { Location } from "./location.ts";
-import { Id } from "../../core/value-object/id.ts";
 
 export class WaterPoint {
 	private constructor(

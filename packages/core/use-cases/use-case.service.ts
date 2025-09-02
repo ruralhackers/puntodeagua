@@ -7,6 +7,8 @@ import { EmptyMiddleware } from "./middleware/empty.middleware.ts";
 import { UseCaseHandler } from "./use-case-handler.ts";
 
 export class UseCaseService {
+	static readonly ID = "UseCaseService";
+
 	constructor(
 		private middlewares: Middleware[],
 		private readonly container: Container,
@@ -22,9 +24,9 @@ export class UseCaseService {
 		};
 
 		let next = UseCaseHandler.create({
-			next: this.container.create(useCase),
+			next: this.container.get((useCase as any).ID),
 			options: requiredOptions,
-			middleware: this.container.get<EmptyMiddleware>(EmptyMiddleware.name),
+			middleware: this.container.get<EmptyMiddleware>(EmptyMiddleware.ID),
 		});
 
 		for (let i = this.middlewares.length - 1; i >= 0; i--) {

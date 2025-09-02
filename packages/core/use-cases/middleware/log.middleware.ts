@@ -4,6 +4,8 @@ import { UseCaseHandler } from "../use-case-handler";
 import type { Middleware } from "./middleware";
 
 export class LogMiddleware implements Middleware {
+	static readonly ID = "LogMiddleware";
+
 	constructor(private readonly logger: Logger) {}
 
 	intercept(params: unknown, useCase: UseCase): Promise<unknown> {

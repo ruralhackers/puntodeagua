@@ -11,12 +11,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: lts/*
+          bun-version: latest
       - name: Install dependencies
-        run: npm ci
+        working-directory: ./apps/webapp
+        run: bun install
       - name: Build project
-        run: npm run build
+        working-directory: ./apps/webapp
+        run: bun run build
       - name: Trigger Vercel Deploy
         run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}

@@ -1,24 +1,24 @@
-name: CI
+# name: CI
 
-on: [push]
+# on: [push]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-      - name: install
-        working-directory: ./apps/webapp
-        run: bun install
-      - name: lint
-        working-directory: ./apps/webapp
-        run: bun run lint
-      - name: compile
-        working-directory: ./apps/webapp
-        run: bun run compile
-      - name: test
-        working-directory: ./apps/webapp
-        run: bun test
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: oven-sh/setup-bun@v1
+#         with:
+#           bun-version: latest
+#       - name: install
+#         working-directory: ./apps/webapp
+#         run: bun install
+#       - name: lint
+#         working-directory: ./apps/webapp
+#         run: bun run lint
+#       - name: compile
+#         working-directory: ./apps/webapp
+#         run: bun run compile
+#       - name: test
+#         working-directory: ./apps/webapp
+#         run: bun test

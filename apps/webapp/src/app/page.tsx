@@ -114,6 +114,106 @@ export default function Home() {
 				</div>
 			</section>
 
+			{/* Testimonials Section */}
+			<section className="py-20 bg-white dark:bg-slate-800">
+				<div className="container mx-auto px-6">
+					<h3 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-16">
+						Voces de la Comunidad
+					</h3>
+					<div className="grid md:grid-cols-3 gap-8">
+						{/* Olga's Testimonial */}
+						<div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6 text-center">
+							<div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+								<svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Olga">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+								</svg>
+							</div>
+							<h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Olga Aranda</h4>
+							<p className="text-sm text-blue-600 dark:text-blue-400 mb-4">Gestora de Agua - Anceu, Ponte Caldelas</p>
+							<p className="text-gray-600 dark:text-gray-300 italic">
+								"Llevamos años gestionando el agua de la aldea de forma manual. Con esta tecnología, 
+								el relevo será mucho más sencillo para las futuras generaciones."
+							</p>
+						</div>
+
+						{/* Rosabel's Testimonial */}
+						<div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6 text-center">
+							<div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+								<svg className="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Rosabel">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+								</svg>
+							</div>
+							<h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Rosabel García</h4>
+							<p className="text-sm text-green-600 dark:text-green-400 mb-4">Co-gestora de Agua - Anceu, Ponte Caldelas</p>
+							<p className="text-gray-600 dark:text-gray-300 italic">
+								"Los 'libros gordos de Petete' han funcionado bien, pero la digitalización nos permitirá 
+								ser más eficientes y mantener el coste en solo 85€ por vivienda al año."
+							</p>
+						</div>
+
+						{/* Jesús's Testimonial */}
+						<div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6 text-center">
+							<div className="w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
+								<svg className="w-10 h-10 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Jesús">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+								</svg>
+							</div>
+							<h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Jesús Angulo</h4>
+							<p className="text-sm text-purple-600 dark:text-purple-400 mb-4">Director de Operaciones - Next Digital</p>
+							<p className="text-gray-600 dark:text-gray-300 italic">
+								"Estamos dando una solución para colectivos que no son mayoritarios pero se enfrentan 
+								a los retos de la despoblación, precio y digitalización."
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Project Story Section */}
+			<section className="py-20 bg-blue-50 dark:bg-slate-800">
+				<div className="container mx-auto px-6">
+					<div className="grid lg:grid-cols-2 gap-12 items-center">
+						<div>
+							<h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+								El Proyecto de Anceu
+							</h3>
+							<p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+								Anceu, una pequeña aldea de Ponte Caldelas, se ha convertido en el epicentro de la 
+								innovación rural en Galicia. Un grupo de veinte expertos en tecnología, diseño y 
+								mediación se reunió para digitalizar el sistema de gestión del agua.
+							</p>
+							<p className="text-gray-600 dark:text-gray-300 mb-6">
+								Este proyecto piloto, que podría replicarse en más de 1.500 aldeas gallegas, 
+								busca garantizar la supervivencia de una forma de vida tradicional frente a los 
+								retos de la despoblación y la falta de relevo generacional.
+							</p>
+							<div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+								<p className="text-blue-800 dark:text-blue-200 text-sm">
+									<strong>Fuente:</strong> 
+									<a href="https://www.galiciapress.es/articulo/galicia-en-red/2025-09-02/5413061-hackers-garantizar-agua-aldeas-gallegas-como-anceu" 
+									   className="underline hover:text-blue-600 dark:hover:text-blue-300" 
+									   target="_blank" 
+									   rel="noopener noreferrer">
+										GaliciaPress - Hackers para garantizar el agua de aldeas gallegas
+									</a>
+								</p>
+							</div>
+						</div>
+						<div className="relative">
+							<div className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-lg p-8 text-white text-center">
+								<svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-label="Innovación">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+								</svg>
+								<h4 className="text-xl font-semibold mb-2">Innovación Rural</h4>
+								<p className="text-blue-100">
+									20 expertos trabajando para digitalizar la gestión del agua en aldeas gallegas
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
 			{/* CTA Section */}
 			<section className="py-20 bg-blue-600 dark:bg-blue-700">
 				<div className="container mx-auto px-6 text-center">

@@ -1,6 +1,6 @@
-import type { UseCase } from '../use-case'
-import type { UseCaseOptions } from '../use-case-options'
-import type { Middleware } from './middleware'
+import type { UseCase } from "../use-case";
+import type { UseCaseOptions } from "../use-case-options";
+import type { Middleware } from "./middleware";
 
 export class EmptyMiddleware implements Middleware {
 	intercept(
@@ -8,6 +8,6 @@ export class EmptyMiddleware implements Middleware {
 		next: UseCase,
 		options: UseCaseOptions,
 	): Promise<unknown> {
-		return next.handle(params)
+		return next.handle(params);
 	}
 }

@@ -1,6 +1,6 @@
-import type { UseCase, UseCaseParams, UseCaseReturn } from './use-case'
-import type { UseCaseOptions } from './use-case-options'
-import type {Middleware} from "./middleware/middleware.ts";
+import type { UseCase, UseCaseParams, UseCaseReturn } from "./use-case";
+import type { UseCaseOptions } from "./use-case-options";
+import type { Middleware } from "./middleware/middleware.ts";
 
 export class UseCaseHandler implements UseCase {
 	private constructor(
@@ -16,14 +16,18 @@ export class UseCaseHandler implements UseCase {
 			params,
 			this.useCase,
 			this.options,
-		) as Promise<UseCaseReturn<T>>
+		) as Promise<UseCaseReturn<T>>;
 	}
 
 	static create({
 		middleware,
 		options,
 		next,
-	}: { next: UseCase; middleware: Middleware; options: UseCaseOptions }) {
-		return new UseCaseHandler(next, middleware, options)
+	}: {
+		next: UseCase;
+		middleware: Middleware;
+		options: UseCaseOptions;
+	}) {
+		return new UseCaseHandler(next, middleware, options);
 	}
 }

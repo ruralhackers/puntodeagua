@@ -1,16 +1,24 @@
 {
-  "name": "puntodeagua",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/luxon": "3.7.1"
-  },
-  "peerDependencies": {
-    "typescript": "5"
-  },
-  "dependencies": {
-    "luxon": "3.7.1"
-  }
+	"name": "puntodeagua",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"format": "bunx biome format --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.2",
+		"@types/bun": "latest",
+		"@types/luxon": "3.7.1"
+	},
+	"peerDependencies": {
+		"typescript": "5"
+	},
+	"dependencies": {
+		"luxon": "3.7.1"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	]
 }

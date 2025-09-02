@@ -1,12 +1,12 @@
 const units = [
-	'years',
-	'months',
-	'weeks',
-	'days',
-	'hours',
-	'minutes',
-	'seconds',
-	'milliseconds',
-] as const
+	"years",
+	"months",
+	"weeks",
+	"days",
+	"hours",
+	"minutes",
+	"seconds",
+	"milliseconds",
+] as const;
 
-export type DurationUnits = (typeof units)[number]
+export type DurationUnits = (typeof units)[number];

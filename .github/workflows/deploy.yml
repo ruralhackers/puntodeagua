@@ -18,6 +18,7 @@ jobs:
         working-directory: ./apps/webapp
         run: bun run build
       - name: Test echo
-        run: echo 'Project id is: ${{ secrets.VERCEL_PROJECT_ID }}'
+        run: |
+          echo "Project id is: ${{ secrets.VERCEL_PROJECT_ID }}"
       - name: Trigger Vercel Deploy
         run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}

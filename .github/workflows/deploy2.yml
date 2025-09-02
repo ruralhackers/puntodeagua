@@ -1,0 +1,14 @@
+name: Deploy2
+
+on: [workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test all secrets
+        run: |
+          echo "Testing secret availability..."
+          [ -n "${{ secrets.VERCEL_ORG_ID }}" ] && echo "✅ VERCEL_ORG_ID: OK" || echo "❌ VERCEL_ORG_ID: Missing"
+          [ -n "${{ secrets.VERCEL_PROJECT_ID }}" ] && echo "✅ VERCEL_PROJECT_ID: OK" || echo "❌ VERCEL_PROJECT_ID: Missing"
+          [ -n "${{ secrets.VERCEL_DEPLOY_HOOK }}" ] && echo "✅ WEBHOOK_URL: OK" || echo "❌ WEBHOOK_URL: Missing"

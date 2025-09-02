@@ -10,6 +10,7 @@
 		"typescript": "5"
 	},
 	"dependencies": {
+		"@paralleldrive/cuid2": "^2.2.2",
 		"zod": "4.1.5"
 	}
 }

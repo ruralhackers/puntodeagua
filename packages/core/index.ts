@@ -5,3 +5,4 @@ export type { Container } from "./di/container.ts";
 export type { registerCoreDependencies } from "./di/register-core-dependencies.ts";
 export { DateTime } from "./date-time/date-time.ts";
 export { IdSchema } from "./types/id.schema.ts";
+export { Id} from "./value-object/id.ts";

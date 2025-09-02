@@ -4,8 +4,9 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"format": "bunx biome format --write"
-	},
+		"format": "bunx biome format --write",
+      "compile": "tsc --noEmit --incremental"
+    },
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
 		"@types/bun": "latest",

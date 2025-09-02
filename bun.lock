@@ -20,6 +20,7 @@
       "version": "1.0.50",
       "dependencies": {
         "elysia": "latest",
+        "zod": "4.1.5",
       },
       "devDependencies": {
         "bun-types": "latest",

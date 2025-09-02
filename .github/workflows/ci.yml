@@ -7,14 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          node-version: lts/*
+          bun-version: latest
       - name: install
-        run: npm ci
+        working-directory: ./apps/webapp
+        run: bun install
       - name: lint
-        run: npm run lint
+        working-directory: ./apps/webapp
+        run: bun run lint
       - name: compile
-        run: npm run compile
+        working-directory: ./apps/webapp
+        run: bun run compile
       - name: test
-        run: npm test
+        working-directory: ./apps/webapp
+        run: bun test

@@ -1,6 +1,4 @@
 name: Deploy
-env:
-  VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
 
 on: [workflow_dispatch]
 
@@ -19,5 +17,7 @@ jobs:
       - name: Build project
         working-directory: ./apps/webapp
         run: bun run build
+      - name: Test echo
+        run: echo ${{ secrets.VERCEL_PROJECT_ID }}
       - name: Trigger Vercel Deploy
         run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}

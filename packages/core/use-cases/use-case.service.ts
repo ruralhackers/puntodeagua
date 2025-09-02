@@ -24,7 +24,7 @@ export class UseCaseService {
 		};
 
 		let next = UseCaseHandler.create({
-			next: this.container.get(useCase.ID),
+			next: this.container.get((useCase as any).ID),
 			options: requiredOptions,
 			middleware: this.container.get<EmptyMiddleware>(EmptyMiddleware.ID),
 		});

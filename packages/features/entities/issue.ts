@@ -9,7 +9,7 @@ export class Issue {
 
   static create(issueSchema: IssueSchema) {
     return new Issue(
-      Id.create(issueSchema.id),
+        Id.generateUniqueId(),
       issueSchema.name,
     );
   }

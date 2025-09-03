@@ -12,3 +12,4 @@ export { UseCaseService } from "./use-cases/use-case.service.ts";
 export { Decimal } from "./value-object/Decimal.ts";
 export { Id } from "./value-object/id.ts";
 export { MeasurementUnit } from "./value-object/MeasurementUnit.ts";
+export type { Savable } from "./repositories/savable.ts";

@@ -1,4 +1,4 @@
-import { gretch } from "gretchen";
+import {gretch, type GretchResponse} from "gretchen";
 
 /**
  * HTTP client wrapper that uses Gretchen underneath.
@@ -15,14 +15,15 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async get<T = any>(endpoint: string, options?: RequestInit): Promise<T> {
+	async get<T = any>(endpoint: string, options?: RequestInit): Promise<GretchResponse> {
 		const url = this.buildUrl(endpoint);
-		const response = await gretch(url, {
+		const response = await gretch<T>(url, {
 			method: "GET",
 			...options,
 		}).json();
 
-		return response as T;
+
+		return response;
 	}
 
 	/**
@@ -32,7 +33,7 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async post<T = any>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+	async post<T = any>(endpoint: string, data?: any, options?: RequestInit): Promise<GretchResponse> {
 		const url = this.buildUrl(endpoint);
 		const response = await gretch(url, {
 			method: "POST",
@@ -44,7 +45,7 @@ export class HttpClient {
 			...options,
 		}).json();
 
-		return response as T;
+		return response;
 	}
 
 	/**

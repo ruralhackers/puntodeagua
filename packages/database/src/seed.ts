@@ -37,11 +37,11 @@ async function seedPlanAndCommunity() {
 const WATER_POINTS = [
 	{
 		name: "Water Point 1",
-		location: "Location 1",
+		location: "2.40,0.30",
 	},
 	{
 		name: "Water Point 2",
-		location: "Location 2",
+		location: "1.40,0.35",
 	},
 ];
 

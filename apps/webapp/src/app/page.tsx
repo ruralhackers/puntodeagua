@@ -1,7 +1,10 @@
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-slate-900 dark:to-slate-800">
 			{/* Header */}
+			<Button>Holaa</Button>
 			<header className="container mx-auto px-6 py-8">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center space-x-3">

@@ -15,7 +15,7 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async get<T = any>(endpoint: string, options?: RequestInit): Promise<GretchResponse> {
+	async get<T>(endpoint: string, options?: RequestInit): Promise<GretchResponse<T>> {
 		const url = this.buildUrl(endpoint);
 		const response = await gretch<T>(url, {
 			method: "GET",
@@ -33,15 +33,15 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async post<T = any>(endpoint: string, data?: any, options?: RequestInit): Promise<GretchResponse> {
+	async post<T, Data>(endpoint: string, data?: Data, options?: RequestInit): Promise<GretchResponse<T>> {
 		const url = this.buildUrl(endpoint);
-		const response = await gretch(url, {
+		const response = await gretch<T>(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 				...options?.headers,
 			},
-			body: data ? JSON.stringify(data) : undefined,
+			...data !== undefined && ({body: JSON.stringify(data)}),
 			...options,
 		}).json();
 
@@ -55,7 +55,7 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async put<T = any>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+	async put<T, Body>(endpoint: string, data?: Body, options?: RequestInit): Promise<GretchResponse<T>> {
 		const url = this.buildUrl(endpoint);
 		const response = await gretch(url, {
 			method: "PUT",
@@ -63,11 +63,11 @@ export class HttpClient {
 				"Content-Type": "application/json",
 				...options?.headers,
 			},
-			body: data ? JSON.stringify(data) : undefined,
+            ...data !== undefined && ({body: JSON.stringify(data)}),
 			...options,
 		}).json();
 
-		return response as T;
+		return response;
 	}
 
 	/**
@@ -76,14 +76,14 @@ export class HttpClient {
 	 * @param options - Optional request options
 	 * @returns Promise with the response data
 	 */
-	async delete<T = any>(endpoint: string, options?: RequestInit): Promise<T> {
+	async delete<T = any>(endpoint: string, options?: RequestInit): Promise<GretchResponse<T>> {
 		const url = this.buildUrl(endpoint);
 		const response = await gretch(url, {
 			method: "DELETE",
 			...options,
 		}).json();
 
-		return response as T;
+		return response;
 	}
 
 	/**

@@ -4,6 +4,7 @@
     "": {
       "name": "puntodeagua",
       "dependencies": {
+        "gretchen": "1.5.1",
         "luxon": "3.7.1",
       },
       "devDependencies": {
@@ -86,6 +87,7 @@
       "dependencies": {
         "@paralleldrive/cuid2": "^2.2.2",
         "decimal.js": "^10.6.0",
+        "gretchen": "^1.5.1",
         "zod": "4.1.5",
       },
       "devDependencies": {
@@ -764,6 +766,8 @@
     "graceful-fs": ["graceful-fs@4.2.11", "", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 
     "graphemer": ["graphemer@1.4.0", "", {}, "sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag=="],
+
+    "gretchen": ["gretchen@1.5.1", "", {}, "sha512-tk/8z1+ZriI32zldoroZOfTmHpubAX7/bmvQpqdW6jpVPhS+tseBDRlqHsAOJ0HCnRTmuRFCcRrniCQzHQvmew=="],
 
     "has-bigints": ["has-bigints@1.1.0", "", {}, "sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg=="],
 

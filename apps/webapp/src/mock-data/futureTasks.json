@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "titulo": "Limpieza de tanque principal",
+    "fecha": "2024-01-20",
+    "tipo": "Mantenimiento"
+  },
+  {
+    "id": 2,
+    "titulo": "Inspección de bombas",
+    "fecha": "2024-01-22",
+    "tipo": "Mantenimiento"
+  },
+  {
+    "id": 3,
+    "titulo": "Análisis bacteriológico",
+    "fecha": "2024-01-25",
+    "tipo": "Análisis"
+  },
+  {
+    "id": 4,
+    "titulo": "Revisión de medidores",
+    "fecha": "2024-01-28",
+    "tipo": "Mantenimiento"
+  },
+  {
+    "id": 5,
+    "titulo": "Mantenimiento preventivo",
+    "fecha": "2024-02-01",
+    "tipo": "Mantenimiento"
+  },
+  {
+    "id": 6,
+    "titulo": "Control de presión",
+    "fecha": "2024-02-03",
+    "tipo": "Análisis"
+  }
+]

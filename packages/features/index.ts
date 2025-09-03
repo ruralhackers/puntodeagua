@@ -11,3 +11,5 @@ export type { PlanRepository } from "./repositories/plan.repository.ts";
 export type { WaterMeterRepository } from "./repositories/water-meter.repository.ts";
 export type { WaterMeterReadingRepository } from "./repositories/water-meter-reading.repository.ts";
 export type { WaterPointRepository } from "./repositories/water-point.repository.ts";
+export type { UserRepository } from "./repositories/user.repository.ts";
+

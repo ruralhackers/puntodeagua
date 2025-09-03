@@ -11,7 +11,7 @@ const useCaseService = container.get<UseCaseService>(UseCaseService.ID)
 
 const app = new Elysia({ prefix: '/api'})
 	.use(cors({
-		origin: 'http://localhost:3001',
+		origin: 'http://localhost:3000',
 		credentials: true
 	}))
 	.use(swagger())

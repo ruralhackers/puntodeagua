@@ -6,7 +6,8 @@ export default function WaterMeterCard() {
         <Link href={"/contadores/id"}>
             <div>
                 <p>Nombre</p>
-                <p>Última lectura</p>
+                <p>Última lectura - fecha</p>
+                <p>Zona</p>
             </div>
         </Link>
     )

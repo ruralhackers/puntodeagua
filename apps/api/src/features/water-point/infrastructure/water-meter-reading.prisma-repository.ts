@@ -20,7 +20,7 @@ export class WaterMeterReadingPrismaRepository extends BasePrismaRepository impl
     }
 
     async save(reading: WaterMeterReading): Promise<void> {
-        const waterMeterReadingData = {
+        const data = {
             id: reading.id.toString(),
             waterMeterId: reading.waterMeterId.toString(),
             timestamp: reading.timestamp,
@@ -29,10 +29,10 @@ export class WaterMeterReadingPrismaRepository extends BasePrismaRepository impl
         await this.getModel().upsert({
             where: { id: reading.id.toString() },
             create: {
-                ...waterMeterReadingData
+                ...data
             },
             update: {
-                value: reading.value.toString()
+                value: data.value
              },
         });
     }

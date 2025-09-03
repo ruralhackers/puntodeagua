@@ -20,19 +20,24 @@ export class WaterPointPrismaRepository extends BasePrismaRepository implements 
     }
 
     async save(waterPoint: WaterPoint): Promise<void> {
-        const waterPointData = {
+        const data = {
             id: waterPoint.id.toString(),
             communityId: waterPoint.communityId.toString(),
             name: waterPoint.name,
             location: waterPoint.location.toString(),
             description: waterPoint.description,
         };
+
         await this.getModel().upsert({
             where: { id: waterPoint.id.toString() },
             create: {
-                ...waterPointData
+                ...data
             },
-            update: { ...waterPointData },
+            update: {
+                name: data.name,
+                location: data.location,
+                description: data.description,
+             },
         });
     }
 

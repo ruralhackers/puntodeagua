@@ -86,6 +86,8 @@ model WaterPoint {
   name     String
   location String
 
+  description String @default("") @db.Text
+
   community   Community @relation(fields: [communityId], references: [id])
   communityId String    @map("community_id")
 
@@ -117,7 +119,6 @@ model WaterMeter {
   waterPointId String     @map("water_point_id")
 
   measurementUnit String
-  serialNumber    String?
 
   images String[] @db.Text
 

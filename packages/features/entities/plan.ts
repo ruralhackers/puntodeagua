@@ -3,8 +3,8 @@ import type { PlanSchema } from "../schemas/plan.schema.ts";
 
 export class Plan {
 	private constructor(
-		private readonly id: Id,
-		private readonly name: string,
+		public readonly id: Id,
+		public name: string,
 	) {}
 
   static create(planSchema: PlanSchema) {

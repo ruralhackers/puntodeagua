@@ -3,8 +3,8 @@ import type { HolderSchema } from "../schemas/holder.schema.ts";
 
 export class Holder {
 	private constructor(
-		private readonly id: Id,
-		private readonly name: string,
+		public readonly id: Id,
+		public name: string,
 	) {}
 
   static create(holderSchema: HolderSchema) {

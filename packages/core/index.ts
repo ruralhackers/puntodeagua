@@ -14,3 +14,7 @@ export { Id } from "./value-object/id.ts";
 export { Location } from "./value-object/location.ts";
 export { MeasurementUnit } from "./value-object/measurement-unit.ts";
 export type { Savable } from "./repositories/savable.ts";
+export { loginSchema, loginResponseSchema, type LoginRequest, type LoginResponse } from "./auth/login.schema.ts";
+export { userSchema, userPublicSchema, type User, type UserPublic } from "./auth/user.schema.ts";
+export { JwtUtils, type JwtPayload } from "./auth/jwt.utils.ts";
+export { LoginCommand, type UserRepository } from "./auth/login.command.ts";

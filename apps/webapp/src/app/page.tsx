@@ -1,4 +1,50 @@
+"use client";
+
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 export default function Home() {
+	const { isAuthenticated, user } = useAuth();
+	const router = useRouter();
+
+	if (isAuthenticated) {
+		// Show authenticated dashboard view
+		return (
+			<div className="flex flex-col">
+				<header className="sticky top-0 z-40 border-b bg-background">
+					<div className="flex h-14 items-center justify-between px-3">
+						<Link href="/" className="font-bold text-lg">
+							Gestión Aguas
+						</Link>
+						<div className="flex items-center gap-2">
+							<span className="text-sm text-gray-600">
+								Bienvenido, {user?.name || user?.email}
+							</span>
+							<button
+								onClick={() => router.push("/login")}
+								className="text-sm text-blue-600 hover:text-blue-800"
+							>
+								Panel
+							</button>
+						</div>
+					</div>
+				</header>
+				<main className="flex-1 px-3 py-4">
+					<div className="bg-white rounded-lg border border-gray-200 p-6 shadow">
+						<h2 className="text-xl font-semibold text-gray-900 mb-4">
+							Panel de Control
+						</h2>
+						<p className="text-gray-600">
+							Bienvenido al sistema de gestión de puntos de agua.
+						</p>
+					</div>
+				</main>
+			</div>
+		);
+	}
+
+	// Show public landing page
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-slate-900 dark:to-slate-800">
 			{/* Header */}

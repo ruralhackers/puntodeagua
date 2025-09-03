@@ -1,8 +1,10 @@
 import { client } from "./client";
+import bcrypt from "bcrypt";
 
 const prisma = client;
 
 async function main() {
+	await seedAdmin();
 	const communityId = await seedPlanAndCommunity();
 	await seedWaterPoints(communityId);
 }
@@ -13,8 +15,27 @@ main()
 		process.exit(1);
 	})
 	.finally(async () => {
-		await prisma.$disconnect();
+		await client.$disconnect();
 	});
+
+async function seedAdmin() {
+	console.log("Creating admin user...");
+	
+	const hashedPassword = await bcrypt.hash("admin123", 10);
+	
+	const adminUser = await client.user.upsert({
+		where: { email: "admin@puntodeagua.com" },
+		update: {},
+		create: {
+			email: "admin@puntodeagua.com",
+			name: "Administrador",
+			password: hashedPassword,
+			roles: ["admin"],
+		},
+	});
+	
+	console.log(`Created admin user: ${adminUser.email}`);
+}
 
 async function seedPlanAndCommunity() {
 	const plan = await prisma.plan.create({

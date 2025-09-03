@@ -14,4 +14,6 @@ if (isServer && process.env.NODE_ENV !== "production") {
     globalForPrisma.prisma = client;
 }
 
+export const prisma = client;
+
 export * from "../prisma/generated";

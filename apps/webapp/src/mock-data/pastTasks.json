@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "titulo": "Inspección mensual Pozo A",
+    "fechaVencimiento": "2024-01-10",
+    "tipo": "tarea",
+    "subtipo": "Mantenimiento",
+    "estado": "Pendiente"
+  },
+  {
+    "id": 2,
+    "titulo": "Análisis de calidad del agua",
+    "fechaVencimiento": "2024-01-12",
+    "tipo": "tarea",
+    "subtipo": "Análisis",
+    "estado": "Pendiente"
+  },
+  {
+    "id": 3,
+    "titulo": "Revisión de válvulas",
+    "fechaVencimiento": "2024-01-08",
+    "tipo": "tarea",
+    "subtipo": "Mantenimiento",
+    "estado": "Pendiente"
+  }
+]

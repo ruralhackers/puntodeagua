@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "titulo": "Fuga en tubería principal",
+    "ubicacion": "Sector Norte",
+    "prioridad": "Alta",
+    "fecha": "2024-01-15",
+    "tipo": "incidencia"
+  },
+  {
+    "id": 2,
+    "titulo": "Presión baja en zona residencial",
+    "ubicacion": "Sector Sur",
+    "prioridad": "Media",
+    "fecha": "2024-01-14",
+    "tipo": "incidencia"
+  },
+  {
+    "id": 3,
+    "titulo": "Calidad del agua cuestionable",
+    "ubicacion": "Pozo Central",
+    "prioridad": "Alta",
+    "fecha": "2024-01-13",
+    "tipo": "incidencia"
+  }
+]

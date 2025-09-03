@@ -1,11 +1,10 @@
 import React from 'react'
-import WaterMeterCard from "../../features/water-meter/delivery/components/WaterMeterCard"
+import WaterMeterPage from '@/src/features/water-meter/delivery/WaterMeter.page'
+import { NextPage } from 'next';
 
-export default function Contadores() {
-    return (
-        <div>
-            <p>Listado</p>
-            <WaterMeterCard />
-        </div>
-    )
-}
+const Page: NextPage = async () => {
+    return <WaterMeterPage />;
+};
+
+export default Page;
+

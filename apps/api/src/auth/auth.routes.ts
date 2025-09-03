@@ -43,20 +43,3 @@ export const authRoutes = new Elysia()
 		},
 	)
 	.use(jwtMiddleware)
-	.get(
-		"/auth/profile",
-		async ({ user }) => {
-			const userData = await userRepository.findByEmail("");
-			// In a real implementation, you'd find by user.userId
-			return {
-				id: user.userId,
-				message: "Profile endpoint - protected by JWT",
-			};
-		},
-		{
-			response: t.Object({
-				id: t.String(),
-				message: t.String(),
-			}),
-		},
-	);

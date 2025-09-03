@@ -1,7 +1,22 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { login, getStoredToken, storeToken, removeToken } from "@/lib/auth";
+import { AuthTokenService } from "./auth.service";
+
+interface LoginRequest {
+	email: string;
+	password: string;
+}
+
+interface LoginResponse {
+	token: string;
+	user: {
+		id: string;
+		name: string | null;
+		email: string;
+		roles: string[];
+	};
+}
 
 interface User {
 	id: string;
@@ -30,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	useEffect(() => {
 		// Check for stored token on mount
-		const token = getStoredToken();
+		const token = AuthTokenService.getStoredToken();
 		if (token) {
 			// In a real app, you'd validate the token with the server
 			// For now, we'll assume it's valid if it exists
@@ -43,9 +58,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const handleLogin = async (email: string, password: string) => {
 		setIsLoading(true);
 		try {
-			const response = await login({ email, password });
-			storeToken(response.token);
-			setUser(response.user);
+			const response = await fetch("http://localhost:4000/api/auth/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ email, password }),
+			});
+
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.error || "Error de autenticación");
+			}
+
+			const data: LoginResponse = await response.json();
+			AuthTokenService.storeToken(data.token);
+			setUser(data.user);
 		} catch (error) {
 			throw error; // Re-throw to let the component handle the error
 		} finally {
@@ -54,7 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	};
 
 	const handleLogout = () => {
-		removeToken();
+		AuthTokenService.removeToken();
 		setUser(null);
 	};
 

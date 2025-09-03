@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoginForm } from "@/components/auth/login-form";
-import { useAuth } from "@/contexts/auth-context";
+import { LoginForm } from "@/features/auth/delivery/login-form";
+import { useAuth } from "@/features/auth/delivery/auth-context";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -15,7 +15,7 @@ export default function LoginPage() {
 		try {
 			setError("");
 			await login(email, password);
-			router.push("/"); // Redirect to dashboard after successful login
+			router.push("/water-point");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Error de autenticación");
 		}

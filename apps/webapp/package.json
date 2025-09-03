@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start"
+    "dev": "bun --env-file ../../.env.local next dev --port 3000",
+    "build": "bunx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
+    "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

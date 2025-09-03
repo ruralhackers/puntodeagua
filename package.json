@@ -4,6 +4,9 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"start": "concurrently -k --prefix-colors 'green,blue' --names 'api,webapp' --prefix '[{name}]' 'bun run api' 'bun run webapp'",
+		"api": "bun run --elide-lines=100 -F api dev --port 4000",
+		"webapp": "bun run --elide-lines=100 -F webapp dev --port 3000",
 		"format": "bunx biome format --write",
 		"compile": "tsc --noEmit --incremental",
 		"dbs": "docker-compose -f docker-compose.yml up -d"
@@ -17,11 +20,15 @@
 		"typescript": "5"
 	},
 	"dependencies": {
+		"concurrently": "^9.2.1",
 		"gretchen": "1.5.1",
 		"luxon": "3.7.1"
 	},
 	"workspaces": [
 		"apps/*",
 		"packages/*"
-	]
+	],
+	"catalog": {
+		"zod": "4.1.5"
+	}
 }

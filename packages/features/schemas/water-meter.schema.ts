@@ -1,10 +1,13 @@
+import { idSchema, measurementUnitSchema } from "core";
 import { z } from "zod";
-import { IdSchema } from "core";
 import { UrlSchema } from "./url.schema.ts";
 
-export const WaterMeterSchema = z.object({
-	id: IdSchema,
-	holderId: IdSchema,
-	waterPointId: IdSchema,
+export type WaterMeterSchema = z.infer<typeof waterMeterSchema>;
+
+export const waterMeterSchema = z.object({
+	id: idSchema,
+	holderId: idSchema,
+	waterPointId: idSchema,
+	measurementUnit: measurementUnitSchema,
 	images: z.array(UrlSchema).optional(),
 });

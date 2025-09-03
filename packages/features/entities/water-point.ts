@@ -1,13 +1,14 @@
-import { Id } from "../../core/value-object/id.ts";
-import type { WaterPointSchema } from "../schemas/water-point.schema.ts";
-import { Location } from "./location.ts";
+import {Id} from "../../core/value-object/id.ts";
+import type {WaterPointSchema} from "../schemas/water-point.schema.ts";
+import {Location} from "./location.ts";
+import type {WaterPointDto} from "./water-point.dto.ts";
 
 export class WaterPoint {
 	private constructor(
 		private readonly id: Id,
 		private readonly location: Location,
 		private readonly communityId: Id,
-		private readonly description?: string,
+		private readonly note?: string,
 	) {}
 
 	static create({ id, location, description, communityId }: WaterPointSchema) {
@@ -18,4 +19,13 @@ export class WaterPoint {
 			description,
 		);
 	}
+
+    toDto(): WaterPointDto {
+        return {
+            id: this.id.toString(),
+            location: this.location.toString(),
+            communityId: this.communityId.toString(),
+            note: this.note,
+        }
+    }
 }

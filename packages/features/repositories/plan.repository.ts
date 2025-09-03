@@ -1,8 +1,5 @@
-import type { Id } from "core"
+import type { Deletable, FindableAll, FindableById, Savable } from "core"
 import type { Plan } from "../entities/plan"
 
-export interface PlanRepository {
-  findById(id: Id): Promise<Plan | null>
-  findAll(): Promise<Plan[]>
-  delete(id: Id): Promise<void>
+export interface PlanRepository extends Savable<Plan>, Deletable<Plan>, FindableById<Plan>, FindableAll<Plan> {
 }

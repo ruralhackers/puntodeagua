@@ -4,9 +4,10 @@ import type { WaterMeterReadingSchema } from "../schemas/water-meter-reading.sch
 
 export class WaterMeterReading {
 	private constructor(
-		private readonly id: Id,
-		private readonly waterMeterId: Id,
-		private readonly value: Decimal,
+		public readonly id: Id,
+		public readonly waterMeterId: Id,
+		public value: Decimal,
+    public readonly timestamp: Date = new Date()
 	) {}
 
   static create({ id, waterMeterId, value }: WaterMeterReadingSchema) {
@@ -22,6 +23,7 @@ export class WaterMeterReading {
       id: this.id.toString(),
       waterMeterId: this.waterMeterId.toString(),
       value: this.value.toString(),
+      timestamp: this.timestamp,
     };
   }
 }

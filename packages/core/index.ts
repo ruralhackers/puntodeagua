@@ -1,8 +1,12 @@
 export { DateTime } from "./date-time/date-time.ts";
 export { Container } from "./di/container.ts";
 export { CoreContainer } from "./di/register-core-dependencies.ts";
-export { decimalSchema } from "./types/decimal.schema.ts";
 export { HttpClient } from "./http/http-client.ts";
+export type { Deletable } from "./repositories/deletable.ts";
+export type { FindableAll } from "./repositories/findable-all.ts";
+export type { FindableById } from "./repositories/findable-by-id.ts";
+export type { Savable } from "./repositories/savable.ts";
+export { decimalSchema } from "./types/decimal.schema.ts";
 export { idSchema } from "./types/id.schema.ts";
 export { locationSchema } from "./types/location.schema.ts";
 export { measurementUnitSchema } from "./types/measurement-unit.schema.ts";
@@ -13,4 +17,3 @@ export { Decimal } from "./value-object/decimal.ts";
 export { Id } from "./value-object/id.ts";
 export { Location } from "./value-object/location.ts";
 export { MeasurementUnit } from "./value-object/measurement-unit.ts";
-export type { Savable } from "./repositories/savable.ts";

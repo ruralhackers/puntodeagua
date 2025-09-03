@@ -1,8 +1,7 @@
 
 import type { Id } from "core";
 import type { PrismaClient } from "database";
-import { WaterPoint, type WaterPointRepository } from "features";
-import { BasePrismaRepository } from "./base.prisma-repository";
+import { BasePrismaRepository, WaterPoint, type WaterPointRepository, } from "features";
 
 export class WaterPointPrismaRepository extends BasePrismaRepository implements WaterPointRepository{
     protected readonly model = 'waterPoint'
@@ -15,9 +14,9 @@ export class WaterPointPrismaRepository extends BasePrismaRepository implements 
         return waterPoints.map(waterPoint => WaterPoint.create(waterPoint))
     }
 
-    async findById(id: Id): Promise<WaterPoint | null> {
+    async findById(id: Id): Promise<WaterPoint | undefined> {
         const wp = await this.getModel().findUniqueOrThrow({ where: { id:id.toString() } });
-        return wp ? WaterPoint.create(wp) : null;
+        return wp ? WaterPoint.create(wp) : undefined;
     }
 
     async save(waterPoint: WaterPoint): Promise<void> {

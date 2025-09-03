@@ -4,17 +4,19 @@ import type { WaterPointSchema } from "../schemas/water-point.schema.ts";
 
 export class WaterPoint {
 	private constructor(
-		private readonly id: Id,
-		private readonly location: Location,
-		private readonly communityId: Id,
-		private readonly description?: string,
+		public readonly id: Id,
+		public readonly communityId: Id,
+		public readonly name: string,
+		public location: Location,
+		public  description?: string,
 	) {}
 
-	static create({ id, location, description, communityId }: WaterPointSchema) {
+	static create({ id, location, description, communityId, name }: WaterPointSchema) {
 		return new WaterPoint(
 			Id.create(id),
-			Location.create(location),
 			Id.create(communityId),
+			name,
+			Location.create(location),
 			description,
 		);
 	}
@@ -24,6 +26,7 @@ export class WaterPoint {
 			id: this.id.toString(),
 			location: this.location.toString(),
 			communityId: this.communityId.toString(),
+			name: this.name,
 			description: this.description,
 		};
 	}

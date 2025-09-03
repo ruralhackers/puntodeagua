@@ -1,9 +1,9 @@
-import {ConsoleLogger} from "../logger/console-logger";
-import {Container} from "./container";
-import {LogMiddleware} from "../use-cases/middleware/log.middleware.ts";
-import {EmptyMiddleware} from "../use-cases/middleware/empty.middleware.ts";
-import {UseCaseService} from "../use-cases/use-case.service.ts";
-import type {Middleware} from "../use-cases/middleware/middleware.ts";
+import { ConsoleLogger } from "../logger/console-logger";
+import { Container } from "./container";
+import { LogMiddleware } from "../use-cases/middleware/log.middleware.ts";
+import { EmptyMiddleware } from "../use-cases/middleware/empty.middleware.ts";
+import { UseCaseService } from "../use-cases/use-case.service.ts";
+import type { Middleware } from "../use-cases/middleware/middleware.ts";
 
 export class CoreContainer extends Container {
 	protected registerInstances(): void {
@@ -15,9 +15,12 @@ export class CoreContainer extends Container {
 
 		const logMiddleware = new LogMiddleware(logger);
 
-			this.register(LogMiddleware.ID, logMiddleware);
+		this.register(LogMiddleware.ID, logMiddleware);
 
-            const middlewares = [this.get<Middleware>(LogMiddleware.ID), this.get<Middleware>(EmptyMiddleware.ID)];
+		const middlewares = [
+			this.get<Middleware>(LogMiddleware.ID),
+			this.get<Middleware>(EmptyMiddleware.ID),
+		];
 
 		const useCaseService = new UseCaseService(middlewares, this);
 		this.register(UseCaseService.ID, useCaseService);

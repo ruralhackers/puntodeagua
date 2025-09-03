@@ -1,0 +1,15 @@
+import type {Query} from "core";
+import type {WaterPointSchema} from "features/schemas/water-point.schema";
+import {WaterPointRepository} from "features";
+import {WaterPoint} from "features/entities/water-point";
+
+export class GetWaterPointsQry implements Query<WaterPoint[]> {
+	static readonly ID = "GetWaterPointsQry";
+
+    constructor(private readonly waterPointRepository: WaterPointRepository) {
+    }
+
+	async handle(): Promise<WaterPoint[]> {
+		return this.waterPointRepository.findAll()
+	}
+}

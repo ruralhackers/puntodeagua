@@ -1,0 +1,1 @@
+export const WATER_REPOSITORY = Symbol('WATER_REPOSITORY');

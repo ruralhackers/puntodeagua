@@ -8,14 +8,15 @@ bun install
 
 # Todo
 
-- [ ] Prisma + Postgres @carolina
-- [ ] Auth con NextAuth 
-- [X] Despliegue con Vercel y CI @agus
+- [ ] Prisma + Postgres @orlando
+- [ ] Auth con NextAuth @carolina
 - [ ] Configurar Biome en pre commit
-- [ ] Configuración PWA
+- [ ] Configuración PWA @victor
 - [ ] Roles y permisos. Resolver a nivel de middleware con foco en permisos granulares @cesalberca
-- [ ] Integrar container @cesalberca
+- [ ] Añadir injection tokens @cesalberca
+- [ ] Interfaz
 - [ ] Multiidoma con Next Intl
 - [ ] Test con BunTest
 - [ ] Test con Playwright
 - [ ] Creación Punto de Agua
+- [ ] Documentar arquitectura @cesalberca

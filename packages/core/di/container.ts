@@ -20,8 +20,8 @@ export abstract class Container {
 	 * @param key - The key to register the instance under
 	 * @param instance - The instance to register
 	 */
-	register<T>(key: string, instance: T): void {
-		this.instances.set(key, instance);
+	register<T>(key: string | symbol, instance: T): void {
+		this.instances.set(key.toString(), instance);
 	}
 
 	/**

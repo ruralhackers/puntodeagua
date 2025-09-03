@@ -17,6 +17,7 @@
 		"typescript": "5"
 	},
 	"dependencies": {
+		"gretchen": "1.5.1",
 		"luxon": "3.7.1"
 	},
 	"workspaces": [

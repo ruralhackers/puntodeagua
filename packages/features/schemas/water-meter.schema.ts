@@ -1,6 +1,6 @@
 import { idSchema, measurementUnitSchema } from "core";
+import { UrlSchema } from "core/types/url.schema.ts";
 import { z } from "zod";
-import { UrlSchema } from "./url.schema.ts";
 
 export type WaterMeterSchema = z.infer<typeof waterMeterSchema>;
 

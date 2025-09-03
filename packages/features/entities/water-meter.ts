@@ -22,4 +22,15 @@ export class WaterMeter {
       images,
     );
   }
+
+  toDto() {
+    return {
+      id: this.id.toString(),
+      holderId: this.holderId.toString(),
+      waterPointId: this.waterPointId.toString(),
+      measurementUnit: this.measurementUnit.toString(),
+      serialNumber: this.serialNumber,
+      images: this.images,
+    };
+  }
 }

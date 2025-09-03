@@ -16,4 +16,12 @@ export class WaterMeterReading {
       Decimal.create(value),
     );
   }
+
+  toDto() {
+    return {
+      id: this.id.toString(),
+      waterMeterId: this.waterMeterId.toString(),
+      value: this.value.toString(),
+    };
+  }
 }

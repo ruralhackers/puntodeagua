@@ -13,4 +13,11 @@ export class Holder {
       holderSchema.name,
     );
   }
+
+  toDto() {
+    return {
+      id: this.id.toString(),
+      name: this.name,
+    };
+  }
 }

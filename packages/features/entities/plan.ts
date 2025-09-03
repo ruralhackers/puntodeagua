@@ -13,4 +13,11 @@ export class Plan {
       planSchema.name,
     );
   }
+
+  toDto() {
+    return {
+      id: this.id.toString(),
+      name: this.name,
+    };
+  }
 }

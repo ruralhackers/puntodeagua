@@ -1,6 +1,6 @@
+import { Location } from "core";
 import { Id } from "core/value-object/id.ts";
 import type { WaterPointSchema } from "../schemas/water-point.schema.ts";
-import { Location } from "./location.ts";
 
 export class WaterPoint {
 	private constructor(
@@ -17,5 +17,14 @@ export class WaterPoint {
 			Id.create(communityId),
 			description,
 		);
+	}
+
+	toDto() {
+		return {
+			id: this.id.toString(),
+			location: this.location.toString(),
+			communityId: this.communityId.toString(),
+			description: this.description,
+		};
 	}
 }

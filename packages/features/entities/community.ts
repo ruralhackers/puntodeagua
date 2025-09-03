@@ -15,4 +15,12 @@ export class Community {
 			Id.create(communitySchema.planId),
 		);
 	}
+
+	toDto() {
+		return {
+			id: this.id.toString(),
+			name: this.name,
+			planId: this.planId.toString(),
+		};
+	}
 }

@@ -6,17 +6,16 @@ import {client} from "database";
 
 export class ApiContainer extends CoreContainer {
 	protected override registerInstances(): void {
-		// Register core dependencies first
 		super.registerInstances();
 
-		// Register API-specific use cases
-		const getWaterPointsQry = new GetWaterPointsQry();
-		this.register(GetWaterPointsQry.ID, getWaterPointsQry);
-
-		this.register(
+        const waterPointPrismaRepository = new WaterPointPrismaRepository(client);
+        this.register(
 			WATER_REPOSITORY,
-			new WaterPointPrismaRepository(client),
+			waterPointPrismaRepository,
 		);
+
+        const getWaterPointsQry = new GetWaterPointsQry(waterPointPrismaRepository);
+        this.register(GetWaterPointsQry.ID, getWaterPointsQry);
 	}
 }
 

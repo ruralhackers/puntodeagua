@@ -1,13 +1,10 @@
 import type { WaterPointRepository } from "features";
 import { HttpClient, Id } from "core";
 import { WaterPoint } from "features/entities/water-point";
+import {WaterPointSchema} from "features/schemas/water-point.schema";
 
 export class WaterPointApiRestRepository implements WaterPointRepository {
-	private readonly httpClient: HttpClient;
-
-	constructor(baseUrl: string = "http://localhost:3000") {
-		this.httpClient = new HttpClient(baseUrl);
-	}
+	constructor(private readonly httpClient: HttpClient) {}
 
 	async findAll(): Promise<WaterPoint[]> {
 		const json = await this.httpClient.get<any[]>("water-points");
@@ -16,19 +13,19 @@ export class WaterPointApiRestRepository implements WaterPointRepository {
 
 	async findById(id: Id): Promise<WaterPoint | null> {
 		try {
-			const json = await this.httpClient.get<any>(`water-points/${id.value}`);
+			const json = await this.httpClient.get<any>(`water-points/${id.toString()}`);
 			return WaterPoint.create(json);
 		} catch (error) {
 			return null;
 		}
 	}
 
-	async save(waterPoint: WaterPoint): Promise<WaterPoint> {
-		const json = await this.httpClient.post<any>("water-points", waterPoint);
-		return WaterPoint.create(json);
+	async save(waterPoint: WaterPoint): Promise<void> {
+		await this.httpClient.post<WaterPointSchema>("water-points", waterPoint);
+		return
 	}
 
 	async delete(id: Id): Promise<void> {
-		await this.httpClient.delete(`water-points/${id.value}`);
+		await this.httpClient.delete(`water-points/${id.toString()}`);
 	}
 }

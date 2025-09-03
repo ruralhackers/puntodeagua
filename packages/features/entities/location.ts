@@ -9,4 +9,11 @@ export class Location {
 	static create(locationSchema: LocationSchema) {
 		return new Location(locationSchema.latitude, locationSchema.longitude);
 	}
+
+    toString() {
+        return {
+            latitude: this.latitude,
+            longitude: this.longitude,
+        }
+    }
 }

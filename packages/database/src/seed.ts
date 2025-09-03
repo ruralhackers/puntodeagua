@@ -1,11 +1,12 @@
-import { client } from "./client";
 import bcrypt from "bcrypt";
+import { client } from "./client";
 
 const prisma = client;
 
 async function main() {
 	await seedUsers();
 	const communityId = await seedPlanAndCommunity();
+	await seedWaterZones(communityId);
 	await seedWaterPoints(communityId);
 }
 
@@ -21,9 +22,9 @@ main()
 async function seedUsers() {
 	// Delete existing users first
 	await prisma.user.deleteMany({});
-	
+
 	const saltRounds = 10;
-	
+
 	const users = [
 		{
 			email: "admin@puntodeagua.com",
@@ -32,23 +33,23 @@ async function seedUsers() {
 			roles: ["admin"]
 		},
 		{
-			email: "user@puntodeagua.com", 
+			email: "user@puntodeagua.com",
 			name: "Regular User",
 			password: await bcrypt.hash("user123", saltRounds),
 			roles: ["user"]
 		},
 		{
 			email: "manager@puntodeagua.com",
-			name: "Manager User", 
+			name: "Manager User",
 			password: await bcrypt.hash("manager123", saltRounds),
 			roles: ["manager", "user"]
 		}
 	];
-	
+
 	await prisma.user.createMany({
 		data: users
 	});
-	
+
 	console.log("Created users:");
 	console.log("- admin@puntodeagua.com (password: admin123)");
 	console.log("- user@puntodeagua.com (password: user123)");
@@ -93,5 +94,25 @@ async function seedWaterPoints(communityId: string) {
 			...wp,
 			communityId,
 		})),
+	});
+}
+
+async function seedWaterZones(communityId: string) {
+	await prisma.waterZone.deleteMany({});
+	await prisma.waterZone.createMany({
+		data: [
+			{
+				name: "Os Casas",
+				communityId,
+			},
+			{
+				name: "Centro",
+				communityId,
+			},
+			{
+				name: "Ramis",
+				communityId,
+			},
+		],
 	});
 }

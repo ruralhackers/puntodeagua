@@ -77,8 +77,21 @@ model Community {
   planId String @map("plan_id")
 
   waterPoints WaterPoint[]
+  waterZones  WaterZone[]
 
   @@index([planId])
+}
+
+model WaterZone {
+  id   String @id @default(cuid())
+  name String
+
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
+
+  analysis Analysis[]
+
+  @@index([communityId])
 }
 
 model WaterPoint {
@@ -94,7 +107,7 @@ model WaterPoint {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  WaterMeter WaterMeter[]
+  waterMeters WaterMeter[]
 
   @@index([communityId])
 }
@@ -106,7 +119,7 @@ model Holder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  WaterMeter WaterMeter[]
+  waterMeters WaterMeter[]
 }
 
 model WaterMeter {
@@ -122,9 +135,10 @@ model WaterMeter {
 
   images String[] @db.Text
 
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  WaterMeterReading WaterMeterReading[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  waterMeterReadings WaterMeterReading[]
 
   @@index([holderId])
   @@index([waterPointId])
@@ -148,8 +162,8 @@ model WaterMeterReading {
 model Issue {
   id String @id @default(cuid())
 
-  area      String
-  status    String
+  area   String
+  status String
 
   title        String
   description  String
@@ -160,4 +174,25 @@ model Issue {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Analysis {
+  id String @id @default(cuid())
+
+  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
+  waterZoneId String    @map("water_zone_id")
+
+  analysisType String
+  analyst      String
+  analyzedAt   DateTime
+
+  ph          String?
+  turbidity   String?
+  chlorine    String?
+  description String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([waterZoneId])
 }

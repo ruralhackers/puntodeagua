@@ -1,5 +1,11 @@
 export { Community } from "./entities/community.ts";
 export { Holder } from "./entities/holder.ts";
+export { Issue } from "./entities/issue.ts";
+export type { CreateIssueDto } from "./entities/create-issue.dto.ts";
+export type { IssueDto } from "./entities/issue.dto.ts";
+export {issueSchema} from "./schemas/issue.schema.ts";
+export {createIssueSchema} from "./schemas/create-issue.schema.ts";
+export type { IssueSchema } from "./schemas/issue.schema.ts";
 export { Plan } from "./entities/plan.ts";
 export { WaterMeter } from "./entities/water-meter.ts";
 export { WaterMeterReading } from "./entities/water-meter-reading.ts";

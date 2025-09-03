@@ -158,24 +158,3 @@ model WaterMeterReading {
 
   @@index([waterMeterId])
 }
-
-model Analysis {
-  id String @id @default(cuid())
-
-  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
-  waterZoneId String    @map("water_zone_id")
-
-  analysisType String
-  analyst      String
-  analyzedAt   DateTime
-
-  ph          String?
-  turbidity   String?
-  chlorine    String?
-  description String? @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([waterZoneId])
-}

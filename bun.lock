@@ -110,6 +110,7 @@
     "packages/features": {
       "name": "features",
       "dependencies": {
+        "database": "workspace:*",
         "zod": "4.1.5",
       },
       "devDependencies": {

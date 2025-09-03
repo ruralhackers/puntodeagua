@@ -10,6 +10,7 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
+		"database": "workspace:*",
 		"zod": "4.1.5"
 	}
 }

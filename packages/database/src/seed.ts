@@ -38,10 +38,12 @@ const WATER_POINTS = [
 	{
 		name: "Water Point 1",
 		location: "42.359987,-8.4669443",
+		description: "This is a description for Water Point 1",
 	},
 	{
 		name: "Water Point 2",
 		location: "42.359987,-8.4669443",
+		description: "This is a description for Water Point 2",
 	},
 ];
 

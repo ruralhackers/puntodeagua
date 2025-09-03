@@ -3,9 +3,9 @@ import type { CommunitySchema } from "../schemas/community.schema.ts";
 
 export class Community {
 	private constructor(
-		private readonly id: Id,
-		private readonly name: string,
-		private readonly planId: Id,
+		public readonly id: Id,
+		public readonly name: string,
+		public readonly planId: Id,
 	) {}
 
 	static create(communitySchema: CommunitySchema) {

@@ -8,7 +8,7 @@ export class WaterPoint {
 		public readonly communityId: Id,
 		public readonly name: string,
 		public location: Location,
-		public  description?: string,
+		public description?: string,
 	) {}
 
 	static create({ id, location, description, communityId, name }: WaterPointSchema) {
@@ -17,7 +17,7 @@ export class WaterPoint {
 			Id.create(communityId),
 			name,
 			Location.create(location),
-			description,
+			description || undefined,
 		);
 	}
 

@@ -1,1 +1,1 @@
-console.log("Hello via Bun!");
+export type { WaterPointRepository } from './repositories/water-point.repository.ts'

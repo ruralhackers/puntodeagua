@@ -1,2 +1,3 @@
 export const WATER_REPOSITORY = Symbol('WATER_REPOSITORY')
 export const AUTH_REPOSITORY = Symbol('AUTH_REPOSITORY')
+export const ISSUE_REPOSITORY = Symbol('ISSUE_REPOSITORY')

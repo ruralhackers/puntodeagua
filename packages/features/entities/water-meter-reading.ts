@@ -3,17 +3,17 @@ import { Id } from "core/value-object/id.ts";
 import type { WaterMeterReadingSchema } from "../schemas/water-meter-reading.schema.ts";
 
 export class WaterMeterReading {
-  private constructor(
-    private readonly id: Id,
-    private readonly waterMeterId: Id,
-    private readonly value: Decimal,
-  ) {}
+	private constructor(
+		private readonly id: Id,
+		private readonly waterMeterId: Id,
+		private readonly value: Decimal,
+	) {}
 
-  static create({ id, waterMeterId, value }: WaterMeterReadingSchema) {
-    return new WaterMeterReading(
-      Id.create(id),
-      Id.create(waterMeterId),
-      Decimal.create(value),
-    );
-  }
+	static create({ id, waterMeterId, value }: WaterMeterReadingSchema) {
+		return new WaterMeterReading(
+			Id.create(id),
+			Id.create(waterMeterId),
+			Decimal.create(value),
+		);
+	}
 }

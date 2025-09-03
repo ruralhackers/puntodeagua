@@ -1,3 +1,3 @@
 export interface Savable<In> {
-    save(input: In): Promise<void>
+	save(input: In): Promise<void>;
 }

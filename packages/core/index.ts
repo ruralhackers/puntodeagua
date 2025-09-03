@@ -1,11 +1,9 @@
 export { DateTime } from "./date-time/date-time.ts";
 export { Container } from "./di/container.ts";
-export {
-	CoreContainer,
-} from "./di/register-core-dependencies.ts";
+export { CoreContainer } from "./di/register-core-dependencies.ts";
 export { decimalSchema } from "./types/decimal.schema.ts";
 export { idSchema } from "./types/id.schema.ts";
-export { locationSchema} from "./types/location.schema.ts";
+export { locationSchema } from "./types/location.schema.ts";
 export { measurementUnitSchema } from "./types/measurement-unit.schema.ts";
 export type { Command } from "./use-cases/command.ts";
 export type { Query } from "./use-cases/query.ts";

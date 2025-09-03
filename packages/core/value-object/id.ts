@@ -1,39 +1,39 @@
-import { init, isCuid } from '@paralleldrive/cuid2'
+import { init, isCuid } from "@paralleldrive/cuid2";
 import { idSchema } from "../types/id.schema.ts";
 
 export class Id {
-  private readonly value: string
+	private readonly value: string;
 
-  private constructor(value: string) {
-    this.value = value
-  }
-
-	static create(raw: string) {
-    const parsed = idSchema.parse(raw) // throws if invalid
-    return new Id(parsed)
+	private constructor(value: string) {
+		this.value = value;
 	}
 
-  static generateUniqueId(length = 25) {
-    return new Id(Id.generateUuid(length))
-  }
+	static create(raw: string) {
+		const parsed = idSchema.parse(raw); // throws if invalid
+		return new Id(parsed);
+	}
 
-  static isValidIdentifier(id: string) {
-    return isCuid(id)
-  }
+	static generateUniqueId(length = 25) {
+		return new Id(Id.generateUuid(length));
+	}
 
-  equals(otherId: Id) {
-    return this.value === otherId.value
-  }
+	static isValidIdentifier(id: string) {
+		return isCuid(id);
+	}
 
-  toString() {
-    return this.value
-  }
+	equals(otherId: Id) {
+		return this.value === otherId.value;
+	}
 
-  private static generateUuid(length: number) {
-    const createdId = init({
-      random: Math.random,
-      length
-    })
-    return createdId()
-  }
+	toString() {
+		return this.value;
+	}
+
+	private static generateUuid(length: number) {
+		const createdId = init({
+			random: Math.random,
+			length,
+		});
+		return createdId();
+	}
 }

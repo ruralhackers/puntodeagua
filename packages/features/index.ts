@@ -1,1 +1,1 @@
-export type { WaterPointRepository } from './repositories/water-point.repository.ts'
+export type { WaterPointRepository } from "./repositories/water-point.repository.ts";

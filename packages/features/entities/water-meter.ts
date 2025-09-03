@@ -1,5 +1,5 @@
 import { MeasurementUnit } from "core";
-import { Id } from "../../core/value-object/id.ts";
+import { Id } from "core/value-object/id.ts";
 import type { WaterMeterSchema } from "../schemas/water-meter.schema.ts";
 
 export class WaterMeter {

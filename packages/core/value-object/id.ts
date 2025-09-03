@@ -1,5 +1,5 @@
 import { init, isCuid } from '@paralleldrive/cuid2'
-import type { IdSchema } from "../types/id.schema.ts";
+import { idSchema } from "../types/id.schema.ts";
 
 export class Id {
   private readonly value: string
@@ -8,11 +8,9 @@ export class Id {
     this.value = value
   }
 
-	static create(id: IdSchema) {
-		if (!Id.isValidIdentifier(id)) {
-      throw new Error(`Invalid Id format:${id}`)
-    }
-		return new Id(id);
+	static create(raw: string) {
+    const parsed = idSchema.parse(raw) // throws if invalid
+    return new Id(parsed)
 	}
 
   static generateUniqueId(length = 25) {

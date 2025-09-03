@@ -1,6 +1,6 @@
 import { idSchema } from "core";
+import { locationSchema } from "core/types/location.schema.ts";
 import { z } from "zod";
-import { locationSchema } from "./location.schema.ts";
 
 export type WaterPointSchema = z.infer<typeof waterPointSchema>;
 

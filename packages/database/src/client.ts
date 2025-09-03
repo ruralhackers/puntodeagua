@@ -1,21 +1,17 @@
 import { PrismaClient } from "../prisma/generated/client";
 
 //https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/generating-prisma-client
-declare global {
-	var prisma: PrismaClient | undefined;
-}
+const isServer = typeof (globalThis as { window?: unknown }).window === "undefined";
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export let client: PrismaClient;
+export const client: PrismaClient = isServer
+    ? globalForPrisma.prisma ?? new PrismaClient()
+    : (() => {
+        throw new Error("PrismaClient is server-only");
+    })();
 
-if (typeof window === "undefined") {
-	if (process.env.NODE_ENV === "production") {
-		client = new PrismaClient();
-	} else {
-		if (!global.prisma) {
-			global.prisma = new PrismaClient();
-		}
-		client = global.prisma;
-	}
+if (isServer && process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
 }
 
 export * from "../prisma/generated";

@@ -1,4 +1,4 @@
-import {WaterPointRepository} from "features";
+import type {WaterPointRepository} from "features";
 import {Id} from "core";
 import {WaterPoint} from "features/entities/water-point";
 import {PrismaClient} from "database";

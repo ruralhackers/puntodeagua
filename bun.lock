@@ -69,6 +69,7 @@
       "name": "webapp",
       "version": "0.1.0",
       "dependencies": {
+        "components": "workspace:*",
         "next": "15.5.2",
         "react": "19.1.0",
         "react-dom": "19.1.0",
@@ -82,12 +83,24 @@
         "typescript": "^5",
       },
     },
+    "packages/components": {
+      "name": "components",
+      "version": "0.0.1",
+      "dependencies": {
+        "@radix-ui/react-slot": "^1.2.3",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.542.0",
+        "tailwind-merge": "^3.3.1",
+        "tw-animate-css": "^1.3.8",
+      },
+    },
     "packages/core": {
       "name": "core",
       "dependencies": {
-        "@paralleldrive/cuid2": "^2.2.2",
-        "decimal.js": "^10.6.0",
-        "gretchen": "^1.5.1",
+        "@paralleldrive/cuid2": "2.2.2",
+        "decimal.js": "10.6.0",
+        "gretchen": "1.5.1",
         "zod": "4.1.5",
       },
       "devDependencies": {
@@ -582,6 +595,8 @@
     "color-name": ["color-name@1.1.4", "", {}, "sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA=="],
 
     "color-string": ["color-string@1.9.1", "", { "dependencies": { "color-name": "^1.0.0", "simple-swizzle": "^0.2.2" } }, "sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg=="],
+
+    "components": ["components@workspace:packages/components"],
 
     "concat-map": ["concat-map@0.0.1", "", {}, "sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg=="],
 

@@ -1,8 +1,5 @@
-import type { Id } from "core";
+import type { Deletable, FindableAll, FindableById, Savable } from "core";
 import type { Holder } from "../entities/holder";
 
-export interface HolderRepository {
-  findById(id: Id): Promise<Holder | null>
-  findAll(): Promise<Holder[]>
-  delete(id: Id): Promise<void>
+export interface PlanRepository extends Savable<Holder>, Deletable<Holder>, FindableById<Holder>, FindableAll<Holder> {
 }

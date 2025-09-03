@@ -1,7 +1,7 @@
+import type { HttpClient, Id } from "core";
 import type { WaterPointRepository } from "features";
-import { HttpClient, Id } from "core";
 import { WaterPoint } from "features/entities/water-point";
-import {WaterPointSchema} from "features/schemas/water-point.schema";
+import type {WaterPointSchema} from "features/schemas/water-point.schema";
 
 export class WaterPointApiRestRepository implements WaterPointRepository {
 	constructor(private readonly httpClient: HttpClient) {}

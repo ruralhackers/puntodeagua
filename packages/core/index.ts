@@ -5,10 +5,12 @@ export {
 } from "./di/register-core-dependencies.ts";
 export { decimalSchema } from "./types/decimal.schema.ts";
 export { idSchema } from "./types/id.schema.ts";
+export { locationSchema} from "./types/location.schema.ts";
 export { measurementUnitSchema } from "./types/measurement-unit.schema.ts";
 export type { Command } from "./use-cases/command.ts";
 export type { Query } from "./use-cases/query.ts";
 export { UseCaseService } from "./use-cases/use-case.service.ts";
-export { Decimal } from "./value-object/Decimal.ts";
+export { Decimal } from "./value-object/decimal.ts";
 export { Id } from "./value-object/id.ts";
-export { MeasurementUnit } from "./value-object/MeasurementUnit.ts";
+export { Location } from "./value-object/location.ts";
+export { MeasurementUnit } from "./value-object/measurement-unit.ts";

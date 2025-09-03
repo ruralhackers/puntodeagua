@@ -1,10 +1,8 @@
 
 import { measurementUnitSchema } from "../types/measurement-unit.schema";
 
-
 export class MeasurementUnit {
   static readonly L = MeasurementUnit.create("L");
-  static readonly ML = MeasurementUnit.create("ML");
   static readonly M3 = MeasurementUnit.create("M3");
 
   private constructor(private readonly value: string) {}
@@ -19,7 +17,6 @@ export class MeasurementUnit {
   }
 
   toString(): string { return this.value; }
-
 }
 
 

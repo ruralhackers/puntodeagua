@@ -1,4 +1,4 @@
-import { Id } from "../../core/value-object/id.ts";
+import { Id } from "core/value-object/id.ts";
 import type { WaterPointSchema } from "../schemas/water-point.schema.ts";
 import { Location } from "./location.ts";
 

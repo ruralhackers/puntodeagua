@@ -8,15 +8,17 @@ export class WaterMeter {
     private readonly holderId: Id,
     private readonly waterPointId: Id,
     private readonly measurementUnit: MeasurementUnit,
+    private readonly serialNumber?: string,
     private readonly images?: string[],
   ) {}
 
-  static create({ id, holderId, waterPointId, measurementUnit, images }: WaterMeterSchema) {
+  static create({ id, holderId, waterPointId, measurementUnit, serialNumber, images }: WaterMeterSchema) {
     return new WaterMeter(
       Id.create(id),
       Id.create(holderId),
       Id.create(waterPointId),
       MeasurementUnit.create(measurementUnit),
+      serialNumber,
       images,
     );
   }

@@ -12,7 +12,6 @@ datasource db {
 // Necessary for Next auth
 model Account {
   id                       String  @id @default(cuid())
-  userId                   String
   type                     String
   provider                 String
   providerAccountId        String
@@ -24,6 +23,7 @@ model Account {
   id_token                 String? // @db.Text
   session_state            String?
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                   String  @map("user_id")
   refresh_token_expires_in Int?
 
   @@unique([provider, providerAccountId])
@@ -31,11 +31,13 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String @id @default(cuid())
+  sessionToken String @unique
+
+  expires DateTime
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
 
   @@index([userId])
 }
@@ -89,5 +91,54 @@ model WaterPoint {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  WaterMeter WaterMeter[]
+
   @@index([communityId])
+}
+
+model Holder {
+  id   String @id @default(cuid())
+  name String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  WaterMeter WaterMeter[]
+}
+
+model WaterMeter {
+  id String @id @default(cuid())
+
+  holder   Holder @relation(fields: [holderId], references: [id])
+  holderId String @map("holder_id")
+
+  waterPoint   WaterPoint @relation(fields: [waterPointId], references: [id], onDelete: Cascade)
+  waterPointId String     @map("water_point_id")
+
+  measurementUnit String
+  serialNumber    String?
+
+  images String[] @db.Text
+
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  WaterMeterReading WaterMeterReading[]
+
+  @@index([holderId])
+  @@index([waterPointId])
+}
+
+model WaterMeterReading {
+  id String @id @default(cuid())
+
+  waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
+  waterMeterId String     @map("water_meter_id")
+
+  value     String
+  timestamp DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([waterMeterId])
 }

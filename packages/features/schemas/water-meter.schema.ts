@@ -9,5 +9,6 @@ export const waterMeterSchema = z.object({
 	holderId: idSchema,
 	waterPointId: idSchema,
 	measurementUnit: measurementUnitSchema,
+	serialNumber: z.string().max(100).optional(),
 	images: z.array(UrlSchema).optional(),
 });

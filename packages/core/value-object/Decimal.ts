@@ -2,10 +2,10 @@ import DecimalLib from "decimal.js";
 import { decimalSchema } from "../types/decimal.schema";
 
 DecimalLib.set({
-  precision: 100,
+  precision: 2,
   rounding: DecimalLib.ROUND_CEIL,
-  toExpNeg: -100,
-  toExpPos: 100,
+  toExpNeg: -2,
+  toExpPos: 2,
 });
 
 export class Decimal {

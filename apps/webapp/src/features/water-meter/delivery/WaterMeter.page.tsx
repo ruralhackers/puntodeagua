@@ -1,3 +1,4 @@
+import { Input } from "@/components/ui/input";
 import WaterMeterCard from "./components/WaterMeterCard";
 
 export default function WaterMeterPage() {
@@ -8,7 +9,7 @@ export default function WaterMeterPage() {
                 <p>Gestión de contadores y control de consumos</p>
             </div>
             <div>
-                <p>Barra de buscador por nombre</p>
+                <Input type="search" placeholder="Buscar por nombre..." />
             </div>
             <WaterMeterCard />
         </div>

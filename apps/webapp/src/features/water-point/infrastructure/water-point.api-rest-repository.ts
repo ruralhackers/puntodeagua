@@ -1,14 +1,15 @@
+import type { HttpClient, Id } from "core";
 import type { WaterPointRepository } from "features";
-import { HttpClient, Id } from "core";
 import { WaterPoint } from "features/entities/water-point";
-import {WaterPointSchema} from "features/schemas/water-point.schema";
+import type {WaterPointSchema} from "features/schemas/water-point.schema";
+import {WaterPointDto} from "features/entities/water-point.dto";
 
 export class WaterPointApiRestRepository implements WaterPointRepository {
 	constructor(private readonly httpClient: HttpClient) {}
 
 	async findAll(): Promise<WaterPoint[]> {
-		const json = await this.httpClient.get<any[]>("water-points");
-		return json.map(WaterPoint.create);
+		const waterPointDtos = await this.httpClient.get<WaterPointDto[]>("water-points");
+		return waterPointDtos.data.map(WaterPoint.create);
 	}
 
 	async findById(id: Id): Promise<WaterPoint | null> {

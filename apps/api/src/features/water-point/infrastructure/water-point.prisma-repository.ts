@@ -5,7 +5,6 @@ import { WaterPoint, type WaterPointRepository } from "features";
 import { BasePrismaRepository } from "./base.prisma-repository";
 
 export class WaterPointPrismaRepository extends BasePrismaRepository implements WaterPointRepository{
-
     protected readonly model = 'waterPoint'
     protected getModel(): PrismaClient['waterPoint'] {
         return this.db.waterPoint

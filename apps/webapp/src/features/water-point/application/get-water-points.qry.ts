@@ -1,6 +1,6 @@
 import type {Query} from "core";
-import {WaterPointRepository} from "features";
-import {WaterPoint} from "features/entities/water-point";
+import type {WaterPointRepository} from "features";
+import type {WaterPoint} from "features/entities/water-point";
 
 export class GetWaterPointsQry implements Query<WaterPoint[]> {
 	static readonly ID = "GetWaterPointsQry";

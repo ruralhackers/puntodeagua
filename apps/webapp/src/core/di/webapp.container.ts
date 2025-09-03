@@ -1,7 +1,7 @@
 import {CoreContainer, HttpClient} from "core";
-import {GetWaterPointsQry} from "@/features/water-point/application/get-water-points.qry";
-import {WaterPointApiRestRepository} from "@/features/water-point/infrastructure/water-point.api-rest-repository";
-import {WATER_REPOSITORY} from "@/core/di/injection-tokens";
+import {WaterPointApiRestRepository} from "../../features/water-point/infrastructure/water-point.api-rest-repository";
+import {WATER_REPOSITORY} from "./injection-tokens";
+import {GetWaterPointsQry} from "../../features/water-point/application/get-water-points.qry";
 
 export class WebappContainer extends CoreContainer {
     protected override registerInstances(): void {

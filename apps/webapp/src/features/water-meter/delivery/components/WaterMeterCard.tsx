@@ -1,14 +1,14 @@
-import React from 'react'
 import Link from 'next/link'
+import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function WaterMeterCard() {
+export default function WaterMeterCard({ meter }: any) {
   return (
     // pasarle al link el id real del contador
     <Link href="/contadores/id">
       <Card>
         <CardHeader>
-          <CardTitle>Nombre y apellidos</CardTitle>
+          <CardTitle>{meter.name}</CardTitle>
           <div className="text-red-600 text-sm">
             Consumo anómalo (aviso que solo aparece si se sobrepasa el consumo)
           </div>

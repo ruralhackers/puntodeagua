@@ -7,7 +7,19 @@ export default function WaterMeterPage() {
   const [meters, setMeters] = useState([])
 
   useEffect(() => {
-    //  llamar api aquí
+    const fetchMeters = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/api/water-meters')
+        if (!res.ok) {
+          throw new Error()
+        }
+        const data = await res.json()
+        setMeters(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchMeters()
   }, [])
 
   return (
@@ -21,10 +33,9 @@ export default function WaterMeterPage() {
         {/* el botón Filtrar debe abrir un modal */}
         {/* <Button>Filtrar</Button> */}
       </div>
-      {meters.map(() => (
-        <WaterMeterCard />
+      {meters.map((meter) => (
+        <WaterMeterCard key={meter.id} meter={meter} />
       ))}
-      <WaterMeterCard />
     </div>
   )
 }

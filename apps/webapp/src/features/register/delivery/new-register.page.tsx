@@ -1,8 +1,19 @@
 'use client'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { type FC, useState } from 'react'
+import { type FC } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
@@ -11,40 +22,56 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
+const registerFormSchema = z.object({
+  registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
+  analyticsSubtype: z.string().optional()
+}).refine((data) => {
+  if (data.registerType === 'analytics' && !data.analyticsSubtype) {
+    return false
+  }
+  return true
+}, {
+  message: 'Por favor selecciona un subtipo de analítica',
+  path: ['analyticsSubtype']
+})
+
+type RegisterFormValues = z.infer<typeof registerFormSchema>
+
 export const NewRegisterPage: FC = () => {
   const router = useRouter()
-  const [tipoSeleccionado, setTipoSeleccionado] = useState('')
-  const [subtipoSeleccionado, setSubtipoSeleccionado] = useState('')
-  const [mostrarSubtipo, setMostrarSubtipo] = useState(false)
 
-  const tiposRegistro = [
-    { value: 'analitica', label: 'Analítica' },
-    { value: 'mantenimiento', label: 'Mantenimiento' },
-    { value: 'contador', label: 'Lectura de contadores' },
-    { value: 'incidencia', label: 'Incidencias' }
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      registerType: '',
+      analyticsSubtype: ''
+    }
+  })
+
+  const registerType = form.watch('registerType')
+
+  const typesOfRegister = [
+    { value: 'analytics', label: 'Analítica' },
+    { value: 'maintenance', label: 'Mantenimiento' },
+    { value: 'counter', label: 'Lectura de contadores' },
+    { value: 'issue', label: 'Incidencias' }
   ]
 
-  const subtiposAnalitica = [
-    { value: 'cloro-ph', label: 'Cloro y pH (por usuario)' },
-    { value: 'turbidez', label: 'Turbidez (por usuario)' },
-    { value: 'dureza', label: 'Dureza (por laboratorio)' },
-    { value: 'completa', label: 'Completa (por laboratorio)' }
+  const analyticsSubtypes = [
+    { value: 'chlorine-ph', label: 'Cloro y pH (por usuario)' },
+    { value: 'turbidity', label: 'Turbidez (por usuario)' },
+    { value: 'hardness', label: 'Dureza (por laboratorio)' },
+    { value: 'complete', label: 'Completa (por laboratorio)' }
   ]
 
-  const handleTipoChange = (value: string) => {
-    setTipoSeleccionado(value)
-    setSubtipoSeleccionado('')
-    setMostrarSubtipo(value === 'analitica')
-  }
-
-  const handleContinuar = () => {
-    if (tipoSeleccionado === 'analitica' && subtipoSeleccionado) {
-      router.push(`/dashboard/nuevo-registro/analitica/${subtipoSeleccionado}`)
-    } else if (tipoSeleccionado === 'mantenimiento') {
+  const onSubmit = (values: RegisterFormValues) => {
+    if (values.registerType === 'analytics' && values.analyticsSubtype) {
+      router.push(`/dashboard/nuevo-registro/analitica/${values.analyticsSubtype}`)
+    } else if (values.registerType === 'maintenance') {
       router.push('/dashboard/nuevo-registro/mantenimiento')
-    } else if (tipoSeleccionado === 'contador') {
+    } else if (values.registerType === 'counter') {
       router.push('/dashboard/nuevo-registro/contador')
-    } else if (tipoSeleccionado === 'incidencia') {
+    } else if (values.registerType === 'issue') {
       router.push('/dashboard/nuevo-registro/incidencia')
     }
   }
@@ -61,52 +88,69 @@ export const NewRegisterPage: FC = () => {
         <h1 className="text-xl font-semibold">Nuevo Registro</h1>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Registro</label>
-          <Select value={tipoSeleccionado} onValueChange={handleTipoChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecciona el tipo de registro" />
-            </SelectTrigger>
-            <SelectContent>
-              {tiposRegistro.map((tipo) => (
-                <SelectItem key={tipo.value} value={tipo.value}>
-                  {tipo.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="registerType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo de Registro</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecciona el tipo de registro" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {typesOfRegister.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {mostrarSubtipo && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de Analítica
-            </label>
-            <Select value={subtipoSeleccionado} onValueChange={setSubtipoSeleccionado}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona el tipo de analítica" />
-              </SelectTrigger>
-              <SelectContent>
-                {subtiposAnalitica.map((subtipo) => (
-                  <SelectItem key={subtipo.value} value={subtipo.value}>
-                    {subtipo.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+          {registerType === 'analytics' && (
+            <FormField
+              control={form.control}
+              name="analyticsSubtype"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Analítica</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecciona el tipo de analítica" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {analyticsSubtypes.map((subtype) => (
+                        <SelectItem key={subtype.value} value={subtype.value}>
+                          {subtype.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
-        <Button
-          onClick={handleContinuar}
-          disabled={!tipoSeleccionado || (tipoSeleccionado === 'analitica' && !subtipoSeleccionado)}
-          className="w-full"
-          size="lg"
-        >
-          Continuar
-        </Button>
-      </div>
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+          >
+            Continuar
+          </Button>
+        </form>
+      </Form>
     </div>
   )
 }

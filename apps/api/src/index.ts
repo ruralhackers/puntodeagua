@@ -11,6 +11,7 @@ import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterMeterReadingApiRest } from './features/water-meter-reading/delivery/water-meter-reading.api-rest'
 import { waterPointApiRest } from './features/water-point/delivery/water-point.api-rest'
+import { waterZonesApiRest } from './features/water-zone/delivery/water-zone.api-rest'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
@@ -34,6 +35,7 @@ export const app = new Elysia({ prefix: '/api' })
   .use(analysisApiRest)
   .use(waterMeterApiRest)
   .use(issueApiRest)
+  .use(waterZonesApiRest)
   .use(waterMeterReadingApiRest)
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {

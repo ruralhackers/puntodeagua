@@ -1,8 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Id } from 'core'
-import { Issue, issueSchema } from 'features'
+import { Issue, issueSchema, type WaterZoneDto } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -18,10 +17,6 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
-import { useId } from 'react'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -29,6 +24,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -61,13 +59,11 @@ const createSchema = issueSchema.omit({
   id: true
 })
 
-const waterZone = [
-  { id: '123', name: 'Os Casas' },
-  { id: 'abc', name: 'Centro' },
-  { id: '0z0', name: 'Ramís' }
-]
+interface CreateIssuePageProps {
+  waterZones: WaterZoneDto[]
+}
 
-export const CreateIssuePage: NextPage = () => {
+export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) => {
   const router = useRouter()
   const saveIssueCommand = useUseCase(SaveIssueCmd)
 
@@ -77,7 +73,8 @@ export const CreateIssuePage: NextPage = () => {
       title: '',
       description: '',
       waterZoneId: 'cmf580rl90006rx07yycjwao3',
-      reporterName: ''
+      reporterName: '',
+      status: 'open'
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -88,13 +85,14 @@ export const CreateIssuePage: NextPage = () => {
     }
   })
 
-  async function onSubmit(values: z.infer<Omit<typeof issueSchema, 'id'>>) {
+  async function onSubmit(values: z.infer<typeof createSchema>) {
     await saveIssueCommand.execute(
       Issue.create({
         title: values.title,
         description: values.description,
         reporterName: values.reporterName,
-        waterZoneId: values.waterZoneId
+        waterZoneId: values.waterZoneId,
+        status: values.status
       })
     )
     router.push('/')
@@ -138,7 +136,6 @@ export const CreateIssuePage: NextPage = () => {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <FormField
-                  id={useId()}
                   control={form.control}
                   name="waterZoneId"
                   render={() => (
@@ -146,10 +143,10 @@ export const CreateIssuePage: NextPage = () => {
                       <FormLabel>Zona *</FormLabel>
                       <Select>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la zona"/>
+                          <SelectValue placeholder="Selecciona la zona" />
                         </SelectTrigger>
                         <SelectContent>
-                          {waterZone.map((wz) => (
+                          {waterZones.map((wz) => (
                             <SelectItem key={wz.id} value={wz.id}>
                               {wz.name}
                             </SelectItem>
@@ -165,18 +162,19 @@ export const CreateIssuePage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="reporterName"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Persona que firma *</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Nombre de quien firma la incidencia"
+                          {...field}
                           required
                         />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
@@ -186,19 +184,19 @@ export const CreateIssuePage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="title"
-                  render={({field}) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Incidencia *</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Describe brevemente la incidencia"
+                          placeholder="Título de la incidencia"
                           {...field}
                           required
                         ></Input>
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
@@ -208,30 +206,30 @@ export const CreateIssuePage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="description"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Descripción de la incidencia</FormLabel>
                       <FormControl>
                         <Textarea
+                          {...field}
                           name="description"
                           placeholder="Describe detalladamente la incidencia"
                           rows={4}
                           cols={40}
                         />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
               </div>
 
               <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">📅 Estado y
-                  fechas</h3>
-                <div className="bg-white rounded-lg p-4 border border-blue-200">
-                  
-                </div>
+                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">
+                  📅 Estado y fechas
+                </h3>
+                <div className="bg-white rounded-lg p-4 border border-blue-200"></div>
               </div>
 
               {/*    <div className="grid grid-cols-2 gap-4">*/}

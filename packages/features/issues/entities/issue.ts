@@ -1,5 +1,6 @@
 import { Id } from 'core'
 import type { IssueSchema } from '../schemas/issue.schema.ts'
+import { IssueStatusType } from '../value-objects/analysis-type.ts'
 import type { IssueDto } from './issue.dto.ts'
 
 export class Issue {
@@ -8,18 +9,18 @@ export class Issue {
     public readonly title: string,
     public readonly description: string,
     public readonly reporterName: string,
-    public readonly waterZoneId: Id
+    public readonly waterZoneId: Id,
+    public readonly status: IssueStatusType
   ) {}
 
   static create(issueSchema: Omit<IssueSchema, 'id'>) {
-    const id1 = Id.generateUniqueId()
-    console.log(id1)
     return new Issue(
-      id1,
+      Id.generateUniqueId(),
       issueSchema.title,
       issueSchema.description,
       issueSchema.reporterName,
-      Id.create(issueSchema.waterZoneId)
+      Id.create(issueSchema.waterZoneId),
+      IssueStatusType.create(issueSchema.status)
     )
   }
 
@@ -29,7 +30,8 @@ export class Issue {
       dto.title,
       dto.description,
       dto.reporterName,
-      Id.create(dto.waterZoneId)
+      Id.create(dto.waterZoneId),
+      IssueStatusType.create(dto.status)
     )
   }
 
@@ -39,7 +41,8 @@ export class Issue {
       waterZoneId: this.waterZoneId.toString(),
       title: this.title,
       reporterName: this.reporterName,
-      description: this.description
+      description: this.description,
+      status: this.status.toString()
     }
   }
 }

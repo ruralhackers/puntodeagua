@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <TabBarProvider>
         <div className="flex flex-col min-h-screen">
           {/* Desktop Navbar - only visible on desktop */}
-          <div className="hidden md:block">
+          <div className="md:block">
             <Header />
           </div>
 

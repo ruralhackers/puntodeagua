@@ -21,4 +21,8 @@ export class AnalysisType {
   toString(): string {
     return this.value
   }
+
+  static values(): string[] {
+    return analysisTypes
+  }
 }

@@ -5,8 +5,7 @@ import { authMiddleware } from '../../../middleware/auth.middleware'
 import { GetWaterMeterQry } from '../application/get-water-meter.qry'
 import { GetWaterMetersQry } from '../application/get-water-meters.qry'
 
-export const waterMeterApiRest = new Elysia()
-  .use(authMiddleware)
+export const waterMeterApiRest = authMiddleware(new Elysia())
   .get('/water-meters', async () => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const waterMeters = await useCaseService.execute(GetWaterMetersQry)

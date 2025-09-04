@@ -6,5 +6,9 @@ export type IssueSchema = z.infer<typeof issueSchema>
 export const issueSchema = z.object({
   id: z.string(),
   title: z.string(),
-  waterZoneId: idSchema
+  description: z.string(),
+  reporterName: z.string(),
+  status: z.string(),
+  startAt: z.date(),
+  waterZoneId: idSchema,
 })

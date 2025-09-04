@@ -1,19 +1,11 @@
-'use client'
-
-import { useWaterMeters } from '../hooks/use-water-meters'
+import type { WaterMeter } from 'features/entities/water-meter'
 import WaterMeterCard from './components/WaterMeterCard'
 
-export default function WaterMeterPage() {
-  const { meters, isLoading, error } = useWaterMeters()
+type Props = {
+  waterMeters: WaterMeter[]
+}
 
-  if (isLoading) {
-    return <div>Loading water meters...</div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
-  }
-
+export default function WaterMeterPage({ waterMeters }: Props) {
   return (
     <div>
       <div>
@@ -25,7 +17,7 @@ export default function WaterMeterPage() {
         {/* el botón Filtrar debe abrir un modal */}
         {/* <Button>Filtrar</Button> */}
       </div>
-      {meters.map((meter) => (
+      {waterMeters.map((meter) => (
         <WaterMeterCard key={meter.id.toString()} meter={meter.toDto()} />
       ))}
     </div>

@@ -5,21 +5,26 @@ export class AnalysisApiRestRepository implements AnalysisRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
   async findAll(): Promise<Analysis[]> {
-    const analysisDtos = await this.httpClient.get<AnalysisDto[]>('analyses')
-    return analysisDtos.data!.map(Analysis.create)
+    const dtos = await this.httpClient.get<AnalysisDto[]>('analyses')
+    if (!dtos.data) return []
+    return dtos.data.map(Analysis.fromDto)
   }
 
   async findById(id: Id): Promise<Analysis | undefined> {
     try {
-      const json = await this.httpClient.get<any>(`analyses/${id.toString()}`)
-      return Analysis.create(json.data!)
+      const json = await this.httpClient.get<AnalysisDto>(`analyses/${id.toString()}`)
+      console.log({ json })
+
+      if (!json.data) return undefined
+
+      return Analysis.fromDto(json.data!)
     } catch (error) {
       return undefined
     }
   }
 
-  async save(Analysis: Analysis): Promise<void> {
-    await this.httpClient.post<void, AnalysisDto>('analyses', Analysis.toDto())
+  async save(analysis: Analysis): Promise<void> {
+    await this.httpClient.post<void, AnalysisDto>('analyses', analysis.toDto())
     return
   }
 

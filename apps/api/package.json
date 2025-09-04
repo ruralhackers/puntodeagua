@@ -2,7 +2,7 @@
   "name": "api",
   "version": "1.0.50",
   "scripts": {
-    "dev": " bun --watch --env-file=../../.env.local run --port 4000 src/index.ts"
+    "dev": "NODE_ENV=development bun --watch --env-file=../../.env.local run --port 4000 src/index.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.879.0",

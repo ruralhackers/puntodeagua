@@ -9,52 +9,40 @@ interface JwtPayload {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-export const authMiddleware = new Elysia({ name: 'auth' })
-  .use(
-    jwt({
-      name: 'jwt',
-      secret: JWT_SECRET
-    })
-  )
-  .derive(async ({ headers, jwt, set }) => {
+export const authMiddleware = (app: Elysia) =>
+  app.use(jwt({ name: 'jwt', secret: JWT_SECRET })).onBeforeHandle(({ headers, jwt, set }) => {
     // Skip authentication in development if DISABLE_AUTH is set
+    console.log(process.env.NODE_ENV)
     if (process.env.DISABLE_AUTH === 'true' || process.env.NODE_ENV === 'development') {
-      return {
-        user: null // No user context when auth is disabled
-      }
+      return
     }
 
     const authHeader = headers.authorization
-
     if (!authHeader) {
       set.status = 401
-      throw new Error('Authorization header required')
+      return { error: 'Authorization header required' }
     }
 
     const token = authHeader.replace('Bearer ', '')
-
     if (!token) {
       set.status = 401
-      throw new Error('Bearer token required')
+      return { error: 'Bearer token required' }
     }
 
     try {
-      const payload = (await jwt.verify(token)) as JwtPayload
-
+      const payload = jwt.verify(token)
       if (!payload) {
         set.status = 401
-        throw new Error('Invalid token')
+        return { error: 'Invalid token' }
       }
 
-      return {
-        user: {
-          userId: payload.userId,
-          email: payload.email,
-          roles: payload.roles
-        }
+      const jwtPayload = payload as JwtPayload
+      if (!jwtPayload.userId || !jwtPayload.email) {
+        set.status = 401
+        return { error: 'Invalid token payload' }
       }
     } catch (error) {
       set.status = 401
-      throw new Error('Invalid or expired token')
+      return { error: 'Invalid or expired token' }
     }
   })

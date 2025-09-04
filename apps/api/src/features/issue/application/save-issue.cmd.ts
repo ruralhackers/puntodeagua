@@ -1,6 +1,6 @@
 import type { Command } from 'core'
 import type { Issue } from 'features'
-import type { IssueRepository } from 'features/repositories/issue.repository'
+import type { IssueRepository } from 'features/issues/repositories/issue.repository'
 
 export class SaveIssueCmd implements Command<Issue> {
   static readonly ID = 'SaveIssueCmd'

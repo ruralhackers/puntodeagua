@@ -1,7 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Id } from 'core'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
@@ -22,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
+import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
@@ -33,7 +33,7 @@ export const CreateAnalysisPage: NextPage = () => {
     resolver: zodResolver(createAnalysisSchema),
     defaultValues: {
       description: '',
-      waterZoneId: Id.generateUniqueId().toString(),
+      waterZoneId: '',
       analysisType: '',
       analyst: '',
       analyzedAt: new Date(),
@@ -42,6 +42,8 @@ export const CreateAnalysisPage: NextPage = () => {
       chlorine: ''
     }
   })
+
+  const { data: waterZones } = useUseCase(GetWaterZonesQry, { immediate: true })
 
   const selectedType = form.watch('analysisType')
   const analysisTypeId = useId()
@@ -101,6 +103,35 @@ export const CreateAnalysisPage: NextPage = () => {
               <div>
                 <FormField
                   control={form.control}
+                  name="waterZoneId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Zona de Agua</FormLabel>
+                      <FormControl>
+                        <select
+                          required
+                          value={field.value}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        >
+                          <option value="">Selecciona una zona</option>
+                          {(waterZones ?? []).map((z) => (
+                            <option key={(z as any).id.toString()} value={(z as any).id.toString()}>
+                              {(z as any).name}
+                            </option>
+                          ))}
+                        </select>
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              <div>
+                <FormField
+                  control={form.control}
                   name="analyst"
                   render={({ field }) => (
                     <FormItem>
@@ -120,11 +151,25 @@ export const CreateAnalysisPage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="analyzedAt"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
-                        <input type="date" required placeholder="Fecha de análisis" />
+                        <input
+                          type="date"
+                          required
+                          placeholder="Fecha de análisis"
+                          value={
+                            field.value
+                              ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
+                              : ''
+                          }
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />

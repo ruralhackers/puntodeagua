@@ -20,6 +20,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
+import { useId } from 'react'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -52,6 +61,12 @@ const createSchema = issueSchema.omit({
   id: true
 })
 
+const waterZone = [
+  { id: '123', name: 'Os Casas' },
+  { id: 'abc', name: 'Centro' },
+  { id: '0z0', name: 'Ramís' }
+]
+
 export const CreateIssuePage: NextPage = () => {
   const router = useRouter()
   const saveIssueCommand = useUseCase(SaveIssueCmd)
@@ -60,7 +75,7 @@ export const CreateIssuePage: NextPage = () => {
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      waterZoneId: Id.generateUniqueId().toString()
+      waterZoneId: 'cmf580rl90006rx07yycjwao3'
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -118,6 +133,52 @@ export const CreateIssuePage: NextPage = () => {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <FormField
+                  id={useId()}
+                  control={form.control}
+                  name="waterZoneId"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Zona *</FormLabel>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona la zona" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {waterZone.map((wz) => (
+                            <SelectItem key={wz.id} value={wz.id}>
+                              {wz.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              <div>
+                <FormField
+                  control={form.control}
+                  name="reporterName"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Persona que firma *</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Nombre de quien firma la incidencia"
+                          required
+                        />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              <div>
+                <FormField
                   control={form.control}
                   name="title"
                   render={({ field }) => (
@@ -129,6 +190,28 @@ export const CreateIssuePage: NextPage = () => {
                           placeholder="Describe brevemente la incidencia"
                           {...field}
                         ></Input>
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              <div>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Descripción de la incidencia</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          name="description"
+                          placeholder="Describe detalladamente la incidencia"
+                          rows={4}
+                          cols={40}
+                        />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -177,26 +260,6 @@ export const CreateIssuePage: NextPage = () => {
               {/*          ))}*/}
               {/*        </select>*/}
               {/*      </div>*/}
-              {/*    </div>*/}
-
-              {/*    <div>*/}
-              {/*      <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*        Punto de Agua Afectado **/}
-              {/*      </label>*/}
-              {/*      <select*/}
-              {/*        name="puntoAgua"*/}
-              {/*        value={formData.puntoAgua}*/}
-              {/*        onChange={handleInputChange}*/}
-              {/*        required*/}
-              {/*        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*      >*/}
-              {/*        <option value="">Selecciona un punto</option>*/}
-              {/*        {puntosAgua.map((punto) => (*/}
-              {/*          <option key={punto} value={punto}>*/}
-              {/*            {punto}*/}
-              {/*          </option>*/}
-              {/*        ))}*/}
-              {/*      </select>*/}
               {/*    </div>*/}
 
               {/*    <div className="grid grid-cols-2 gap-4">*/}

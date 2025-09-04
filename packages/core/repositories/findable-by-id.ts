@@ -1,5 +1,5 @@
-import type { Id } from "../value-object/id";
+import type { Id } from '../value-object/id'
 
 export interface FindableById<In> {
-	findById(id: Id): Promise<In | undefined>;
+  findById(id: Id): Promise<In | undefined>
 }

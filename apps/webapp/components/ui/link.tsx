@@ -13,9 +13,9 @@ const linkVariants = cva('underline', {
   variants: {
     type: {
       invisible: 'no-underline',
-      navigation: 'no-underline',
-    },
-  },
+      navigation: 'no-underline'
+    }
+  }
 })
 
 export const Link: FC<PropsWithChildren<Props>> = ({ to, children, className, type }) => {

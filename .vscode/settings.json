@@ -16,7 +16,5 @@
   "[javascriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
-  "cSpell.words": [
-    "elysia"
-  ]
+  "cSpell.words": ["elysia"]
 }

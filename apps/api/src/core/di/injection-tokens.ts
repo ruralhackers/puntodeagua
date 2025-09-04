@@ -1,2 +1,2 @@
-export const WATER_REPOSITORY = Symbol('WATER_REPOSITORY');
-export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
+export const WATER_REPOSITORY = Symbol('WATER_REPOSITORY')
+export const USER_REPOSITORY = Symbol('USER_REPOSITORY')

@@ -13,6 +13,8 @@ import { GetWaterMetersQry } from '../../features/water-meter/application/get-wa
 import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
+import { GetWaterZonesQry } from '../../features/water-zone/application/get-water-zones.qry'
+import { WaterZoneApiRestRepository } from '../../features/water-zone/infrastructure/water-zone.api-rest-repository'
 import {
   AUTH_REPOSITORY,
   ISSUE_REPOSITORY,
@@ -59,6 +61,10 @@ export class WebappContainer extends CoreContainer {
 
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
+    const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
+    this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

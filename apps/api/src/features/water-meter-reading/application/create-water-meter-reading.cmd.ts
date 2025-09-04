@@ -1,4 +1,4 @@
-import { Command, Id } from 'core'
+import { Command, Id, MeasurementUnit } from 'core'
 import type { WaterMeterRepository } from 'features'
 import { WaterMeterReading, WaterMeterReadingDto } from 'features'
 import type { FileUploadService } from '../../../infrastructure/file-upload/file-upload.service'
@@ -45,7 +45,7 @@ export class CreateWaterMeterReadingCmd
 
     // 2. Normalizar la lectura: si está en M3, convertir a litros
     const normalizedReading =
-      waterMeter.measurementUnit.toString() === 'M3'
+      waterMeter.measurementUnit === MeasurementUnit.M3
         ? (parseFloat(command.reading) * 1000).toString()
         : command.reading
 

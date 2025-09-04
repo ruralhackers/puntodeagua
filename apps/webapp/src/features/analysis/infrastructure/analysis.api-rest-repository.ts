@@ -5,12 +5,14 @@ export class AnalysisApiRestRepository implements AnalysisRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
   async findAll(): Promise<Analysis[]> {
+    console.log('findAll')
     const dtos = await this.httpClient.get<AnalysisDto[]>('analyses')
     if (!dtos.data) return []
     return dtos.data.map(Analysis.fromDto)
   }
 
   async findById(id: Id): Promise<Analysis | undefined> {
+    console.log('vamos')
     try {
       const json = await this.httpClient.get<AnalysisDto>(`analyses/${id.toString()}`)
       console.log({ json })

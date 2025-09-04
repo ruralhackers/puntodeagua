@@ -8,6 +8,7 @@ import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-wate
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
 import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
+import { GetAnalysisQry } from '../../features/analysis/application/get-analysis.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
@@ -58,6 +59,9 @@ export class WebappContainer extends CoreContainer {
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
+
+    const getAnalysisQry = new GetAnalysisQry(analysisRepository)
+    this.register(GetAnalysisQry.ID, getAnalysisQry)
 
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)

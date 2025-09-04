@@ -26,6 +26,8 @@ export const CreateAnalysisPage: NextPage = () => {
 
   const createAnalysisSchema = analysisSchema.omit({ id: true })
 
+  const analysisParams = ['ph', 'turbidity', 'chlorine']
+
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
     defaultValues: {
@@ -53,6 +55,10 @@ export const CreateAnalysisPage: NextPage = () => {
     await createAnalysisCommand.execute({})
     // Aquí iría la lógica para guardar la incidencia
     router.push('/')
+  }
+
+  function onChangeAnalysisType(value: string) {
+    form.setValue('analysisType', value, { shouldValidate: true })
   }
 
   return (
@@ -86,23 +92,6 @@ export const CreateAnalysisPage: NextPage = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
 
             <div className="grid grid-cols-1 gap-4">
-              <div>
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel />
-                      <FormControl>
-                        <input type="text" placeholder="Describe brevemente el análisis" />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -111,7 +100,7 @@ export const CreateAnalysisPage: NextPage = () => {
                   <select
                     name="analysisType"
                     value={form.getValues('analysisType')}
-                    onChange={form.handleChange('analysisType')}
+                    onChange={(e) => onChangeAnalysisType(e.target.value)}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
@@ -123,6 +112,61 @@ export const CreateAnalysisPage: NextPage = () => {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <FormField
+                  control={form.control}
+                  name="analyst"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel />
+                      <FormControl>
+                        <input type="text" placeholder="Nombre del analista" />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              {/* add form field for each analysis params with a label */}
+              {analysisParams.map((param) => (
+                <div key={param}>
+                  <FormField
+                    control={form.control}
+                    name={param as keyof z.infer<typeof createAnalysisSchema>}
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>{param}</FormLabel>
+                        <FormControl>
+                          <input type="text" placeholder={param} />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  ></FormField>
+                </div>
+              ))}
+
+              {/* description use textarea */}
+              <div>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Descripción</FormLabel>
+                      <FormControl>
+                        <textarea placeholder="Describe brevemente el análisis" rows={4} />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
               </div>
 
               {/*      <div>*/}

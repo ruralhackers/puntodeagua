@@ -12,9 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export const authMiddleware = (app: Elysia) =>
   app.use(jwt({ name: 'jwt', secret: JWT_SECRET })).onBeforeHandle(({ headers, jwt, set }) => {
-    console.log('🔍 authMiddleware entra')
     // Skip authentication in development if DISABLE_AUTH is set
-    console.log(process.env.NODE_ENV)
     if (process.env.DISABLE_AUTH === 'true' || process.env.NODE_ENV === 'development') {
       return
     }

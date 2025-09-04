@@ -8,15 +8,27 @@ export class WaterPoint {
     public readonly communityId: Id,
     public readonly name: string,
     public location: Location,
+    public readonly fixedPopulation: number,
+    public readonly floatingPopulation: number,
     public description?: string
   ) {}
 
-  static create({ id, location, description, communityId, name }: WaterPointSchema) {
+  static create({
+    id,
+    location,
+    description,
+    communityId,
+    name,
+    fixedPopulation,
+    floatingPopulation
+  }: WaterPointSchema) {
     return new WaterPoint(
       Id.create(id),
       Id.create(communityId),
       name,
       Location.create(location),
+      fixedPopulation,
+      floatingPopulation,
       description || undefined
     )
   }
@@ -27,7 +39,9 @@ export class WaterPoint {
       location: this.location.toString(),
       communityId: this.communityId.toString(),
       name: this.name,
-      description: this.description
+      description: this.description,
+      fixedPopulation: this.fixedPopulation,
+      floatingPopulation: this.floatingPopulation
     }
   }
 }

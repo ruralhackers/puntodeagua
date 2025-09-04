@@ -14,5 +14,6 @@ export interface WaterMeterDto {
     reading: string
     normalizedReading: string
     consumption: number
+    'excess-consumption': boolean
   }>
 }

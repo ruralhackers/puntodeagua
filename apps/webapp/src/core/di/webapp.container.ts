@@ -8,9 +8,16 @@ import { GetAnalysesQry } from '../../features/analysis/application/get-analyses
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
+import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
-import { AUTH_REPOSITORY, ISSUE_REPOSITORY, WATER_REPOSITORY } from './injection-tokens'
+import {
+  AUTH_REPOSITORY,
+  ISSUE_REPOSITORY,
+  WATER_METER_REPOSITORY,
+  WATER_REPOSITORY
+} from './injection-tokens'
 
 export class WebappContainer extends CoreContainer {
   protected override registerInstances(): void {
@@ -32,6 +39,12 @@ export class WebappContainer extends CoreContainer {
 
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
+
+    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(httpClient)
+    this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)
+
+    const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)
+    this.register(GetWaterMetersQry.ID, getWaterMetersQry)
 
     const authApiRestRepository = new AuthApiRestRepository(httpClient)
     this.register(AUTH_REPOSITORY, authApiRestRepository)

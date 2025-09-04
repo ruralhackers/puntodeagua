@@ -157,8 +157,8 @@ model WaterMeterReading {
   waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
   waterMeterId String     @map("water_meter_id")
 
-  reading           String
-  normalizedReading String
+  reading           Decimal @db.Decimal(10,3)
+  normalizedReading Decimal @db.Decimal(10,3)
   readingDate       DateTime
   notes             String?
 

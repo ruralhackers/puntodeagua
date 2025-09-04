@@ -14,6 +14,7 @@ async function main() {
   await seedHolders()
   await seedWaterMeters(waterPointIds)
   await seedIssues()
+  await seedWaterMeterReadings()
 }
 
 main()
@@ -227,43 +228,100 @@ async function seedWaterMeters(waterPointIds: string[]) {
 }
 
 async function seedIssues() {
-  await prisma.issue.deleteMany({});
+  await prisma.issue.deleteMany({})
 
   const waterZones = await prisma.waterZone.findMany()
 
   const issues = [
     {
-      status: "open",
-      title: "Fuga en tubería principal",
+      status: 'open',
+      title: 'Fuga en tubería principal',
       description: null,
-      reporterName: "Olga",
-      startAt: "2025-09-03T20:05:35.000Z",
+      reporterName: 'Olga',
+      startAt: '2025-09-03T20:05:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0].id,
+      waterZoneId: waterZones[0].id
     },
     {
-      status: "open",
-      title: "Presión baja en zona residencial",
+      status: 'open',
+      title: 'Presión baja en zona residencial',
       description: null,
-      reporterName: "Rosabel",
-      startAt: "2025-09-02T09:24:35.000Z",
+      reporterName: 'Rosabel',
+      startAt: '2025-09-02T09:24:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0].id,
+      waterZoneId: waterZones[0].id
     },
     {
-      status: "closed",
-      title: "Avería en bomba de agua",
-      description: "La bomba principal presenta ruidos anómalos y baja presión",
-      reporterName: "Rosabel",
-      startAt: "2025-08-25T18:45:00.000Z",
-      endAt: "2025-09-03T10:00:00.000Z",
-      waterZoneId: waterZones[1].id,
+      status: 'closed',
+      title: 'Avería en bomba de agua',
+      description: 'La bomba principal presenta ruidos anómalos y baja presión',
+      reporterName: 'Rosabel',
+      startAt: '2025-08-25T18:45:00.000Z',
+      endAt: '2025-09-03T10:00:00.000Z',
+      waterZoneId: waterZones[1].id
     }
-  ];
+  ]
 
   await prisma.issue.createMany({
-    data: issues,
-  });
+    data: issues
+  })
 
   console.log(`Created ${issues.length} issues`)
+}
+
+async function seedWaterMeterReadings() {
+  await prisma.waterMeterReading.deleteMany({})
+
+  const waterMeters = await prisma.waterMeter.findMany()
+
+  if (waterMeters.length === 0) {
+    console.log('No water meters found, skipping water meter readings seed')
+    return
+  }
+
+  // Create readings for the last 6 months with different patterns
+  const readings = []
+  const now = new Date()
+
+  for (const meter of waterMeters) {
+    // Generate 6 months of readings (one per month)
+    for (let i = 5; i >= 0; i--) {
+      const readingDate = new Date(now.getFullYear(), now.getMonth() - i, 15) // 15th of each month
+
+      // Generate realistic reading values based on measurement unit
+      let reading: string
+      let normalizedReading: string
+
+      if (meter.measurementUnit === 'L') {
+        // Liters: generate values between 1000-5000 L
+        const litersValue = Math.floor(Math.random() * 4000) + 1000
+        reading = litersValue.toString()
+        // Normalize to m³ (divide by 1000)
+        normalizedReading = (litersValue / 1000).toFixed(3)
+      } else {
+        // M³: generate values between 1-5 m³
+        const m3Value = (Math.random() * 4 + 1).toFixed(3)
+        reading = m3Value
+        // Normalize to m³ (same value)
+        normalizedReading = m3Value
+      }
+
+      readings.push({
+        waterMeterId: meter.id,
+        reading,
+        normalizedReading,
+        readingDate,
+        notes:
+          i === 0
+            ? 'Última lectura del mes'
+            : `Lectura mensual - ${readingDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`
+      })
+    }
+  }
+
+  await prisma.waterMeterReading.createMany({
+    data: readings
+  })
+
+  console.log(`Created ${readings.length} water meter readings`)
 }

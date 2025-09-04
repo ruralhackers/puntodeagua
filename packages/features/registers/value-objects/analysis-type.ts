@@ -18,11 +18,30 @@ export class AnalysisType {
     return analysisTypes.includes(value)
   }
 
+  static values() {
+    return [
+      AnalysisType.CHLORINE_PH,
+      AnalysisType.TURBIDITY,
+      AnalysisType.HARDNESS,
+      AnalysisType.COMPLETE
+    ]
+  }
+
   toString(): string {
     return this.value
   }
 
-  static values(): string[] {
-    return analysisTypes
+  getFieldsByType() {
+    if (this.value === 'chlorine_ph') {
+      return ['ph', 'chlorine']
+    } else if (this.value === 'turbidity') {
+      return ['turbidity']
+    } else if (this.value === 'hardness') {
+      return ['description']
+    } else if (this.value === 'complete') {
+      return ['description']
+    } else {
+      return []
+    }
   }
 }

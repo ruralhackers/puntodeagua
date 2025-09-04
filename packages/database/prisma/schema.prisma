@@ -157,8 +157,10 @@ model WaterMeterReading {
   waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
   waterMeterId String     @map("water_meter_id")
 
-  value     String
-  timestamp DateTime @default(now())
+  reading           String
+  normalizedReading String
+  readingDate       DateTime
+  notes             String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -6,6 +6,8 @@ export type WaterMeterReadingSchema = z.infer<typeof waterMeterReadingSchema>
 export const waterMeterReadingSchema = z.object({
   id: idSchema,
   waterMeterId: idSchema,
-  // TODO: Handle decimals
-  value: decimalSchema
+  reading: decimalSchema,
+  normalizedReading: decimalSchema,
+  readingDate: z.date(),
+  notes: z.string().optional()
 })

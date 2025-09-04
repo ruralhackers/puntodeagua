@@ -13,7 +13,8 @@ import {
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY,
-  WATER_ZONE_REPOSITORY
+  WATER_ZONE_REPOSITORY,
+  MAINTENANCE_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
 import { DeleteAnalysisCmd } from './features/analysis/application/delete-analysis.cmd'
@@ -26,6 +27,8 @@ import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
+import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
+import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
@@ -95,6 +98,12 @@ export class ApiContainer extends CoreContainer {
 
     const getWaterZonesQry = new GetWaterZonesQry(waterZonePrismaRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
+    // Maintenance
+    const maintenanceRepository = new MaintenancePrismaRepository(client)
+    this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
+    const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
+    this.register(GetMaintenancesQry.ID, getMaintenancesQry)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

@@ -12,6 +12,7 @@
     "db:seed": "bun --env-file=../../.env.local run src/seed.ts",
     "db:fresh": "bun migrate:reset && bun db:push && bun db:seed",
     "db:sync": "bun generate && bun db:push",
+    "db:studio": "bun --env-file=../../.env.local prisma studio",
     "migrate:dev": "bun --env-file=../../.env.local prisma migrate dev",
     "migrate:deploy": "bun --env-file=../../.env.local prisma migrate deploy",
     "migrate:reset": "bun --env-file=../../.env.local prisma migrate reset"
@@ -21,7 +22,7 @@
   },
   "devDependencies": {
     "prisma": "latest",
-    "prisma-json-types-generator": "^3.2.2",
+    "prisma-json-types-generator": "3.2.2",
     "typescript": "latest"
   }
 }

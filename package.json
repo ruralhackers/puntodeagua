@@ -20,7 +20,7 @@
     "typescript": "5"
   },
   "dependencies": {
-    "concurrently": "^9.2.1",
+    "concurrently": "9.2.1",
     "gretchen": "1.5.1",
     "luxon": "3.7.1"
   },

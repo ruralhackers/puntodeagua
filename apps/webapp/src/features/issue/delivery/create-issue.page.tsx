@@ -1,7 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { issueSchema } from 'features'
+import { Id } from 'core'
+import { Issue, issueSchema } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -16,8 +17,9 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -46,14 +48,19 @@ const puntosAgua = [
   'Estación de Bombeo'
 ]
 
+const createSchema = issueSchema.omit({
+  id: true
+})
+
 export const CreateIssuePage: NextPage = () => {
   const router = useRouter()
-  const createIssueCommand = useUseCase(CreateIssueCmd)
+  const saveIssueCommand = useUseCase(SaveIssueCmd)
 
-  const form = useForm<z.infer<typeof issueSchema>>({
-    resolver: zodResolver(issueSchema),
+  const form = useForm<z.infer<typeof createSchema>>({
+    resolver: zodResolver(createSchema),
     defaultValues: {
-      name: ''
+      title: '',
+      waterZoneId: Id.generateUniqueId().toString()
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -66,10 +73,10 @@ export const CreateIssuePage: NextPage = () => {
     }
   })
 
-  async function onSubmit(values: z.infer<typeof issueSchema>) {
-    console.log('Datos de la incidencia:', values)
-    await createIssueCommand.execute({})
-    // Aquí iría la lógica para guardar la incidencia
+  async function onSubmit(values: z.infer<Omit<typeof issueSchema, 'id'>>) {
+    await saveIssueCommand.execute(
+      Issue.create({ title: values.title, waterZoneId: values.waterZoneId })
+    )
     router.push('/')
   }
 
@@ -98,7 +105,12 @@ export const CreateIssuePage: NextPage = () => {
 
       {/* Formulario */}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, (x) => {
+            console.log(x)
+          })}
+          className="space-y-8"
+        >
           {/* Información básica */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
@@ -107,12 +119,16 @@ export const CreateIssuePage: NextPage = () => {
               <div>
                 <FormField
                   control={form.control}
-                  name="name"
-                  render={() => (
+                  name="title"
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel />
                       <FormControl>
-                        <input type="text" placeholder="Describe brevemente la incidencia" />
+                        <Input
+                          type="text"
+                          placeholder="Describe brevemente la incidencia"
+                          {...field}
+                        ></Input>
                       </FormControl>
                       <FormDescription />
                       <FormMessage />

@@ -1,6 +1,6 @@
-import type { PrismaClient } from 'database'
-import { BasePrismaRepository, Issue } from 'features'
-import { IssueRepository } from 'features/repositories/issue.repository'
+import type { Prisma, PrismaClient } from 'database'
+import { BasePrismaRepository, type Issue } from 'features'
+import type { IssueRepository } from 'features/repositories/issue.repository'
 
 export class IssuePrismaRepository extends BasePrismaRepository implements IssueRepository {
   protected readonly model = 'issue'
@@ -9,16 +9,37 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
   }
 
   async save(input: Issue): Promise<void> {
-    const issueData = {
+    const update = {
+      waterZoneId: input.waterZoneId.toString(),
+      name: input.title
+    }
+
+    const create = {
+      ...update,
       id: input.id.toString(),
-      name: input.name
+      title: '',
+      reporterName: '',
+      reporterEmail: '',
+      description: '',
+      status: 'OPEN',
+      priority: 'LOW',
+      startAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
     await this.getModel().upsert({
       where: { id: input.id.toString() },
-      create: {
-        ...issueData
-      }
+      create,
+      update
     })
+  }
+
+  private fromPrismaPayload(input: Prisma.IssueGetPayload<true>) {
+    return {
+      id: input.id.toString(),
+      name: input.title,
+      waterZoneId: input.waterZoneId.toString()
+    }
   }
 }

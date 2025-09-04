@@ -10,6 +10,7 @@ import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
 import { WaterMeterPrismaRepository } from './features/water-point/infrastructure/water-meter.prisma-repository'
@@ -30,6 +31,9 @@ export class ApiContainer extends CoreContainer {
 
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterPrismaRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
+
+    const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
+    this.register(GetWaterMeterQry.ID, getWaterMeterQry)
 
     const userPrismaRepository = new UserPrismaRepository(client)
     this.register(USER_REPOSITORY, userPrismaRepository)

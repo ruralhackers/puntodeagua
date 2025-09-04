@@ -1,5 +1,5 @@
 import { CoreContainer, HttpClient } from 'core'
-import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
@@ -24,8 +24,8 @@ export class WebappContainer extends CoreContainer {
     const issueApiRestRepository = new IssueApiRestRepository(httpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
-    const createIssueCmd = new CreateIssueCmd(issueApiRestRepository)
-    this.register(CreateIssueCmd.ID, createIssueCmd)
+    const saveIssueCmd = new SaveIssueCmd(issueApiRestRepository)
+    this.register(SaveIssueCmd.ID, saveIssueCmd)
 
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)

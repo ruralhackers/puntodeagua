@@ -1,14 +1,16 @@
 import cors from '@elysiajs/cors'
 import jwt from '@elysiajs/jwt'
 import swagger from '@elysiajs/swagger'
-import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
+// import { UseCaseService } from 'core'
+import type { UserRepository } from 'features'
 import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
 import { loginSchema } from './features/auth/application/auth.schema'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
+import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
 import { userApiRest } from './features/user/delivery/user.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterMeterReadingApiRest } from './features/water-meter-reading/delivery/water-meter-reading.api-rest'
@@ -35,6 +37,7 @@ export const app = new Elysia({ prefix: '/api' })
   )
   .use(waterPointApiRest)
   .use(waterZonesApiRest)
+  .use(maintenanceApiRest)
   .use(analysisApiRest)
   .use(waterMeterApiRest)
   .use(issueApiRest)
@@ -44,7 +47,6 @@ export const app = new Elysia({ prefix: '/api' })
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)
-      const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
       const authenticateCmd = apiContainer.get<AuthenticateUserCmd>(AuthenticateUserCmd.ID)
 
       // Create a JWT sign function and inject it
@@ -58,7 +60,10 @@ export const app = new Elysia({ prefix: '/api' })
       }
 
       // Create new instance with jwt function
-      const cmdWithJwt = new AuthenticateUserCmd((authenticateCmd as any).userRepository, jwtSign)
+      const cmdWithJwt = new AuthenticateUserCmd(
+        (authenticateCmd as unknown as { userRepository: UserRepository }).userRepository,
+        jwtSign
+      )
 
       const result = await cmdWithJwt.handle(loginDto)
       return result

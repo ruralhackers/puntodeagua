@@ -6,22 +6,23 @@ import { useEffect, useState } from 'react'
 
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
-export default function WaterMeterDetailPage() {
+export default function WaterMeterDetailPage({ waterMeter }) {
+  console.log('water meter que viene de page', waterMeter)
   const params = useParams()
   const { id } = params
 
-  const [waterMeter, setWaterMeter] = useState(null)
+  // const [waterMeter, setWaterMeter] = useState(null)
 
-  useEffect(() => {
-    if (!id) return
-    const fetchMeter = async () => {
-      const res = await fetch(`http://localhost:4000/api/water-meter/${id}`)
-      const data = await res.json()
-      console.log(data)
-      setWaterMeter(data)
-    }
-    fetchMeter()
-  }, [id])
+  // useEffect(() => {
+  //   if (!id) return
+  //   const fetchMeter = async () => {
+  //     const res = await fetch(`http://localhost:4000/api/water-meter/${id}`)
+  //     const data = await res.json()
+  //     console.log(data)
+  //     setWaterMeter(data)
+  //   }
+  //   fetchMeter()
+  // }, [id])
 
   return (
     <div>

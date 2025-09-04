@@ -4,6 +4,7 @@ import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
+import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
@@ -45,6 +46,9 @@ export class WebappContainer extends CoreContainer {
 
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
+
+    const getWaterMeterQry = new GetWaterMeterQry(waterMeterApiRestRepository)
+    this.register(GetWaterMeterQry.ID, getWaterMeterQry)
 
     const authApiRestRepository = new AuthApiRestRepository(httpClient)
     this.register(AUTH_REPOSITORY, authApiRestRepository)

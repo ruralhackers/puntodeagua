@@ -8,18 +8,22 @@ export class WaterMeter {
 		public readonly name: string,
 		public readonly holderId: Id,
 		public readonly waterPointId: Id,
+		public readonly waterZoneId: Id,
 		public measurementUnit: MeasurementUnit,
 		public images: string[] | [],
+		public readonly waterZoneName?: string,
 	) {}
 
-  static create({ id, name, holderId, waterPointId, measurementUnit, images }: WaterMeterSchema) {
+  static create({ id, name, holderId, waterPointId, waterZoneId, measurementUnit, images, waterZoneName }: WaterMeterSchema) {
     return new WaterMeter(
       Id.create(id),
       name,
       Id.create(holderId),
       Id.create(waterPointId),
+      Id.create(waterZoneId),
       MeasurementUnit.create(measurementUnit),
       images || [],
+      waterZoneName,
     );
   }
 
@@ -29,6 +33,7 @@ export class WaterMeter {
       name: this.name,
       holderId: this.holderId.toString(),
       waterPointId: this.waterPointId.toString(),
+      waterZoneName: this.waterZoneName,
       measurementUnit: this.measurementUnit.toString(),
       images: this.images,
     };

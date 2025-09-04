@@ -145,14 +145,15 @@ async function seedHolders() {
 async function seedWaterMeters(waterPointIds: string[]) {
   await prisma.waterMeter.deleteMany({})
 
-  // Get the created holders
   const holders = await prisma.holder.findMany()
+  const waterZones = await prisma.waterZone.findMany()
 
   const waterMeters = [
     {
       name: 'Meter WP1-001',
       holderId: holders[0].id,
       waterPointId: waterPointIds[0],
+      waterZoneId: waterZones[0].id, // Os Casas
       measurementUnit: 'L',
       images: ['https://example.com/meter1.jpg', 'https://example.com/meter1_detail.jpg']
     },
@@ -160,6 +161,7 @@ async function seedWaterMeters(waterPointIds: string[]) {
       name: 'Meter WP1-002',
       holderId: holders[1].id,
       waterPointId: waterPointIds[0],
+      waterZoneId: waterZones[1].id, // Centro
       measurementUnit: 'M3',
       images: ['https://example.com/meter2.jpg']
     },
@@ -167,6 +169,7 @@ async function seedWaterMeters(waterPointIds: string[]) {
       name: 'Meter WP2-001',
       holderId: holders[2].id,
       waterPointId: waterPointIds[1],
+      waterZoneId: waterZones[1].id, // Centro
       measurementUnit: 'L',
       images: []
     },
@@ -174,6 +177,7 @@ async function seedWaterMeters(waterPointIds: string[]) {
       name: 'Meter WP2-002',
       holderId: holders[3].id,
       waterPointId: waterPointIds[1],
+      waterZoneId: waterZones[2].id, // Ramis
       measurementUnit: 'M3',
       images: [
         'https://example.com/meter4.jpg',

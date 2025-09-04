@@ -91,6 +91,7 @@ model WaterZone {
 
   analysis Analysis[]
   issue Issue[]
+  waterMeters WaterMeter[]
 
   @@index([communityId])
 }
@@ -133,6 +134,9 @@ model WaterMeter {
   waterPoint   WaterPoint @relation(fields: [waterPointId], references: [id], onDelete: Cascade)
   waterPointId String     @map("water_point_id")
 
+  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id])
+  waterZoneId String    @map("water_zone_id")
+
   measurementUnit String
 
   images String[] @db.Text
@@ -144,6 +148,7 @@ model WaterMeter {
 
   @@index([holderId])
   @@index([waterPointId])
+  @@index([waterZoneId])
 }
 
 model WaterMeterReading {

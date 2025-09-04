@@ -33,7 +33,7 @@ export function DesktopNavbar() {
       icon: FileText,
       active: pathname.includes('/dashboard/registros')
     },
-    // Only show "Más" if user is community_admin
+    // Only show "Más" if user is community_admin or super_admin
     ...(canSeeMore()
       ? [
           {

@@ -1,11 +1,11 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import type { WaterZoneDto } from 'features'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -26,15 +26,11 @@ import {
 const registerFormSchema = z
   .object({
     registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
-    analyticsSubtype: z.string().optional(),
-    waterZone: z.string().optional()
+    analyticsSubtype: z.string().optional()
   })
   .refine(
     (data) => {
       if (data.registerType === 'analytics' && !data.analyticsSubtype) {
-        return false
-      }
-      if (data.registerType === 'counter' && !data.waterZone) {
         return false
       }
       return true
@@ -42,18 +38,6 @@ const registerFormSchema = z
     {
       message: 'Por favor selecciona un subtipo de analítica',
       path: ['analyticsSubtype']
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.registerType === 'counter' && !data.waterZone) {
-        return false
-      }
-      return true
-    },
-    {
-      message: 'Por favor selecciona una zona de agua',
-      path: ['waterZone']
     }
   )
 
@@ -70,8 +54,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
       registerType: '',
-      analyticsSubtype: '',
-      waterZone: ''
+      analyticsSubtype: ''
     }
   })
 
@@ -96,8 +79,8 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
       router.push(`/dashboard/nuevo-registro/analitica/${values.analyticsSubtype}`)
     } else if (values.registerType === 'maintenance') {
       router.push('/dashboard/nuevo-registro/mantenimiento')
-    } else if (values.registerType === 'counter' && values.waterZone) {
-      router.push(`/dashboard/nuevo-registro/contador?zone=${values.waterZone}`)
+    } else if (values.registerType === 'counter') {
+      router.push('/dashboard/nuevo-registro/contador')
     } else if (values.registerType === 'issue') {
       router.push('/dashboard/nuevo-registro/incidencia')
     }
@@ -159,33 +142,6 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
                       {analyticsSubtypes.map((subtype) => (
                         <SelectItem key={subtype.value} value={subtype.value}>
                           {subtype.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-
-          {registerType === 'counter' && (
-            <FormField
-              control={form.control}
-              name="waterZone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Zona de Agua</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecciona la zona de agua" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {waterZones.map((zone) => (
-                        <SelectItem key={zone.id} value={zone.id}>
-                          {zone.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

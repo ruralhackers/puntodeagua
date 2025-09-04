@@ -5,6 +5,7 @@ interface JwtPayload {
   userId: string
   email: string
   roles: string[]
+  communityId: string | null
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'

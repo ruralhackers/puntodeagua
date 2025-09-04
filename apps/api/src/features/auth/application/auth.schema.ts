@@ -13,7 +13,8 @@ export const authResponseSchema = z.object({
     id: z.string(),
     email: z.string(),
     name: z.string().nullable(),
-    roles: z.array(z.string())
+    roles: z.array(z.string()),
+    communityId: z.string().nullable()
   })
 })
 

@@ -45,7 +45,12 @@ export const app = new Elysia({ prefix: '/api' })
       const authenticateCmd = apiContainer.get<AuthenticateUserCmd>(AuthenticateUserCmd.ID)
 
       // Create a JWT sign function and inject it
-      const jwtSign = async (payload: { userId: string; email: string; roles: string[] }) => {
+      const jwtSign = async (payload: {
+        userId: string
+        email: string
+        roles: string[]
+        communityId: string | null
+      }) => {
         return await jwt.sign(payload)
       }
 

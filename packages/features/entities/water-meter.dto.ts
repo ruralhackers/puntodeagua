@@ -7,4 +7,6 @@ export interface WaterMeterDto {
   waterZoneName?: string
   measurementUnit: string
   images: string[]
+  lastReadingValue?: string
+  lastReadingDate?: Date
 }

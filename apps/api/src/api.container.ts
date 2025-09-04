@@ -3,9 +3,12 @@ import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { client } from 'database'
+import { FilePrismaRepository } from 'features'
 import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
+  FILE_UPLOAD_SERVICE,
+  STORAGE_SERVICE,
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
@@ -27,6 +30,8 @@ import { WaterMeterPrismaRepository } from './features/water-point/infrastructur
 import { WaterPointPrismaRepository } from './features/water-point/infrastructure/water-point.prisma-repository'
 import { GetWaterZonesQry } from './features/water-zone/application/get-water-zones.qry'
 import { WaterZonePrismaRepository } from './features/water-zone/infrastructure/water-zone.prisma-repository'
+import { FileUploadService } from './infrastructure/file-upload/file-upload.service'
+import { CloudflareR2Adapter } from './infrastructure/storage/cloudflare-r2-adapter'
 
 export class ApiContainer extends CoreContainer {
   protected override registerInstances(): void {
@@ -72,6 +77,20 @@ export class ApiContainer extends CoreContainer {
 
     const getWaterZonesQry = new GetWaterZonesQry(waterZonePrismaRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
+    // Storage and File Upload Services
+    const r2Adapter = new CloudflareR2Adapter({
+      accountId: process.env.CLOUDFLARE_R2_ACCOUNT_ID!,
+      accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
+      bucketName: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
+      publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL!
+    })
+    this.register(STORAGE_SERVICE, r2Adapter)
+
+    const fileRepository = new FilePrismaRepository(client)
+    const fileUploadService = new FileUploadService(r2Adapter, fileRepository)
+    this.register(FILE_UPLOAD_SERVICE, fileUploadService)
 
     // Note: We register the command without JWT function as it will be injected at runtime
     const authenticateUserCmd = new AuthenticateUserCmd(userPrismaRepository, async () => {

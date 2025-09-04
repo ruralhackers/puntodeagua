@@ -284,7 +284,7 @@ async function seedWaterMeterReadings() {
   for (const meter of waterMeters) {
     // Generate 6 months of readings (one per month)
     for (let i = 5; i >= 0; i--) {
-      const readingDate = new Date(now.getFullYear(), now.getMonth() - i, 15) // 15th of each month
+      const readingDate = new Date(now.getFullYear(), now.getMonth() - i, 1) // 15th of each month
 
       // Generate realistic reading values based on measurement unit
       let reading: string

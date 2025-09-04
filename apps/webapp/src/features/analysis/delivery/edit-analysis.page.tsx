@@ -30,13 +30,13 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
   waterZone
 }) => {
   const router = useRouter()
-
   const editAnalysisCommand = useUseCase(EditAnalysisCmd)
 
   const form = useForm<z.infer<typeof analysisSchema>>({
     resolver: zodResolver(analysisSchema),
     defaultValues: {
-      ...analysis
+      ...analysis,
+      analyzedAt: analysis.analyzedAt ? new Date(analysis.analyzedAt) : undefined
     }
   })
 
@@ -111,9 +111,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                           required
                           placeholder="Fecha de análisis"
                           value={
-                            field.value
-                              ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
-                              : ''
+                            field.value ? new Date(field.value).toISOString().slice(0, 10) : ''
                           }
                           onChange={(e) =>
                             field.onChange(

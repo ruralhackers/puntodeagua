@@ -26,7 +26,6 @@ import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-wate
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
-
   const createAnalysisSchema = analysisSchema.omit({ id: true })
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({

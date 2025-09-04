@@ -1,14 +1,13 @@
 import type { Command } from 'core'
-import { Analysis } from 'features'
-import type { AnalysisRepository } from 'features/registers/repositories/analysis.repository'
 import type { AnalysisSchema } from 'features/registers/schemas/analysis.schema'
+import type { AnalysisCreateRepository } from '../infrastructure/analysis.api-rest-repository'
 
 export class CreateAnalysisCmd implements Command<Omit<AnalysisSchema, 'id'>> {
   static readonly ID = 'CreateAnalysisCmd'
 
-  constructor(private readonly analysisRepository: AnalysisRepository) {}
+  constructor(private readonly analysisRepository: AnalysisCreateRepository) {}
 
   async handle(createAnalysisSchema: Omit<AnalysisSchema, 'id'>): Promise<void> {
-    return this.analysisRepository.save(Analysis.create(createAnalysisSchema))
+    return this.analysisRepository.create(createAnalysisSchema)
   }
 }

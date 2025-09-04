@@ -19,11 +19,6 @@ export const FormHeader: React.FC<FormHeaderProps> = ({
 }) => {
   const router = useRouter()
 
-  const handleBack = () => {
-    if (onBack) return onBack()
-    router.back()
-  }
-
   return (
     <div className={`flex items-center gap-4 mb-6 ${className}`}>
       <Button

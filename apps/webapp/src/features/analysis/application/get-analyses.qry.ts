@@ -1,15 +1,13 @@
-import type {Query} from "core";
-import type {Analysis, AnalysisRepository} from "features";
+import type { Query } from 'core'
+import type { Analysis, AnalysisRepository } from 'features'
 
 export class GetAnalysesQry implements Query<Analysis[]> {
-  static readonly ID = "GetAnalysesQry";
+  static readonly ID = 'GetAnalysesQry'
 
-  constructor(
-    private readonly analysisRepository: AnalysisRepository,
-  ) {}
+  constructor(private readonly analysisRepository: AnalysisRepository) {}
 
   async handle(): Promise<Analysis[]> {
-    const analyses = await this.analysisRepository.findAll();
+    const analyses = await this.analysisRepository.findAll()
     return analyses
   }
 }

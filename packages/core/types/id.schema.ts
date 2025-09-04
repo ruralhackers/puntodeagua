@@ -1,5 +1,5 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-export type IdSchema = z.infer<typeof idSchema>;
+export type IdSchema = z.infer<typeof idSchema>
 
-export const idSchema = z.cuid();
+export const idSchema = z.cuid2()

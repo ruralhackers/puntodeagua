@@ -145,18 +145,32 @@ model WaterMeter {
 }
 
 model WaterMeterReading {
-  id String @id @default(cuid())
+  id            String   @id @default(cuid())
+  waterMeterId  String
+  reading       String
+  normalizedReading String
+  readingDate   DateTime
+  notes         String?
+  waterMeter    WaterMeter @relation(fields: [waterMeterId], references: [id])
+  attachments   FileAttachment[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
-  waterMeterId String     @map("water_meter_id")
+  @@map("WaterMeterReading")
+}
 
-  value     String
-  timestamp DateTime @default(now())
+model FileAttachment {
+  id                String   @id @default(cuid())
+  originalName      String
+  fileName          String   @unique
+  mimeType          String
+  size              Int
+  path              String
+  waterMeterReadingId String
+  waterMeterReading WaterMeterReading @relation(fields: [waterMeterReadingId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([waterMeterId])
+  @@map("file_attachments")
 }
 
 model Issue {

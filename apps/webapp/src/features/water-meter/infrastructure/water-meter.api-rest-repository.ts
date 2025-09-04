@@ -17,8 +17,9 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
     }
 
     const url = `water-meters${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
-    const waterMeterDtos = await this.httpClient.get<WaterMeterDto[]>(url)
-    return waterMeterDtos.data!.map(WaterMeter.create)
+    const response = await this.httpClient.get<WaterMeterDto[]>(url)
+    const data = response.data ?? []
+    return data.map(WaterMeter.create)
   }
 
   async findAll(): Promise<WaterMeter[]> {

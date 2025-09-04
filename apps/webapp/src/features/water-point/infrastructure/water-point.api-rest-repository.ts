@@ -7,8 +7,9 @@ export class WaterPointApiRestRepository implements WaterPointRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
   async findAll(): Promise<WaterPoint[]> {
-    const waterPointDtos = await this.httpClient.get<WaterPointDto[]>('water-points')
-    return waterPointDtos.data!.map(WaterPoint.create)
+    const response = await this.httpClient.get<WaterPointDto[]>('water-points')
+    const data = response.data ?? []
+    return data.map(WaterPoint.create)
   }
 
   async findById(id: Id): Promise<WaterPoint | undefined> {

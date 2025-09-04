@@ -26,6 +26,9 @@ import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
+import { CreateUserCmd } from './features/user/application/create-user.cmd'
+import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
+import { GetUsersQry } from './features/user/application/get-users.qry'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
@@ -125,6 +128,16 @@ export class ApiContainer extends CoreContainer {
 
     const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
+
+    // User commands
+    const getUsersQry = new GetUsersQry(userPrismaRepository)
+    this.register(GetUsersQry.ID, getUsersQry)
+
+    const createUserCmd = new CreateUserCmd(userPrismaRepository)
+    this.register(CreateUserCmd.ID, createUserCmd)
+
+    const deleteUserCmd = new DeleteUserCmd(userPrismaRepository)
+    this.register(DeleteUserCmd.ID, deleteUserCmd)
 
     // Note: We register the command without JWT function as it will be injected at runtime
     const authenticateUserCmd = new AuthenticateUserCmd(userPrismaRepository, async () => {

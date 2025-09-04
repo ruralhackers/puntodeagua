@@ -1,6 +1,6 @@
+import { DesktopNavbar } from '@/components/navigation/desktop-navbar'
 import { TabBar } from '@/components/navigation/tab-bar'
 import { TabBarProvider } from '@/components/navigation/tab-bar-context'
-import { DesktopNavbar } from '@/src/components/navigation/desktop-navbar'
 import ProtectedRoute from '@/src/features/auth/components/protected-route'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

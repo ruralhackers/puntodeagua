@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useAuth } from '../../features/auth/context/auth-context'
+import { useAuth } from '../../src/features/auth/context/auth-context'
 
 export function DesktopNavbar() {
   const { logout, user } = useAuth()

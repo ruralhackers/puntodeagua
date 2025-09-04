@@ -2,7 +2,7 @@ import { Id, type Query } from 'core'
 import type { Analysis, AnalysisRepository } from 'features'
 
 export class GetAnalysisQry implements Query<Analysis | undefined, { id: string }> {
-  static readonly ID = 'GetAnalysesQry'
+  static readonly ID = 'GetAnalysisQry'
 
   constructor(private readonly analysisRepository: AnalysisRepository) {}
 

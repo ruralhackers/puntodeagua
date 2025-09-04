@@ -75,14 +75,14 @@ export const CreateIssuePage: NextPage = () => {
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      waterZoneId: 'cmf580rl90006rx07yycjwao3'
+      description: '',
+      waterZoneId: 'cmf580rl90006rx07yycjwao3',
+      reporterName: ''
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
       // fecha: '',
       // hora: '',
-      // reportadoPor: '',
-      // descripcion: '',
       // accionesRealizadas: '',
       // observaciones: ''
     }
@@ -90,7 +90,12 @@ export const CreateIssuePage: NextPage = () => {
 
   async function onSubmit(values: z.infer<Omit<typeof issueSchema, 'id'>>) {
     await saveIssueCommand.execute(
-      Issue.create({ title: values.title, waterZoneId: values.waterZoneId })
+      Issue.create({
+        title: values.title,
+        description: values.description,
+        reporterName: values.reporterName,
+        waterZoneId: values.waterZoneId
+      })
     )
     router.push('/')
   }
@@ -141,7 +146,7 @@ export const CreateIssuePage: NextPage = () => {
                       <FormLabel>Zona *</FormLabel>
                       <Select>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la zona" />
+                          <SelectValue placeholder="Selecciona la zona"/>
                         </SelectTrigger>
                         <SelectContent>
                           {waterZone.map((wz) => (
@@ -170,8 +175,8 @@ export const CreateIssuePage: NextPage = () => {
                           required
                         />
                       </FormControl>
-                      <FormDescription />
-                      <FormMessage />
+                      <FormDescription/>
+                      <FormMessage/>
                     </FormItem>
                   )}
                 ></FormField>
@@ -181,7 +186,7 @@ export const CreateIssuePage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="title"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem>
                       <FormLabel>Incidencia *</FormLabel>
                       <FormControl>
@@ -192,8 +197,8 @@ export const CreateIssuePage: NextPage = () => {
                           required
                         ></Input>
                       </FormControl>
-                      <FormDescription />
-                      <FormMessage />
+                      <FormDescription/>
+                      <FormMessage/>
                     </FormItem>
                   )}
                 ></FormField>
@@ -214,11 +219,19 @@ export const CreateIssuePage: NextPage = () => {
                           cols={40}
                         />
                       </FormControl>
-                      <FormDescription />
-                      <FormMessage />
+                      <FormDescription/>
+                      <FormMessage/>
                     </FormItem>
                   )}
                 ></FormField>
+              </div>
+
+              <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">📅 Estado y
+                  fechas</h3>
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  
+                </div>
               </div>
 
               {/*    <div className="grid grid-cols-2 gap-4">*/}

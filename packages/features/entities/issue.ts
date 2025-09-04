@@ -6,24 +6,40 @@ export class Issue {
   private constructor(
     public readonly id: Id,
     public readonly title: string,
+    public readonly description: string,
+    public readonly reporterName: string,
     public readonly waterZoneId: Id
   ) {}
 
   static create(issueSchema: Omit<IssueSchema, 'id'>) {
     const id1 = Id.generateUniqueId()
     console.log(id1)
-    return new Issue(id1, issueSchema.title, Id.create(issueSchema.waterZoneId))
+    return new Issue(
+      id1,
+      issueSchema.title,
+      issueSchema.description,
+      issueSchema.reporterName,
+      Id.create(issueSchema.waterZoneId)
+    )
   }
 
   static fromDto(dto: IssueSchema): Issue {
-    return new Issue(Id.create(dto.id), dto.title, Id.create(dto.waterZoneId))
+    return new Issue(
+      Id.create(dto.id),
+      dto.title,
+      dto.description,
+      dto.reporterName,
+      Id.create(dto.waterZoneId)
+    )
   }
 
   toDto(): IssueDto {
     return {
       id: this.id.toString(),
       waterZoneId: this.waterZoneId.toString(),
-      title: this.title
+      title: this.title,
+      reporterName: this.reporterName,
+      description: this.description
     }
   }
 }

@@ -55,8 +55,8 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
             const dto = a.toDto()
             const alert = hasAlert(a)
             return (
-              <Card key={dto.id} className="bg-white">
-                <CardHeader className="border-b">
+              <Card key={dto.id} className="bg-white gap-3 py-4">
+                <CardHeader>
                   <CardTitle className="text-base">
                     {toTitle(dto.analysisType)}{' '}
                     {alert && (
@@ -73,7 +73,7 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
                     <span className="text-gray-400">›</span>
                   </CardAction>
                 </CardHeader>
-                <CardContent className="py-3">
+                <CardContent className="pt-0 pb-2">
                   <div className="text-sm text-gray-600">
                     {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
                   </div>

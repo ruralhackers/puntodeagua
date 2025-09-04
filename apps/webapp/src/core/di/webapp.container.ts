@@ -6,6 +6,7 @@ import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
+import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
@@ -63,6 +64,9 @@ export class WebappContainer extends CoreContainer {
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
+
+    const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
+    this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

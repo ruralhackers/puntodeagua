@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Id } from 'core'
-import { Analysis } from 'features/registers/entities/analysis'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
@@ -23,15 +22,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
-// import { useUseCase } from '@/src/core/use-cases/use-use-case'
 
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
 
   const createAnalysisSchema = analysisSchema.omit({ id: true })
-
-  // const analysisParams = ['ph', 'turbidity', 'chlorine']
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -44,15 +40,6 @@ export const CreateAnalysisPage: NextPage = () => {
       ph: '',
       turbidity: '',
       chlorine: ''
-      // tipo: '',
-      // prioridad: '',
-      // puntoAgua: '',
-      // fecha: '',
-      // hora: '',
-      // reportadoPor: '',
-      // descripcion: '',
-      // accionesRealizadas: '',
-      // observaciones: ''
     }
   })
 
@@ -65,10 +52,7 @@ export const CreateAnalysisPage: NextPage = () => {
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
     console.log('Datos del análisis:', values)
-    const analysis = Analysis.create(values)
-    await createAnalysisCommand.execute(analysis.toDto())
-    // await createAnalysisCommand.execute(values)
-    // Aquí iría la lógica para guardar la incidencia cuando tengamos waterZoneId
+    await createAnalysisCommand.execute(values)
     router.push('/')
   }
 
@@ -118,11 +102,11 @@ export const CreateAnalysisPage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="analyst"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Analista</FormLabel>
                       <FormControl>
-                        <input type="text" placeholder="Nombre del analista" />
+                        <Input type="text" required placeholder="Nombre del analista" {...field} />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -140,7 +124,7 @@ export const CreateAnalysisPage: NextPage = () => {
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
-                        <input type="date" placeholder="Fecha de análisis" />
+                        <input type="date" required placeholder="Fecha de análisis" />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -155,7 +139,7 @@ export const CreateAnalysisPage: NextPage = () => {
                     htmlFor={analysisTypeId}
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Tipo de Incidencia
+                    Tipo de Análisis
                   </label>
                   <select
                     id={analysisTypeId}
@@ -175,20 +159,35 @@ export const CreateAnalysisPage: NextPage = () => {
                 </div>
               </div>
 
-              {/* add form field for each analysis params with a label */}
               {analysisParams.map((param) => (
                 <div key={param}>
                   <FormField
                     control={form.control}
                     name={param as keyof z.infer<typeof createAnalysisSchema>}
-                    render={() => (
+                    render={({ field }) => (
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>
                           {param === 'description' ? (
-                            <textarea placeholder="Descripción" rows={4} />
+                            <textarea
+                              placeholder="Descripción"
+                              rows={4}
+                              name={field.name}
+                              onBlur={field.onBlur}
+                              onChange={field.onChange}
+                              ref={field.ref}
+                              value={(field.value as string) ?? ''}
+                            />
                           ) : (
-                            <Input type="text" placeholder={param} />
+                            <Input
+                              type="text"
+                              placeholder={param}
+                              name={field.name}
+                              onBlur={field.onBlur}
+                              onChange={field.onChange}
+                              ref={field.ref}
+                              value={(field.value as string) ?? ''}
+                            />
                           )}
                           {/* <input type="text" placeholder={param} /> */}
                         </FormControl>
@@ -199,163 +198,6 @@ export const CreateAnalysisPage: NextPage = () => {
                   ></FormField>
                 </div>
               ))}
-
-              {/* description use textarea */}
-              {/* <div>
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Descripción</FormLabel>
-                      <FormControl>
-                        <textarea placeholder="Describe brevemente el análisis" rows={4} />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-              </div> */}
-
-              {/*      <div>*/}
-              {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*          Prioridad **/}
-              {/*        </label>*/}
-              {/*        <select*/}
-              {/*          name="prioridad"*/}
-              {/*          value={formData.prioridad}*/}
-              {/*          onChange={handleInputChange}*/}
-              {/*          required*/}
-              {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*        >*/}
-              {/*          <option value="">Selecciona prioridad</option>*/}
-              {/*          {prioridades.map((prioridad) => (*/}
-              {/*            <option key={prioridad.value} value={prioridad.value}>*/}
-              {/*              {prioridad.label}*/}
-              {/*            </option>*/}
-              {/*          ))}*/}
-              {/*        </select>*/}
-              {/*      </div>*/}
-              {/*    </div>*/}
-
-              {/*    <div>*/}
-              {/*      <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*        Punto de Agua Afectado **/}
-              {/*      </label>*/}
-              {/*      <select*/}
-              {/*        name="puntoAgua"*/}
-              {/*        value={formData.puntoAgua}*/}
-              {/*        onChange={handleInputChange}*/}
-              {/*        required*/}
-              {/*        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*      >*/}
-              {/*        <option value="">Selecciona un punto</option>*/}
-              {/*        {puntosAgua.map((punto) => (*/}
-              {/*          <option key={punto} value={punto}>*/}
-              {/*            {punto}*/}
-              {/*          </option>*/}
-              {/*        ))}*/}
-              {/*      </select>*/}
-              {/*    </div>*/}
-
-              {/*    <div className="grid grid-cols-2 gap-4">*/}
-              {/*      <div>*/}
-              {/*        <label className="block text-sm font-medium text-gray-700 mb-2">Fecha *</label>*/}
-              {/*        <input*/}
-              {/*          type="date"*/}
-              {/*          name="fecha"*/}
-              {/*          value={formData.fecha}*/}
-              {/*          onChange={handleInputChange}*/}
-              {/*          required*/}
-              {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*        />*/}
-              {/*      </div>*/}
-              {/*      <div>*/}
-              {/*        <label className="block text-sm font-medium text-gray-700 mb-2">Hora *</label>*/}
-              {/*        <input*/}
-              {/*          type="time"*/}
-              {/*          name="hora"*/}
-              {/*          value={formData.hora}*/}
-              {/*          onChange={handleInputChange}*/}
-              {/*          required*/}
-              {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*        />*/}
-              {/*      </div>*/}
-              {/*    </div>*/}
-
-              {/*    <div>*/}
-              {/*      <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*        Reportado por **/}
-              {/*      </label>*/}
-              {/*      <input*/}
-              {/*        type="text"*/}
-              {/*        name="reportadoPor"*/}
-              {/*        value={formData.reportadoPor}*/}
-              {/*        onChange={handleInputChange}*/}
-              {/*        required*/}
-              {/*        placeholder="Nombre de quien reporta"*/}
-              {/*        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*      />*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-
-              {/*/!* Descripción *!/*/}
-              {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-              {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Descripción del Problema</h3>*/}
-
-              {/*  <div>*/}
-              {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*      Descripción detallada **/}
-              {/*    </label>*/}
-              {/*    <textarea*/}
-              {/*      name="descripcion"*/}
-              {/*      value={formData.descripcion}*/}
-              {/*      onChange={handleInputChange}*/}
-              {/*      required*/}
-              {/*      rows={4}*/}
-              {/*      placeholder="Describe detalladamente el problema, síntomas observados, área afectada, etc."*/}
-              {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*    />*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-
-              {/*/!* Acciones realizadas *!/*/}
-              {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-              {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Inmediatas</h3>*/}
-
-              {/*  <div>*/}
-              {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*      Acciones realizadas (si las hay)*/}
-              {/*    </label>*/}
-              {/*    <textarea*/}
-              {/*      name="accionesRealizadas"*/}
-              {/*      value={formData.accionesRealizadas}*/}
-              {/*      onChange={handleInputChange}*/}
-              {/*      rows={3}*/}
-              {/*      placeholder="Describe las acciones inmediatas que se han tomado para mitigar el problema"*/}
-              {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*    />*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-
-              {/*/!* Observaciones *!/*/}
-              {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-              {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Observaciones</h3>*/}
-
-              {/*  <div>*/}
-              {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*      Observaciones adicionales*/}
-              {/*    </label>*/}
-              {/*    <textarea*/}
-              {/*      name="observaciones"*/}
-              {/*      value={formData.observaciones}*/}
-              {/*      onChange={handleInputChange}*/}
-              {/*      rows={3}*/}
-              {/*      placeholder="Cualquier información adicional relevante"*/}
-              {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*    />*/}
             </div>
           </div>
 
@@ -365,7 +207,7 @@ export const CreateAnalysisPage: NextPage = () => {
               Cancelar
             </Button>
             <Button className="flex-1" variant="destructive" type="submit">
-              Reportar Incidencia
+              Añadir Análisis
             </Button>
           </div>
         </form>

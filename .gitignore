@@ -29,7 +29,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # IDEs
 .idea
-.vscode
 
 package-lock.json
 

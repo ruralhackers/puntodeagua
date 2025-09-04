@@ -14,8 +14,10 @@ export class WaterMeterPrismaRepository
   async save(input: WaterMeter): Promise<void> {
     const data = {
         id: input.id.toString(),
+        name: input.name,
         holderId: input.holderId.toString(),
         waterPointId: input.waterPointId.toString(),
+        waterZoneId: input.waterZoneId.toString(),
         measurementUnit: input.measurementUnit.toString(),
         images: input.images,
     };
@@ -26,6 +28,8 @@ export class WaterMeterPrismaRepository
             ...data
         },
         update: {
+          name: data.name,
+          waterZoneId: data.waterZoneId,
           measurementUnit: data.measurementUnit,
           images: data.images,
           },
@@ -33,13 +37,28 @@ export class WaterMeterPrismaRepository
   }
 
   async findById(id: Id): Promise<WaterMeter | undefined> {
-      const wm = await this.getModel().findUnique({ where: { id:id.toString() } });
-      return wm ? WaterMeter.create(wm) : undefined;
+      const wm = await this.getModel().findUnique({ 
+        where: { id:id.toString() },
+        include: {
+          waterZone: true
+        }
+      });
+      return wm ? WaterMeter.create({
+        ...wm,
+        waterZoneName: wm.waterZone.name
+      }) : undefined;
   }
 
   async findAll(): Promise<WaterMeter[]> {
-    const waterMeters = await this.getModel().findMany()
-    return waterMeters.map(wm => WaterMeter.create(wm))
+    const waterMeters = await this.getModel().findMany({
+      include: {
+        waterZone: true
+      }
+    })
+    return waterMeters.map(wm => WaterMeter.create({
+      ...wm,
+      waterZoneName: wm.waterZone.name
+    }))
   }
 
   async delete(id: Id): Promise<void> {

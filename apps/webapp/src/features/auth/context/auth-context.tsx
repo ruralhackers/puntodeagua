@@ -7,7 +7,8 @@ interface User {
   id: string
   email: string
   name?: string | null
-  roles: string[]
+  roles: ('SUPER_ADMIN' | 'MANAGER' | 'USER' | 'COMMUNITY_ADMIN')[]
+  communityId?: string | null
 }
 
 interface AuthContextType {

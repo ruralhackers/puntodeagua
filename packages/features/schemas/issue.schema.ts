@@ -1,7 +1,10 @@
+import { idSchema } from 'core'
 import { z } from 'zod'
 
 export type IssueSchema = z.infer<typeof issueSchema>
 
 export const issueSchema = z.object({
-  name: z.string()
+  id: z.string(),
+  title: z.string(),
+  waterZoneId: idSchema
 })

@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { issueSchema } from 'features'
+import { Issue, issueSchema } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -17,7 +17,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -48,12 +48,13 @@ const puntosAgua = [
 
 export const CreateIssuePage: NextPage = () => {
   const router = useRouter()
-  const createIssueCommand = useUseCase(CreateIssueCmd)
+  const saveIssueCommand = useUseCase(SaveIssueCmd)
 
   const form = useForm<z.infer<typeof issueSchema>>({
     resolver: zodResolver(issueSchema),
     defaultValues: {
-      name: ''
+      title: '',
+      waterZoneId: ''
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -67,9 +68,7 @@ export const CreateIssuePage: NextPage = () => {
   })
 
   async function onSubmit(values: z.infer<typeof issueSchema>) {
-    console.log('Datos de la incidencia:', values)
-    await createIssueCommand.execute({})
-    // Aquí iría la lógica para guardar la incidencia
+    await saveIssueCommand.execute(Issue.create({ title: values.title, waterZoneId: '' }))
     router.push('/')
   }
 
@@ -107,7 +106,7 @@ export const CreateIssuePage: NextPage = () => {
               <div>
                 <FormField
                   control={form.control}
-                  name="name"
+                  name="title"
                   render={() => (
                     <FormItem>
                       <FormLabel />

@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 

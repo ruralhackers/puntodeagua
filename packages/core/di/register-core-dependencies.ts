@@ -1,9 +1,9 @@
 import { ConsoleLogger } from "../logger/console-logger";
-import { Container } from "./container";
-import { LogMiddleware } from "../use-cases/middleware/log.middleware.ts";
 import { EmptyMiddleware } from "../use-cases/middleware/empty.middleware.ts";
-import { UseCaseService } from "../use-cases/use-case.service.ts";
+import { LogMiddleware } from "../use-cases/middleware/log.middleware.ts";
 import type { Middleware } from "../use-cases/middleware/middleware.ts";
+import { UseCaseService } from "../use-cases/use-case.service.ts";
+import { Container } from "./container";
 
 export class CoreContainer extends Container {
 	protected registerInstances(): void {

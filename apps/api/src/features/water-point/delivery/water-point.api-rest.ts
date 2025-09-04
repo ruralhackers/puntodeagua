@@ -1,6 +1,6 @@
+import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
 import { apiContainer } from '../../../api.container'
-import { UseCaseService } from 'core'
 import { GetWaterPointsQry } from '../application/get-water-points.qry'
 
 export const waterPointApiRest = new Elysia().get('/water-points', async () => {

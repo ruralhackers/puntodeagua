@@ -1,10 +1,12 @@
 import { CoreContainer } from "core";
-import { GetWaterPointsQry } from "./features/water-point/application/get-water-points.qry";
-import { WaterPointPrismaRepository } from "./features/water-point/infrastructure/water-point.prisma-repository";
+import {client} from "database";
+import {ANALYSIS_REPOSITORY, USER_REPOSITORY, WATER_REPOSITORY } from "./core/di/injection-tokens";
+import { GetAnalysesQry } from "./features/analysis/application/get-analyses.qry";
+import { AnalysisPrismaRepository } from "./features/analysis/infrastructure/analysis.prisma-repository";
 import { AuthenticateUserCmd } from "./features/auth/application/authenticate-user.cmd";
 import { UserPrismaRepository } from "./features/auth/infrastructure/user.prisma-repository";
-import {WATER_REPOSITORY, USER_REPOSITORY} from "./core/di/injection-tokens";
-import {client} from "database";
+import { GetWaterPointsQry } from "./features/water-point/application/get-water-points.qry";
+import { WaterPointPrismaRepository } from "./features/water-point/infrastructure/water-point.prisma-repository";
 
 export class ApiContainer extends CoreContainer {
 	protected override registerInstances(): void {
@@ -21,6 +23,12 @@ export class ApiContainer extends CoreContainer {
 
         const userPrismaRepository = new UserPrismaRepository(client);
         this.register(USER_REPOSITORY, userPrismaRepository);
+
+        // Analysis
+        const analysisRepository = new AnalysisPrismaRepository(client);
+        this.register(ANALYSIS_REPOSITORY, analysisRepository);
+        const getAnalysesQry = new GetAnalysesQry(analysisRepository);
+        this.register(GetAnalysesQry.ID, getAnalysesQry);
 
         // Note: We register the command without JWT function as it will be injected at runtime
         const authenticateUserCmd = new AuthenticateUserCmd(

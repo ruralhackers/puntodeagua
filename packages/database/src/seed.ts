@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { client } from "./client";
+import { client, Prisma } from "./client";
 
 const prisma = client;
 
@@ -8,6 +8,7 @@ async function main() {
 	const communityId = await seedPlanAndCommunity();
 	await seedWaterZones(communityId);
 	await seedWaterPoints(communityId);
+	await seedAnalyses();
 }
 
 main()
@@ -99,7 +100,7 @@ async function seedWaterPoints(communityId: string) {
 
 async function seedWaterZones(communityId: string) {
 	await prisma.waterZone.deleteMany({});
-	await prisma.waterZone.createMany({
+	const waterZones = await prisma.waterZone.createMany({
 		data: [
 			{
 				name: "Os Casas",
@@ -112,6 +113,34 @@ async function seedWaterZones(communityId: string) {
 			{
 				name: "Ramis",
 				communityId,
+			},
+		],
+	});
+
+	return waterZones;
+}
+
+async function seedAnalyses() {
+	const waterZone = await prisma.waterZone.findFirst();
+
+	await prisma.analysis.deleteMany({});
+	await prisma.analysis.createMany({
+		data: [
+			{
+				waterZoneId: waterZone?.id,
+				analysisType: 'chlorine_ph',
+				analyst: "Rosa",
+				analyzedAt: new Date(),
+				ph: '7.2',
+				chlorine: '0.5',
+			},
+			{
+				waterZoneId: waterZone?.id,
+				analysisType: 'chlorine_ph',
+				analyst: "Pepe",
+				analyzedAt: new Date(),
+				ph: '7.1',
+				chlorine: '0.48',
 			},
 		],
 	});

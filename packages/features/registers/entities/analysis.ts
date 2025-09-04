@@ -9,10 +9,10 @@ export class Analysis {
     public readonly analysisType: AnalysisType,
     public analyst: string,
     public analyzedAt: Date,
-    public ph: Decimal | null = null,
-    public turbidity: Decimal | null = null,
-    public chlorine: Decimal | null = null,
-    public description: string | null = null
+    public ph: Decimal | undefined = undefined,
+    public turbidity: Decimal | undefined = undefined,
+    public chlorine: Decimal | undefined = undefined,
+    public description: string | undefined = undefined
   ) {}
 
   static create(analysisSchema: Omit<AnalysisSchema, "id">) {
@@ -22,10 +22,24 @@ export class Analysis {
       AnalysisType.create(analysisSchema.analysisType),
       analysisSchema.analyst,
       analysisSchema.analyzedAt,
-      analysisSchema.ph ? Decimal.fromString(analysisSchema.ph) : null,
-      analysisSchema.turbidity ? Decimal.fromString(analysisSchema.turbidity) : null,
-      analysisSchema.chlorine ? Decimal.fromString(analysisSchema.chlorine) : null,
-      analysisSchema.description ?? null
+      analysisSchema.ph ? Decimal.fromString(analysisSchema.ph) : undefined,
+      analysisSchema.turbidity ? Decimal.fromString(analysisSchema.turbidity) : undefined,
+      analysisSchema.chlorine ? Decimal.fromString(analysisSchema.chlorine) : undefined,
+      analysisSchema.description ?? undefined
+    );
+  }
+
+  static fromDto(dto: AnalysisSchema): Analysis {
+    return new Analysis(
+      Id.create(dto.id),
+      Id.create(dto.waterZoneId),
+      AnalysisType.create(dto.analysisType),
+      dto.analyst,
+      dto.analyzedAt,
+      dto.ph ? Decimal.fromString(dto.ph) : undefined,
+      dto.turbidity ? Decimal.fromString(dto.turbidity) : undefined,
+      dto.chlorine ? Decimal.fromString(dto.chlorine) : undefined,
+      dto.description ?? undefined
     );
   }
 
@@ -33,7 +47,7 @@ export class Analysis {
     return {
       id: this.id.toString(),
       waterZoneId: this.waterZoneId.toString(),
-      analysisType: this.analysisType,
+      analysisType: this.analysisType.toString(),
       analyst: this.analyst,
       analyzedAt: this.analyzedAt,
       ph: this.ph?.toString(),

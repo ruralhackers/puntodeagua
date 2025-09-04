@@ -1,24 +1,25 @@
-const analysisTypes = ['water_quality', 'water_quantity'];
+const analysisTypes = ['chlorine_ph', 'turbidity', 'hardness', 'complete']
 
 export class AnalysisType {
-  static WATER_QUALITY = new AnalysisType("water_quality");
-  static WATER_QUANTITY = new AnalysisType("water_quantity");
+  static CHLORINE_PH = new AnalysisType('chlorine_ph')
+  static TURBIDITY = new AnalysisType('turbidity')
+  static HARDNESS = new AnalysisType('hardness')
+  static COMPLETE = new AnalysisType('complete')
 
-  constructor(public readonly value: string) {
-  }
+  constructor(public readonly value: string) {}
 
   static create(value: string) {
-    if(!AnalysisType.isValidType(value)){
-      throw new Error(`Invalid analysis type: ${value}`);
+    if (!AnalysisType.isValidType(value)) {
+      throw new Error(`Invalid analysis type: ${value}`)
     }
-    return new AnalysisType(value);
+    return new AnalysisType(value)
   }
 
   static isValidType(value: string): boolean {
-    return (analysisTypes).includes(value);
+    return analysisTypes.includes(value)
   }
 
   toString(): string {
-    return this.value;
+    return this.value
   }
 }

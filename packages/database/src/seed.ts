@@ -122,14 +122,16 @@ async function seedPlanAndCommunities() {
   const anceuCommunity = await prisma.community.create({
     data: {
       name: 'Anceu',
-      planId: plan.id
+      planId: plan.id,
+      dailyWaterLimitLitersPerPerson: 180
     }
   })
 
   const ponteCaldelasCommunity = await prisma.community.create({
     data: {
       name: 'Ponte Caldelas',
-      planId: plan.id
+      planId: plan.id,
+      dailyWaterLimitLitersPerPerson: 220
     }
   })
 

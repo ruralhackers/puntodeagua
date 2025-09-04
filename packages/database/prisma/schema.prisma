@@ -90,6 +90,7 @@ model WaterZone {
   communityId String    @map("community_id")
 
   analysis Analysis[]
+  issue Issue[]
 
   @@index([communityId])
 }
@@ -162,13 +163,14 @@ model WaterMeterReading {
 model Issue {
   id String @id @default(cuid())
 
-  area   String
-  status String
+  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
+  waterZoneId String    @map("water_zone_id")
 
   title        String
   description  String
   reporterName String
 
+  status  String
   startAt DateTime
   endAt   DateTime?
 

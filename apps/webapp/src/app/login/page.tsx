@@ -1,10 +1,8 @@
-import type { NextPage } from "next";
-import { LoginPage } from "../../features/auth/delivery/login.page";
+import type { NextPage } from 'next'
+import { LoginPage } from '../../features/auth/delivery/login.page'
 
 const Page: NextPage = async () => {
-  return <LoginPage />;
-};
+  return <LoginPage />
+}
 
-export default Page;
-
-
+export default Page

@@ -1,4 +1,3 @@
-
 export interface FindableAll<In> {
-	findAll(): Promise<In[]>;
+  findAll(): Promise<In[]>
 }

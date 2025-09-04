@@ -1,7 +1,7 @@
-import { idSchema } from "core";
-import z from "zod";
+import { idSchema } from 'core'
+import z from 'zod'
 
-export type AnalysisSchema = z.infer<typeof analysisSchema>;
+export type AnalysisSchema = z.infer<typeof analysisSchema>
 
 export const analysisSchema = z.object({
   id: idSchema,
@@ -13,4 +13,4 @@ export const analysisSchema = z.object({
   turbidity: z.string().min(0).optional(),
   chlorine: z.string().min(0).optional(),
   description: z.string().max(500).optional()
-});
+})

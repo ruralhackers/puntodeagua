@@ -1,8 +1,8 @@
-import WaterMeterDetailPage from '@/src/features/water-meter/delivery/WaterMeterDetail.page';
-import { NextPage } from 'next';
+import WaterMeterDetailPage from '@/src/features/water-meter/delivery/WaterMeterDetail.page'
+import { NextPage } from 'next'
 
 const Page: NextPage = async () => {
-    return <WaterMeterDetailPage />;
-};
+  return <WaterMeterDetailPage />
+}
 
-export default Page;
+export default Page

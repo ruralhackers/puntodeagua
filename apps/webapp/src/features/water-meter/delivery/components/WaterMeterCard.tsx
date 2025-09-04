@@ -4,12 +4,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 
 export default function WaterMeterCard({ meter }: any) {
   console.log('meter desde el card', meter)
+
   return (
     // pasarle al link el id real del contador
     <Link href="/contadores/id">
       <Card>
         <CardHeader>
-          <CardTitle>{meter.name}</CardTitle>
+          <CardTitle>Nombre y apellidos</CardTitle>
           <div className="text-red-600 text-sm">
             Consumo anómalo (aviso que solo aparece si se sobrepasa el consumo)
           </div>

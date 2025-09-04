@@ -1,14 +1,13 @@
-import type {Query} from "core";
-import type {WaterPointRepository} from "features";
-import {WaterPoint} from "features/entities/water-point";
+import type { Query } from 'core'
+import type { WaterPointRepository } from 'features'
+import { WaterPoint } from 'features/entities/water-point'
 
 export class GetWaterPointsQry implements Query<WaterPoint[]> {
-	static readonly ID = "GetWaterPointsQry";
+  static readonly ID = 'GetWaterPointsQry'
 
-    constructor(private readonly waterPointRepository: WaterPointRepository) {
-    }
+  constructor(private readonly waterPointRepository: WaterPointRepository) {}
 
-	async handle(): Promise<WaterPoint[]> {
-		return this.waterPointRepository.findAll()
-	}
+  async handle(): Promise<WaterPoint[]> {
+    return this.waterPointRepository.findAll()
+  }
 }

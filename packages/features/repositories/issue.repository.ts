@@ -1,5 +1,4 @@
-import type {Savable} from "core";
-import type {Issue} from "../entities/issue.ts";
+import type { Savable } from 'core'
+import type { Issue } from '../entities/issue.ts'
 
-export interface IssueRepository extends Savable<Issue> {
-}
+export interface IssueRepository extends Savable<Issue> {}

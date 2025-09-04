@@ -22,18 +22,23 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-const registerFormSchema = z.object({
-  registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
-  analyticsSubtype: z.string().optional()
-}).refine((data) => {
-  if (data.registerType === 'analytics' && !data.analyticsSubtype) {
-    return false
-  }
-  return true
-}, {
-  message: 'Por favor selecciona un subtipo de analítica',
-  path: ['analyticsSubtype']
-})
+const registerFormSchema = z
+  .object({
+    registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
+    analyticsSubtype: z.string().optional()
+  })
+  .refine(
+    (data) => {
+      if (data.registerType === 'analytics' && !data.analyticsSubtype) {
+        return false
+      }
+      return true
+    },
+    {
+      message: 'Por favor selecciona un subtipo de analítica',
+      path: ['analyticsSubtype']
+    }
+  )
 
 type RegisterFormValues = z.infer<typeof registerFormSchema>
 
@@ -142,11 +147,7 @@ export const NewRegisterPage: FC = () => {
             />
           )}
 
-          <Button
-            type="submit"
-            className="w-full"
-            size="lg"
-          >
+          <Button type="submit" className="w-full" size="lg">
             Continuar
           </Button>
         </form>

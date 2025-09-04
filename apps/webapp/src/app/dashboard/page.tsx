@@ -1,18 +1,302 @@
+'use client'
+
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
-import { Header } from '@/src/components/header'
-import TaskList from '@/src/components/TaskList'
 
+// --- Datos mock (iteración 1) ---
+const incidenciasAbiertas = [
+  {
+    id: 1,
+    titulo: 'Fuga en tubería principal',
+    ubicacion: 'Sector Norte',
+    prioridad: 'Alta',
+    fecha: '2024-01-15',
+    tipo: 'incidencia'
+  },
+  {
+    id: 2,
+    titulo: 'Presión baja en zona residencial',
+    ubicacion: 'Sector Sur',
+    prioridad: 'Media',
+    fecha: '2024-01-14',
+    tipo: 'incidencia'
+  }
+]
+
+const recordatoriosVencidos = [
+  {
+    id: 1,
+    titulo: 'Lectura mensual de contadores',
+    tipoRegistro: 'contador',
+    fechaVencimiento: '2024-01-18',
+    tipo: 'recordatorio',
+    periodicidad: 'mensual'
+  },
+  {
+    id: 2,
+    titulo: 'Análisis de calidad del agua',
+    tipoRegistro: 'analitica',
+    fechaVencimiento: '2024-01-19',
+    tipo: 'recordatorio',
+    periodicidad: 'semanal'
+  }
+]
+
+const elementosAtencion = [...incidenciasAbiertas, ...recordatoriosVencidos]
+
+const hoy = new Date()
+const d = (n: number) => {
+  const x = new Date(hoy)
+  x.setDate(hoy.getDate() + n)
+  return x.toISOString().split('T')[0]
+}
+
+const recordatorios = [
+  {
+    id: 1,
+    titulo: 'Lectura mensual de contadores',
+    tipoRegistro: 'contador',
+    fecha: d(0),
+    periodicidad: 'mensual'
+  },
+  {
+    id: 2,
+    titulo: 'Análisis de calidad del agua',
+    tipoRegistro: 'analitica',
+    fecha: d(1),
+    periodicidad: 'semanal'
+  },
+  {
+    id: 3,
+    titulo: 'Mantenimiento preventivo bombas',
+    tipoRegistro: 'mantenimiento',
+    fecha: d(3),
+    periodicidad: 'trimestral'
+  },
+  {
+    id: 4,
+    titulo: 'Inspección de válvulas',
+    tipoRegistro: 'mantenimiento',
+    fecha: d(5),
+    periodicidad: 'mensual'
+  },
+  {
+    id: 5,
+    titulo: 'Control de cloro residual',
+    tipoRegistro: 'analitica',
+    fecha: d(10),
+    periodicidad: 'semanal'
+  }
+]
+
+const obtenerDiaSemana = (fecha: string) =>
+  ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][
+    new Date(fecha + 'T00:00:00').getDay()
+  ]
+
+const formatearFechaConDia = (fecha: string) => {
+  const f = new Date(fecha + 'T00:00:00')
+  return `${obtenerDiaSemana(fecha)}, ${f.getDate()} de ${f.toLocaleString('es', { month: 'long' })} de ${f.getFullYear()}`
+}
+
+const categorizarFecha = (fecha: string) => {
+  const base = new Date()
+  const t = new Date(fecha + 'T00:00:00')
+  const diffDays = Math.ceil((t.getTime() - base.getTime()) / 86400000)
+  if (diffDays === 0) return 'hoy'
+  if (diffDays > 0 && diffDays <= 7) return 'esta-semana'
+  return 'proximamente'
+}
+
+const recordatoriosAgrupados = recordatorios.reduce(
+  (acc, r) => {
+    const cat = categorizarFecha(r.fecha)
+    acc[cat] ||= {}
+    acc[cat][r.fecha] ||= []
+    acc[cat][r.fecha].push(r)
+    return acc
+  },
+  {} as Record<string, Record<string, typeof recordatorios>>
+)
+
+// --- Componente ---
 export default function Home() {
+  const router = useRouter()
+
   return (
-    <>
-      <Header />
-      <div>
-        <Button asChild>
-          <Link to="/dashboard/nuevo-registro">Nuevo registro</Link>
+    <main className="flex-1 px-3 py-4">
+      {/* Botón principal */}
+      <div className="mb-6">
+        <Button asChild className="w-full">
+          <Link
+            to="/dashboard/nuevo-registro"
+            className="no-underline hover:no-underline font-bold"
+          >
+            Nuevo registro
+          </Link>
         </Button>
       </div>
-      <TaskList />
-    </>
+
+      <div className="space-y-6">
+        {/* Requiere Atención */}
+        <div className="bg-white rounded-lg border p-4 shadow">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Requiere Atención</h2>
+            <span className="text-sm text-gray-500">{elementosAtencion.length} elementos</span>
+          </div>
+          <div className="space-y-2">
+            {elementosAtencion.slice(0, 2).map((e) => (
+              <div
+                key={`${e.tipo}-${e.id}`}
+                className={`p-3 ${e.tipo === 'incidencia' ? 'bg-orange-50' : 'bg-white'} border rounded-md hover:bg-gray-50 transition-colors shadow-sm`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          e.tipo === 'incidencia'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-orange-100 text-orange-800'
+                        }`}
+                      >
+                        {e.tipo === 'incidencia' ? 'Incidencia' : 'Recordatorio Vencido'}
+                      </span>
+                    </div>
+                    <h3 className="font-medium text-sm">{e.titulo}</h3>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {e.tipo === 'incidencia'
+                        ? 'ubicacion' in e
+                          ? e.ubicacion
+                          : ''
+                        : 'fechaVencimiento' in e
+                          ? `Vencía: ${e.fechaVencimiento}`
+                          : ''}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <span
+                    className="text-xs text-blue-600 cursor-pointer hover:text-blue-800 ml-auto"
+                    onClick={() => {
+                      if (e.tipo === 'incidencia') {
+                        const params = new URLSearchParams({
+                          descripcion: e.titulo || '',
+                          estado: 'abierta',
+                          zona: 'ubicacion' in e ? e.ubicacion : '',
+                          fechaApertura:
+                            'fecha' in e ? (e as any).fecha : new Date().toISOString().split('T')[0]
+                        })
+                        router.push(`/dashboard/nuevo-registro/incidencia?${params.toString()}`)
+                      } else if (e.tipo === 'recordatorio' && 'tipoRegistro' in e) {
+                        const t = (e as any).tipoRegistro
+                        if (t === 'contador') router.push('/dashboard/nuevo-registro/contador')
+                        else if (t === 'analitica')
+                          router.push('/dashboard/nuevo-registro/analitica')
+                        else if (t === 'mantenimiento')
+                          router.push('/dashboard/nuevo-registro/mantenimiento')
+                      }
+                    }}
+                  >
+                    {e.tipo === 'incidencia' ? 'Ver Incidencia' : 'Añadir Registro'}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {elementosAtencion.length > 2 && (
+              <div className="text-center text-sm text-gray-500 mt-2">
+                {elementosAtencion.length - 2} elementos más requieren atención
+              </div>
+            )}
+          </div>
+          <a
+            href="/dashboard/atencion"
+            className="block w-full mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium text-center"
+          >
+            Ver todos los elementos
+          </a>
+        </div>
+
+        {/* Próximas Tareas */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">Próximas Tareas</h2>
+          {['hoy', 'esta-semana', 'proximamente'].map((cat) => {
+            const titulo =
+              cat === 'hoy' ? 'Hoy' : cat === 'esta-semana' ? 'Esta Semana' : 'Próximamente'
+            if (
+              !recordatoriosAgrupados[cat] ||
+              Object.keys(recordatoriosAgrupados[cat]).length === 0
+            )
+              return null
+            return (
+              <div key={cat} className="mb-6">
+                <h3 className="text-base font-semibold mb-3 px-2">{titulo}</h3>
+                {Object.entries(recordatoriosAgrupados[cat]).map(([fecha, arr]) => (
+                  <div key={fecha} className="mb-4">
+                    <h4 className="text-sm font-medium mb-2 px-2">{formatearFechaConDia(fecha)}</h4>
+                    <div className="space-y-2">
+                      {arr.map((r) => {
+                        const tipoColor =
+                          r.tipoRegistro === 'contador'
+                            ? 'bg-purple-100 text-purple-800'
+                            : r.tipoRegistro === 'analitica'
+                              ? 'bg-green-100 text-green-800'
+                              : r.tipoRegistro === 'mantenimiento'
+                                ? 'bg-orange-100 text-orange-800'
+                                : 'bg-gray-100 text-gray-800'
+                        const tipoLabel =
+                          r.tipoRegistro === 'contador'
+                            ? 'Contadores'
+                            : r.tipoRegistro === 'analitica'
+                              ? 'Análisis'
+                              : r.tipoRegistro === 'mantenimiento'
+                                ? 'Mantenimiento'
+                                : r.tipoRegistro
+                        return (
+                          <button
+                            key={r.id}
+                            className="w-full p-3 bg-white border rounded-lg hover:bg-gray-50 transition-colors text-left shadow-sm"
+                            onClick={() => {
+                              if (r.tipoRegistro === 'contador')
+                                router.push('/dashboard/nuevo-registro/contador')
+                              else if (r.tipoRegistro === 'analitica')
+                                router.push('/dashboard/nuevo-registro/analitica')
+                              else if (r.tipoRegistro === 'mantenimiento')
+                                router.push('/dashboard/nuevo-registro/mantenimiento')
+                            }}
+                          >
+                            <div>
+                              <div className="mb-3">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span
+                                    className={`px-2 py-1 text-xs rounded-full font-medium ${tipoColor}`}
+                                  >
+                                    {tipoLabel}
+                                  </span>
+                                </div>
+                                <h4 className="font-medium text-sm">{r.titulo}</h4>
+                                <p className="text-xs text-gray-600 mt-1">{r.periodicidad}</p>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-blue-600 text-xs font-medium">
+                                  Añadir Registro
+                                </span>
+                              </div>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* <TaskList /> // ...existing code... (opcional, retirado en la unificación) */}
+    </main>
   )
 }

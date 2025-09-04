@@ -183,7 +183,7 @@ export const IssueForm: FC<{
                       placeholder="dd/mm/aaaa"
                       defaultValue={
                         field.value
-                          ? field.value.toISOString().split('T')[0]
+                          ? new Date(field.value).toISOString().split('T')[0]
                           : new Date().toISOString().split('T')[0]
                       }
                       required
@@ -207,7 +207,7 @@ export const IssueForm: FC<{
                     <Input
                       type="date"
                       placeholder="dd/mm/aaaa"
-                      defaultValue={field.value ? field.value.toISOString() : ''}
+                      defaultValue={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                       disabled={selectedStatus === 'closed' ? '' : 'disabled'}
                       required={selectedStatus === 'open' ? '' : 'required'}
                     ></Input>

@@ -1,9 +1,12 @@
+import type { WaterMeter } from 'features/entities/water-meter'
 import Link from 'next/link'
-// import { useParams } from 'next/navigation'
-
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
-export default function WaterMeterDetailPage({ waterMeter }) {
+interface WaterMeterDetailPageProps {
+  waterMeter: WaterMeter
+}
+
+export default function WaterMeterDetailPage({ waterMeter }: WaterMeterDetailPageProps) {
   console.log('water meter que viene de page', waterMeter)
 
   return (
@@ -19,7 +22,7 @@ export default function WaterMeterDetailPage({ waterMeter }) {
         <p>{waterMeter?.waterZoneName}</p>
       </div>
       <div>
-        <WaterMeterReadingHistory />
+        <WaterMeterReadingHistory readings={waterMeter.readings} />
       </div>
     </div>
   )

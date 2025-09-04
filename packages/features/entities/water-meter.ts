@@ -15,6 +15,7 @@ export class WaterMeter {
     public readonly lastReadingValue?: string,
     public readonly lastReadingDate?: Date,
     public readonly readings?: Array<{
+      id: string
       readingDate: Date
       reading: string
       normalizedReading: string

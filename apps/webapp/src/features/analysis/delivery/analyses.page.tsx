@@ -1,4 +1,3 @@
-import { DateTime } from 'core/date-time/date-time'
 import type { Analysis, WaterZone } from 'features'
 import type { FC } from 'react'
 import {
@@ -11,32 +10,13 @@ import {
 } from '@/components/ui/card'
 import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
+import { formatDate, toTitle } from './analysis.utils'
 
 export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
   analysis,
   zones
 }) => {
   const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
-
-  function formatDate(date: Date) {
-    try {
-      return DateTime.fromDate(date).format("d 'de' LLLL 'de' yyyy", { locale: 'es' })
-    } catch {
-      return new Date(date).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit'
-      })
-    }
-  }
-
-  function toTitle(analysisType: string) {
-    if (analysisType === 'chlorine_ph') return 'Cloro/pH'
-    if (analysisType === 'turbidity') return 'Turbidez'
-    if (analysisType === 'hardness') return 'Dureza'
-    if (analysisType === 'complete') return 'Completo'
-    return analysisType
-  }
 
   function hasAlert(a: Analysis) {
     const dto = a.toDto()

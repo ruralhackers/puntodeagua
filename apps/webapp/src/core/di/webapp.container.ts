@@ -21,6 +21,7 @@ import { GetAnalysisQry } from '../../features/analysis/application/get-analysis
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { CreateMaintenanceCmd } from '../../features/maintenance/application/create-maintenance.cmd'
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
@@ -112,6 +113,8 @@ export class WebappContainer extends CoreContainer {
     this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
     const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
     this.register(GetMaintenancesQry.ID, getMaintenancesQry)
+    const createMaintenanceCmd = new CreateMaintenanceCmd(maintenanceRepository)
+    this.register(CreateMaintenanceCmd.ID, createMaintenanceCmd)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

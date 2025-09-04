@@ -27,7 +27,9 @@ import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
+import { GetMaintenanceQry } from './features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
+import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
@@ -104,6 +106,10 @@ export class ApiContainer extends CoreContainer {
     this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
     const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
     this.register(GetMaintenancesQry.ID, getMaintenancesQry)
+    const getMaintenanceQry = new GetMaintenanceQry(maintenanceRepository)
+    this.register(GetMaintenanceQry.ID, getMaintenanceQry)
+    const saveMaintenanceCmd = new SaveMaintenanceCmd(maintenanceRepository)
+    this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

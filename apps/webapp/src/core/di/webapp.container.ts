@@ -4,6 +4,9 @@ import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
+import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
+import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
+import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
@@ -12,6 +15,8 @@ import { GetWaterMetersQry } from '../../features/water-meter/application/get-wa
 import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
+import { GetWaterZonesQry } from '../../features/water-zone/application/get-water-zones.qry'
+import { WaterZoneApiRestRepository } from '../../features/water-zone/infrastructure/water-zone.api-rest-repository'
 import {
   AUTH_REPOSITORY,
   ISSUE_REPOSITORY,
@@ -46,6 +51,12 @@ export class WebappContainer extends CoreContainer {
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
 
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
+    this.register(WATER_REPOSITORY, waterZoneApiRestRepository)
+
+    const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
+    this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
     const authApiRestRepository = new AuthApiRestRepository(httpClient)
     this.register(AUTH_REPOSITORY, authApiRestRepository)
 
@@ -55,6 +66,13 @@ export class WebappContainer extends CoreContainer {
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
+
+    const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
+    this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
+    const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
+    this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

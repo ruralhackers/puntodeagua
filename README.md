@@ -135,16 +135,12 @@ This architecture enables:
 
 # Todo
 
-- [ ] Prisma + Postgres @orlando
 - [ ] Configurar Biome en pre commit
 - [ ] Multitenant
 - [ ] Middleware de gestión de errores
 - [ ] Configuración PWA @victor
 - [ ] Roles y permisos. Resolver a nivel de middleware con foco en permisos granulares @cesalberca
-- [ ] Interfaz
 - [ ] Multiidoma con Next Intl
 - [ ] Test con BunTest
 - [ ] Test con Playwright
-- [ ] Documentar arquitectura @cesalberca
-- [ ] Documentar setup @cesalberca
-- [ ] Romper enrutado en varios ficheros @Orlando
+- [ ] Mover la creación de UUIDs en el back

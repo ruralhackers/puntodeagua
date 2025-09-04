@@ -1,7 +1,7 @@
 import type { Id } from 'core'
 import type { Prisma, PrismaClient } from 'database'
 import { BasePrismaRepository, Issue } from 'features'
-import type { IssueRepository } from 'features/repositories/issue.repository'
+import type { IssueRepository } from 'features/issues/repositories/issue.repository'
 
 export class IssuePrismaRepository extends BasePrismaRepository implements IssueRepository {
   protected readonly model = 'issue'

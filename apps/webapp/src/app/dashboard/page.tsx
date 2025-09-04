@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
-import Header from '@/src/components/Header'
+import { Header } from '@/src/components/header'
 import TaskList from '@/src/components/TaskList'
 
 export default function Home() {
@@ -8,10 +8,8 @@ export default function Home() {
     <>
       <Header />
       <div>
-        <Button>Nuevo Registro</Button>
-
         <Button asChild>
-          <Link to="/dashboard/incidencia/nueva">Nueva Incidencia</Link>
+          <Link to="/dashboard/nuevo-registro">Nuevo registro</Link>
         </Button>
       </div>
       <TaskList />

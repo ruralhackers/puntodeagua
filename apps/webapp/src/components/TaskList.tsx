@@ -1,7 +1,6 @@
 import tasks from "../mock-data/requireAttentionTasks.json"
-import { Badge } from "@/components/ui/badge"
 import TaskItem from "./TaskItem"
-import { Button } from "@/components/ui/button"
+import {Button} from "@/components/ui/button"
 
 export default function TaskList() {
     return (

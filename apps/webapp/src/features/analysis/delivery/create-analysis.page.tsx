@@ -5,6 +5,7 @@ import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
+import { useId, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -17,16 +18,16 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { CreateAnalysisCmd } from '../application/create-analysis.cmd'
+// import { useUseCase } from '@/src/core/use-cases/use-use-case'
+// import { CreateAnalysisCmd } from '../application/create-analysis.cmd'
 
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
-  const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
+  // const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
 
   const createAnalysisSchema = analysisSchema.omit({ id: true })
 
-  const analysisParams = ['ph', 'turbidity', 'chlorine']
+  // const analysisParams = ['ph', 'turbidity', 'chlorine']
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -50,10 +51,17 @@ export const CreateAnalysisPage: NextPage = () => {
     }
   })
 
-  async function onSubmit(values: z.infer<typeof analysisSchema>) {
+  const selectedType = form.watch('analysisType')
+  const analysisTypeId = useId()
+  const analysisParams = useMemo(() => {
+    if (!selectedType || !AnalysisType.isValidType(selectedType)) return []
+    return AnalysisType.create(selectedType).getFieldsByType()
+  }, [selectedType])
+
+  async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
     console.log('Datos de la incidencia:', values)
-    await createAnalysisCommand.execute({})
-    // Aquí iría la lógica para guardar la incidencia
+    // await createAnalysisCommand.execute(values)
+    // Aquí iría la lógica para guardar la incidencia cuando tengamos waterZoneId
     router.push('/')
   }
 
@@ -66,10 +74,17 @@ export const CreateAnalysisPage: NextPage = () => {
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
+          aria-label="Volver"
           onClick={() => router.back()}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            aria-hidden="true"
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -94,10 +109,14 @@ export const CreateAnalysisPage: NextPage = () => {
             <div className="grid grid-cols-1 gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor={analysisTypeId}
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Tipo de Incidencia
                   </label>
                   <select
+                    id={analysisTypeId}
                     name="analysisType"
                     value={form.getValues('analysisType')}
                     onChange={(e) => onChangeAnalysisType(e.target.value)}
@@ -105,30 +124,13 @@ export const CreateAnalysisPage: NextPage = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                     <option value="">Selecciona un tipo</option>
-                    {AnalysisType.values().map((tipo) => (
-                      <option key={tipo} value={tipo}>
-                        {tipo}
+                    {AnalysisType.values().map((analysisType) => (
+                      <option key={analysisType.value} value={analysisType.value}>
+                        {analysisType.value}
                       </option>
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <FormField
-                  control={form.control}
-                  name="analyst"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel />
-                      <FormControl>
-                        <input type="text" placeholder="Nombre del analista" />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
               </div>
 
               {/* add form field for each analysis params with a label */}
@@ -150,6 +152,23 @@ export const CreateAnalysisPage: NextPage = () => {
                   ></FormField>
                 </div>
               ))}
+
+              <div>
+                <FormField
+                  control={form.control}
+                  name="analyst"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Analista</FormLabel>
+                      <FormControl>
+                        <input type="text" placeholder="Nombre del analista" />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
 
               {/* description use textarea */}
               <div>

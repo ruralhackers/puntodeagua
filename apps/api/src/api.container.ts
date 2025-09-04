@@ -3,6 +3,7 @@ import { client } from 'database'
 import {
   ANALYSIS_REPOSITORY,
   USER_REPOSITORY,
+  WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY
 } from './core/di/injection-tokens'
@@ -12,6 +13,8 @@ import { AuthenticateUserCmd } from './features/auth/application/authenticate-us
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
+import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
+import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
 import { WaterMeterPrismaRepository } from './features/water-point/infrastructure/water-meter.prisma-repository'
 import { WaterPointPrismaRepository } from './features/water-point/infrastructure/water-point.prisma-repository'
@@ -32,8 +35,12 @@ export class ApiContainer extends CoreContainer {
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterPrismaRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
 
-    const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
-    this.register(GetWaterMeterQry.ID, getWaterMeterQry)
+    // Water Meter Readings
+    const waterMeterReadingPrismaRepository = new WaterMeterReadingPrismaRepository(client)
+    this.register(WATER_METER_READING_REPOSITORY, waterMeterReadingPrismaRepository)
+
+    const getWaterMeterReadingsQry = new GetWaterMeterReadingsQry(waterMeterReadingPrismaRepository)
+    this.register(GetWaterMeterReadingsQry.ID, getWaterMeterReadingsQry)
 
     const userPrismaRepository = new UserPrismaRepository(client)
     this.register(USER_REPOSITORY, userPrismaRepository)

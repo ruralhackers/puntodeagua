@@ -1,6 +1,16 @@
 import type { Analysis, WaterZone } from 'features'
+import { Pencil, Trash } from 'lucide-react'
 import type { FC } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
 import { formatDate, toTitle } from './analysis.utils'
 
@@ -20,6 +30,20 @@ export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }>
           <CardHeader>
             <CardTitle className="text-xl">{toTitle(dto.analysisType)}</CardTitle>
             <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
+            <CardAction>
+              <div className="flex items-center gap-1.5">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to={`/analysis/edit/${dto.id}`} type="invisible">
+                    <Pencil className="size-4" aria-hidden="true" />
+                    <span className="sr-only">Editar</span>
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="sm" disabled>
+                  <Trash className="size-4" aria-hidden="true" />
+                  <span className="sr-only">Eliminar</span>
+                </Button>
+              </div>
+            </CardAction>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>

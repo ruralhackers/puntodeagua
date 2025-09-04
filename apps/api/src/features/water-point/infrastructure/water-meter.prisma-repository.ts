@@ -53,6 +53,7 @@ export class WaterMeterPrismaRepository
           ...wm,
           waterZoneName: wm.waterZone.name,
           readings: wm.waterMeterReadings.map((reading) => ({
+            id: reading.id,
             readingDate: reading.readingDate,
             reading: reading.reading.toString(),
             normalizedReading: reading.normalizedReading.toString()

@@ -7,6 +7,7 @@ import { UseCaseService } from 'core'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { loginSchema } from './features/auth/application/auth.schema'
 import { waterPointApiRest } from './features/water-point/delivery/water-point.api-rest'
+import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
@@ -27,6 +28,7 @@ export const app = new Elysia({ prefix: '/api' })
     })
   )
   .use(waterPointApiRest)
+  .use(waterMeterApiRest)
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)

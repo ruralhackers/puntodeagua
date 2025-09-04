@@ -91,6 +91,7 @@ model WaterZone {
 
   analysis Analysis[]
   issue Issue[]
+  waterMeters WaterMeter[]
 
   @@index([communityId])
 }
@@ -125,12 +126,16 @@ model Holder {
 
 model WaterMeter {
   id String @id @default(cuid())
+  name String
 
   holder   Holder @relation(fields: [holderId], references: [id])
   holderId String @map("holder_id")
 
   waterPoint   WaterPoint @relation(fields: [waterPointId], references: [id], onDelete: Cascade)
   waterPointId String     @map("water_point_id")
+
+  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id])
+  waterZoneId String    @map("water_zone_id")
 
   measurementUnit String
 
@@ -143,6 +148,7 @@ model WaterMeter {
 
   @@index([holderId])
   @@index([waterPointId])
+  @@index([waterZoneId])
 }
 
 model WaterMeterReading {
@@ -167,7 +173,7 @@ model Issue {
   waterZoneId String    @map("water_zone_id")
 
   title        String
-  description  String
+  description  String?
   reporterName String
 
   status  String

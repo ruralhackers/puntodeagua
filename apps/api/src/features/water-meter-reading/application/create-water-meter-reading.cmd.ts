@@ -1,4 +1,5 @@
-import { Command, Id } from 'core'
+import { Command, Id, MeasurementUnit } from 'core'
+import type { WaterMeterRepository } from 'features'
 import { WaterMeterReading, WaterMeterReadingDto } from 'features'
 import type { FileUploadService } from '../../../infrastructure/file-upload/file-upload.service'
 
@@ -16,7 +17,6 @@ interface MulterFile {
 export interface CreateWaterMeterReadingCommand {
   waterMeterId: string
   reading: string
-  normalizedReading: string
   readingDate: Date
   notes?: string
   files?: MulterFile[]
@@ -30,17 +30,31 @@ export class CreateWaterMeterReadingCmd
 
   constructor(
     private readonly waterMeterReadingRepository: any,
-    private readonly fileUploadService: FileUploadService
+    private readonly fileUploadService: FileUploadService,
+    private readonly waterMeterRepository: WaterMeterRepository
   ) {}
 
   async handle(command: CreateWaterMeterReadingCommand): Promise<WaterMeterReadingDto> {
     console.log('🔍 Creating water meter reading...', { command })
-    // 1. Crear la entidad WaterMeterReading
+
+    // 1. Obtener el water meter para conocer su unidad de medida
+    const waterMeter = await this.waterMeterRepository.findById(Id.create(command.waterMeterId))
+    if (!waterMeter) {
+      throw new Error(`Water meter with id ${command.waterMeterId} not found`)
+    }
+
+    // 2. Normalizar la lectura: si está en M3, convertir a litros
+    const normalizedReading =
+      waterMeter.measurementUnit === MeasurementUnit.M3
+        ? (parseFloat(command.reading) * 1000).toString()
+        : command.reading
+
+    // 3. Crear la entidad WaterMeterReading
     const waterMeterReading = WaterMeterReading.create({
       id: Id.generateUniqueId().toString(),
       waterMeterId: command.waterMeterId,
       reading: command.reading,
-      normalizedReading: command.normalizedReading,
+      normalizedReading,
       readingDate: command.readingDate,
       notes: command.notes,
       files: [] // Inicialmente sin archivos
@@ -76,7 +90,7 @@ export class CreateWaterMeterReadingCmd
           id: waterMeterReading.id.toString(),
           waterMeterId: command.waterMeterId,
           reading: command.reading,
-          normalizedReading: command.normalizedReading,
+          normalizedReading,
           readingDate: command.readingDate,
           notes: command.notes,
           files: uploadedFiles.map((file) => ({

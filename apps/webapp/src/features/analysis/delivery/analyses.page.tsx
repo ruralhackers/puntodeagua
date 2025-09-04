@@ -12,7 +12,7 @@ import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
 import { formatDate, toTitle } from './analysis.utils'
 
-export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
+export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
   analysis,
   zones
 }) => {
@@ -31,6 +31,36 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
   return (
     <Page>
       <div className="px-3 py-4">
+        <div className="mb-6">
+          <div className="mb-4">
+            <Link
+              to="/dashboard/registros"
+              type="invisible"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            >
+              <span className="p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </span>
+              <span className="text-sm">Volver</span>
+            </Link>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Analíticas</h1>
+          <p className="text-gray-600">Análisis de calidad del agua</p>
+        </div>
         <div className="flex flex-col gap-3">
           {analysis.map((a) => {
             const dto = a.toDto()
@@ -38,7 +68,7 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
             return (
               <Card key={dto.id} className="bg-white gap-3 py-4">
                 <CardHeader>
-                  <Link to={`/analysis/${dto.id}`} className="block">
+                  <Link to={`/dashboard/registros/analiticas/${dto.id}`} className="block">
                     <CardTitle className="text-base">
                       {toTitle(dto.analysisType)}{' '}
                       {alert && (
@@ -69,3 +99,5 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
     </Page>
   )
 }
+
+export { AnalysesPage as AnalysisPage }

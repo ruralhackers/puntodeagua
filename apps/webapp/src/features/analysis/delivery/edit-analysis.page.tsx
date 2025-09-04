@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { AnalysisDto, WaterZone, WaterZoneDto } from 'features'
+import type { AnalysisDto, WaterZoneDto } from 'features'
 import { Analysis } from 'features/registers/entities/analysis'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
@@ -45,7 +45,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
   async function onSubmit(values: z.infer<typeof analysisSchema>) {
     const analysisEntity = Analysis.fromDto(values)
     await editAnalysisCommand.execute(analysisEntity.toDto())
-    router.push('/')
+    router.push(`/dashboard/registros/analiticas/${values.id}`)
   }
 
   return (

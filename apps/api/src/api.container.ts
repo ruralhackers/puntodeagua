@@ -28,6 +28,7 @@ import { IssuePrismaRepository } from './features/issue/infrastructure/issue.pri
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
+import { DeleteWaterMeterReadingCmd } from './features/water-meter-reading/application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
@@ -109,9 +110,15 @@ export class ApiContainer extends CoreContainer {
     // Create Water Meter Reading Command
     const createWaterMeterReadingCmd = new CreateWaterMeterReadingCmd(
       waterMeterReadingPrismaRepository,
-      fileUploadService
+      fileUploadService,
+      waterMeterPrismaRepository
     )
     this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
+
+    const deleteWaterMeterReadingCmd = new DeleteWaterMeterReadingCmd(
+      waterMeterReadingPrismaRepository
+    )
+    this.register(DeleteWaterMeterReadingCmd.ID, deleteWaterMeterReadingCmd)
 
     const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)

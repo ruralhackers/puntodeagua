@@ -55,7 +55,6 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
       await createWaterMeterReadingCommand.execute({
         waterMeterId: waterMeter.id,
         reading: values.reading,
-        normalizedReading: values.reading, // Same as reading for now
         readingDate: values.readingDate,
         uploadedBy: 'current-user' // TODO: Get from auth context
       })

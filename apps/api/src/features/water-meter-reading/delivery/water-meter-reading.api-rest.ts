@@ -3,6 +3,7 @@ import { Elysia } from 'elysia'
 import { apiContainer } from '../../../api.container'
 import { CreateWaterMeterReadingCmd } from '../application/create-water-meter-reading.cmd'
 import { createWaterMeterReadingSchema } from '../application/create-water-meter-reading.schema'
+import { DeleteWaterMeterReadingCmd } from '../application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from '../application/get-water-meter-readings.qry'
 
 export const waterMeterReadingApiRest = new Elysia()
@@ -60,6 +61,36 @@ export const waterMeterReadingApiRest = new Elysia()
       return result
     } catch (error) {
       console.error('Error creating water meter reading:', error)
+      set.status = 500
+      return {
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error occurred'
+      }
+    }
+  })
+  .delete('/water-meter-readings/:id', async ({ params, set }) => {
+    try {
+      const deleteCmd = apiContainer.get<DeleteWaterMeterReadingCmd>(
+        DeleteWaterMeterReadingCmd.ID.toString()
+      )
+
+      await deleteCmd.handle({
+        id: params.id
+      })
+
+      set.status = 204
+      return
+    } catch (error) {
+      console.error('Error deleting water meter reading:', error)
+      
+      if (error instanceof Error && error.message.includes('not found')) {
+        set.status = 404
+        return {
+          error: 'Water meter reading not found',
+          message: error.message
+        }
+      }
+      
       set.status = 500
       return {
         error: 'Internal server error',

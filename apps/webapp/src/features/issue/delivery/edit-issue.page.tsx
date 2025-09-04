@@ -1,55 +1,25 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createIssueSchema, Issue, type WaterZoneDto } from 'features'
-import type { CreateIssueSchema } from 'features/schemas/create-issue.schema'
+import { Issue, type IssueSchema, issueSchema, type WaterZoneDto } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
 
-const tiposIncidencia = [
-  'Fuga de agua',
-  'Baja presión',
-  'Corte de suministro',
-  'Calidad del agua',
-  'Avería en bomba',
-  'Problema eléctrico',
-  'Obstrucción en tubería',
-  'Otro'
-]
-
-const prioridades = [
-  { value: 'baja', label: 'Baja', color: 'text-green-600' },
-  { value: 'media', label: 'Media', color: 'text-yellow-600' },
-  { value: 'alta', label: 'Alta', color: 'text-orange-600' },
-  { value: 'critica', label: 'Crítica', color: 'text-red-600' }
-]
-
-const puntosAgua = [
-  'Pozo Principal',
-  'Tanque Elevado Norte',
-  'Tanque Elevado Sur',
-  'Red Distribución Centro',
-  'Red Distribución Periferia',
-  'Estación de Bombeo'
-]
-
-interface CreateIssuePageProps {
+export const EditIssuePage: NextPage<{
+  id: string
   waterZones: WaterZoneDto[]
-}
-
-export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) => {
+}> = ({ waterZones, id }) => {
   const router = useRouter()
   const saveIssueCommand = useUseCase(SaveIssueCmd)
 
-  const form = useForm<CreateIssueSchema>({
-    resolver: zodResolver(createIssueSchema),
+  const form = useForm<IssueSchema>({
+    resolver: zodResolver(issueSchema),
     defaultValues: {
       title: '',
       waterZoneId: '',
@@ -67,9 +37,10 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
     }
   })
 
-  async function onSubmit(values: CreateIssueSchema) {
+  async function onSubmit(values: IssueSchema) {
     await saveIssueCommand.execute(
-      Issue.create({
+      Issue.fromDto({
+        id,
         title: values.title,
         description: values.description,
         reporterName: values.reporterName,

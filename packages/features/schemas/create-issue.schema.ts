@@ -1,7 +1,8 @@
-import { z } from 'zod'
+import type { z } from 'zod'
+import { issueSchema } from '../issues/schemas/issue.schema.ts'
 
 export type CreateIssueSchema = z.infer<typeof createIssueSchema>
 
-export const createIssueSchema = z.object({
-  name: z.string()
+export const createIssueSchema = issueSchema.omit({
+  id: true
 })

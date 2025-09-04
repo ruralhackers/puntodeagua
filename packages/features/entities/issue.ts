@@ -8,6 +8,7 @@ export class Issue {
     public readonly title: string,
     public readonly description: string,
     public readonly reporterName: string,
+    public readonly startAt: Date,
     public readonly waterZoneId: Id
   ) {}
 
@@ -19,6 +20,7 @@ export class Issue {
       issueSchema.title,
       issueSchema.description,
       issueSchema.reporterName,
+      issueSchema.startAt,
       Id.create(issueSchema.waterZoneId)
     )
   }
@@ -29,6 +31,7 @@ export class Issue {
       dto.title,
       dto.description,
       dto.reporterName,
+      dto.startAt,
       Id.create(dto.waterZoneId)
     )
   }
@@ -39,7 +42,8 @@ export class Issue {
       waterZoneId: this.waterZoneId.toString(),
       title: this.title,
       reporterName: this.reporterName,
-      description: this.description
+      description: this.description,
+      startAt: this.startAt
     }
   }
 }

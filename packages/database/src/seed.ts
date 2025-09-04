@@ -13,7 +13,7 @@ async function main() {
   const waterPointIds = await seedWaterPoints(communityId)
   await seedHolders()
   await seedWaterMeters(waterPointIds)
-  await seedIssues(communityId)
+  await seedIssues()
 }
 
 main()
@@ -150,23 +150,6 @@ async function seedAnalyses() {
       }
     ]
   })
-  await prisma.waterZone.deleteMany({})
-  await prisma.waterZone.createMany({
-    data: [
-      {
-        name: 'Os Casas',
-        communityId
-      },
-      {
-        name: 'Centro',
-        communityId
-      },
-      {
-        name: 'Ramis',
-        communityId
-      }
-    ]
-  })
 }
 
 const HOLDERS = [
@@ -243,39 +226,44 @@ async function seedWaterMeters(waterPointIds: string[]) {
   console.log(`Created ${waterMeters.length} water meters`)
 }
 
-const ISSUES = [
-  {
-    status: 'open',
-    title: 'Fuga en tubería principal',
-    description: null,
-    reporterName: 'Olga',
-    startAt: '2025-09-03T20:05:35.000Z',
-    endAt: null
-  },
-  {
-    status: 'open',
-    title: 'Presión baja en zona residencial',
-    description: null,
-    reporterName: 'Rosabel',
-    startAt: '2025-09-02T09:24:35.000Z',
-    endAt: null
-  },
-  {
-    status: 'closed',
-    title: 'Avería en bomba de agua',
-    description: 'La bomba principal presenta ruidos anómalos y baja presión',
-    reporterName: 'Rosabel',
-    startAt: '2025-08-25T18:45:00.000Z',
-    endAt: '2025-09-03T10:00:00.000Z'
-  }
-]
+async function seedIssues() {
+  await prisma.issue.deleteMany({});
 
-async function seedIssues(waterZoneId: string) {
-  await prisma.issue.deleteMany({})
+  const waterZones = await prisma.waterZone.findMany()
+
+  const issues = [
+    {
+      status: "open",
+      title: "Fuga en tubería principal",
+      description: null,
+      reporterName: "Olga",
+      startAt: "2025-09-03T20:05:35.000Z",
+      endAt: null,
+      waterZoneId: waterZones[0].id,
+    },
+    {
+      status: "open",
+      title: "Presión baja en zona residencial",
+      description: null,
+      reporterName: "Rosabel",
+      startAt: "2025-09-02T09:24:35.000Z",
+      endAt: null,
+      waterZoneId: waterZones[0].id,
+    },
+    {
+      status: "closed",
+      title: "Avería en bomba de agua",
+      description: "La bomba principal presenta ruidos anómalos y baja presión",
+      reporterName: "Rosabel",
+      startAt: "2025-08-25T18:45:00.000Z",
+      endAt: "2025-09-03T10:00:00.000Z",
+      waterZoneId: waterZones[1].id,
+    }
+  ];
+
   await prisma.issue.createMany({
-    data: ISSUES.map((wp) => ({
-      ...wp,
-      waterZoneId
-    }))
-  })
+    data: issues,
+  });
+
+  console.log(`Created ${issues.length} issues`)
 }

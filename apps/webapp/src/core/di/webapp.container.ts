@@ -2,7 +2,7 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
-import { AuthHttpClient } from '@/src/features/auth/infrastructure/auth-http-client'
+// import { AuthHttpClient } from '@/src/features/auth/infrastructure/auth-http-client'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
@@ -21,6 +21,8 @@ import { GetAnalysisQry } from '../../features/analysis/application/get-analysis
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
+import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
 import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
@@ -28,6 +30,7 @@ import { WaterPointApiRestRepository } from '../../features/water-point/infrastr
 import {
   AUTH_REPOSITORY,
   ISSUE_REPOSITORY,
+  MAINTENANCE_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY
 } from './injection-tokens'
@@ -103,6 +106,12 @@ export class WebappContainer extends CoreContainer {
       waterMeterReadingApiRestRepository
     )
     this.register(DeleteWaterMeterReadingCmd.ID, deleteWaterMeterReadingCmd)
+
+    // maintenance
+    const maintenanceRepository = new MaintenanceApiRestRepository(httpClient)
+    this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
+    const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
+    this.register(GetMaintenancesQry.ID, getMaintenancesQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

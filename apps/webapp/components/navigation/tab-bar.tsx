@@ -11,10 +11,15 @@ import { useAuth } from '@/src/features/auth/context/auth-context'
 export const TabBar: FC = () => {
   const pathname = usePathname()
   const { isTabBarVisible } = useTabBar()
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
 
   if (!isTabBarVisible) {
     return null
+  }
+
+  // Helper function to check if user can see "Más" section
+  const canSeeMore = () => {
+    return user?.roles.includes('COMMUNITY_ADMIN') || user?.roles.includes('SUPER_ADMIN') || false
   }
 
   const tabs = [
@@ -30,17 +35,21 @@ export const TabBar: FC = () => {
       icon: FileText,
       active: pathname.includes('/dashboard/registros')
     },
-    {
-      href: '/dashboard/mas',
-      label: 'Más',
-      icon: Menu,
-      active: pathname.includes('/dashboard/mas')
-    },
+    // Only show "Más" if user is community_admin
+    ...(canSeeMore()
+      ? [
+          {
+            href: '/dashboard/mas',
+            label: 'Más',
+            icon: Menu,
+            active: pathname.includes('/dashboard/mas')
+          }
+        ]
+      : []),
     {
       href: '#',
       label: 'Salir',
       icon: LogOut,
-      active: false,
       onClick: () => logout()
     }
   ]

@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
+import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 
 interface CreateIssuePageProps {
   waterZones: WaterZoneDto[]
@@ -18,7 +18,7 @@ interface CreateIssuePageProps {
 
 export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) => {
   const router = useRouter()
-  const saveIssueCommand = useUseCase(SaveIssueCmd)
+  const createIssueCommand = useUseCase(CreateIssueCmd)
 
   const form = useForm<CreateIssueSchema>({
     resolver: zodResolver(createIssueSchema),
@@ -33,16 +33,14 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
   })
 
   async function onSubmit(values: CreateIssueSchema) {
-    await saveIssueCommand.execute(
-      Issue.create({
-        title: values.title,
-        description: values.description,
-        reporterName: values.reporterName,
-        startAt: values.startAt,
-        waterZoneId: values.waterZoneId,
-        status: values.status
-      })
-    )
+    await createIssueCommand.execute({
+      title: values.title,
+      description: values.description,
+      reporterName: values.reporterName,
+      startAt: values.startAt,
+      waterZoneId: values.waterZoneId,
+      status: values.status
+    })
     router.push('/')
   }
 

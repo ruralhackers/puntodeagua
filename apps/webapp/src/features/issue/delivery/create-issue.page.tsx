@@ -27,6 +27,8 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -71,8 +73,10 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      description: '',
       waterZoneId: 'cmf580rl90006rx07yycjwao3',
+      description: '',
+      reporterName: '',
+      startAt: '',
       reporterName: '',
       status: 'open'
       // tipo: '',
@@ -89,8 +93,11 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
     await saveIssueCommand.execute(
       Issue.create({
         title: values.title,
+        waterZoneId: values.waterZoneId,
         description: values.description,
         reporterName: values.reporterName,
+        status: values.status,
+        startAt: values.startAt,
         waterZoneId: values.waterZoneId,
         status: values.status
       })
@@ -229,7 +236,37 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
                 <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">
                   📅 Estado y fechas
                 </h3>
-                <div className="bg-white rounded-lg p-4 border border-blue-200"></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <divclassName="bg-white rounded-lg p-4 border border-blue-200"><FormField
+                      control={form.control}
+                      name="status"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Estado *</FormLabel>
+                          <FormControl>
+                            <Select required>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecciona el estado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem key="open" value="open">
+                                  Abierta
+                                </SelectItem>
+                                <SelectItem key="closed" value="closed">
+                                  Cerrada
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormDescription />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    ></FormField>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-4 border border-blue-200"></div>
+                </div>
               </div>
 
               {/*    <div className="grid grid-cols-2 gap-4">*/}

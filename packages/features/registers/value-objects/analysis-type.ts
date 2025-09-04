@@ -37,9 +37,9 @@ export class AnalysisType {
     } else if (this.value === 'turbidity') {
       return ['turbidity']
     } else if (this.value === 'hardness') {
-      return ['description']
+      return []
     } else if (this.value === 'complete') {
-      return ['description']
+      return []
     } else {
       return []
     }

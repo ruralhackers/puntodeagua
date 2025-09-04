@@ -1,7 +1,6 @@
 export enum UserRoleType {
   SUPER_ADMIN = 'SUPER_ADMIN',
   MANAGER = 'MANAGER',
-  USER = 'USER',
   COMMUNITY_ADMIN = 'COMMUNITY_ADMIN'
 }
 
@@ -9,7 +8,6 @@ export class UserRole {
   static readonly SUPER_ADMIN = new UserRole(UserRoleType.SUPER_ADMIN)
   static readonly COMMUNITY_ADMIN = new UserRole(UserRoleType.COMMUNITY_ADMIN)
   static readonly MANAGER = new UserRole(UserRoleType.MANAGER)
-  static readonly USER = new UserRole(UserRoleType.USER)
 
   private constructor(private readonly value: UserRoleType) {}
 
@@ -19,8 +17,6 @@ export class UserRole {
         return UserRole.SUPER_ADMIN
       case UserRoleType.MANAGER:
         return UserRole.MANAGER
-      case UserRoleType.USER:
-        return UserRole.USER
       case UserRoleType.COMMUNITY_ADMIN:
         return UserRole.COMMUNITY_ADMIN
       default:
@@ -71,10 +67,6 @@ export class UserRole {
 
   isManager(): boolean {
     return this.value === UserRoleType.MANAGER
-  }
-
-  isUser(): boolean {
-    return this.value === UserRoleType.USER
   }
 
   isCommunityAdmin(): boolean {

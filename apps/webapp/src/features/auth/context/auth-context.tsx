@@ -7,7 +7,7 @@ interface User {
   id: string
   email: string
   name?: string | null
-  roles: ('SUPER_ADMIN' | 'MANAGER' | 'USER' | 'COMMUNITY_ADMIN')[]
+  roles: ('SUPER_ADMIN' | 'MANAGER' | 'COMMUNITY_ADMIN')[]
   communityId?: string | null
 }
 

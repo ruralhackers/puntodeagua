@@ -72,14 +72,14 @@ async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: str
       email: 'user1@anceu.com',
       name: 'Usuario 1 Anceu',
       password: await bcrypt.hash('user123', saltRounds),
-      roles: ['USER'],
+      roles: ['COMMUNITY_ADMIN'],
       communityId: anceuCommunityId
     },
     {
       email: 'user2@anceu.com',
       name: 'Usuario 2 Anceu',
       password: await bcrypt.hash('user123', saltRounds),
-      roles: ['USER'],
+      roles: ['COMMUNITY_ADMIN'],
       communityId: anceuCommunityId
     },
     // Ponte Caldelas community users
@@ -94,7 +94,7 @@ async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: str
       email: 'user@pontecaldelas.com',
       name: 'Usuario Ponte Caldelas',
       password: await bcrypt.hash('user123', saltRounds),
-      roles: ['USER'],
+      roles: ['COMMUNITY_ADMIN'],
       communityId: ponteCaldelasCommunityId
     }
   ]
@@ -107,10 +107,10 @@ async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: str
   console.log('- superadmin@puntodeagua.com (password: superadmin123) - SUPER_ADMIN')
   console.log('- admin@anceu.com (password: admin123) - COMMUNITY_ADMIN')
   console.log('- manager@anceu.com (password: manager123) - MANAGER')
-  console.log('- user1@anceu.com (password: user123) - USER')
-  console.log('- user2@anceu.com (password: user123) - USER')
+  console.log('- user1@anceu.com (password: user123) - COMMUNITY_ADMIN')
+  console.log('- user2@anceu.com (password: user123) - COMMUNITY_ADMIN')
   console.log('- admin@pontecaldelas.com (password: admin123) - COMMUNITY_ADMIN')
-  console.log('- user@pontecaldelas.com (password: user123) - USER')
+  console.log('- user@pontecaldelas.com (password: user123) - COMMUNITY_ADMIN')
 }
 
 async function seedPlanAndCommunities() {
@@ -123,14 +123,16 @@ async function seedPlanAndCommunities() {
   const anceuCommunity = await prisma.community.create({
     data: {
       name: 'Anceu',
-      planId: plan.id
+      planId: plan.id,
+      dailyWaterLimitLitersPerPerson: 180
     }
   })
 
   const ponteCaldelasCommunity = await prisma.community.create({
     data: {
       name: 'Ponte Caldelas',
-      planId: plan.id
+      planId: plan.id,
+      dailyWaterLimitLitersPerPerson: 220
     }
   })
 

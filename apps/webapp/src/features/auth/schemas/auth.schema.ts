@@ -13,7 +13,7 @@ export const authResponseSchema = z.object({
     id: z.string(),
     email: z.string().email(),
     name: z.string().nullable().optional(),
-    roles: z.array(z.enum(['SUPER_ADMIN', 'MANAGER', 'USER', 'COMMUNITY_ADMIN'])),
+    roles: z.array(z.enum(['SUPER_ADMIN', 'MANAGER', 'COMMUNITY_ADMIN'])),
     communityId: z.string().nullable().optional()
   })
 })

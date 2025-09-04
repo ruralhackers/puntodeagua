@@ -8,7 +8,7 @@ export class User {
     public readonly name?: string | null,
     public readonly emailVerified?: Date | null,
     public readonly image?: string | null,
-    public readonly roles: UserRole[] = [UserRole.USER],
+    public readonly roles: UserRole[] = [UserRole.COMMUNITY_ADMIN],
     public readonly communityId?: Id | null
   ) {}
 
@@ -19,7 +19,7 @@ export class User {
       name,
       emailVerified,
       image,
-      roles ? UserRole.fromArray(roles) : [UserRole.USER],
+      roles ? UserRole.fromArray(roles) : [UserRole.COMMUNITY_ADMIN],
       communityId ? Id.create(communityId) : null
     )
   }
@@ -47,10 +47,6 @@ export class User {
 
   isManager(): boolean {
     return this.hasRole(UserRole.MANAGER)
-  }
-
-  isUser(): boolean {
-    return this.hasRole(UserRole.USER)
   }
 
   isCommunityAdmin(): boolean {

@@ -14,6 +14,7 @@ export class WaterMeterPrismaRepository
   async save(input: WaterMeter): Promise<void> {
     const data = {
         id: input.id.toString(),
+        name: input.name,
         holderId: input.holderId.toString(),
         waterPointId: input.waterPointId.toString(),
         measurementUnit: input.measurementUnit.toString(),
@@ -26,6 +27,7 @@ export class WaterMeterPrismaRepository
             ...data
         },
         update: {
+          name: data.name,
           measurementUnit: data.measurementUnit,
           images: data.images,
           },

@@ -150,24 +150,28 @@ async function seedWaterMeters(waterPointIds: string[]) {
 
   const waterMeters = [
     {
+      name: 'Meter WP1-001',
       holderId: holders[0].id,
       waterPointId: waterPointIds[0],
       measurementUnit: 'L',
       images: ['https://example.com/meter1.jpg', 'https://example.com/meter1_detail.jpg']
     },
     {
+      name: 'Meter WP1-002',
       holderId: holders[1].id,
       waterPointId: waterPointIds[0],
       measurementUnit: 'M3',
       images: ['https://example.com/meter2.jpg']
     },
     {
+      name: 'Meter WP2-001',
       holderId: holders[2].id,
       waterPointId: waterPointIds[1],
       measurementUnit: 'L',
       images: []
     },
     {
+      name: 'Meter WP2-002',
       holderId: holders[3].id,
       waterPointId: waterPointIds[1],
       measurementUnit: 'M3',

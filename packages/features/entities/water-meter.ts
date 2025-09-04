@@ -5,15 +5,17 @@ import type { WaterMeterSchema } from "../schemas/water-meter.schema.ts";
 export class WaterMeter {
 	private constructor(
 		public readonly id: Id,
+		public readonly name: string,
 		public readonly holderId: Id,
 		public readonly waterPointId: Id,
 		public measurementUnit: MeasurementUnit,
 		public images: string[] | [],
 	) {}
 
-  static create({ id, holderId, waterPointId, measurementUnit, images }: WaterMeterSchema) {
+  static create({ id, name, holderId, waterPointId, measurementUnit, images }: WaterMeterSchema) {
     return new WaterMeter(
       Id.create(id),
+      name,
       Id.create(holderId),
       Id.create(waterPointId),
       MeasurementUnit.create(measurementUnit),
@@ -24,6 +26,7 @@ export class WaterMeter {
   toDto() {
     return {
       id: this.id.toString(),
+      name: this.name,
       holderId: this.holderId.toString(),
       waterPointId: this.waterPointId.toString(),
       measurementUnit: this.measurementUnit.toString(),

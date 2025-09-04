@@ -125,6 +125,7 @@ model Holder {
 
 model WaterMeter {
   id String @id @default(cuid())
+  name String
 
   holder   Holder @relation(fields: [holderId], references: [id])
   holderId String @map("holder_id")

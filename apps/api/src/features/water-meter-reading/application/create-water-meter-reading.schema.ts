@@ -15,7 +15,6 @@ export const multerFileSchema = z.object({
 export const createWaterMeterReadingSchema = z.object({
   waterMeterId: z.string().min(1, 'Water meter ID is required'),
   reading: z.string().min(1, 'Reading value is required'),
-  normalizedReading: z.string().min(1, 'Normalized reading is required'),
   readingDate: z.string().datetime('Invalid date format'),
   notes: z.string().optional(),
   uploadedBy: z.string().min(1, 'Uploader ID is required'),

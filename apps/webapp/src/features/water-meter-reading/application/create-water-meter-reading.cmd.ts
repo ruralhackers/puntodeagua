@@ -5,7 +5,6 @@ import type { WaterMeterReadingApiRestRepository } from '../infrastructure/water
 export interface CreateWaterMeterReadingCommand {
   waterMeterId: string
   reading: string
-  normalizedReading: string
   readingDate: Date
   notes?: string
   uploadedBy: string

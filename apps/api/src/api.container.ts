@@ -105,7 +105,8 @@ export class ApiContainer extends CoreContainer {
     // Create Water Meter Reading Command
     const createWaterMeterReadingCmd = new CreateWaterMeterReadingCmd(
       waterMeterReadingPrismaRepository,
-      fileUploadService
+      fileUploadService,
+      waterMeterPrismaRepository
     )
     this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
 

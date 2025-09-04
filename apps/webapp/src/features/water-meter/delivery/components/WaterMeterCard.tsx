@@ -40,7 +40,7 @@ export default function WaterMeterCard({ meter }: WaterMeterCardProps) {
         <div className="flex justify-between items-center w-full">
           <p className="text-sm text-gray-600">{meter.waterZoneName}</p>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/contadores/${meter.id}`}>Ver Detalles</Link>
+            <Link href={`/dashboard/contadores/${meter.id}`}>Ver Detalles</Link>
           </Button>
         </div>
       </CardFooter>

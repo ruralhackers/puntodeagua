@@ -7,6 +7,7 @@ import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
 import { loginSchema } from './features/auth/application/auth.schema'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
+import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterMeterReadingApiRest } from './features/water-meter-reading/delivery/water-meter-reading.api-rest'
@@ -45,7 +46,12 @@ export const app = new Elysia({ prefix: '/api' })
       const authenticateCmd = apiContainer.get<AuthenticateUserCmd>(AuthenticateUserCmd.ID)
 
       // Create a JWT sign function and inject it
-      const jwtSign = async (payload: { userId: string; email: string; roles: string[] }) => {
+      const jwtSign = async (payload: {
+        userId: string
+        email: string
+        roles: string[]
+        communityId: string | null
+      }) => {
         return await jwt.sign(payload)
       }
 
@@ -59,6 +65,7 @@ export const app = new Elysia({ prefix: '/api' })
       return { error: error instanceof Error ? error.message : 'Authentication failed' }
     }
   })
+  .use(authApiRest)
   .listen(4000)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

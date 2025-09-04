@@ -50,9 +50,16 @@ model User {
   image         String?
   password      String?
   roles         Json      @default("[]")
+  
+  // Community relationship (optional for SUPER_ADMIN)
+  community     Community? @relation(fields: [communityId], references: [id])
+  communityId   String?    @map("community_id")
+  
   accounts      Account[]
   sessions      Session[]
   files         File[]    // Relación con archivos subidos por el usuario
+
+  @@index([communityId])
 }
 
 model VerificationToken {
@@ -77,6 +84,7 @@ model Community {
   plan   Plan   @relation(fields: [planId], references: [id])
   planId String @map("plan_id")
 
+  users       User[]
   waterPoints WaterPoint[]
   waterZones  WaterZone[]
 

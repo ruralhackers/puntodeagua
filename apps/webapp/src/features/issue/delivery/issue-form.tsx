@@ -27,6 +27,9 @@ export const IssueForm: FC<{
   form: UseFormReturn<IssueSchema | CreateIssueSchema>
   waterZones: WaterZoneDto[]
 }> = ({ form, onSubmit, onCancel, waterZones }) => {
+
+  const selectedStatus = form.watch('status')
+
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (x) => {
@@ -35,8 +38,8 @@ export const IssueForm: FC<{
       })}
       className="space-y-8"
     >
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+      <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-3 mb-4">📋 Información Básica</h3>
 
         <div className="grid grid-cols-1 gap-4">
           <div>
@@ -129,79 +132,127 @@ export const IssueForm: FC<{
               )}
             ></FormField>
           </div>
-
-          <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">
-              📅 Estado y fechas
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg p-4 border border-blue-200">
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Estado *</FormLabel>
-                      <FormControl>
-                        <Select required>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona el estado" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem key="open" value="open">
-                              Abierta
-                            </SelectItem>
-                            <SelectItem key="closed" value="closed">
-                              Cerrada
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-              </div>
-
-              <div className="bg-white rounded-lg p-4 border border-blue-200"></div>
-            </div>
-          </div>
-
-          {/*    <div className="grid grid-cols-2 gap-4">*/}
-          {/*      <div>*/}
-          {/*        <label className="block text-sm font-medium text-gray-700 mb-2">Fecha *</label>*/}
-          {/*        <input*/}
-          {/*          type="date"*/}
-          {/*          name="fecha"*/}
-          {/*          value={formData.fecha}*/}
-          {/*          onChange={handleInputChange}*/}
-          {/*          required*/}
-          {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*      <div>*/}
-          {/*        <label className="block text-sm font-medium text-gray-700 mb-2">Hora *</label>*/}
-          {/*        <input*/}
-          {/*          type="time"*/}
-          {/*          name="hora"*/}
-          {/*          value={formData.hora}*/}
-          {/*          onChange={handleInputChange}*/}
-          {/*          required*/}
-          {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
         </div>
       </div>
 
+      <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4 shadow-sm">
+        <h3 className="text-lg font-semibold border-b border-blue-300 pb-3 mb-4">
+          📅 Estado y fechas
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <FormField
+              control={form.control}
+              name="status"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Estado *</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el estado"/>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem key="open" value="open">
+                          Abierta
+                        </SelectItem>
+                        <SelectItem key="closed" value="closed">
+                          Cerrada
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription/>
+                  <FormMessage/>
+                </FormItem>
+              )}
+            ></FormField>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <FormField
+              control={form.control}
+              name="startAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fecha de apertura *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      placeholder="dd/mm/aaaa"
+                      defaultValue={field.value ? field.value.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                      required
+                    ></Input>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            ></FormField>
+          </div>
+
+          <div className="bg-white rounded-lg p-4 border border-blue-200">
+            <FormField
+              control={form.control}
+              name="endAt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fecha de resolución</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      placeholder="dd/mm/aaaa"
+                      defaultValue={field.value ? field.value.toISOString() : ''}
+                      disabled={selectedStatus === "closed" ? "" : "disabled"}
+                      required={selectedStatus === "open" ? "" : "required"}
+                    ></Input>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage/>
+                </FormItem>
+              )}
+            ></FormField>
+          </div>
+        </div>
+
+        {selectedStatus === 'closed' && (
+          <div className="p-4 rounded-lg border-2 bg-white border-green-200">
+            <div className="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   className="lucide lucide-circle-check-big h-6 w-6 text-green-600" aria-hidden="true">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+              <div><h4 className="font-semibold text-green-800">✅ Incidencia Cerrada</h4><p
+                className="text-sm text-green-700">Esta incidencia ha sido resuelta satisfactoriamente</p></div>
+            </div>
+          </div>
+        )}
+
+        {selectedStatus === 'open' && (
+          <div className="p-4 rounded-lg border-2 bg-white border-red-200">
+            <div className="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                   className="lucide lucide-circle-alert h-6 w-6 text-red-600" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" x2="12" y1="8" y2="12"></line>
+                <line x1="12" x2="12.01" y1="16" y2="16"></line>
+              </svg>
+              <div><h4 className="font-semibold text-red-800">🔴 Incidencia Abierta</h4><p
+                className="text-sm text-red-700">Esta incidencia requiere atención y seguimiento</p></div>
+            </div>
+          </div>
+        )}
+
+      </div>
+
       <div className="flex gap-3 w-full">
-        <Button className="flex-1" type="button" onClick={() => onCancel()}>
+        <Button className="flex-1" type="button" variant="outline" onClick={() => onCancel()}>
           Cancelar
         </Button>
-        <Button className="flex-1" variant="destructive" type="submit">
+        <Button className="flex-1" variant="default" type="submit">
           Reportar Incidencia
         </Button>
       </div>

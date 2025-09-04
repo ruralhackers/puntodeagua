@@ -4,8 +4,8 @@ import { GetAnalysisQry } from '../../../../../../features/analysis/application/
 import { EditAnalysisPage } from '../../../../../../features/analysis/delivery/edit-analysis.page'
 import { GetWaterZonesQry } from '../../../../../../features/water-zone/application/get-water-zones.qry'
 
-const Page = async ({ params }: { params: { id: string } }) => {
-  const { id } = params
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params
   const analysis = await webAppContainer
     .get<UseCaseService>(UseCaseService.ID)
     .execute(GetAnalysisQry, id)

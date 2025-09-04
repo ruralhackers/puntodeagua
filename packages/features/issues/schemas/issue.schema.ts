@@ -6,7 +6,7 @@ export type IssueSchema = z.infer<typeof issueSchema>
 export const issueSchema = z.object({
   id: idSchema,
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   reporterName: z.string(),
   status: z.string(),
   startAt: z.date(),

@@ -13,5 +13,6 @@ export interface WaterMeterDto {
     readingDate: Date
     reading: string
     normalizedReading: string
+    consumption: number
   }>
 }

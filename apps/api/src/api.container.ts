@@ -15,7 +15,8 @@ import {
   WATER_REPOSITORY,
   WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
-import { CreateAnalysisCmd } from './features/analysis/application/create-analisys.cmd'
+import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
+import { EditAnalysisCmd } from './features/analysis/application/edit-analysis.cmd'
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
@@ -80,6 +81,8 @@ export class ApiContainer extends CoreContainer {
     this.register(GetAnalysisQry.ID, getAnalysisQry)
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+    const editAnalysisCmd = new EditAnalysisCmd(analysisRepository)
+    this.register(EditAnalysisCmd.ID, editAnalysisCmd)
 
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)

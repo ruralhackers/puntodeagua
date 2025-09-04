@@ -7,6 +7,7 @@ import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issu
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
 import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
+import { EditAnalysisCmd } from '../../features/analysis/application/edit-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from '../../features/analysis/application/get-analysis.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
@@ -56,15 +57,16 @@ export class WebappContainer extends CoreContainer {
     const loginCmd = new LoginCmd(authApiRestRepository)
     this.register(LoginCmd.ID, loginCmd)
 
+    //analysis
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
-
     const getAnalysisQry = new GetAnalysisQry(analysisRepository)
     this.register(GetAnalysisQry.ID, getAnalysisQry)
-
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+    const editAnalysisCmd = new EditAnalysisCmd(analysisRepository)
+    this.register(EditAnalysisCmd.ID, editAnalysisCmd)
 
     const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)

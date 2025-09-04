@@ -13,6 +13,10 @@ export class AnalysisApiRestRepository implements AnalysisRepository {
   async findById(id: Id): Promise<Analysis | undefined> {
     try {
       const json = await this.httpClient.get<AnalysisDto>(`analyses/${id.toString()}`)
+      console.log({ json })
+
+      if (!json.data) return undefined
+
       return Analysis.fromDto(json.data!)
     } catch (error) {
       return undefined

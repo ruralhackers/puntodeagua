@@ -13,6 +13,6 @@ const Page: NextPage = async () => {
     return <div>Analysis not found</div>
   }
 
-  return <EditAnalysisPage analysis={analysis} />
+  return <EditAnalysisPage analysis={analysis.toDto()} />
 }
 export default Page

@@ -15,7 +15,7 @@ import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { EditAnalysisCmd } from '../application/edit-analysis.cmd'
 // import { useUseCase } from '@/<src/core/use-cases/use-use-case'
 
-export const EditAnalysisPage: FC<{ analysis: Analysis }> = ({ analysis }) => {
+export const EditAnalysisPage: FC<{ analysis: AnalysisDto }> = ({ analysis }) => {
   const router = useRouter()
 
   const editAnalysisCommand = useUseCase(EditAnalysisCmd)
@@ -23,7 +23,7 @@ export const EditAnalysisPage: FC<{ analysis: Analysis }> = ({ analysis }) => {
   const form = useForm<z.infer<typeof analysisSchema>>({
     resolver: zodResolver(analysisSchema),
     defaultValues: {
-      ...analysis.toDto()
+      ...analysis
     }
   })
 

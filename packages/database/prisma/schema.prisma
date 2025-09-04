@@ -111,6 +111,9 @@ model WaterPoint {
   location String
 
   description String @default("") @db.Text
+  
+  fixedPopulation    Int @default(0) @map("fixed_population")
+  floatingPopulation Int @default(0) @map("floating_population")
 
   community   Community @relation(fields: [communityId], references: [id])
   communityId String    @map("community_id")

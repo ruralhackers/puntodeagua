@@ -13,12 +13,24 @@ export class WaterPointPrismaRepository
 
   async findAll(): Promise<WaterPoint[]> {
     const waterPoints = await this.getModel().findMany()
-    return waterPoints.map((waterPoint) => WaterPoint.create(waterPoint))
+    return waterPoints.map((waterPoint) =>
+      WaterPoint.create({
+        ...waterPoint,
+        fixedPopulation: waterPoint.fixedPopulation ?? 0,
+        floatingPopulation: waterPoint.floatingPopulation ?? 0
+      })
+    )
   }
 
   async findById(id: Id): Promise<WaterPoint | undefined> {
     const wp = await this.getModel().findUniqueOrThrow({ where: { id: id.toString() } })
-    return wp ? WaterPoint.create(wp) : undefined
+    return wp
+      ? WaterPoint.create({
+          ...wp,
+          fixedPopulation: wp.fixedPopulation ?? 0,
+          floatingPopulation: wp.floatingPopulation ?? 0
+        })
+      : undefined
   }
 
   async save(waterPoint: WaterPoint): Promise<void> {
@@ -27,7 +39,9 @@ export class WaterPointPrismaRepository
       communityId: waterPoint.communityId.toString(),
       name: waterPoint.name,
       location: waterPoint.location.toString(),
-      description: waterPoint.description
+      description: waterPoint.description,
+      fixedPopulation: waterPoint.fixedPopulation,
+      floatingPopulation: waterPoint.floatingPopulation
     }
 
     await this.getModel().upsert({
@@ -38,7 +52,9 @@ export class WaterPointPrismaRepository
       update: {
         name: data.name,
         location: data.location,
-        description: data.description
+        description: data.description,
+        fixedPopulation: data.fixedPopulation,
+        floatingPopulation: data.floatingPopulation
       }
     })
   }

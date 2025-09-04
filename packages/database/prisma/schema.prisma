@@ -52,6 +52,7 @@ model User {
   roles         Json      @default("[]")
   accounts      Account[]
   sessions      Session[]
+  files         File[]    // Relación con archivos subidos por el usuario
 }
 
 model VerificationToken {
@@ -162,10 +163,37 @@ model WaterMeterReading {
   readingDate       DateTime
   notes             String?
 
+  files File[] @relation("WaterMeterReadingFiles")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([waterMeterId])
+}
+
+model File {
+  id           String   @id @default(cuid())
+  filename     String   // Nombre único del archivo
+  originalName String   // Nombre original del usuario
+  mimeType     String
+  size         Int
+  url          String   // URL pública
+  bucket       String
+  key          String   // Clave en R2
+  
+  entityType   String   // Tipo de entidad (ej: 'water-meter-reading')
+  entityId     String   // ID de la entidad
+  
+  uploadedBy   String   // ID del usuario que subió
+  user         User     @relation(fields: [uploadedBy], references: [id])
+  
+  // Relaciones con entidades que pueden tener archivos
+  waterMeterReadings WaterMeterReading[] @relation("WaterMeterReadingFiles")
+  
+  createdAt    DateTime @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
 }
 
 model Issue {

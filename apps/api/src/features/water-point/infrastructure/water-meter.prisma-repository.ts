@@ -54,13 +54,19 @@ export class WaterMeterPrismaRepository
   async findAll(): Promise<WaterMeter[]> {
     const waterMeters = await this.getModel().findMany({
       include: {
-        waterZone: true
+        waterZone: true,
+        waterMeterReadings: {
+          orderBy: { readingDate: 'desc' },
+          take: 1
+        }
       }
     })
     return waterMeters.map((wm) =>
       WaterMeter.create({
         ...wm,
-        waterZoneName: wm.waterZone.name
+        waterZoneName: wm.waterZone.name,
+        lastReadingValue: wm.waterMeterReadings[0]?.reading?.toString(),
+        lastReadingDate: wm.waterMeterReadings[0]?.readingDate
       })
     )
   }

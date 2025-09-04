@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Id } from 'core'
-import { Analysis } from 'features/registers/entities/analysis'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
@@ -23,15 +22,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
-// import { useUseCase } from '@/src/core/use-cases/use-use-case'
 
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
 
   const createAnalysisSchema = analysisSchema.omit({ id: true })
-
-  // const analysisParams = ['ph', 'turbidity', 'chlorine']
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -44,15 +40,6 @@ export const CreateAnalysisPage: NextPage = () => {
       ph: '',
       turbidity: '',
       chlorine: ''
-      // tipo: '',
-      // prioridad: '',
-      // puntoAgua: '',
-      // fecha: '',
-      // hora: '',
-      // reportadoPor: '',
-      // descripcion: '',
-      // accionesRealizadas: '',
-      // observaciones: ''
     }
   })
 
@@ -65,10 +52,7 @@ export const CreateAnalysisPage: NextPage = () => {
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
     console.log('Datos del análisis:', values)
-    const analysis = Analysis.create(values)
-    await createAnalysisCommand.execute(analysis.toDto())
-    // await createAnalysisCommand.execute(values)
-    // Aquí iría la lógica para guardar la incidencia cuando tengamos waterZoneId
+    await createAnalysisCommand.execute(values)
     router.push('/')
   }
 
@@ -155,7 +139,7 @@ export const CreateAnalysisPage: NextPage = () => {
                     htmlFor={analysisTypeId}
                     className="block text-sm font-medium text-gray-700 mb-2"
                   >
-                    Tipo de Incidencia
+                    Tipo de Análisis
                   </label>
                   <select
                     id={analysisTypeId}
@@ -175,7 +159,6 @@ export const CreateAnalysisPage: NextPage = () => {
                 </div>
               </div>
 
-              {/* add form field for each analysis params with a label */}
               {analysisParams.map((param) => (
                 <div key={param}>
                   <FormField
@@ -381,7 +364,7 @@ export const CreateAnalysisPage: NextPage = () => {
               Cancelar
             </Button>
             <Button className="flex-1" variant="destructive" type="submit">
-              Reportar Incidencia
+              Añadir Análisis
             </Button>
           </div>
         </form>

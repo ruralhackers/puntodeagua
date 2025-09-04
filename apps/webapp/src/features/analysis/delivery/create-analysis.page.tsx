@@ -98,7 +98,6 @@ export const CreateAnalysisPage: NextPage = () => {
           {/* Información básica */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
-
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <FormField

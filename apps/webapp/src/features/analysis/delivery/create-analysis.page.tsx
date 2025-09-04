@@ -118,11 +118,11 @@ export const CreateAnalysisPage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="analyst"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Analista</FormLabel>
                       <FormControl>
-                        <input type="text" placeholder="Nombre del analista" />
+                        <Input type="text" required placeholder="Nombre del analista" {...field} />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -140,7 +140,7 @@ export const CreateAnalysisPage: NextPage = () => {
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
-                        <input type="date" placeholder="Fecha de análisis" />
+                        <input type="date" required placeholder="Fecha de análisis" />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -181,14 +181,30 @@ export const CreateAnalysisPage: NextPage = () => {
                   <FormField
                     control={form.control}
                     name={param as keyof z.infer<typeof createAnalysisSchema>}
-                    render={() => (
+                    render={({ field }) => (
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>
                           {param === 'description' ? (
-                            <textarea placeholder="Descripción" rows={4} />
+                            <textarea
+                              placeholder="Descripción"
+                              rows={4}
+                              name={field.name}
+                              onBlur={field.onBlur}
+                              onChange={field.onChange}
+                              ref={field.ref}
+                              value={(field.value as string) ?? ''}
+                            />
                           ) : (
-                            <Input type="text" placeholder={param} />
+                            <Input
+                              type="text"
+                              placeholder={param}
+                              name={field.name}
+                              onBlur={field.onBlur}
+                              onChange={field.onChange}
+                              ref={field.ref}
+                              value={(field.value as string) ?? ''}
+                            />
                           )}
                           {/* <input type="text" placeholder={param} /> */}
                         </FormControl>

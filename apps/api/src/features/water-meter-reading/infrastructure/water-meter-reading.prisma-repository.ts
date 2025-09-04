@@ -7,29 +7,68 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
 
   async findAll(): Promise<WaterMeterReading[]> {
     const readings = await this.client.waterMeterReading.findMany({
+      include: {
+        files: true
+      },
       orderBy: {
         readingDate: 'desc'
       }
     })
 
-    return readings.map((reading) =>
-      WaterMeterReading.create({
+    return readings.map((reading) => {
+      const files =
+        reading.files?.map((file) => ({
+          id: file.id,
+          filename: file.filename,
+          originalName: file.originalName,
+          mimeType: file.mimeType,
+          size: file.size,
+          url: file.url,
+          bucket: file.bucket,
+          key: file.key,
+          entityType: file.entityType,
+          entityId: file.entityId,
+          uploadedBy: file.uploadedBy,
+          createdAt: file.createdAt
+        })) || []
+
+      return WaterMeterReading.create({
         id: reading.id,
         waterMeterId: reading.waterMeterId,
         reading: reading.reading.toString(),
         normalizedReading: reading.normalizedReading.toString(),
         readingDate: reading.readingDate,
-        notes: reading.notes || undefined
+        notes: reading.notes || undefined,
+        files
       })
-    )
+    })
   }
 
   async findById(id: Id): Promise<WaterMeterReading | undefined> {
     const reading = await this.client.waterMeterReading.findUnique({
-      where: { id: id.toString() }
+      where: { id: id.toString() },
+      include: {
+        files: true
+      }
     })
 
     if (!reading) return undefined
+
+    const files =
+      reading.files?.map((file) => ({
+        id: file.id,
+        filename: file.filename,
+        originalName: file.originalName,
+        mimeType: file.mimeType,
+        size: file.size,
+        url: file.url,
+        bucket: file.bucket,
+        key: file.key,
+        entityType: file.entityType,
+        entityId: file.entityId,
+        uploadedBy: file.uploadedBy,
+        createdAt: file.createdAt
+      })) || []
 
     return WaterMeterReading.create({
       id: reading.id,
@@ -37,7 +76,8 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
       reading: reading.reading.toString(),
       normalizedReading: reading.normalizedReading.toString(),
       readingDate: reading.readingDate,
-      notes: reading.notes || undefined
+      notes: reading.notes || undefined,
+      files
     })
   }
 

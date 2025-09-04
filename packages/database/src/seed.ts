@@ -4,12 +4,11 @@ import { client } from './client'
 const prisma = client
 
 async function main() {
+  await deleteAll()
   await seedUsers()
   const communityId = await seedPlanAndCommunity()
   await seedWaterZones(communityId)
-  await seedWaterPoints(communityId)
   await seedAnalyses()
-  await seedUsers()
   const waterPointIds = await seedWaterPoints(communityId)
   await seedHolders()
   await seedWaterMeters(waterPointIds)
@@ -26,9 +25,18 @@ main()
     await prisma.$disconnect()
   })
 
+async function deleteAll() {
+  await prisma.user.deleteMany({})
+  await prisma.file.deleteMany({})
+  await prisma.waterMeterReading.deleteMany({})
+  await prisma.waterMeter.deleteMany({})
+  await prisma.waterPoint.deleteMany({})
+  await prisma.waterZone.deleteMany({})
+  await prisma.issue.deleteMany({})
+}
+
 async function seedUsers() {
   // Delete existing users first
-  await prisma.user.deleteMany({})
 
   const saltRounds = 10
 
@@ -95,7 +103,6 @@ const WATER_POINTS = [
 ]
 
 async function seedWaterPoints(communityId: string) {
-  await prisma.waterPoint.deleteMany({})
   const waterPoints = await prisma.waterPoint.createManyAndReturn({
     data: WATER_POINTS.map((wp) => ({
       ...wp,
@@ -106,7 +113,6 @@ async function seedWaterPoints(communityId: string) {
 }
 
 async function seedWaterZones(communityId: string) {
-  await prisma.waterZone.deleteMany({})
   const waterZones = await prisma.waterZone.createMany({
     data: [
       {
@@ -130,7 +136,6 @@ async function seedWaterZones(communityId: string) {
 async function seedAnalyses() {
   const waterZone = await prisma.waterZone.findFirst()
 
-  await prisma.analysis.deleteMany({})
   await prisma.analysis.createMany({
     data: [
       {
@@ -169,15 +174,12 @@ const HOLDERS = [
 ]
 
 async function seedHolders() {
-  await prisma.holder.deleteMany({})
   await prisma.holder.createMany({
     data: HOLDERS
   })
 }
 
 async function seedWaterMeters(waterPointIds: string[]) {
-  await prisma.waterMeter.deleteMany({})
-
   const holders = await prisma.holder.findMany()
   const waterZones = await prisma.waterZone.findMany()
 
@@ -228,8 +230,6 @@ async function seedWaterMeters(waterPointIds: string[]) {
 }
 
 async function seedIssues() {
-  await prisma.issue.deleteMany({})
-
   const waterZones = await prisma.waterZone.findMany()
 
   const issues = [
@@ -270,8 +270,6 @@ async function seedIssues() {
 }
 
 async function seedWaterMeterReadings() {
-  await prisma.waterMeterReading.deleteMany({})
-
   const waterMeters = await prisma.waterMeter.findMany()
 
   if (waterMeters.length === 0) {

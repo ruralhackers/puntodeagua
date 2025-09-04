@@ -1,3 +1,5 @@
+import type { FileDto } from './file.dto'
+
 export interface WaterMeterReadingDto {
   id: string
   waterMeterId: string
@@ -5,4 +7,5 @@ export interface WaterMeterReadingDto {
   normalizedReading: string
   readingDate: Date
   notes?: string
+  files: FileDto[]
 }

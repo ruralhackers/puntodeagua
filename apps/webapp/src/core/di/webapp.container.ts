@@ -1,4 +1,7 @@
-import { CoreContainer, HttpClient } from 'core'
+import { CoreContainer, HttpClient, UseCaseService } from 'core'
+import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
+import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
+import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
@@ -52,6 +55,14 @@ export class WebappContainer extends CoreContainer {
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
+
+    const middlewares = [
+      this.get<Middleware>(LogMiddleware.ID),
+      this.get<Middleware>(EmptyMiddleware.ID)
+    ]
+
+    const useCaseService = new UseCaseService(middlewares, this)
+    this.register(UseCaseService.ID, useCaseService)
   }
 }
 

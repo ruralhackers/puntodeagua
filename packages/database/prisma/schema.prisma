@@ -173,7 +173,7 @@ model Issue {
   waterZoneId String    @map("water_zone_id")
 
   title        String
-  description  String
+  description  String?
   reporterName String
 
   status  String

@@ -10,6 +10,7 @@ async function main() {
   const waterPointIds = await seedWaterPoints(communityId)
   await seedHolders()
   await seedWaterMeters(waterPointIds)
+  await seedIssues(communityId)
 }
 
 main()
@@ -192,4 +193,41 @@ async function seedWaterMeters(waterPointIds: string[]) {
   })
 
   console.log(`Created ${waterMeters.length} water meters`)
+}
+
+const ISSUES = [
+  {
+    status: "open",
+    title: "Fuga en tubería principal",
+    description: null,
+    reporterName: "Olga",
+    startAt: "2025-09-03T20:05:35.000Z",
+    endAt: null,
+  },
+  {
+    status: "open",
+    title: "Presión baja en zona residencial",
+    description: null,
+    reporterName: "Rosabel",
+    startAt: "2025-09-02T09:24:35.000Z",
+    endAt: null,
+  },
+  {
+    status: "closed",
+    title: "Avería en bomba de agua",
+    description: "La bomba principal presenta ruidos anómalos y baja presión",
+    reporterName: "Rosabel",
+    startAt: "2025-08-25T18:45:00.000Z",
+    endAt: "2025-09-03T10:00:00.000Z",
+  }
+]
+
+async function seedIssues(waterZoneId: string) {
+  await prisma.issue.deleteMany({});
+  await prisma.issue.createMany({
+    data: ISSUES.map((wp) => ({
+      ...wp,
+      waterZoneId,
+    })),
+  });
 }

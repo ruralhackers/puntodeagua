@@ -1,10 +1,12 @@
-import type { WaterMeterReading } from 'features/entities/water-meter-reading'
+interface WaterMeterReadingHistoryItemProps {
+  item: any
+}
 
-export default function WaterMeterReadingHistoryItem({ item }) {
+export default function WaterMeterReadingHistoryItem({ item }: WaterMeterReadingHistoryItemProps) {
   console.log(item)
   return (
     <div className="flex gap-4">
-      <p>{item.readingDate}</p>
+      <p>{item.readingDate.toLocaleString()}</p>
       <p>Consumo en metros cúbicos</p>
       <p>{item.normalizedReading}</p>
       <p>Señal de advertencia si sobrepasa límite</p>

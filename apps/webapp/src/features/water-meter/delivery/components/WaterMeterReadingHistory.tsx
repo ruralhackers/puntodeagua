@@ -1,19 +1,19 @@
-import type { WaterMeter } from 'features/entities/water-meter'
+import type { WaterMeter } from 'features'
 import WaterMeterReadingHistoryItem from './WaterMeterReadingHistoryItem'
 
 interface WaterMeterReadingHistoryProps {
   readings: WaterMeter['readings']
 }
 
-export default function WaterMeterReadingHistory({ readings }: WaterMeterReadingHistoryProps) {
+export default function WatersMeterReadingHistory({ readings }: WaterMeterReadingHistoryProps) {
   return (
     <div>
       <div>
         <p>Historial de lecturas</p>
         <p>Contador en metros cúbicos, consumos en L</p>
       </div>
-      {readings?.map((item) => (
-        <WaterMeterReadingHistoryItem item={item} />
+      {(readings ?? []).map((item) => (
+        <WaterMeterReadingHistoryItem key={item.id} item={item} />
       ))}
     </div>
   )

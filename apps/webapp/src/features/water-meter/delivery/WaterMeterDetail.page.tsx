@@ -22,7 +22,7 @@ export default function WaterMeterDetailPage({ waterMeter }: WaterMeterDetailPag
         <p>{waterMeter?.waterZoneName}</p>
       </div>
       <div>
-        <WaterMeterReadingHistory readings={waterMeter.readings} />
+        <WaterMeterReadingHistory readings={waterMeter.readings ?? []} />
       </div>
     </div>
   )

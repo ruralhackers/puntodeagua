@@ -29,6 +29,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -75,9 +77,11 @@ export const CreateIssuePage: NextPage = () => {
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      description: '',
       waterZoneId: 'cmf580rl90006rx07yycjwao3',
-      reporterName: ''
+      description: '',
+      reporterName: '',
+      status: '',
+      startAt: ''
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -92,9 +96,11 @@ export const CreateIssuePage: NextPage = () => {
     await saveIssueCommand.execute(
       Issue.create({
         title: values.title,
+        waterZoneId: values.waterZoneId,
         description: values.description,
         reporterName: values.reporterName,
-        waterZoneId: values.waterZoneId
+        status: values.status,
+        startAt: values.startAt
       })
     )
     router.push('/')
@@ -146,7 +152,7 @@ export const CreateIssuePage: NextPage = () => {
                       <FormLabel>Zona *</FormLabel>
                       <Select>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la zona"/>
+                          <SelectValue placeholder="Selecciona la zona" />
                         </SelectTrigger>
                         <SelectContent>
                           {waterZone.map((wz) => (
@@ -175,8 +181,8 @@ export const CreateIssuePage: NextPage = () => {
                           required
                         />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
@@ -186,7 +192,7 @@ export const CreateIssuePage: NextPage = () => {
                 <FormField
                   control={form.control}
                   name="title"
-                  render={({field}) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Incidencia *</FormLabel>
                       <FormControl>
@@ -197,8 +203,8 @@ export const CreateIssuePage: NextPage = () => {
                           required
                         ></Input>
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
@@ -219,18 +225,48 @@ export const CreateIssuePage: NextPage = () => {
                           cols={40}
                         />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
               </div>
 
               <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">📅 Estado y
-                  fechas</h3>
-                <div className="bg-white rounded-lg p-4 border border-blue-200">
-                  
+                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">
+                  📅 Estado y fechas
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Estado *</FormLabel>
+                          <FormControl>
+                            <Select required>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecciona el estado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem key="open" value="open">
+                                  Abierta
+                                </SelectItem>
+                                <SelectItem key="closed" value="closed">
+                                  Cerrada
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormDescription />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    ></FormField>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-4 border border-blue-200"></div>
                 </div>
               </div>
 

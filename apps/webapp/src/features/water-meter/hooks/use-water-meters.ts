@@ -1,10 +1,11 @@
 import { UseCaseService } from 'core'
-import { WaterMeter } from 'features/entities/water-meter'
+import type { GetWaterMetersFiltersDto } from 'features'
+import type { WaterMeter } from 'features/entities/water-meter'
 import { useEffect, useState } from 'react'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetWaterMetersQry } from '../application/get-water-meters.qry'
 
-export function useWaterMeters() {
+export function useWaterMeters(filters: GetWaterMetersFiltersDto = {}) {
   const [meters, setMeters] = useState<WaterMeter[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -16,7 +17,7 @@ export function useWaterMeters() {
         setError(null)
 
         const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
-        const waterMeters = await useCaseService.execute(GetWaterMetersQry)
+        const waterMeters = await useCaseService.execute(GetWaterMetersQry, filters)
 
         setMeters(waterMeters)
       } catch (err) {
@@ -28,7 +29,7 @@ export function useWaterMeters() {
     }
 
     fetchMeters()
-  }, [])
+  }, [filters])
 
   return { meters, isLoading, error }
 }

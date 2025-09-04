@@ -12,17 +12,17 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
   async save(input: Issue): Promise<void> {
     const update = {
       waterZoneId: input.waterZoneId.toString(),
-      title: input.title
+      title: input.title,
+      reporterName: input.reporterName,
+      description: input.description,
+      status: input.status,
+      startAt: input.startAt,
+      endAt: input.endAt
     }
 
     const create = {
       ...update,
-      id: input.id.toString(),
-      reporterName: '',
-      description: '',
-      status: 'OPEN',
-      startAt: new Date(),
-      endAt: new Date()
+      id: input.id.toString()
     }
 
     await this.getModel().upsert({

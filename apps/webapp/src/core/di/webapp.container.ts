@@ -2,6 +2,7 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
+import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
@@ -73,6 +74,9 @@ export class WebappContainer extends CoreContainer {
     const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
+    const getIssueByIdQry = new GetIssueByIdQry(issueApiRestRepository)
+    this.register(GetIssueByIdQry.ID, getIssueByIdQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

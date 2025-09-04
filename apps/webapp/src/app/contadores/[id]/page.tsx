@@ -6,7 +6,6 @@ import WaterMeterDetailPage from '@/src/features/water-meter/delivery/WaterMeter
 const Page: NextPage = async ({ params }) => {
   const { id } = params
   const waterMeter = await getUseCase(GetWaterMeterQry).execute(id)
-  console.log('page:', waterMeter)
   return <WaterMeterDetailPage waterMeter={waterMeter} />
 }
 

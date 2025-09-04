@@ -1,13 +1,16 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Id } from 'core'
 import { Issue, type IssueSchema, issueSchema, type WaterZoneDto } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
 
@@ -17,6 +20,7 @@ export const EditIssuePage: NextPage<{
 }> = ({ waterZones, id }) => {
   const router = useRouter()
   const saveIssueCommand = useUseCase(SaveIssueCmd)
+  const getIssueByIdQry = useUseCase(GetIssueByIdQry)
 
   const form = useForm<IssueSchema>({
     resolver: zodResolver(issueSchema),
@@ -27,15 +31,18 @@ export const EditIssuePage: NextPage<{
       startAt: new Date(),
       reporterName: '',
       status: 'open'
-      // tipo: '',
-      // prioridad: '',
-      // puntoAgua: '',
-      // fecha: '',
-      // hora: '',
-      // accionesRealizadas: '',
-      // observaciones: ''
     }
   })
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    const fetchIssue = async () => {
+      const issue = await getIssueByIdQry.execute(Id.create(id))
+      const issueDto = issue.toDto()
+      form.reset(issueDto)
+    }
+    fetchIssue()
+  }, [])
 
   async function onSubmit(values: IssueSchema) {
     await saveIssueCommand.execute(
@@ -59,7 +66,15 @@ export const EditIssuePage: NextPage<{
           onClick={() => router.back()}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            role="img"
+            aria-label="Volver"
+          >
+            <title>Volver</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -69,8 +84,8 @@ export const EditIssuePage: NextPage<{
           </svg>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Incidencia</h1>
-          <p className="text-gray-600">Reporta una nueva incidencia o problema</p>
+          <h1 className="text-2xl font-bold text-gray-900">Editar Incidencia</h1>
+          <p className="text-gray-600">Modifica los datos de la incidencia</p>
         </div>
       </div>
 

@@ -2,43 +2,15 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createIssueSchema, Issue, type WaterZoneDto } from 'features'
-import type { CreateIssueSchema } from 'features/schemas/create-issue.schema'
+import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
-
-const tiposIncidencia = [
-  'Fuga de agua',
-  'Baja presión',
-  'Corte de suministro',
-  'Calidad del agua',
-  'Avería en bomba',
-  'Problema eléctrico',
-  'Obstrucción en tubería',
-  'Otro'
-]
-
-const prioridades = [
-  { value: 'baja', label: 'Baja', color: 'text-green-600' },
-  { value: 'media', label: 'Media', color: 'text-yellow-600' },
-  { value: 'alta', label: 'Alta', color: 'text-orange-600' },
-  { value: 'critica', label: 'Crítica', color: 'text-red-600' }
-]
-
-const puntosAgua = [
-  'Pozo Principal',
-  'Tanque Elevado Norte',
-  'Tanque Elevado Sur',
-  'Red Distribución Centro',
-  'Red Distribución Periferia',
-  'Estación de Bombeo'
-]
 
 interface CreateIssuePageProps {
   waterZones: WaterZoneDto[]
@@ -57,13 +29,6 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       startAt: new Date(),
       reporterName: '',
       status: 'open'
-      // tipo: '',
-      // prioridad: '',
-      // puntoAgua: '',
-      // fecha: '',
-      // hora: '',
-      // accionesRealizadas: '',
-      // observaciones: ''
     }
   })
 

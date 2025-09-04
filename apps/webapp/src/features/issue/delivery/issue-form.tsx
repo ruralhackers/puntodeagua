@@ -1,5 +1,5 @@
 import type { IssueSchema, WaterZoneDto } from 'features'
-import type { CreateIssueSchema } from 'features/schemas/create-issue.schema'
+import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { FC } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
@@ -30,11 +30,11 @@ export const IssueForm: FC<{
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (x) => {
+        console.log(form.getValues())
         console.log(x)
       })}
       className="space-y-8"
     >
-      {/* Información básica */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
 
@@ -43,10 +43,10 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="waterZoneId"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Zona *</FormLabel>
-                  <Select>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona la zona" />
                     </SelectTrigger>
@@ -170,48 +170,6 @@ export const IssueForm: FC<{
 
           {/*    <div className="grid grid-cols-2 gap-4">*/}
           {/*      <div>*/}
-          {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*          Tipo de Incidencia **/}
-          {/*        </label>*/}
-          {/*        <select*/}
-          {/*          name="tipo"*/}
-          {/*          value={formData.tipo}*/}
-          {/*          onChange={handleInputChange}*/}
-          {/*          required*/}
-          {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*        >*/}
-          {/*          <option value="">Selecciona un tipo</option>*/}
-          {/*          {tiposIncidencia.map((tipo) => (*/}
-          {/*            <option key={tipo} value={tipo}>*/}
-          {/*              {tipo}*/}
-          {/*            </option>*/}
-          {/*          ))}*/}
-          {/*        </select>*/}
-          {/*      </div>*/}
-
-          {/*      <div>*/}
-          {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*          Prioridad **/}
-          {/*        </label>*/}
-          {/*        <select*/}
-          {/*          name="prioridad"*/}
-          {/*          value={formData.prioridad}*/}
-          {/*          onChange={handleInputChange}*/}
-          {/*          required*/}
-          {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*        >*/}
-          {/*          <option value="">Selecciona prioridad</option>*/}
-          {/*          {prioridades.map((prioridad) => (*/}
-          {/*            <option key={prioridad.value} value={prioridad.value}>*/}
-          {/*              {prioridad.label}*/}
-          {/*            </option>*/}
-          {/*          ))}*/}
-          {/*        </select>*/}
-          {/*      </div>*/}
-          {/*    </div>*/}
-
-          {/*    <div className="grid grid-cols-2 gap-4">*/}
-          {/*      <div>*/}
           {/*        <label className="block text-sm font-medium text-gray-700 mb-2">Fecha *</label>*/}
           {/*        <input*/}
           {/*          type="date"*/}
@@ -234,79 +192,8 @@ export const IssueForm: FC<{
           {/*        />*/}
           {/*      </div>*/}
           {/*    </div>*/}
-
-          {/*    <div>*/}
-          {/*      <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*        Reportado por **/}
-          {/*      </label>*/}
-          {/*      <input*/}
-          {/*        type="text"*/}
-          {/*        name="reportadoPor"*/}
-          {/*        value={formData.reportadoPor}*/}
-          {/*        onChange={handleInputChange}*/}
-          {/*        required*/}
-          {/*        placeholder="Nombre de quien reporta"*/}
-          {/*        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*      />*/}
-          {/*    </div>*/}
           {/*  </div>*/}
           {/*</div>*/}
-
-          {/*/!* Descripción *!/*/}
-          {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-          {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Descripción del Problema</h3>*/}
-
-          {/*  <div>*/}
-          {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*      Descripción detallada **/}
-          {/*    </label>*/}
-          {/*    <textarea*/}
-          {/*      name="descripcion"*/}
-          {/*      value={formData.descripcion}*/}
-          {/*      onChange={handleInputChange}*/}
-          {/*      required*/}
-          {/*      rows={4}*/}
-          {/*      placeholder="Describe detalladamente el problema, síntomas observados, área afectada, etc."*/}
-          {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
-          {/*/!* Acciones realizadas *!/*/}
-          {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-          {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Inmediatas</h3>*/}
-
-          {/*  <div>*/}
-          {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*      Acciones realizadas (si las hay)*/}
-          {/*    </label>*/}
-          {/*    <textarea*/}
-          {/*      name="accionesRealizadas"*/}
-          {/*      value={formData.accionesRealizadas}*/}
-          {/*      onChange={handleInputChange}*/}
-          {/*      rows={3}*/}
-          {/*      placeholder="Describe las acciones inmediatas que se han tomado para mitigar el problema"*/}
-          {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-
-          {/*/!* Observaciones *!/*/}
-          {/*<div className="bg-white border border-gray-200 rounded-lg p-4">*/}
-          {/*  <h3 className="text-lg font-semibold text-gray-900 mb-4">Observaciones</h3>*/}
-
-          {/*  <div>*/}
-          {/*    <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-          {/*      Observaciones adicionales*/}
-          {/*    </label>*/}
-          {/*    <textarea*/}
-          {/*      name="observaciones"*/}
-          {/*      value={formData.observaciones}*/}
-          {/*      onChange={handleInputChange}*/}
-          {/*      rows={3}*/}
-          {/*      placeholder="Cualquier información adicional relevante"*/}
-          {/*      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-          {/*    />*/}
         </div>
       </div>
 

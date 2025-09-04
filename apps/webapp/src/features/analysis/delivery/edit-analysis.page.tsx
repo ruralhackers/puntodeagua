@@ -31,8 +31,6 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
 }) => {
   const router = useRouter()
 
-  console.log({ waterZone })
-
   const editAnalysisCommand = useUseCase(EditAnalysisCmd)
 
   const form = useForm<z.infer<typeof analysisSchema>>({

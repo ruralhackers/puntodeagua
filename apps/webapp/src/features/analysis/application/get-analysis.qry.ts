@@ -7,7 +7,6 @@ export class GetAnalysisQry implements Query<Analysis | undefined, { id: string 
   constructor(private readonly analysisRepository: AnalysisRepository) {}
 
   async handle({ id }: { id: string }): Promise<Analysis | undefined> {
-    console.log('GetAnalysisQry', id)
     const entity = await this.analysisRepository.findById(Id.create(id))
     return entity
   }

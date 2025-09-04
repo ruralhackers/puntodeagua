@@ -1,7 +1,7 @@
 import type { HttpClient, Id } from 'core'
 import { Issue } from 'features'
 import type { IssueRepository } from 'features/issues/repositories/issue.repository'
-import type { CreateIssueSchema } from 'features/schemas/create-issue.schema'
+import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { IssueDto } from '../../../../../../packages/features/issues/entities/issue.dto'
 
 export class IssueApiRestRepository implements IssueRepository {

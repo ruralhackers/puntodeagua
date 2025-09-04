@@ -53,7 +53,6 @@ export const CreateAnalysisPage: NextPage = () => {
   }, [selectedType])
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
-    console.log('Datos del análisis:', values)
     await createAnalysisCommand.execute(values)
     router.push('/')
   }

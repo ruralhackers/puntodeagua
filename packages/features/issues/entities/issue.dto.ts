@@ -6,4 +6,5 @@ export interface IssueDto {
   waterZoneId: string
   status: string
   startAt: Date
+  endAt?: Date
 }

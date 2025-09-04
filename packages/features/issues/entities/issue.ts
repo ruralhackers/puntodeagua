@@ -11,7 +11,8 @@ export class Issue {
     public readonly reporterName: string,
     public readonly startAt: Date,
     public readonly waterZoneId: Id,
-    public readonly status: IssueStatusType
+    public readonly status: IssueStatusType,
+    public readonly endAt?: Date
   ) {}
 
   static create(issueSchema: Omit<IssueSchema, 'id'>) {
@@ -22,7 +23,8 @@ export class Issue {
       issueSchema.reporterName,
       issueSchema.startAt,
       Id.create(issueSchema.waterZoneId),
-      IssueStatusType.create(issueSchema.status)
+      IssueStatusType.create(issueSchema.status),
+      issueSchema.endAt
     )
   }
 
@@ -34,7 +36,8 @@ export class Issue {
       dto.reporterName,
       dto.startAt,
       Id.create(dto.waterZoneId),
-      IssueStatusType.create(dto.status)
+      IssueStatusType.create(dto.status),
+      dto.endAt
     )
   }
 
@@ -46,7 +49,8 @@ export class Issue {
       reporterName: this.reporterName,
       description: this.description,
       status: this.status.toString(),
-      startAt: this.startAt
+      startAt: this.startAt,
+      endAt: this.endAt
     }
   }
 }

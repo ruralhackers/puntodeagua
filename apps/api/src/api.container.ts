@@ -15,12 +15,14 @@ import {
   WATER_REPOSITORY,
   WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
-import { CreateAnalysisCmd } from './features/analysis/application/create-analisys.cmd'
+import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
+import { EditAnalysisCmd } from './features/analysis/application/edit-analysis.cmd'
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
@@ -80,6 +82,8 @@ export class ApiContainer extends CoreContainer {
     this.register(GetAnalysisQry.ID, getAnalysisQry)
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+    const editAnalysisCmd = new EditAnalysisCmd(analysisRepository)
+    this.register(EditAnalysisCmd.ID, editAnalysisCmd)
 
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)
@@ -109,6 +113,9 @@ export class ApiContainer extends CoreContainer {
       waterMeterPrismaRepository
     )
     this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
+
+    const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
+    this.register(GetIssueByIdQry.ID, getIssueByIdQry)
 
     // Note: We register the command without JWT function as it will be injected at runtime
     const authenticateUserCmd = new AuthenticateUserCmd(userPrismaRepository, async () => {

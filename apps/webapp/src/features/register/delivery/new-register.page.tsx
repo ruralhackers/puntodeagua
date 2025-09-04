@@ -23,23 +23,9 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-const registerFormSchema = z
-  .object({
-    registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
-    analyticsSubtype: z.string().optional()
-  })
-  .refine(
-    (data) => {
-      if (data.registerType === 'analytics' && !data.analyticsSubtype) {
-        return false
-      }
-      return true
-    },
-    {
-      message: 'Por favor selecciona un subtipo de analítica',
-      path: ['analyticsSubtype']
-    }
-  )
+const registerFormSchema = z.object({
+  registerType: z.string().min(1, 'Por favor selecciona un tipo de registro')
+})
 
 type RegisterFormValues = z.infer<typeof registerFormSchema>
 
@@ -58,8 +44,6 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
     }
   })
 
-  const registerType = form.watch('registerType')
-
   const typesOfRegister = [
     { value: 'analytics', label: 'Analítica' },
     { value: 'maintenance', label: 'Mantenimiento' },
@@ -67,16 +51,9 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
     { value: 'issue', label: 'Incidencias' }
   ]
 
-  const analyticsSubtypes = [
-    { value: 'chlorine-ph', label: 'Cloro y pH (por usuario)' },
-    { value: 'turbidity', label: 'Turbidez (por usuario)' },
-    { value: 'hardness', label: 'Dureza (por laboratorio)' },
-    { value: 'complete', label: 'Completa (por laboratorio)' }
-  ]
-
   const onSubmit = (values: RegisterFormValues) => {
-    if (values.registerType === 'analytics' && values.analyticsSubtype) {
-      router.push(`/dashboard/nuevo-registro/analitica/${values.analyticsSubtype}`)
+    if (values.registerType === 'analytics') {
+      router.push(`/dashboard/nuevo-registro/analitica`)
     } else if (values.registerType === 'maintenance') {
       router.push('/dashboard/nuevo-registro/mantenimiento')
     } else if (values.registerType === 'counter') {
@@ -125,7 +102,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
             )}
           />
 
-          {registerType === 'analytics' && (
+          {/* {registerType === 'analytics' && (
             <FormField
               control={form.control}
               name="analyticsSubtype"
@@ -150,7 +127,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
                 </FormItem>
               )}
             />
-          )}
+          )} */}
 
           <Button type="submit" className="w-full" size="lg">
             Continuar

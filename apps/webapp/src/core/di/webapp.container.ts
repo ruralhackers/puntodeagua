@@ -2,6 +2,7 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
+import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
@@ -10,6 +11,7 @@ import { WaterMeterReadingApiRestRepository } from '@/src/features/water-meter-r
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
 import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
+import { EditAnalysisCmd } from '../../features/analysis/application/edit-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from '../../features/analysis/application/get-analysis.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
@@ -62,19 +64,23 @@ export class WebappContainer extends CoreContainer {
     const loginCmd = new LoginCmd(authApiRestRepository)
     this.register(LoginCmd.ID, loginCmd)
 
+    //analysis
     const analysisRepository = new AnalysisApiRestRepository(httpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
-
     const getAnalysisQry = new GetAnalysisQry(analysisRepository)
     this.register(GetAnalysisQry.ID, getAnalysisQry)
-
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
+    const editAnalysisCmd = new EditAnalysisCmd(analysisRepository)
+    this.register(EditAnalysisCmd.ID, editAnalysisCmd)
 
     const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
+    const getIssueByIdQry = new GetIssueByIdQry(issueApiRestRepository)
+    this.register(GetIssueByIdQry.ID, getIssueByIdQry)
 
     // Water meter reading commands
     const waterMeterReadingApiRestRepository = new WaterMeterReadingApiRestRepository(httpClient)

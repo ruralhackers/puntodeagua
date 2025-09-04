@@ -1,14 +1,13 @@
 import type { Command } from 'core'
-import { Analysis } from 'features'
+import { Analysis, type AnalysisDto } from 'features'
 import type { AnalysisRepository } from 'features/registers/repositories/analysis.repository'
-import type { AnalysisSchema } from 'features/registers/schemas/analysis.schema'
 
-export class EditAnalysisCmd implements Command<AnalysisSchema> {
+export class EditAnalysisCmd implements Command<AnalysisDto> {
   static readonly ID = 'EditAnalysisCmd'
 
   constructor(private readonly analysisRepository: AnalysisRepository) {}
 
-  async handle(analysis: AnalysisSchema): Promise<void> {
+  async handle(analysis: AnalysisDto): Promise<void> {
     return this.analysisRepository.save(Analysis.fromDto(analysis))
   }
 }

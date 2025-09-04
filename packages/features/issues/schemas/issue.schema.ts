@@ -4,11 +4,12 @@ import { z } from 'zod'
 export type IssueSchema = z.infer<typeof issueSchema>
 
 export const issueSchema = z.object({
-  id: z.string(),
+  id: idSchema,
   title: z.string(),
   description: z.string(),
   reporterName: z.string(),
   status: z.string(),
   startAt: z.date(),
-  waterZoneId: idSchema,
+  endAt: z.date().optional(),
+  waterZoneId: idSchema
 })

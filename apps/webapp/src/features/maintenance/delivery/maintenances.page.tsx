@@ -155,16 +155,15 @@ export const MaintenancesPage: FC<{ maintenances: Maintenance[] }> = ({ maintena
                     </div>
                   </div>
 
-                  {/* Action buttons (placeholders, no functionality yet) */}
+                  {/* Action buttons */}
                   <div className="flex items-center gap-2 ml-4">
-                    <button
+                    <Link
+                      href={`/dashboard/registros/mantenimiento/${dto.id}/edit`}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Editar"
-                      type="button"
-                      disabled
                     >
                       <Edit3 className="w-4 h-4" />
-                    </button>
+                    </Link>
                     <button
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Eliminar"

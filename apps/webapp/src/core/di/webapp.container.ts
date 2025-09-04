@@ -22,6 +22,8 @@ import { AnalysisApiRestRepository } from '../../features/analysis/infrastructur
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
 import { CreateMaintenanceCmd } from '../../features/maintenance/application/create-maintenance.cmd'
+import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-maintenance.cmd'
+import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
@@ -122,8 +124,12 @@ export class WebappContainer extends CoreContainer {
     this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
     const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
     this.register(GetMaintenancesQry.ID, getMaintenancesQry)
+    const getMaintenanceQry = new GetMaintenanceQry(maintenanceRepository)
+    this.register(GetMaintenanceQry.ID, getMaintenanceQry)
     const createMaintenanceCmd = new CreateMaintenanceCmd(maintenanceRepository)
     this.register(CreateMaintenanceCmd.ID, createMaintenanceCmd)
+    const editMaintenanceCmd = new EditMaintenanceCmd(maintenanceRepository)
+    this.register(EditMaintenanceCmd.ID, editMaintenanceCmd)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

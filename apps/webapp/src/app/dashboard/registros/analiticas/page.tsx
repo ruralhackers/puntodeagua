@@ -6,13 +6,11 @@ import { GetAnalysesQry } from '../../../../features/analysis/application/get-an
 import { AnalysesPage } from '../../../../features/analysis/delivery/analyses.page'
 
 const Page: NextPage = async () => {
-  const analysis = await webAppContainer
-    .get<UseCaseService>(UseCaseService.ID)
-    .execute(GetAnalysesQry)
-
-  const zones = await webAppContainer
-    .get<UseCaseService>(UseCaseService.ID)
-    .execute(GetWaterZonesQry)
+  const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
+  const [analysis, zones] = await Promise.all([
+    useCaseService.execute(GetAnalysesQry),
+    useCaseService.execute(GetWaterZonesQry)
+  ])
 
   return <AnalysesPage analysis={analysis} zones={zones} />
 }

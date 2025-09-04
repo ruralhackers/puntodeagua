@@ -14,6 +14,7 @@ import { WaterMeterReadingApiRestRepository } from '@/src/features/water-meter-r
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
 import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
+import { DeleteAnalysisCmd } from '../../features/analysis/application/delete-analysis.cmd'
 import { EditAnalysisCmd } from '../../features/analysis/application/edit-analysis.cmd'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from '../../features/analysis/application/get-analysis.qry'
@@ -77,7 +78,10 @@ export class WebappContainer extends CoreContainer {
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
     const editAnalysisCmd = new EditAnalysisCmd(analysisRepository)
     this.register(EditAnalysisCmd.ID, editAnalysisCmd)
+    const deleteAnalysisCmd = new DeleteAnalysisCmd(analysisRepository)
+    this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
 
+    // water zones
     const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)

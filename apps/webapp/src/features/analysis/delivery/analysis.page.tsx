@@ -1,4 +1,5 @@
-import type { Analysis, WaterZone } from 'features'
+'use client'
+import type { Analysis, AnalysisDto, WaterZone, WaterZoneDto } from 'features'
 import {
   AlertTriangle,
   Calendar,
@@ -9,26 +10,42 @@ import {
   Trash,
   User
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { PageHeader } from '../../../components/analysis/page-header'
 import { Page } from '../../../core/components/page'
+import { useUseCase } from '../../../core/use-cases/use-use-case'
+import { DeleteAnalysisCmd } from '../application/delete-analysis.cmd'
 import { formatDate, toTitle } from './analysis.utils'
 
-export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }> = ({
+export const AnalysisDetailPage: FC<{ analysis: AnalysisDto; zones?: WaterZoneDto[] }> = ({
   analysis,
   zones
 }) => {
-  const dto = analysis.toDto()
-  const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
+  const router = useRouter()
+  const deleteAnalysisCommand = useUseCase(DeleteAnalysisCmd)
+
+  const dto = analysis
+  const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.id, z.name]))
 
   const zoneName = zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`
+
+  const handleDelete = async () => {
+    if (confirm('¿Estás seguro de que deseas eliminar este análisis?')) {
+      await deleteAnalysisCommand.execute(dto.id)
+      router.push(`/dashboard/registros/analiticas`)
+    }
+  }
 
   return (
     <Page>
       <div className="px-3 py-4">
         {/* Header */}
+        <PageHeader title="Análisis" subtitle="Registros de análisis de calidad del agua" />
+
         <div className="flex items-start justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{toTitle(dto.analysisType)}</h1>
           <Popover>
@@ -49,7 +66,7 @@ export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }>
                 </Link>
                 <button
                   type="button"
-                  disabled
+                  onClick={handleDelete}
                   className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent text-red-600 disabled:opacity-60 text-left"
                 >
                   <Trash className="size-4" aria-hidden="true" />

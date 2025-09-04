@@ -12,11 +12,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
 
   const [analysis, zones] = await Promise.all([
-    useCaseService.execute(GetAnalysisQry, { id }),
+    useCaseService.execute(GetAnalysisQry, id),
     useCaseService.execute(GetWaterZonesQry)
   ])
 
   if (!analysis) return null
 
-  return <AnalysisDetailPage analysis={analysis} zones={zones} />
+  return (
+    <AnalysisDetailPage analysis={analysis.toDto()} zones={zones.map((zone) => zone.toDto())} />
+  )
 }

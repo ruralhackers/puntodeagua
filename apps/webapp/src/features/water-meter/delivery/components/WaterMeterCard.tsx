@@ -2,10 +2,9 @@ import Link from 'next/link'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function WaterMeterCard({ meter }: any) {
-  console.log(meter.id)
+  console.log(meter)
   return (
-    // pasarle al link el id real del contador
-    <Link href="/contadores/id">
+    <Link href={`/contadores/${meter.id}}`}>
       <Card>
         <CardHeader>
           <CardTitle>{meter.name}</CardTitle>

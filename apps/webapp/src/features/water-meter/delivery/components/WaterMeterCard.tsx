@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function WaterMeterCard({ meter }: any) {
@@ -17,7 +16,7 @@ export default function WaterMeterCard({ meter }: any) {
           <p>Último consumo • fecha última lectura</p>
         </CardContent>
         <CardFooter>
-          <p>Zona</p>
+          <p>{meter.waterZoneName}</p>
         </CardFooter>
       </Card>
     </Link>

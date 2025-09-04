@@ -1,11 +1,12 @@
-import React from 'react'
+import type { WaterMeterReading } from 'features/entities/water-meter-reading'
 
-export default function WaterMeterReadingHistoryItem() {
+export default function WaterMeterReadingHistoryItem({ item }) {
+  console.log(item)
   return (
-    <div>
-      <p>Fecha</p>
+    <div className="flex gap-4">
+      <p>{item.readingDate}</p>
       <p>Consumo en metros cúbicos</p>
-      <p>Consumo en litros</p>
+      <p>{item.normalizedReading}</p>
       <p>Señal de advertencia si sobrepasa límite</p>
       <div>
         <p>Editar</p>

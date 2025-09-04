@@ -1,4 +1,3 @@
-import { DateTime } from 'core/date-time/date-time'
 import type { Analysis, WaterZone } from 'features'
 import type { FC } from 'react'
 import {
@@ -9,33 +8,15 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
+import { formatDate, toTitle } from './analysis.utils'
 
 export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
   analysis,
   zones
 }) => {
   const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
-
-  function formatDate(date: Date) {
-    try {
-      return DateTime.fromDate(date).format("d 'de' LLLL 'de' yyyy", { locale: 'es' })
-    } catch {
-      return new Date(date).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit'
-      })
-    }
-  }
-
-  function toTitle(analysisType: string) {
-    if (analysisType === 'chlorine_ph') return 'Cloro/pH'
-    if (analysisType === 'turbidity') return 'Turbidez'
-    if (analysisType === 'hardness') return 'Dureza'
-    if (analysisType === 'complete') return 'Completo'
-    return analysisType
-  }
 
   function hasAlert(a: Analysis) {
     const dto = a.toDto()
@@ -57,21 +38,23 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
             return (
               <Card key={dto.id} className="bg-white gap-3 py-4">
                 <CardHeader>
-                  <CardTitle className="text-base">
-                    {toTitle(dto.analysisType)}{' '}
-                    {alert && (
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex align-middle ml-1 text-red-600"
-                      >
-                        ⚠️
-                      </span>
-                    )}
-                  </CardTitle>
-                  <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
-                  <CardAction>
-                    <span className="text-gray-400">›</span>
-                  </CardAction>
+                  <Link to={`/analysis/${dto.id}`} className="block">
+                    <CardTitle className="text-base">
+                      {toTitle(dto.analysisType)}{' '}
+                      {alert && (
+                        <span
+                          aria-hidden="true"
+                          className="inline-flex align-middle ml-1 text-red-600"
+                        >
+                          ⚠️
+                        </span>
+                      )}
+                    </CardTitle>
+                    <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
+                    <CardAction>
+                      <span className="text-gray-400">›</span>
+                    </CardAction>
+                  </Link>
                 </CardHeader>
                 <CardContent className="pt-0 pb-2">
                   <div className="text-sm text-gray-600">

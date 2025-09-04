@@ -1,5 +1,6 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { type FC } from 'react'
@@ -42,7 +43,11 @@ const registerFormSchema = z
 
 type RegisterFormValues = z.infer<typeof registerFormSchema>
 
-export const NewRegisterPage: FC = () => {
+interface NewRegisterPageProps {
+  waterZones: WaterZoneDto[]
+}
+
+export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
   const router = useRouter()
 
   const form = useForm<RegisterFormValues>({

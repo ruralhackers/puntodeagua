@@ -30,5 +30,7 @@ export type { WaterPointRepository } from './repositories/water-point.repository
 export type { WaterZoneRepository } from './repositories/water-zone.repository.ts'
 export { createIssueSchema } from './schemas/create-issue.schema.ts'
 export { fileSchema } from './schemas/file.schema.ts'
+export type { GetWaterMetersFiltersDto } from './schemas/get-water-meters-filters.schema'
+export { getWaterMetersFiltersSchema } from './schemas/get-water-meters-filters.schema'
 export { waterMeterReadingSchema } from './schemas/water-meter-reading.schema.ts'
 export { waterZoneSchema } from './schemas/water-zone.schema.ts'

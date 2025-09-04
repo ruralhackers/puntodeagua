@@ -4,7 +4,7 @@ import { GetWaterMetersQry } from '@/src/features/water-meter/application/get-wa
 import WaterMeterPage from '@/src/features/water-meter/delivery/WaterMeter.page'
 
 const Page: NextPage = async () => {
-  const waterMeters = await getUseCase(GetWaterMetersQry).execute(GetWaterMetersQry)
+  const waterMeters = await getUseCase(GetWaterMetersQry).execute()
   return <WaterMeterPage waterMeters={waterMeters} />
 }
 

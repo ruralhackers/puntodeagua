@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -17,6 +18,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -27,8 +29,6 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar } from '@/components/ui/calendar'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -75,8 +75,7 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       title: '',
       waterZoneId: 'cmf580rl90006rx07yycjwao3',
       description: '',
-      reporterName: '',
-      startAt: '',
+      startAt: new Date(),
       reporterName: '',
       status: 'open'
       // tipo: '',
@@ -93,10 +92,8 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
     await saveIssueCommand.execute(
       Issue.create({
         title: values.title,
-        waterZoneId: values.waterZoneId,
         description: values.description,
         reporterName: values.reporterName,
-        status: values.status,
         startAt: values.startAt,
         waterZoneId: values.waterZoneId,
         status: values.status
@@ -237,7 +234,8 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
                   📅 Estado y fechas
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <divclassName="bg-white rounded-lg p-4 border border-blue-200"><FormField
+                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                    <FormField
                       control={form.control}
                       name="status"
                       render={() => (

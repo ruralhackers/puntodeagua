@@ -170,12 +170,6 @@ export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }>
             </div>
             <div className="text-sm text-gray-500 italic">Sin archivos adjuntos</div>
           </div>
-
-          {/* Identificador */}
-          <div>
-            <div className="text-sm text-gray-500">Identificador</div>
-            <div className="text-xs text-gray-600">{dto.id}</div>
-          </div>
         </div>
       </div>
     </Page>

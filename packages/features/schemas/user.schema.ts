@@ -1,16 +1,15 @@
 import { idSchema } from 'core'
 import { z } from 'zod'
 
-export const userRoleSchema = z.enum(['SUPER_ADMIN', 'MANAGER', 'USER', 'COMMUNITY_ADMIN'])
+export const userRoleSchema = z.enum(['SUPER_ADMIN', 'MANAGER', 'COMMUNITY_ADMIN'])
 
 export const userSchema = z.object({
   id: idSchema,
-  name: z.string().nullable().optional(),
   email: z.string().email(),
+  name: z.string().nullable().optional(),
   emailVerified: z.date().nullable().optional(),
   image: z.string().nullable().optional(),
-  password: z.string().optional(),
-  roles: z.array(userRoleSchema).default(['USER']),
+  roles: z.array(userRoleSchema).default(['COMMUNITY_ADMIN']),
   communityId: idSchema.nullable().optional()
 })
 

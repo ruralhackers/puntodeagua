@@ -18,12 +18,14 @@ import { waterPointApiRest } from './features/water-point/delivery/water-point.a
 import { waterZonesApiRest } from './features/water-zone/delivery/water-zone.api-rest'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+const PORT = process.env.PORT ? Number(process.env.PORT) : 4000
+const WEBAPP_ORIGIN = process.env.WEBAPP_ORIGIN || 'http://localhost:3000'
 
 export const app = new Elysia({ prefix: '/api' })
   .use(swagger())
   .use(
     cors({
-      origin: [/^http:\/\/localhost:3000$/],
+      origin: [WEBAPP_ORIGIN],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization']
@@ -73,6 +75,6 @@ export const app = new Elysia({ prefix: '/api' })
     }
   })
   .use(authApiRest)
-  .listen(4000)
+  .listen(PORT)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

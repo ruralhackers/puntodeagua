@@ -30,13 +30,7 @@ export const IssueForm: FC<{
   const selectedStatus = form.watch('status')
 
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit, (x) => {
-        console.log(form.getValues())
-        console.log(x)
-      })}
-      className="space-y-8"
-    >
+    <form onSubmit={form.handleSubmit(onSubmit, (x) => {})} className="space-y-8">
       <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-3 mb-4">
           📋 Información Básica
@@ -207,7 +201,9 @@ export const IssueForm: FC<{
                     <Input
                       type="date"
                       placeholder="dd/mm/aaaa"
-                      defaultValue={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                      defaultValue={
+                        field.value ? new Date(field.value).toISOString().split('T')[0] : ''
+                      }
                       disabled={selectedStatus === 'closed' ? '' : 'disabled'}
                       required={selectedStatus === 'open' ? '' : 'required'}
                     ></Input>

@@ -39,7 +39,6 @@ export default function WaterMeterReadingHistoryItem({
     }
   }
 
-  console.log(item)
   return (
     <div className="flex gap-4">
       <p>{item.readingDate.toLocaleString()}</p>

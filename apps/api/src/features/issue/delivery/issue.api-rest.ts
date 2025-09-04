@@ -16,8 +16,6 @@ export const issueApiRest = new Elysia({ prefix: '/issues' })
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const issue = await useCaseService.execute(GetIssueByIdQry, Id.create(params.id))
 
-    console.log({ issue })
-
     if (!issue) {
       return { status: 404, body: { message: 'Issue not found' } }
     }

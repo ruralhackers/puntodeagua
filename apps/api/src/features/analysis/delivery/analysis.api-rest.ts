@@ -33,7 +33,6 @@ export const analysisApiRest = new Elysia()
     return
   })
   .post('/analyses/:id', async ({ body, params }) => {
-    console.log('paso')
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const schema = analysisSchema.extend({ analyzedAt: z.coerce.date() })
     const dto = schema.parse(body)

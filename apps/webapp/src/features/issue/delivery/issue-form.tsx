@@ -150,15 +150,48 @@ export const IssueForm: FC<{
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecciona el estado" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="w-full">
                         <SelectItem key="open" value="open">
-                          Abierta
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-circle-alert h-4 w-4 text-red-500"
+                            aria-hidden="true"
+                          >
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" x2="12" y1="8" y2="12"></line>
+                            <line x1="12" x2="12.01" y1="16" y2="16"></line>
+                          </svg>
+                          <span className="text-red-600">Abierta</span>
                         </SelectItem>
                         <SelectItem key="closed" value="closed">
-                          Cerrada
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-circle-check-big h-4 w-4 text-green-500"
+                            aria-hidden="true"
+                          >
+                            <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                            <path d="m9 11 3 3L22 4"></path>
+                          </svg>
+                          <span className="text-green-600">Cerrada</span>
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -207,7 +240,9 @@ export const IssueForm: FC<{
                     <Input
                       type="date"
                       placeholder="dd/mm/aaaa"
-                      defaultValue={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                      defaultValue={
+                        field.value ? new Date(field.value).toISOString().split('T')[0] : ''
+                      }
                       disabled={selectedStatus === 'closed' ? '' : 'disabled'}
                       required={selectedStatus === 'open' ? '' : 'required'}
                     ></Input>

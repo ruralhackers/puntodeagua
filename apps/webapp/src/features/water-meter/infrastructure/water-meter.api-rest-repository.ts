@@ -1,18 +1,33 @@
 import type { HttpClient, Id } from 'core'
-import type { WaterMeterDto, WaterMeterRepository } from 'features'
+import type { GetWaterMetersFiltersDto, WaterMeterDto, WaterMeterRepository } from 'features'
 import { WaterMeter } from 'features/entities/water-meter'
 
 export class WaterMeterApiRestRepository implements WaterMeterRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
-  async findAll(): Promise<WaterMeter[]> {
-    const waterMeterDtos = await this.httpClient.get<WaterMeterDto[]>('water-meters')
+  async findWithFilters(filters: GetWaterMetersFiltersDto): Promise<WaterMeter[]> {
+    const queryParams = new URLSearchParams()
+
+    if (filters.zoneId) {
+      queryParams.append('zoneId', filters.zoneId)
+    }
+
+    if (filters.name) {
+      queryParams.append('name', filters.name)
+    }
+
+    const url = `water-meters${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+    const waterMeterDtos = await this.httpClient.get<WaterMeterDto[]>(url)
     return waterMeterDtos.data!.map(WaterMeter.create)
+  }
+
+  async findAll(): Promise<WaterMeter[]> {
+    return this.findWithFilters({})
   }
 
   async findById(id: Id): Promise<WaterMeter | undefined> {
     try {
-      const json = await this.httpClient.get<any>(`water-meters/${id.toString()}`)
+      const json = await this.httpClient.get<any>(`water-meter/${id.toString()}`)
       return WaterMeter.create(json.data!)
     } catch (error) {
       return undefined

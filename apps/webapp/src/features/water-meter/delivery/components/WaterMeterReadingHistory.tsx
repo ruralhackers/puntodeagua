@@ -1,19 +1,19 @@
-'use client'
-
-import { useState } from 'react'
+import type { WaterMeter } from 'features'
 import WaterMeterReadingHistoryItem from './WaterMeterReadingHistoryItem'
 
-export default function WaterMeterReadingHistory() {
-  const [items, setItems] = useState([])
+interface WaterMeterReadingHistoryProps {
+  readings: WaterMeter['readings']
+}
 
+export default function WatersMeterReadingHistory({ readings }: WaterMeterReadingHistoryProps) {
   return (
     <div>
       <div>
         <p>Historial de lecturas</p>
         <p>Contador en metros cúbicos, consumos en L</p>
       </div>
-      {items.map(() => (
-        <WaterMeterReadingHistoryItem />
+      {(readings ?? []).map((item) => (
+        <WaterMeterReadingHistoryItem key={item.id} item={item} />
       ))}
     </div>
   )

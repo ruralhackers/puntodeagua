@@ -4,8 +4,8 @@ import { GetAnalysisQry } from '../../../features/analysis/application/get-analy
 import { AnalysisDetailPage } from '../../../features/analysis/delivery/analysis.page'
 import { GetWaterZonesQry } from '../../../features/water-zone/application/get-water-zones.qry'
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const id = params.id
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
 
   if (!id) return null
 

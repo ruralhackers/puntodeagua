@@ -1,10 +1,10 @@
 import type { HttpClient, Id } from 'core'
+import type { IssueDto } from 'features'
 import { Issue } from 'features'
-import type { IssueRepository } from 'features/issues/repositories/issue.repository'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
-import type { IssueDto } from '../../../../../../packages/features/issues/entities/issue.dto'
+import type { IssueCreateRepository } from '@/src/features/issue/domain/issue-create.repository'
 
-export class IssueApiRestRepository implements IssueRepository {
+export class IssueApiRestRepository implements IssueCreateRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
   async findAll(): Promise<Issue[]> {
@@ -17,12 +17,18 @@ export class IssueApiRestRepository implements IssueRepository {
       const json = await this.httpClient.get<IssueDto>(`issues/${id.toString()}`)
       return Issue.fromDto(json.data!)
     } catch (error) {
+      console.log({ error })
       return
     }
   }
 
   async save(issue: Issue): Promise<void> {
-    await this.httpClient.post<void, IssueDto>('issues', issue.toDto())
+    await this.httpClient.post<void, IssueDto>(`issues/${issue.id.toString()}`, issue.toDto())
+    return
+  }
+
+  async create(issue: CreateIssueSchema): Promise<void> {
+    await this.httpClient.post<void, CreateIssueSchema>('issues', issue)
     return
   }
 

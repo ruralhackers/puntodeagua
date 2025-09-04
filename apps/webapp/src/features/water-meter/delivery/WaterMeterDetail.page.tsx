@@ -11,7 +11,7 @@ export default function WaterMeterDetailPage({ waterMeter }: WaterMeterDetailPag
 
   return (
     <div>
-      <Link href={'/contadores'}>
+      <Link href={'/dashboard/contadores'}>
         <div>
           <p>Volver atrás</p>
           <h1>{waterMeter?.name}</h1>

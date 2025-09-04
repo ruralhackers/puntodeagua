@@ -1,4 +1,4 @@
-import { UseCaseService } from 'core'
+import { Id, UseCaseService } from 'core'
 import { Elysia } from 'elysia'
 import { createIssueSchema, issueSchema } from 'features'
 import { GetIssueByIdQry } from 'webapp/src/features/issue/application/get-issue-by-id.qry'
@@ -12,9 +12,15 @@ export const issueApiRest = new Elysia({ prefix: '/issues' })
     const issues = await useCaseService.execute(GetAnalysesQry)
     return issues.map((x) => x.toDto())
   })
-  .get('/:id', async () => {
+  .get('/:id', async ({ params }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    const issue = await useCaseService.execute(GetIssueByIdQry)
+    const issue = await useCaseService.execute(GetIssueByIdQry, Id.create(params.id))
+
+    console.log({ issue })
+
+    if (!issue) {
+      return { status: 404, body: { message: 'Issue not found' } }
+    }
     return issue.toDto()
   })
   .post('/', async ({ body }) => {

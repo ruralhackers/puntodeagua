@@ -9,6 +9,7 @@ import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-rest-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import { CreateWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/create-water-meter-reading.cmd'
+import { DeleteWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/delete-water-meter-reading.cmd'
 import { WaterMeterReadingApiRestRepository } from '@/src/features/water-meter-reading/infrastructure/water-meter-reading.api-rest-repository'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
@@ -93,6 +94,11 @@ export class WebappContainer extends CoreContainer {
       waterMeterReadingApiRestRepository
     )
     this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
+
+    const deleteWaterMeterReadingCmd = new DeleteWaterMeterReadingCmd(
+      waterMeterReadingApiRestRepository
+    )
+    this.register(DeleteWaterMeterReadingCmd.ID, deleteWaterMeterReadingCmd)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

@@ -29,28 +29,49 @@ export interface CreateUserDto {
 }
 
 export interface UserRepository {
-  getUsers(): Promise<GetUsersResponseDto>
-  createUser(userData: CreateUserDto): Promise<UserDto>
-  deleteUser(id: string): Promise<void>
+  getUsers(token?: string): Promise<GetUsersResponseDto>
+  createUser(userData: CreateUserDto, token?: string): Promise<UserDto>
+  deleteUser(id: string, token?: string): Promise<void>
 }
 
 export class UserApiRestRepository implements UserRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
-  async getUsers(): Promise<GetUsersResponseDto> {
-    const response = await this.httpClient.get<GetUsersResponseDto>('/users')
+  async getUsers(token?: string): Promise<GetUsersResponseDto> {
+    let response: any
+    if (token) {
+      response = await this.httpClient.get<GetUsersResponseDto>('/users', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    } else {
+      response = await this.httpClient.get<GetUsersResponseDto>('/users')
+    }
     if (!response.data) throw new Error('Empty users response')
     return response.data
   }
 
-  async createUser(userData: CreateUserDto): Promise<UserDto> {
-    const response = await this.httpClient.post<UserDto, CreateUserDto>('/users', userData)
+  async createUser(userData: CreateUserDto, token?: string): Promise<UserDto> {
+    let response: any
+    if (token) {
+      response = await this.httpClient.post<UserDto, CreateUserDto>('/users', userData, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    } else {
+      response = await this.httpClient.post<UserDto, CreateUserDto>('/users', userData)
+    }
     if (!response.data) throw new Error('Empty create user response')
     return response.data
   }
 
-  async deleteUser(id: string): Promise<void> {
-    const response = await this.httpClient.delete(`/users/${id}`)
+  async deleteUser(id: string, token?: string): Promise<void> {
+    let response: any
+    if (token) {
+      response = await this.httpClient.delete(`/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    } else {
+      response = await this.httpClient.delete(`/users/${id}`)
+    }
     if (!response.data) throw new Error('Delete user failed')
   }
 }

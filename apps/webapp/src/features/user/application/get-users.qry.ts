@@ -4,12 +4,16 @@ import type {
   UserRepository
 } from '../infrastructure/user.api-rest-repository'
 
-export class GetUsersQry implements Query<GetUsersResponseDto, void> {
+export interface GetUsersParams {
+  token?: string
+}
+
+export class GetUsersQry implements Query<GetUsersResponseDto, GetUsersParams> {
   static readonly ID = 'GetUsersQry'
 
   constructor(private readonly userRepository: UserRepository) {}
 
-  async handle(): Promise<GetUsersResponseDto> {
-    return this.userRepository.getUsers()
+  async handle(params?: GetUsersParams): Promise<GetUsersResponseDto> {
+    return this.userRepository.getUsers(params?.token)
   }
 }

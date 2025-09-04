@@ -11,19 +11,19 @@ interface JwtPayload {
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export const authMiddleware = (app: Elysia) =>
-  app.use(jwt({ name: 'jwt', secret: JWT_SECRET })).derive(({ headers, jwt, set }) => {
+  app.use(jwt({ name: 'jwt', secret: JWT_SECRET })).derive(async ({ headers, jwt, set }) => {
     // Skip authentication in development if DISABLE_AUTH is set
-    if (process.env.DISABLE_AUTH === 'true' || process.env.NODE_ENV === 'development') {
-      // Return mock user for development
-      return {
-        user: {
-          userId: 'dev-user',
-          email: 'dev@example.com',
-          roles: ['SUPER_ADMIN'],
-          communityId: null
-        }
-      }
-    }
+    // if (process.env.DISABLE_AUTH === 'true' || process.env.NODE_ENV === 'development') {
+    //   // Return mock user for development
+    //   return {
+    //     user: {
+    //       userId: 'dev-user',
+    //       email: 'dev@example.com',
+    //       roles: ['SUPER_ADMIN'],
+    //       communityId: null
+    //     }
+    //   }
+    // }
 
     const authHeader = headers.authorization
     if (!authHeader) {
@@ -38,7 +38,7 @@ export const authMiddleware = (app: Elysia) =>
     }
 
     try {
-      const payload = jwt.verify(token)
+      const payload = await jwt.verify(token)
       if (!payload) {
         set.status = 401
         return { error: 'Invalid token' }

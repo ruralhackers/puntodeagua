@@ -38,7 +38,7 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
             return (
               <Card key={dto.id} className="bg-white gap-3 py-4">
                 <CardHeader>
-                  <Link to={`/analysis/${dto.id}`} className="block">
+                  <Link to={`/dashboard/registros/analiticas/${dto.id}`} className="block">
                     <CardTitle className="text-base">
                       {toTitle(dto.analysisType)}{' '}
                       {alert && (

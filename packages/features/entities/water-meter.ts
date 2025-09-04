@@ -11,7 +11,14 @@ export class WaterMeter {
     public readonly waterZoneId: Id,
     public measurementUnit: MeasurementUnit,
     public images: string[] | [],
-    public readonly waterZoneName?: string
+    public readonly waterZoneName?: string,
+    public readonly lastReadingValue?: string,
+    public readonly lastReadingDate?: Date,
+    public readonly readings?: Array<{
+      readingDate: Date
+      reading: string
+      normalizedReading: string
+    }>
   ) {}
 
   static create({
@@ -22,7 +29,10 @@ export class WaterMeter {
     waterZoneId,
     measurementUnit,
     images,
-    waterZoneName
+    waterZoneName,
+    lastReadingValue,
+    lastReadingDate,
+    readings
   }: WaterMeterSchema) {
     return new WaterMeter(
       Id.create(id),
@@ -32,7 +42,10 @@ export class WaterMeter {
       Id.create(waterZoneId),
       MeasurementUnit.create(measurementUnit),
       images || [],
-      waterZoneName
+      waterZoneName,
+      lastReadingValue,
+      lastReadingDate,
+      readings
     )
   }
 
@@ -45,7 +58,10 @@ export class WaterMeter {
       waterZoneId: this.waterZoneId.toString(),
       waterZoneName: this.waterZoneName,
       measurementUnit: this.measurementUnit.toString(),
-      images: this.images
+      images: this.images,
+      lastReadingValue: this.lastReadingValue,
+      lastReadingDate: this.lastReadingDate,
+      readings: this.readings
     }
   }
 }

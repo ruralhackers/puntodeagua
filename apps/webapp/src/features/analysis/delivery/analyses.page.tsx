@@ -1,11 +1,71 @@
-import type { Analysis } from 'features'
+import type { Analysis, WaterZone } from 'features'
 import type { FC } from 'react'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
+import { formatDate, toTitle } from './analysis.utils'
 
-export const AnalysisPage: FC<{ analysis: Analysis[] }> = ({ analysis }) => {
+export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
+  analysis,
+  zones
+}) => {
+  const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
+
+  function hasAlert(a: Analysis) {
+    const dto = a.toDto()
+    const ph = dto.ph ? Number(dto.ph) : undefined
+    const chlorine = dto.chlorine ? Number(dto.chlorine) : undefined
+    const alerts: boolean[] = []
+    if (ph !== undefined) alerts.push(ph < 6.5 || ph > 8.5)
+    if (chlorine !== undefined) alerts.push(chlorine < 0.2 || chlorine > 0.5)
+    return alerts.some(Boolean)
+  }
+
   return (
     <Page>
-      <div>{analysis.map((x) => x.toDto().id)}</div>
+      <div className="px-3 py-4">
+        <div className="flex flex-col gap-3">
+          {analysis.map((a) => {
+            const dto = a.toDto()
+            const alert = hasAlert(a)
+            return (
+              <Card key={dto.id} className="bg-white gap-3 py-4">
+                <CardHeader>
+                  <Link to={`/analysis/${dto.id}`} className="block">
+                    <CardTitle className="text-base">
+                      {toTitle(dto.analysisType)}{' '}
+                      {alert && (
+                        <span
+                          aria-hidden="true"
+                          className="inline-flex align-middle ml-1 text-red-600"
+                        >
+                          ⚠️
+                        </span>
+                      )}
+                    </CardTitle>
+                    <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
+                    <CardAction>
+                      <span className="text-gray-400">›</span>
+                    </CardAction>
+                  </Link>
+                </CardHeader>
+                <CardContent className="pt-0 pb-2">
+                  <div className="text-sm text-gray-600">
+                    {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
     </Page>
   )
 }

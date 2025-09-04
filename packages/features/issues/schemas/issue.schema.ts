@@ -8,5 +8,7 @@ export const issueSchema = z.object({
   title: z.string(),
   description: z.string(),
   reporterName: z.string(),
-  waterZoneId: idSchema
+  status: z.string(),
+  startAt: z.date(),
+  waterZoneId: idSchema,
 })

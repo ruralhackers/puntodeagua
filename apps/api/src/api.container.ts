@@ -15,7 +15,9 @@ import {
   WATER_REPOSITORY,
   WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
+import { CreateAnalysisCmd } from './features/analysis/application/create-analisys.cmd'
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
+import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
@@ -23,6 +25,7 @@ import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
+import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
@@ -73,6 +76,10 @@ export class ApiContainer extends CoreContainer {
     this.register(ANALYSIS_REPOSITORY, analysisRepository)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
+    const getAnalysisQry = new GetAnalysisQry(analysisRepository)
+    this.register(GetAnalysisQry.ID, getAnalysisQry)
+    const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
+    this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
 
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)
@@ -94,6 +101,13 @@ export class ApiContainer extends CoreContainer {
     const fileRepository = new FilePrismaRepository(client)
     const fileUploadService = new FileUploadService(r2Adapter, fileRepository)
     this.register(FILE_UPLOAD_SERVICE, fileUploadService)
+
+    // Create Water Meter Reading Command
+    const createWaterMeterReadingCmd = new CreateWaterMeterReadingCmd(
+      waterMeterReadingPrismaRepository,
+      fileUploadService
+    )
+    this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
 
     // Note: We register the command without JWT function as it will be injected at runtime
     const authenticateUserCmd = new AuthenticateUserCmd(userPrismaRepository, async () => {

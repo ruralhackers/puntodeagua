@@ -6,14 +6,17 @@ export class WaterZoneApiRestRepository implements WaterZoneRepository {
 
   async findAll(): Promise<WaterZone[]> {
     const dtos = await this.httpClient.get<WaterZoneDto[]>('water-zones')
-    return dtos.data!.map(WaterZone.create)
+    const data = dtos.data ?? []
+    return data.map(WaterZone.fromDto)
   }
 
   async findById(id: Id): Promise<WaterZone | undefined> {
     try {
-      const json = await this.httpClient.get<any>(`water-zones/${id.toString()}`)
-      return WaterZone.create(json.data!)
-    } catch (error) {
+      const json = await this.httpClient.get<WaterZoneDto>(`water-zones/${id.toString()}`)
+      const data = json.data
+      if (!data) return undefined
+      return WaterZone.fromDto(data)
+    } catch {
       return undefined
     }
   }

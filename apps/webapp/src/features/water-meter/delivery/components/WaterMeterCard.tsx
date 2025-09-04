@@ -25,8 +25,8 @@ export default function WaterMeterCard({ meter }: WaterMeterCardProps) {
       <CardContent>
         <div className="space-y-2">
           <p className="text-sm text-gray-600">
-            {meter.lastReadingValue
-              ? `Última lectura: ${meter.lastReadingValue} ${meter.measurementUnit}`
+            {meter.readings && meter.readings.length > 0
+              ? `Último consumo: ${meter.readings[0].consumption} l.`
               : 'Sin lecturas registradas'}
           </p>
           {meter.lastReadingDate && (

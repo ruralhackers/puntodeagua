@@ -16,6 +16,10 @@ export class WaterZone {
     )
   }
 
+  static fromDto(dto: WaterZoneSchema): WaterZone {
+    return new WaterZone(Id.create(dto.id), Id.create(dto.communityId), dto.name)
+  }
+
   toDto() {
     return {
       id: this.id.toString(),

@@ -1,8 +1,18 @@
 import type { Analysis, WaterZone } from 'features'
-import { AlertTriangle, Calendar, CheckCircle2, MapPin, Pencil, Trash, User } from 'lucide-react'
+import {
+  AlertTriangle,
+  Calendar,
+  CheckCircle2,
+  EllipsisVertical,
+  MapPin,
+  Pencil,
+  Trash,
+  User
+} from 'lucide-react'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Page } from '../../../core/components/page'
 import { formatDate, toTitle } from './analysis.utils'
 
@@ -21,18 +31,33 @@ export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }>
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <h1 className="text-2xl font-bold text-gray-900">{toTitle(dto.analysisType)}</h1>
-          <div className="flex items-center gap-1.5">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to={`/analysis/edit/${dto.id}`} type="invisible">
-                <Pencil className="size-4" aria-hidden="true" />
-                <span className="sr-only">Editar</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="sm" disabled>
-              <Trash className="size-4" aria-hidden="true" />
-              <span className="sr-only">Eliminar</span>
-            </Button>
-          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button type="button" variant="ghost" size="sm" aria-label="Acciones">
+                <EllipsisVertical className="size-4" aria-hidden="true" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-44 p-1">
+              <div className="flex flex-col">
+                <Link
+                  to={`/analysis/edit/${dto.id}`}
+                  type="invisible"
+                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Pencil className="size-4" aria-hidden="true" />
+                  <span>Editar</span>
+                </Link>
+                <button
+                  type="button"
+                  disabled
+                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent text-red-600 disabled:opacity-60 text-left"
+                >
+                  <Trash className="size-4" aria-hidden="true" />
+                  <span>Eliminar</span>
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="space-y-6">

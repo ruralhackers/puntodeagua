@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import { Link } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
 
 export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
@@ -57,21 +58,23 @@ export const AnalysisPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
             return (
               <Card key={dto.id} className="bg-white gap-3 py-4">
                 <CardHeader>
-                  <CardTitle className="text-base">
-                    {toTitle(dto.analysisType)}{' '}
-                    {alert && (
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex align-middle ml-1 text-red-600"
-                      >
-                        ⚠️
-                      </span>
-                    )}
-                  </CardTitle>
-                  <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
-                  <CardAction>
-                    <span className="text-gray-400">›</span>
-                  </CardAction>
+                  <Link to={`/analysis/${dto.id}`} className="block">
+                    <CardTitle className="text-base">
+                      {toTitle(dto.analysisType)}{' '}
+                      {alert && (
+                        <span
+                          aria-hidden="true"
+                          className="inline-flex align-middle ml-1 text-red-600"
+                        >
+                          ⚠️
+                        </span>
+                      )}
+                    </CardTitle>
+                    <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
+                    <CardAction>
+                      <span className="text-gray-400">›</span>
+                    </CardAction>
+                  </Link>
                 </CardHeader>
                 <CardContent className="pt-0 pb-2">
                   <div className="text-sm text-gray-600">

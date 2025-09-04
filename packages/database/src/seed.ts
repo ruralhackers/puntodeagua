@@ -5,11 +5,17 @@ const prisma = client
 
 async function main() {
   await deleteAll()
-  await seedUsers()
-  const communityId = await seedPlanAndCommunity()
-  await seedWaterZones(communityId)
+
+  // Create multiple communities
+  const { anceuCommunityId, ponteCaldelasCommunityId } = await seedPlanAndCommunities()
+
+  // Create users for both communities
+  await seedUsers(anceuCommunityId, ponteCaldelasCommunityId)
+
+  // Create water infrastructure for Anceu community
+  await seedWaterZones(anceuCommunityId)
   await seedAnalyses()
-  const waterPointIds = await seedWaterPoints(communityId)
+  const waterPointIds = await seedWaterPoints(anceuCommunityId)
   await seedHolders()
   await seedWaterMeters(waterPointIds)
   await seedIssues()
@@ -36,29 +42,60 @@ async function deleteAll() {
   await prisma.issue.deleteMany({})
 }
 
-async function seedUsers() {
-  // Delete existing users first
-
+async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
   const saltRounds = 10
 
   const users = [
     {
-      email: 'admin@puntodeagua.com',
-      name: 'Admin User',
+      email: 'superadmin@puntodeagua.com',
+      name: 'Super Admin',
+      password: await bcrypt.hash('superadmin123', saltRounds),
+      roles: ['SUPER_ADMIN'],
+      communityId: null // Super admin doesn't belong to a specific community
+    },
+    // Anceu community users
+    {
+      email: 'admin@anceu.com',
+      name: 'Admin Anceu',
       password: await bcrypt.hash('admin123', saltRounds),
-      roles: ['admin']
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: anceuCommunityId
     },
     {
-      email: 'user@puntodeagua.com',
-      name: 'Regular User',
-      password: await bcrypt.hash('user123', saltRounds),
-      roles: ['user']
-    },
-    {
-      email: 'manager@puntodeagua.com',
-      name: 'Manager User',
+      email: 'manager@anceu.com',
+      name: 'Manager Anceu',
       password: await bcrypt.hash('manager123', saltRounds),
-      roles: ['manager', 'user']
+      roles: ['MANAGER'],
+      communityId: anceuCommunityId
+    },
+    {
+      email: 'user1@anceu.com',
+      name: 'Usuario 1 Anceu',
+      password: await bcrypt.hash('user123', saltRounds),
+      roles: ['USER'],
+      communityId: anceuCommunityId
+    },
+    {
+      email: 'user2@anceu.com',
+      name: 'Usuario 2 Anceu',
+      password: await bcrypt.hash('user123', saltRounds),
+      roles: ['USER'],
+      communityId: anceuCommunityId
+    },
+    // Ponte Caldelas community users
+    {
+      email: 'admin@pontecaldelas.com',
+      name: 'Admin Ponte Caldelas',
+      password: await bcrypt.hash('admin123', saltRounds),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: ponteCaldelasCommunityId
+    },
+    {
+      email: 'user@pontecaldelas.com',
+      name: 'Usuario Ponte Caldelas',
+      password: await bcrypt.hash('user123', saltRounds),
+      roles: ['USER'],
+      communityId: ponteCaldelasCommunityId
     }
   ]
 
@@ -67,39 +104,56 @@ async function seedUsers() {
   })
 
   console.log('Created users:')
-  console.log('- admin@puntodeagua.com (password: admin123)')
-  console.log('- user@puntodeagua.com (password: user123)')
-  console.log('- manager@puntodeagua.com (password: manager123)')
+  console.log('- superadmin@puntodeagua.com (password: superadmin123) - SUPER_ADMIN')
+  console.log('- admin@anceu.com (password: admin123) - COMMUNITY_ADMIN')
+  console.log('- manager@anceu.com (password: manager123) - MANAGER')
+  console.log('- user1@anceu.com (password: user123) - USER')
+  console.log('- user2@anceu.com (password: user123) - USER')
+  console.log('- admin@pontecaldelas.com (password: admin123) - COMMUNITY_ADMIN')
+  console.log('- user@pontecaldelas.com (password: user123) - USER')
 }
 
-async function seedPlanAndCommunity() {
+async function seedPlanAndCommunities() {
   const plan = await prisma.plan.create({
     data: {
       name: 'Aguas de Galicia'
     }
   })
 
-  const COMMUNITY = {
-    name: 'Anceu',
-    planId: plan.id
-  }
-
-  const community = await prisma.community.create({
-    data: COMMUNITY
+  const anceuCommunity = await prisma.community.create({
+    data: {
+      name: 'Anceu',
+      planId: plan.id
+    }
   })
-  return community.id
+
+  const ponteCaldelasCommunity = await prisma.community.create({
+    data: {
+      name: 'Ponte Caldelas',
+      planId: plan.id
+    }
+  })
+
+  return {
+    anceuCommunityId: anceuCommunity.id,
+    ponteCaldelasCommunityId: ponteCaldelasCommunity.id
+  }
 }
 
 const WATER_POINTS = [
   {
     name: 'Water Point 1',
     location: '42.359987,-8.4669443',
-    description: 'This is a description for Water Point 1'
+    description: 'This is a description for Water Point 1',
+    fixedPopulation: 4,
+    floatingPopulation: 2
   },
   {
     name: 'Water Point 2',
     location: '42.359987,-8.4669443',
-    description: 'This is a description for Water Point 2'
+    description: 'This is a description for Water Point 2',
+    fixedPopulation: 6,
+    floatingPopulation: 8
   }
 ]
 

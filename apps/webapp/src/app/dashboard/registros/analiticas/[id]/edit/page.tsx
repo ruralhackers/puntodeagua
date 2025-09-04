@@ -8,7 +8,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params
   const analysis = await webAppContainer
     .get<UseCaseService>(UseCaseService.ID)
-    .execute(GetAnalysisQry, { id })
+    .execute(GetAnalysisQry, id)
 
   const waterZones = await webAppContainer
     .get<UseCaseService>(UseCaseService.ID)

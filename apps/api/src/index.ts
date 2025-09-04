@@ -1,8 +1,12 @@
 import cors from '@elysiajs/cors'
 import jwt from '@elysiajs/jwt'
 import swagger from '@elysiajs/swagger'
+import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
+import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
+import { loginSchema } from './features/auth/application/auth.schema'
+import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
@@ -35,6 +39,32 @@ export const app = new Elysia({ prefix: '/api' })
   .use(issueApiRest)
   .use(waterZonesApiRest)
   .use(waterMeterReadingApiRest)
+  .post('/auth/login', async ({ body, jwt, set }) => {
+    try {
+      const loginDto = loginSchema.parse(body)
+      const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+      const authenticateCmd = apiContainer.get<AuthenticateUserCmd>(AuthenticateUserCmd.ID)
+
+      // Create a JWT sign function and inject it
+      const jwtSign = async (payload: {
+        userId: string
+        email: string
+        roles: string[]
+        communityId: string | null
+      }) => {
+        return await jwt.sign(payload)
+      }
+
+      // Create new instance with jwt function
+      const cmdWithJwt = new AuthenticateUserCmd((authenticateCmd as any).userRepository, jwtSign)
+
+      const result = await cmdWithJwt.handle(loginDto)
+      return result
+    } catch (error) {
+      set.status = 401
+      return { error: error instanceof Error ? error.message : 'Authentication failed' }
+    }
+  })
   .use(authApiRest)
   .listen(4000)
 

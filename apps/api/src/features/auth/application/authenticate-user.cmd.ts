@@ -1,7 +1,7 @@
+import bcrypt from 'bcrypt'
 import type { Command } from 'core'
 import type { UserRepository } from 'features'
-import type { LoginDto, AuthResponseDto } from './auth.schema'
-import bcrypt from 'bcrypt'
+import type { AuthResponseDto, LoginDto } from './auth.schema'
 
 export class AuthenticateUserCmd implements Command<LoginDto, AuthResponseDto> {
   static readonly ID = 'AuthenticateUserCmd'
@@ -12,6 +12,7 @@ export class AuthenticateUserCmd implements Command<LoginDto, AuthResponseDto> {
       userId: string
       email: string
       roles: string[]
+      communityId: string | null
     }) => Promise<string>
   ) {}
 
@@ -31,7 +32,8 @@ export class AuthenticateUserCmd implements Command<LoginDto, AuthResponseDto> {
     const token = await this.jwtSign({
       userId: user.id,
       email: user.email,
-      roles: user.roles
+      roles: user.roles,
+      communityId: user.communityId
     })
 
     return {
@@ -40,7 +42,8 @@ export class AuthenticateUserCmd implements Command<LoginDto, AuthResponseDto> {
         id: user.id,
         email: user.email,
         name: user.name,
-        roles: user.roles
+        roles: user.roles,
+        communityId: user.communityId
       }
     }
   }

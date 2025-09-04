@@ -18,7 +18,9 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { useAuth } from '@/src/features/auth/context/auth-context'
 import { CreateWaterMeterReadingCmd } from '../application/create-water-meter-reading.cmd'
 
 const createWaterMeterReadingSchema = z.object({
@@ -28,7 +30,8 @@ const createWaterMeterReadingSchema = z.object({
     .regex(/^\d+(\.\d+)?$/, 'Debe ser un número válido'),
   readingDate: z.date().refine((date) => date <= new Date(), {
     message: 'La fecha no puede ser futura'
-  })
+  }),
+  notes: z.string().optional()
 })
 
 type CreateWaterMeterReadingFormValues = z.infer<typeof createWaterMeterReadingSchema>
@@ -39,6 +42,7 @@ interface CreateWaterMeterReadingPageProps {
 
 export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterReadingPageProps) => {
   const router = useRouter()
+  const { user } = useAuth()
   const createWaterMeterReadingCommand = useUseCase(CreateWaterMeterReadingCmd)
   const counterLabelId = useId()
 
@@ -46,7 +50,8 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
     resolver: zodResolver(createWaterMeterReadingSchema),
     defaultValues: {
       reading: '',
-      readingDate: new Date()
+      readingDate: new Date(),
+      notes: ''
     }
   })
 
@@ -56,7 +61,8 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
         waterMeterId: waterMeter.id,
         reading: values.reading,
         readingDate: values.readingDate,
-        uploadedBy: 'current-user' // TODO: Get from auth context
+        notes: values.notes,
+        uploadedBy: user?.id || 'anonymous'
       })
 
       router.push('/dashboard/nuevo-registro/contador')
@@ -155,6 +161,30 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
                         />
                       </FormControl>
                       <FormDescription>Fecha en que se realizó la lectura</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Notas */}
+              <div>
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notas (opcional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Observaciones adicionales sobre la lectura..."
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Cualquier observación relevante sobre esta lectura
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

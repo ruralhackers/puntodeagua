@@ -1,5 +1,5 @@
-import type { UserRepository } from 'features'
 import type { PrismaClient } from 'database'
+import type { UserRepository } from 'features'
 
 export class UserPrismaRepository implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -12,7 +12,8 @@ export class UserPrismaRepository implements UserRepository {
         email: true,
         name: true,
         password: true,
-        roles: true
+        roles: true,
+        communityId: true
       }
     })
 
@@ -25,7 +26,8 @@ export class UserPrismaRepository implements UserRepository {
       email: user.email,
       name: user.name,
       password: user.password,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : []
+      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
+      communityId: user.communityId
     }
   }
 }

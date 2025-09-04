@@ -5,5 +5,6 @@ export interface UserRepository {
     name: string | null
     password: string | null
     roles: string[]
+    communityId: string | null
   } | null>
 }

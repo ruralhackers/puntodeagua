@@ -1,19 +1,21 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import type { FC } from 'react'
 import { useId, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { webAppContainer } from '../../../core/di/webapp.container'
-import { UseCaseService } from 'core'
-import { LoginCmd } from '../application/login.cmd'
-import { loginSchema, type LoginDto } from '../schemas/auth.schema'
 import { z } from 'zod'
-import { Input } from '../../../../components/ui/input'
 import { Button } from '../../../../components/ui/button'
+import { Input } from '../../../../components/ui/input'
 import { Page } from '../../../core/components/page'
+import { useUseCase } from '../../../core/use-cases/use-use-case'
+import { LoginCmd } from '../application/login.cmd'
+import { useAuth } from '../context/auth-context'
+import { type LoginDto, loginSchema } from '../schemas/auth.schema'
 
 export const LoginPage: FC = () => {
   const router = useRouter()
+  const { login } = useAuth()
+  const loginCommand = useUseCase(LoginCmd)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -27,11 +29,16 @@ export const LoginPage: FC = () => {
     setLoading(true)
     try {
       const dto: LoginDto = loginSchema.parse({ email, password })
-      const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
-      const result = await useCaseService.execute(LoginCmd, dto)
+      const result = await loginCommand.execute(dto)
+
       if (result?.token) {
-        localStorage.setItem('auth_token', result.token)
-        router.push('/dashboard')
+        login(result) // Use AuthContext login function
+
+        // Check for redirect path
+        const redirectPath = localStorage.getItem('auth_redirect')
+        localStorage.removeItem('auth_redirect')
+
+        router.push(redirectPath || '/dashboard')
         return
       }
       setError('Unexpected response')

@@ -9,5 +9,7 @@ export const waterPointSchema = z.object({
   location: locationSchema,
   name: z.string(),
   description: z.string().optional(),
-  communityId: idSchema
+  communityId: idSchema,
+  fixedPopulation: z.number().int().min(0),
+  floatingPopulation: z.number().int().min(0)
 })

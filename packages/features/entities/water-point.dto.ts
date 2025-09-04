@@ -4,4 +4,6 @@ export interface WaterPointDto {
   name: string
   location: string
   description?: string
+  fixedPopulation: number
+  floatingPopulation: number
 }

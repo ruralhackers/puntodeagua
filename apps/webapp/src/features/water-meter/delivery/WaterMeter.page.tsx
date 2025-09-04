@@ -1,6 +1,7 @@
 'use client'
 import type { WaterMeterDto, WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -20,7 +21,6 @@ type Props = {
 }
 
 export default function WaterMeterPage({ waterMeters, waterZones }: Props) {
-  const router = useRouter()
   const zoneFilterId = useId()
   const nameFilterId = useId()
   const [selectedZone, setSelectedZone] = useState<string>('all')
@@ -36,11 +36,10 @@ export default function WaterMeterPage({ waterMeters, waterZones }: Props) {
   return (
     <div className="p-4 pb-20">
       <div className="flex items-center gap-3 mb-6">
-        <Button
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
+        <Button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <Link href={'/dashboard'}>
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
         </Button>
         <h1 className="text-xl font-semibold">Contadores</h1>
       </div>

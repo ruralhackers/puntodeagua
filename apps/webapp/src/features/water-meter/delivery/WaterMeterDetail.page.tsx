@@ -1,12 +1,35 @@
-import type { WaterMeter } from 'features/entities/water-meter'
+'use client'
+
+import type { WaterMeterDto } from 'features'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
 interface WaterMeterDetailPageProps {
-  waterMeter: WaterMeter
+  waterMeter: WaterMeterDto
+  waterMeterId: string
 }
 
-export default function WaterMeterDetailPage({ waterMeter }: WaterMeterDetailPageProps) {
+export default function WaterMeterDetailPage({
+  waterMeter: initialWaterMeter,
+  waterMeterId
+}: WaterMeterDetailPageProps) {
+  const [waterMeter, setWaterMeter] = useState<WaterMeterDto>(initialWaterMeter)
+  const getWaterMeterQry = useUseCase(GetWaterMeterQry)
+
+  const refreshWaterMeter = async () => {
+    try {
+      const updatedWaterMeter = await getWaterMeterQry.execute(waterMeterId)
+      if (updatedWaterMeter) {
+        setWaterMeter(updatedWaterMeter.toDto())
+      }
+    } catch (error) {
+      console.error('Error refreshing water meter:', error)
+    }
+  }
+
   console.log('water meter que viene de page', waterMeter)
 
   return (
@@ -22,7 +45,10 @@ export default function WaterMeterDetailPage({ waterMeter }: WaterMeterDetailPag
         <p>{waterMeter?.waterZoneName}</p>
       </div>
       <div>
-        <WaterMeterReadingHistory readings={waterMeter.readings ?? []} />
+        <WaterMeterReadingHistory
+          readings={waterMeter.readings ?? []}
+          onReadingDeleted={refreshWaterMeter}
+        />
       </div>
     </div>
   )

@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { FormHeader } from '../../../components/analysis/form-header'
+import { PageHeader } from '../../../components/analysis/page-header'
 import { EditAnalysisCmd } from '../application/edit-analysis.cmd'
 // import { useUseCase } from '@/<src/core/use-cases/use-use-case'
 
@@ -51,7 +51,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
   return (
     <div className="px-3 py-4 pb-20">
       {/* Header */}
-      <FormHeader title="Editar análisis" subtitle="Actualiza los datos del análisis" />
+      <PageHeader title="Editar análisis" subtitle="Actualiza los datos del análisis" />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="bg-white border border-gray-200 rounded-lg p-4">

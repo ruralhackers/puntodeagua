@@ -52,12 +52,24 @@ export class WaterMeterPrismaRepository
       ? WaterMeter.create({
           ...wm,
           waterZoneName: wm.waterZone.name,
-          readings: wm.waterMeterReadings.map((reading) => ({
-            id: reading.id,
-            readingDate: reading.readingDate,
-            reading: reading.reading.toString(),
-            normalizedReading: reading.normalizedReading.toString()
-          }))
+          readings: wm.waterMeterReadings.map((reading, index, arr) => {
+            // Calculate consumption: current reading - previous reading
+            // For the oldest reading (last in desc order), consumption is 0
+            let consumption = 0
+            if (index < arr.length - 1) {
+              const currentValue = parseFloat(reading.normalizedReading.toString())
+              const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
+              consumption = currentValue - previousValue
+            }
+            
+            return {
+              id: reading.id,
+              readingDate: reading.readingDate,
+              reading: reading.reading.toString(),
+              normalizedReading: reading.normalizedReading.toString(),
+              consumption
+            }
+          })
         })
       : undefined
   }
@@ -82,7 +94,7 @@ export class WaterMeterPrismaRepository
         waterZone: true,
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
-          take: 1
+          take: 2
         }
       }
     })
@@ -92,7 +104,25 @@ export class WaterMeterPrismaRepository
         ...wm,
         waterZoneName: wm.waterZone.name,
         lastReadingValue: wm.waterMeterReadings[0]?.reading?.toString(),
-        lastReadingDate: wm.waterMeterReadings[0]?.readingDate
+        lastReadingDate: wm.waterMeterReadings[0]?.readingDate,
+        readings: wm.waterMeterReadings.map((reading, index, arr) => {
+          // Calculate consumption: current reading - previous reading
+          // For the oldest reading (last in desc order), consumption is 0
+          let consumption = 0
+          if (index < arr.length - 1) {
+            const currentValue = parseFloat(reading.normalizedReading.toString())
+            const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
+            consumption = currentValue - previousValue
+          }
+          
+          return {
+            id: reading.id,
+            readingDate: reading.readingDate,
+            reading: reading.reading.toString(),
+            normalizedReading: reading.normalizedReading.toString(),
+            consumption
+          }
+        })
       })
     )
   }

@@ -3,9 +3,13 @@ import WaterMeterReadingHistoryItem from './WaterMeterReadingHistoryItem'
 
 interface WaterMeterReadingHistoryProps {
   readings: WaterMeter['readings']
+  onReadingDeleted?: () => void
 }
 
-export default function WatersMeterReadingHistory({ readings }: WaterMeterReadingHistoryProps) {
+export default function WatersMeterReadingHistory({
+  readings,
+  onReadingDeleted
+}: WaterMeterReadingHistoryProps) {
   return (
     <div>
       <div>
@@ -13,7 +17,7 @@ export default function WatersMeterReadingHistory({ readings }: WaterMeterReadin
         <p>Contador en metros cúbicos, consumos en L</p>
       </div>
       {(readings ?? []).map((item) => (
-        <WaterMeterReadingHistoryItem key={item.id} item={item} />
+        <WaterMeterReadingHistoryItem key={item.id} item={item} onDeleted={onReadingDeleted} />
       ))}
     </div>
   )

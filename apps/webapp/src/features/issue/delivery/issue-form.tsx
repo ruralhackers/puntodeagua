@@ -51,7 +51,7 @@ export const IssueForm: FC<{
                 <FormItem>
                   <FormLabel>Zona *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecciona la zona" />
                     </SelectTrigger>
                     <SelectContent>

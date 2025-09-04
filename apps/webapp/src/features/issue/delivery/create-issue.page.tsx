@@ -20,15 +20,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
-import {useId} from "react";
-import {Textarea} from "@/components/ui/textarea";
+import { useId } from 'react'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  SelectValue
+} from '@/components/ui/select'
 
 const tiposIncidencia = [
   'Fuga de agua',
@@ -64,7 +64,7 @@ const createSchema = issueSchema.omit({
 const waterZone = [
   { id: '123', name: 'Os Casas' },
   { id: 'abc', name: 'Centro' },
-  { id: '0z0', name: 'Ramís' },
+  { id: '0z0', name: 'Ramís' }
 ]
 
 export const CreateIssuePage: NextPage = () => {
@@ -145,7 +145,9 @@ export const CreateIssuePage: NextPage = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {waterZone.map((wz) => (
-                            <SelectItem key={wz.id} value={wz.id}>{wz.name}</SelectItem>
+                            <SelectItem key={wz.id} value={wz.id}>
+                              {wz.name}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>

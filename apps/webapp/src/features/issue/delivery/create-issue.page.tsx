@@ -60,7 +60,7 @@ export const CreateIssuePage: NextPage = () => {
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      waterZoneId: Id.generateUniqueId().toString()
+      waterZoneId: 'cmf580rl90006rx07yycjwao3'
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',

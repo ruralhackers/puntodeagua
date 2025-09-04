@@ -16,13 +16,5 @@ export class CoreContainer extends Container {
     const logMiddleware = new LogMiddleware(logger)
 
     this.register(LogMiddleware.ID, logMiddleware)
-
-    const middlewares = [
-      this.get<Middleware>(LogMiddleware.ID),
-      this.get<Middleware>(EmptyMiddleware.ID)
-    ]
-
-    const useCaseService = new UseCaseService(middlewares, this)
-    this.register(UseCaseService.ID, useCaseService)
   }
 }

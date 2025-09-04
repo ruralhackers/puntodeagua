@@ -1,5 +1,9 @@
-import { CoreContainer } from 'core'
+import { CoreContainer, UseCaseService } from 'core'
+import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
+import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
+import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { client } from 'database'
+import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
   USER_REPOSITORY,
@@ -10,6 +14,8 @@ import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
+import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
@@ -38,6 +44,12 @@ export class ApiContainer extends CoreContainer {
     const userPrismaRepository = new UserPrismaRepository(client)
     this.register(USER_REPOSITORY, userPrismaRepository)
 
+    const issuePrismaRepository = new IssuePrismaRepository(client)
+    this.register(ISSUE_REPOSITORY, issuePrismaRepository)
+
+    const saveIssueCmd = new SaveIssueCmd(issuePrismaRepository)
+    this.register(SaveIssueCmd.ID, saveIssueCmd)
+
     // Analysis
     const analysisRepository = new AnalysisPrismaRepository(client)
     this.register(ANALYSIS_REPOSITORY, analysisRepository)
@@ -49,6 +61,14 @@ export class ApiContainer extends CoreContainer {
       throw new Error('JWT function not injected')
     })
     this.register(AuthenticateUserCmd.ID, authenticateUserCmd)
+
+    const middlewares = [
+      this.get<Middleware>(LogMiddleware.ID),
+      this.get<Middleware>(EmptyMiddleware.ID)
+    ]
+
+    const useCaseService = new UseCaseService(middlewares, this)
+    this.register(UseCaseService.ID, useCaseService)
   }
 }
 

@@ -7,6 +7,7 @@ import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
 import { loginSchema } from './features/auth/application/auth.schema'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
+import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterPointApiRest } from './features/water-point/delivery/water-point.api-rest'
 
@@ -31,6 +32,7 @@ export const app = new Elysia({ prefix: '/api' })
   .use(waterPointApiRest)
   .use(analysisApiRest)
   .use(waterMeterApiRest)
+  .use(issueApiRest)
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)

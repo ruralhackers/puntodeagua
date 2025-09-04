@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 export default function WaterMeterCard({ meter }: any) {
   console.log(meter)
   return (
-    <Link href={`/contadores/${meter.id}}`}>
+    <Link href={`/contadores/${meter.id}`}>
       <Card>
         <CardHeader>
           <CardTitle>{meter.name}</CardTitle>

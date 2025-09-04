@@ -150,23 +150,6 @@ async function seedAnalyses() {
       }
     ]
   })
-  await prisma.waterZone.deleteMany({})
-  await prisma.waterZone.createMany({
-    data: [
-      {
-        name: 'Os Casas',
-        communityId
-      },
-      {
-        name: 'Centro',
-        communityId
-      },
-      {
-        name: 'Ramis',
-        communityId
-      }
-    ]
-  })
 }
 
 const HOLDERS = [

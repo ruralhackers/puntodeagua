@@ -1,0 +1,110 @@
+import { Command, Id } from 'core'
+import { WaterMeterReading, WaterMeterReadingDto } from 'features'
+import type { FileUploadService } from '../../../infrastructure/file-upload/file-upload.service'
+
+// Define el tipo para archivos de multer
+interface MulterFile {
+  fieldname: string
+  originalname: string
+  encoding: string
+  mimetype: string
+  size: number
+  buffer: Buffer
+  filename?: string
+}
+
+export interface CreateWaterMeterReadingCommand {
+  waterMeterId: string
+  reading: string
+  normalizedReading: string
+  readingDate: Date
+  notes?: string
+  files?: MulterFile[]
+  uploadedBy: string
+}
+
+export class CreateWaterMeterReadingCmd
+  implements Command<CreateWaterMeterReadingCommand, WaterMeterReadingDto>
+{
+  static readonly ID = Symbol('CreateWaterMeterReadingCmd')
+
+  constructor(
+    private readonly waterMeterReadingRepository: any,
+    private readonly fileUploadService: FileUploadService
+  ) {}
+
+  async handle(command: CreateWaterMeterReadingCommand): Promise<WaterMeterReadingDto> {
+    console.log('🔍 Creating water meter reading...', { command })
+    // 1. Crear la entidad WaterMeterReading
+    const waterMeterReading = WaterMeterReading.create({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: command.waterMeterId,
+      reading: command.reading,
+      normalizedReading: command.normalizedReading,
+      readingDate: command.readingDate,
+      notes: command.notes,
+      files: [] // Inicialmente sin archivos
+    })
+
+    // 2. Si hay archivos, subirlos y asociarlos
+    if (command.files && command.files.length > 0) {
+      const uploadedFiles = []
+
+      for (const file of command.files) {
+        try {
+          const uploadedFile = await this.fileUploadService.uploadFile(file.buffer, {
+            filename: file.filename || `file-${Date.now()}`,
+            originalName: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+            entityType: 'water-meter-reading',
+            entityId: waterMeterReading.id.toString(),
+            uploadedBy: command.uploadedBy
+          })
+
+          uploadedFiles.push(uploadedFile)
+        } catch (error) {
+          console.error(`Error uploading file ${file.originalname}:`, error)
+          // Continuar con otros archivos, no fallar todo el proceso
+        }
+      }
+
+      // Asignar archivos subidos al reading
+      if (uploadedFiles.length > 0) {
+        // Crear nueva instancia con archivos
+        const readingWithFiles = WaterMeterReading.create({
+          id: waterMeterReading.id.toString(),
+          waterMeterId: command.waterMeterId,
+          reading: command.reading,
+          normalizedReading: command.normalizedReading,
+          readingDate: command.readingDate,
+          notes: command.notes,
+          files: uploadedFiles.map((file) => ({
+            id: file.id.toString(),
+            filename: file.filename,
+            originalName: file.originalName,
+            mimeType: file.mimeType,
+            size: file.size,
+            url: file.url,
+            bucket: file.bucket,
+            key: file.key,
+            entityType: file.entityType,
+            entityId: file.entityId,
+            uploadedBy: file.uploadedBy.toString(),
+            createdAt: file.createdAt
+          }))
+        })
+
+        // Guardar en base de datos
+        await this.waterMeterReadingRepository.save(readingWithFiles)
+
+        return readingWithFiles.toDto()
+      }
+    }
+
+    // 3. Guardar reading sin archivos (si no hay archivos o fallaron todos)
+    await this.waterMeterReadingRepository.save(waterMeterReading)
+
+    return waterMeterReading.toDto()
+  }
+}

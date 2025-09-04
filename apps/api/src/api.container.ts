@@ -11,6 +11,7 @@ import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'

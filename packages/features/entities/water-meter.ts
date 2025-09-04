@@ -42,6 +42,7 @@ export class WaterMeter {
       name: this.name,
       holderId: this.holderId.toString(),
       waterPointId: this.waterPointId.toString(),
+      waterZoneId: this.waterZoneId.toString(),
       waterZoneName: this.waterZoneName,
       measurementUnit: this.measurementUnit.toString(),
       images: this.images

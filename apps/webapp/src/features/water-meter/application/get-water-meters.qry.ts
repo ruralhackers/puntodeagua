@@ -1,14 +1,14 @@
 import type { Query } from 'core'
-import type { WaterMeterRepository } from 'features'
+import type { GetWaterMetersFiltersDto, WaterMeterRepository } from 'features'
 import type { WaterMeter } from 'features/entities/water-meter'
 
-export class GetWaterMetersQry implements Query<WaterMeter[]> {
+export class GetWaterMetersQry implements Query<WaterMeter[], GetWaterMetersFiltersDto> {
   static readonly ID = 'GetWaterMetersQry'
 
   constructor(private readonly waterMeterRepository: WaterMeterRepository) {}
 
-  async handle(): Promise<WaterMeter[]> {
-    const waterMeters = await this.waterMeterRepository.findAll()
+  async handle(filters: GetWaterMetersFiltersDto = {}): Promise<WaterMeter[]> {
+    const waterMeters = await this.waterMeterRepository.findWithFilters(filters)
     return waterMeters
   }
 }

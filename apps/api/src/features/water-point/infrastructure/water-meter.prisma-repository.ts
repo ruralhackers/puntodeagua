@@ -1,5 +1,6 @@
 import type { Id } from 'core'
 import type { PrismaClient } from 'database'
+import type { GetWaterMetersFiltersDto } from 'features'
 import { BasePrismaRepository, WaterMeter, type WaterMeterRepository } from 'features'
 
 export class WaterMeterPrismaRepository
@@ -51,7 +52,7 @@ export class WaterMeterPrismaRepository
       ? WaterMeter.create({
           ...wm,
           waterZoneName: wm.waterZone.name,
-          readings: wm.waterMeterReadings.map(reading => ({
+          readings: wm.waterMeterReadings.map((reading) => ({
             readingDate: reading.readingDate,
             reading: reading.reading.toString(),
             normalizedReading: reading.normalizedReading.toString()
@@ -60,8 +61,22 @@ export class WaterMeterPrismaRepository
       : undefined
   }
 
-  async findAll(): Promise<WaterMeter[]> {
+  async findWithFilters(filters: GetWaterMetersFiltersDto): Promise<WaterMeter[]> {
+    const where: any = {}
+
+    if (filters.zoneId) {
+      where.waterZoneId = filters.zoneId
+    }
+
+    if (filters.name) {
+      where.name = {
+        contains: filters.name,
+        mode: 'insensitive'
+      }
+    }
+
     const waterMeters = await this.getModel().findMany({
+      where,
       include: {
         waterZone: true,
         waterMeterReadings: {
@@ -70,6 +85,7 @@ export class WaterMeterPrismaRepository
         }
       }
     })
+
     return waterMeters.map((wm) =>
       WaterMeter.create({
         ...wm,
@@ -78,6 +94,10 @@ export class WaterMeterPrismaRepository
         lastReadingDate: wm.waterMeterReadings[0]?.readingDate
       })
     )
+  }
+
+  async findAll(): Promise<WaterMeter[]> {
+    return this.findWithFilters({})
   }
 
   async delete(id: Id): Promise<void> {

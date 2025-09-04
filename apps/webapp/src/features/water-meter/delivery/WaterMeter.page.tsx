@@ -23,12 +23,12 @@ export default function WaterMeterPage({ waterMeters, waterZones }: Props) {
   const router = useRouter()
   const zoneFilterId = useId()
   const nameFilterId = useId()
-  const [selectedZone, setSelectedZone] = useState<string>('')
+  const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
 
   // Filter water meters based on selected zone and name
   const filteredWaterMeters = waterMeters.filter((meter) => {
-    const matchesZone = !selectedZone || meter.waterZoneId.toString() === selectedZone
+    const matchesZone = selectedZone === 'all' || meter.waterZoneId.toString() === selectedZone
     const matchesName = !nameFilter || meter.name.toLowerCase().includes(nameFilter.toLowerCase())
     return matchesZone && matchesName
   })
@@ -59,6 +59,7 @@ export default function WaterMeterPage({ waterMeters, waterZones }: Props) {
                 <SelectValue placeholder="Todas las zonas" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="all">Todas las zonas</SelectItem>
                 {waterZones.map((zone) => (
                   <SelectItem key={zone.id} value={zone.id}>
                     {zone.name}

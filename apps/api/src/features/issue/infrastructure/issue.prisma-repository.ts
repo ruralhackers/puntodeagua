@@ -15,7 +15,7 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       title: input.title,
       reporterName: input.reporterName,
       description: input.description,
-      status: input.status,
+      status: input.status.toString(),
       startAt: input.startAt,
       endAt: input.endAt
     }
@@ -50,7 +50,12 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     return {
       id: input.id.toString(),
       title: input.title,
-      waterZoneId: input.waterZoneId.toString()
+      waterZoneId: input.waterZoneId.toString(),
+      reporterName: input.reporterName,
+      description: input.description ?? undefined,
+      status: input.status,
+      startAt: input.startAt,
+      endAt: input.endAt ?? undefined
     }
   }
 }

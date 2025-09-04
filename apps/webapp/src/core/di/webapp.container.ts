@@ -3,9 +3,10 @@ import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { AuthHttpClient } from '@/src/features/auth/infrastructure/auth-http-client'
+import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
-import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
+import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-rest-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import { CreateWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/create-water-meter-reading.cmd'
 import { WaterMeterReadingApiRestRepository } from '@/src/features/water-meter-reading/infrastructure/water-meter-reading.api-rest-repository'
@@ -82,6 +83,9 @@ export class WebappContainer extends CoreContainer {
 
     const getIssueByIdQry = new GetIssueByIdQry(issueApiRestRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
+
+    const createIssueCmd = new CreateIssueCmd(issueApiRestRepository)
+    this.register(CreateIssueCmd.ID, createIssueCmd)
 
     // Water meter reading commands
     const waterMeterReadingApiRestRepository = new WaterMeterReadingApiRestRepository(httpClient)

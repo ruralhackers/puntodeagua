@@ -40,7 +40,7 @@ export const AnalysisDetailPage: FC<{ analysis: Analysis; zones?: WaterZone[] }>
             <PopoverContent align="end" className="w-44 p-1">
               <div className="flex flex-col">
                 <Link
-                  to={`/analysis/edit/${dto.id}`}
+                  to={`/dashboard/registros/analiticas/${dto.id}/edit`}
                   type="invisible"
                   className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent hover:text-accent-foreground"
                 >

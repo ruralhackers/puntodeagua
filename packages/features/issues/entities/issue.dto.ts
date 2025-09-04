@@ -1,7 +1,7 @@
 export interface IssueDto {
   id: string
   title: string
-  description: string
+  description?: string
   reporterName: string
   waterZoneId: string
   status: string

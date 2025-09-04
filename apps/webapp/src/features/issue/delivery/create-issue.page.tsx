@@ -183,12 +183,13 @@ export const CreateIssuePage: NextPage = () => {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel />
+                      <FormLabel>Incidencia *</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
                           placeholder="Describe brevemente la incidencia"
                           {...field}
+                          required
                         ></Input>
                       </FormControl>
                       <FormDescription />

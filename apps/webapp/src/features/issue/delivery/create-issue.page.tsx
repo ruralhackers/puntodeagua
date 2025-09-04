@@ -73,7 +73,7 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      waterZoneId: 'cmf580rl90006rx07yycjwao3',
+      waterZoneId: '',
       description: '',
       startAt: new Date(),
       reporterName: '',

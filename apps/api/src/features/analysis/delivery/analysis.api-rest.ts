@@ -4,6 +4,7 @@ import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { z } from 'zod'
 import { apiContainer } from '../../../api.container'
 import { CreateAnalysisCmd } from '../application/create-analysis.cmd'
+import { DeleteAnalysisCmd } from '../application/delete-analysis.cmd'
 import { EditAnalysisCmd } from '../application/edit-analysis.cmd'
 import { GetAnalysesQry } from '../application/get-analyses.qry'
 import { GetAnalysisQry } from '../application/get-analysis.qry'
@@ -16,7 +17,7 @@ export const analysisApiRest = new Elysia()
   })
   .get('/analyses/:id', async ({ params }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    const analysis = await useCaseService.execute(GetAnalysisQry, { id: Id.create(params.id) })
+    const analysis = await useCaseService.execute(GetAnalysisQry, Id.create(params.id))
     if (!analysis) {
       return { status: 404, body: { message: 'Analysis not found' } }
     }
@@ -37,5 +38,10 @@ export const analysisApiRest = new Elysia()
     const schema = analysisSchema.extend({ analyzedAt: z.coerce.date() })
     const dto = schema.parse(body)
     await useCaseService.execute(EditAnalysisCmd, dto)
+    return
+  })
+  .delete('/analyses/:id', async ({ params }) => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    await useCaseService.execute(DeleteAnalysisCmd, Id.create(params.id))
     return
   })

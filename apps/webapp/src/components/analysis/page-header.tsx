@@ -4,14 +4,14 @@ import { useRouter } from 'next/navigation'
 import type * as React from 'react'
 import { Button } from '@/components/ui/button'
 
-interface FormHeaderProps {
+interface PageHeaderProps {
   title?: string
   subtitle?: string
   onBack?: () => void
   className?: string
 }
 
-export const FormHeader: React.FC<FormHeaderProps> = ({
+export const PageHeader: React.FC<PageHeaderProps> = ({
   title = 'Nuevo análisis',
   subtitle = 'Reporta un nuevo análisis o problema',
   onBack,

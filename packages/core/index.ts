@@ -6,6 +6,8 @@ export type { Deletable } from './repositories/deletable.ts'
 export type { FindableAll } from './repositories/findable-all.ts'
 export type { FindableById } from './repositories/findable-by-id.ts'
 export type { Savable } from './repositories/savable.ts'
+// Storage exports
+export * from './storage'
 export { decimalSchema } from './types/decimal.schema.ts'
 export { idSchema } from './types/id.schema.ts'
 export { locationSchema } from './types/location.schema.ts'

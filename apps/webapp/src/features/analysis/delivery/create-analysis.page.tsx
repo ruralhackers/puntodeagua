@@ -2,9 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Id } from 'core'
-import { Issue, issueSchema } from 'features'
+import { Analysis } from 'features/registers/entities/analysis'
+import { analysisSchema } from 'features/registers/schemas/analysis.schema'
+import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
+import { useId, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -19,85 +22,58 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
-import { useId } from 'react'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
+// import { useUseCase } from '@/src/core/use-cases/use-use-case'
 
-const tiposIncidencia = [
-  'Fuga de agua',
-  'Baja presión',
-  'Corte de suministro',
-  'Calidad del agua',
-  'Avería en bomba',
-  'Problema eléctrico',
-  'Obstrucción en tubería',
-  'Otro'
-]
-
-const prioridades = [
-  { value: 'baja', label: 'Baja', color: 'text-green-600' },
-  { value: 'media', label: 'Media', color: 'text-yellow-600' },
-  { value: 'alta', label: 'Alta', color: 'text-orange-600' },
-  { value: 'critica', label: 'Crítica', color: 'text-red-600' }
-]
-
-const puntosAgua = [
-  'Pozo Principal',
-  'Tanque Elevado Norte',
-  'Tanque Elevado Sur',
-  'Red Distribución Centro',
-  'Red Distribución Periferia',
-  'Estación de Bombeo'
-]
-
-const createSchema = issueSchema.omit({
-  id: true
-})
-
-const waterZone = [
-  { id: '123', name: 'Os Casas' },
-  { id: 'abc', name: 'Centro' },
-  { id: '0z0', name: 'Ramís' }
-]
-
-export const CreateIssuePage: NextPage = () => {
+export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
-  const saveIssueCommand = useUseCase(SaveIssueCmd)
+  const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
 
-  const form = useForm<z.infer<typeof createSchema>>({
-    resolver: zodResolver(createSchema),
+  const createAnalysisSchema = analysisSchema.omit({ id: true })
+
+  // const analysisParams = ['ph', 'turbidity', 'chlorine']
+
+  const form = useForm<z.infer<typeof createAnalysisSchema>>({
+    resolver: zodResolver(createAnalysisSchema),
     defaultValues: {
-      title: '',
       description: '',
-      waterZoneId: 'cmf580rl90006rx07yycjwao3',
-      reporterName: ''
+      waterZoneId: Id.generateUniqueId().toString(),
+      analysisType: '',
+      analyst: '',
+      analyzedAt: new Date(),
+      ph: '',
+      turbidity: '',
+      chlorine: ''
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
       // fecha: '',
       // hora: '',
+      // reportadoPor: '',
+      // descripcion: '',
       // accionesRealizadas: '',
       // observaciones: ''
     }
   })
 
-  async function onSubmit(values: z.infer<Omit<typeof issueSchema, 'id'>>) {
-    await saveIssueCommand.execute(
-      Issue.create({
-        title: values.title,
-        description: values.description,
-        reporterName: values.reporterName,
-        waterZoneId: values.waterZoneId
-      })
-    )
+  const selectedType = form.watch('analysisType')
+  const analysisTypeId = useId()
+  const analysisParams = useMemo(() => {
+    if (!selectedType || !AnalysisType.isValidType(selectedType)) return []
+    return AnalysisType.create(selectedType).getFieldsByType()
+  }, [selectedType])
+
+  async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
+    console.log('Datos del análisis:', values)
+    const analysis = Analysis.create(values)
+    await createAnalysisCommand.execute(analysis.toDto())
+    // await createAnalysisCommand.execute(values)
+    // Aquí iría la lógica para guardar la incidencia cuando tengamos waterZoneId
     router.push('/')
+  }
+
+  function onChangeAnalysisType(value: string) {
+    form.setValue('analysisType', value, { shouldValidate: true })
   }
 
   return (
@@ -105,10 +81,17 @@ export const CreateIssuePage: NextPage = () => {
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Button
+          aria-label="Volver"
           onClick={() => router.back()}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            aria-hidden="true"
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -118,19 +101,14 @@ export const CreateIssuePage: NextPage = () => {
           </svg>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Incidencia</h1>
-          <p className="text-gray-600">Reporta una nueva incidencia o problema</p>
+          <h1 className="text-2xl font-bold text-gray-900">Nueva Análisis</h1>
+          <p className="text-gray-600">Reporta una nueva análisis o problema</p>
         </div>
       </div>
 
       {/* Formulario */}
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit, (x) => {
-            console.log(x)
-          })}
-          className="space-y-8"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Información básica */}
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
@@ -138,122 +116,107 @@ export const CreateIssuePage: NextPage = () => {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <FormField
-                  id={useId()}
                   control={form.control}
-                  name="waterZoneId"
+                  name="analyst"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Zona *</FormLabel>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona la zona"/>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {waterZone.map((wz) => (
-                            <SelectItem key={wz.id} value={wz.id}>
-                              {wz.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Analista</FormLabel>
+                      <FormControl>
+                        <input type="text" placeholder="Nombre del analista" />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
               </div>
 
+              {/* analyzedAt */}
               <div>
                 <FormField
                   control={form.control}
-                  name="reporterName"
+                  name="analyzedAt"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Persona que firma *</FormLabel>
+                      <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Nombre de quien firma la incidencia"
-                          required
-                        />
+                        <input type="date" placeholder="Fecha de análisis" />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
               </div>
 
-              <div>
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({field}) => (
-                    <FormItem>
-                      <FormLabel>Incidencia *</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Describe brevemente la incidencia"
-                          {...field}
-                          required
-                        ></Input>
-                      </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
-                    </FormItem>
-                  )}
-                ></FormField>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor={analysisTypeId}
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Tipo de Incidencia
+                  </label>
+                  <select
+                    id={analysisTypeId}
+                    name="analysisType"
+                    value={form.getValues('analysisType')}
+                    onChange={(e) => onChangeAnalysisType(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Selecciona un tipo</option>
+                    {AnalysisType.values().map((analysisType) => (
+                      <option key={analysisType.value} value={analysisType.value}>
+                        {analysisType.value}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div>
+              {/* add form field for each analysis params with a label */}
+              {analysisParams.map((param) => (
+                <div key={param}>
+                  <FormField
+                    control={form.control}
+                    name={param as keyof z.infer<typeof createAnalysisSchema>}
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>{param}</FormLabel>
+                        <FormControl>
+                          {param === 'description' ? (
+                            <textarea placeholder="Descripción" rows={4} />
+                          ) : (
+                            <Input type="text" placeholder={param} />
+                          )}
+                          {/* <input type="text" placeholder={param} /> */}
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  ></FormField>
+                </div>
+              ))}
+
+              {/* description use textarea */}
+              {/* <div>
                 <FormField
                   control={form.control}
                   name="description"
                   render={() => (
                     <FormItem>
-                      <FormLabel>Descripción de la incidencia</FormLabel>
+                      <FormLabel>Descripción</FormLabel>
                       <FormControl>
-                        <Textarea
-                          name="description"
-                          placeholder="Describe detalladamente la incidencia"
-                          rows={4}
-                          cols={40}
-                        />
+                        <textarea placeholder="Describe brevemente el análisis" rows={4} />
                       </FormControl>
-                      <FormDescription/>
-                      <FormMessage/>
+                      <FormDescription />
+                      <FormMessage />
                     </FormItem>
                   )}
                 ></FormField>
-              </div>
-
-              <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-blue-800 border-b border-blue-300 pb-3 mb-4">📅 Estado y
-                  fechas</h3>
-                <div className="bg-white rounded-lg p-4 border border-blue-200">
-                  
-                </div>
-              </div>
-
-              {/*    <div className="grid grid-cols-2 gap-4">*/}
-              {/*      <div>*/}
-              {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
-              {/*          Tipo de Incidencia **/}
-              {/*        </label>*/}
-              {/*        <select*/}
-              {/*          name="tipo"*/}
-              {/*          value={formData.tipo}*/}
-              {/*          onChange={handleInputChange}*/}
-              {/*          required*/}
-              {/*          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
-              {/*        >*/}
-              {/*          <option value="">Selecciona un tipo</option>*/}
-              {/*          {tiposIncidencia.map((tipo) => (*/}
-              {/*            <option key={tipo} value={tipo}>*/}
-              {/*              {tipo}*/}
-              {/*            </option>*/}
-              {/*          ))}*/}
-              {/*        </select>*/}
-              {/*      </div>*/}
+              </div> */}
 
               {/*      <div>*/}
               {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}
@@ -274,6 +237,26 @@ export const CreateIssuePage: NextPage = () => {
               {/*          ))}*/}
               {/*        </select>*/}
               {/*      </div>*/}
+              {/*    </div>*/}
+
+              {/*    <div>*/}
+              {/*      <label className="block text-sm font-medium text-gray-700 mb-2">*/}
+              {/*        Punto de Agua Afectado **/}
+              {/*      </label>*/}
+              {/*      <select*/}
+              {/*        name="puntoAgua"*/}
+              {/*        value={formData.puntoAgua}*/}
+              {/*        onChange={handleInputChange}*/}
+              {/*        required*/}
+              {/*        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"*/}
+              {/*      >*/}
+              {/*        <option value="">Selecciona un punto</option>*/}
+              {/*        {puntosAgua.map((punto) => (*/}
+              {/*          <option key={punto} value={punto}>*/}
+              {/*            {punto}*/}
+              {/*          </option>*/}
+              {/*        ))}*/}
+              {/*      </select>*/}
               {/*    </div>*/}
 
               {/*    <div className="grid grid-cols-2 gap-4">*/}

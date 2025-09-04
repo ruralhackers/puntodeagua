@@ -5,6 +5,8 @@
     "dev": " bun --watch --env-file=../../.env.local run --port 4000 src/index.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.879.0",
+    "@aws-sdk/s3-request-presigner": "^3.879.0",
     "@elysiajs/cors": "1.3.3",
     "@elysiajs/jwt": "1.3.3",
     "@elysiajs/swagger": "1.3.1",

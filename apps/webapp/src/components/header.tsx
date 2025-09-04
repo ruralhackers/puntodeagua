@@ -4,7 +4,11 @@ import { Link } from '@/components/ui/link'
 import { useAuth } from '../features/auth/context/auth-context'
 
 export function Header() {
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
+
+  const canSeeMore = () => {
+    return user?.roles.includes('COMMUNITY_ADMIN') || user?.roles.includes('SUPER_ADMIN') || false
+  }
 
   return (
     <header className="border-b bg-background">
@@ -52,10 +56,25 @@ export function Header() {
                 Puntos de Agua
               </Link>
             </Button>
-            <Button variant="outline" size="sm" asChild onClick={() => logout()}>
-              <Link to="#" className="text-xs font-bold no-underline hover:no-underline">
-                Cerrar Sesion
-              </Link>
+            {canSeeMore() && (
+              <Button variant="outline" size="sm" asChild>
+                <Link
+                  to="/dashboard/mas"
+                  className="text-xs font-bold no-underline hover:no-underline"
+                >
+                  Más
+                </Link>
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={logout}
+              aria-label="Cerrar sesión"
+              className="text-xs font-bold cursor-pointer"
+            >
+              Cerrar Sesion
             </Button>
           </div>
         </div>

@@ -4,7 +4,7 @@ import type { AnalysisRepository } from 'features/registers/repositories/analysi
 import type { AnalysisSchema } from 'features/registers/schemas/analysis.schema'
 
 export class CreateAnalysisCmd implements Command<Omit<AnalysisSchema, 'id'>> {
-  static readonly ID = 'CreateIssueCmd'
+  static readonly ID = 'CreateAnalysisCmd'
 
   constructor(private readonly analysisRepository: AnalysisRepository) {}
 

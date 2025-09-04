@@ -32,16 +32,17 @@ export class AnalysisType {
   }
 
   getFieldsByType() {
+    const mandatoryFields = ['description']
     if (this.value === 'chlorine_ph') {
-      return ['ph', 'chlorine']
+      return ['ph', 'chlorine', ...mandatoryFields]
     } else if (this.value === 'turbidity') {
-      return ['turbidity']
+      return ['turbidity', ...mandatoryFields]
     } else if (this.value === 'hardness') {
-      return []
+      return [...mandatoryFields]
     } else if (this.value === 'complete') {
-      return []
+      return [...mandatoryFields]
     } else {
-      return []
+      return [...mandatoryFields]
     }
   }
 }

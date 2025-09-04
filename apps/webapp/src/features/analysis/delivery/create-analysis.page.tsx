@@ -1,6 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Id } from 'core'
+import { Analysis } from 'features/registers/entities/analysis'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
@@ -18,12 +20,14 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
 // import { useUseCase } from '@/src/core/use-cases/use-use-case'
-// import { CreateAnalysisCmd } from '../application/create-analysis.cmd'
 
 export const CreateAnalysisPage: NextPage = () => {
   const router = useRouter()
-  // const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
+  const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
 
   const createAnalysisSchema = analysisSchema.omit({ id: true })
 
@@ -33,6 +37,7 @@ export const CreateAnalysisPage: NextPage = () => {
     resolver: zodResolver(createAnalysisSchema),
     defaultValues: {
       description: '',
+      waterZoneId: Id.generateUniqueId().toString(),
       analysisType: '',
       analyst: '',
       analyzedAt: new Date(),
@@ -59,7 +64,9 @@ export const CreateAnalysisPage: NextPage = () => {
   }, [selectedType])
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
-    console.log('Datos de la incidencia:', values)
+    console.log('Datos del análisis:', values)
+    const analysis = Analysis.create(values)
+    await createAnalysisCommand.execute(analysis.toDto())
     // await createAnalysisCommand.execute(values)
     // Aquí iría la lógica para guardar la incidencia cuando tengamos waterZoneId
     router.push('/')
@@ -107,6 +114,41 @@ export const CreateAnalysisPage: NextPage = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
 
             <div className="grid grid-cols-1 gap-4">
+              <div>
+                <FormField
+                  control={form.control}
+                  name="analyst"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Analista</FormLabel>
+                      <FormControl>
+                        <input type="text" placeholder="Nombre del analista" />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
+              {/* analyzedAt */}
+              <div>
+                <FormField
+                  control={form.control}
+                  name="analyzedAt"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Fecha de análisis</FormLabel>
+                      <FormControl>
+                        <input type="date" placeholder="Fecha de análisis" />
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                ></FormField>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label
@@ -143,7 +185,12 @@ export const CreateAnalysisPage: NextPage = () => {
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>
-                          <input type="text" placeholder={param} />
+                          {param === 'description' ? (
+                            <textarea placeholder="Descripción" rows={4} />
+                          ) : (
+                            <Input type="text" placeholder={param} />
+                          )}
+                          {/* <input type="text" placeholder={param} /> */}
                         </FormControl>
                         <FormDescription />
                         <FormMessage />
@@ -153,25 +200,8 @@ export const CreateAnalysisPage: NextPage = () => {
                 </div>
               ))}
 
-              <div>
-                <FormField
-                  control={form.control}
-                  name="analyst"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Analista</FormLabel>
-                      <FormControl>
-                        <input type="text" placeholder="Nombre del analista" />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-              </div>
-
               {/* description use textarea */}
-              <div>
+              {/* <div>
                 <FormField
                   control={form.control}
                   name="description"
@@ -186,7 +216,7 @@ export const CreateAnalysisPage: NextPage = () => {
                     </FormItem>
                   )}
                 ></FormField>
-              </div>
+              </div> */}
 
               {/*      <div>*/}
               {/*        <label className="block text-sm font-medium text-gray-700 mb-2">*/}

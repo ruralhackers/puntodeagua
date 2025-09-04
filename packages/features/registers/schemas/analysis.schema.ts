@@ -5,6 +5,7 @@ export type AnalysisSchema = z.infer<typeof analysisSchema>
 
 export const analysisSchema = z.object({
   id: idSchema,
+  name: z.string(),
   waterZoneId: idSchema,
   analysisType: z.string(),
   analyst: z.string(),

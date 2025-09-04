@@ -1,3 +1,5 @@
+// TODO: add mappings to camelCase fields
+
 generator client {
   provider = "prisma-client-js"
   output   = "./generated"
@@ -103,6 +105,7 @@ model WaterZone {
   analysis Analysis[]
   issue Issue[]
   waterMeters WaterMeter[]
+  maintenances Maintenance[]
 
   @@index([communityId])
 }
@@ -241,6 +244,29 @@ model Analysis {
   turbidity   String?
   chlorine    String?
   description String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([waterZoneId])
+}
+
+
+model Maintenance {
+  id String @id @default(cuid())
+  name String
+  scheduledDate DateTime @map("scheduled_date")
+  responsible String
+
+  waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
+  waterZoneId String    @map("water_zone_id")
+
+
+  executionDate DateTime? @map("execution_date")
+  duration Int?
+  nextMaintenanceDate DateTime? @map("next_maintenance_date")
+  description String?
+  observations String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

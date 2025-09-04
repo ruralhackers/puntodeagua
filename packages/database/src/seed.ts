@@ -20,6 +20,7 @@ async function main() {
   await seedWaterMeters(waterPointIds)
   await seedIssues()
   await seedWaterMeterReadings()
+  await seedMaintenances()
 }
 
 main()
@@ -209,6 +210,38 @@ async function seedAnalyses() {
         analyzedAt: new Date(),
         ph: '7.1',
         chlorine: '0.48'
+      }
+    ]
+  })
+}
+
+async function seedMaintenances() {
+  const waterZone = await prisma.waterZone.findFirst()
+
+  if (!waterZone) {
+    console.log('No water zone found, skipping maintenance seed')
+    return
+  }
+
+  await prisma.maintenance.createMany({
+    data: [
+      {
+        waterZoneId: waterZone.id,
+        name: 'Maintenance 1',
+        scheduledDate: new Date(),
+        responsible: 'Juan García'
+      },
+      {
+        waterZoneId: waterZone.id,
+        name: 'Maintenance 2',
+        scheduledDate: new Date(),
+        responsible: 'María López'
+      },
+      {
+        waterZoneId: waterZone.id,
+        name: 'Maintenance 3',
+        scheduledDate: new Date(),
+        responsible: 'Carlos Rodríguez'
       }
     ]
   })

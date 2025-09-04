@@ -1,18 +1,18 @@
 {
-	"name": "core",
-	"module": "index.ts",
-	"type": "module",
-	"private": true,
-	"devDependencies": {
-		"@types/bun": "latest"
-	},
-	"peerDependencies": {
-		"typescript": "5"
-	},
-	"dependencies": {
-		"@paralleldrive/cuid2": "2.2.2",
-		"decimal.js": "10.6.0",
-		"gretchen": "1.5.1",
-		"zod": "catalog:"
-	}
+  "name": "core",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "5"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "2.2.2",
+    "decimal.js": "10.6.0",
+    "gretchen": "1.5.1",
+    "zod": "catalog:"
+  }
 }

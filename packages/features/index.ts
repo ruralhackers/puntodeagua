@@ -1,24 +1,23 @@
-export { Community } from "./entities/community.ts";
-export type { CreateIssueDto } from "./entities/create-issue.dto.ts";
-export { Holder } from "./entities/holder.ts";
-export type { IssueDto } from "./entities/issue.dto.ts";
-export { Issue } from "./entities/issue.ts";
-export { Plan } from "./entities/plan.ts";
-export { WaterMeter } from "./entities/water-meter.ts";
-export { WaterMeterReading } from "./entities/water-meter-reading.ts";
-export { WaterPoint } from "./entities/water-point.ts";
-export type { AnalysisDto } from "./registers/entities/analysis.dto.ts";
-export { Analysis } from "./registers/entities/analysis.ts";
-export type { AnalysisRepository } from "./registers/repositories/analysis.repository.ts";
-export { BasePrismaRepository } from "./repositories/base.prisma-repository.ts";
-export type { CommunityRepository } from "./repositories/community.repository.ts";
-export type { HolderRepository } from "./repositories/holder.repository.ts";
-export type { PlanRepository } from "./repositories/plan.repository.ts";
-export type { UserRepository } from "./repositories/user.repository.ts";
-export type { WaterMeterRepository } from "./repositories/water-meter.repository.ts";
-export type { WaterMeterReadingRepository } from "./repositories/water-meter-reading.repository.ts";
-export type { WaterPointRepository } from "./repositories/water-point.repository.ts";
-export {createIssueSchema} from "./schemas/create-issue.schema.ts";
-export type { IssueSchema } from "./schemas/issue.schema.ts";
-export {issueSchema} from "./schemas/issue.schema.ts";
-
+export { Community } from './entities/community.ts'
+export type { CreateIssueDto } from './entities/create-issue.dto.ts'
+export { Holder } from './entities/holder.ts'
+export type { IssueDto } from './entities/issue.dto.ts'
+export { Issue } from './entities/issue.ts'
+export { Plan } from './entities/plan.ts'
+export { WaterMeter } from './entities/water-meter.ts'
+export { WaterMeterReading } from './entities/water-meter-reading.ts'
+export { WaterPoint } from './entities/water-point.ts'
+export type { AnalysisDto } from './registers/entities/analysis.dto.ts'
+export { Analysis } from './registers/entities/analysis.ts'
+export type { AnalysisRepository } from './registers/repositories/analysis.repository.ts'
+export { BasePrismaRepository } from './repositories/base.prisma-repository.ts'
+export type { CommunityRepository } from './repositories/community.repository.ts'
+export type { HolderRepository } from './repositories/holder.repository.ts'
+export type { PlanRepository } from './repositories/plan.repository.ts'
+export type { UserRepository } from './repositories/user.repository.ts'
+export type { WaterMeterRepository } from './repositories/water-meter.repository.ts'
+export type { WaterMeterReadingRepository } from './repositories/water-meter-reading.repository.ts'
+export type { WaterPointRepository } from './repositories/water-point.repository.ts'
+export { createIssueSchema } from './schemas/create-issue.schema.ts'
+export type { IssueSchema } from './schemas/issue.schema.ts'
+export { issueSchema } from './schemas/issue.schema.ts'

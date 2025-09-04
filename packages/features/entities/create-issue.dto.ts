@@ -1,3 +1,3 @@
 export interface CreateIssueDto {
-	name: string
+  name: string
 }

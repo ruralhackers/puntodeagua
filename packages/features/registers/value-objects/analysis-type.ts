@@ -1,5 +1,4 @@
 const analysisTypes = ['chlorine_ph', 'turbidity', 'hardness', 'complete']
-
 export class AnalysisType {
   static CHLORINE_PH = new AnalysisType('chlorine_ph')
   static TURBIDITY = new AnalysisType('turbidity')

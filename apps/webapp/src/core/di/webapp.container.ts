@@ -1,13 +1,13 @@
-import {CoreContainer, HttpClient} from 'core'
-import {CreateIssueCmd} from "@/src/features/issue/application/create-issue.cmd";
-import {IssueApiRestRepository} from "@/src/features/issue/infrastructure/issue.api-repository";
+import { CoreContainer, HttpClient } from 'core'
+import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetAnalysesQry } from '../../features/analysis/application/get-analyses.qry'
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
-import {LoginCmd} from '../../features/auth/application/login.cmd'
-import {AuthApiRestRepository} from '../../features/auth/infrastructure/auth.api-rest-repository'
-import {GetWaterPointsQry} from '../../features/water-point/application/get-water-points.qry'
-import {WaterPointApiRestRepository} from '../../features/water-point/infrastructure/water-point.api-rest-repository'
-import {AUTH_REPOSITORY, ISSUE_REPOSITORY, WATER_REPOSITORY} from './injection-tokens'
+import { LoginCmd } from '../../features/auth/application/login.cmd'
+import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
+import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
+import { AUTH_REPOSITORY, ISSUE_REPOSITORY, WATER_REPOSITORY } from './injection-tokens'
 
 export class WebappContainer extends CoreContainer {
   protected override registerInstances(): void {
@@ -24,8 +24,8 @@ export class WebappContainer extends CoreContainer {
     const issueApiRestRepository = new IssueApiRestRepository(httpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
-    const createIssueCmd = new CreateIssueCmd(issueApiRestRepository);
-    this.register(CreateIssueCmd.ID, createIssueCmd);
+    const createIssueCmd = new CreateIssueCmd(issueApiRestRepository)
+    this.register(CreateIssueCmd.ID, createIssueCmd)
 
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)

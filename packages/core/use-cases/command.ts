@@ -1,4 +1,3 @@
-import type { UseCase } from "./use-case";
+import type { UseCase } from './use-case'
 
-export interface Command<Param = void, Return = void>
-	extends UseCase<Param, Return> {}
+export interface Command<Param = void, Return = void> extends UseCase<Param, Return> {}

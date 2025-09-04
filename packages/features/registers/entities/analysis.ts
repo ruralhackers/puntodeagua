@@ -1,6 +1,6 @@
-import { Decimal, Id } from "core";
-import type { AnalysisSchema } from "../schemas/analysis.schema";
-import { AnalysisType } from "../value-objects/analysis-type";
+import { Decimal, Id } from 'core'
+import type { AnalysisSchema } from '../schemas/analysis.schema'
+import { AnalysisType } from '../value-objects/analysis-type'
 
 export class Analysis {
   private constructor(
@@ -15,7 +15,7 @@ export class Analysis {
     public description: string | undefined = undefined
   ) {}
 
-  static create(analysisSchema: Omit<AnalysisSchema, "id">) {
+  static create(analysisSchema: Omit<AnalysisSchema, 'id'>) {
     return new Analysis(
       Id.generateUniqueId(),
       Id.create(analysisSchema.waterZoneId),
@@ -26,7 +26,7 @@ export class Analysis {
       analysisSchema.turbidity ? Decimal.fromString(analysisSchema.turbidity) : undefined,
       analysisSchema.chlorine ? Decimal.fromString(analysisSchema.chlorine) : undefined,
       analysisSchema.description ?? undefined
-    );
+    )
   }
 
   static fromDto(dto: AnalysisSchema): Analysis {
@@ -40,7 +40,7 @@ export class Analysis {
       dto.turbidity ? Decimal.fromString(dto.turbidity) : undefined,
       dto.chlorine ? Decimal.fromString(dto.chlorine) : undefined,
       dto.description ?? undefined
-    );
+    )
   }
 
   toDto() {
@@ -54,6 +54,6 @@ export class Analysis {
       turbidity: this.turbidity?.toString(),
       chlorine: this.chlorine?.toString(),
       description: this.description
-    };
+    }
   }
 }

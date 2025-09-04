@@ -17,6 +17,7 @@ import {
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analisys.cmd'
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
+import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
@@ -71,7 +72,8 @@ export class ApiContainer extends CoreContainer {
     this.register(ANALYSIS_REPOSITORY, analysisRepository)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
-
+    const getAnalysisQry = new GetAnalysisQry(analysisRepository)
+    this.register(GetAnalysisQry.ID, getAnalysisQry)
     const createAnalysisCmd = new CreateAnalysisCmd(analysisRepository)
     this.register(CreateAnalysisCmd.ID, createAnalysisCmd)
 

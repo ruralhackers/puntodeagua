@@ -9,11 +9,13 @@ import { GetAnalysisQry } from '../application/get-analysis.qry'
 
 export const analysisApiRest = new Elysia()
   .get('/analyses', async () => {
+    console.log('voy aqui')
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const analysis = await useCaseService.execute(GetAnalysesQry)
     return analysis.map((x) => x.toDto())
   })
   .get('/analyses/:id', async ({ params }) => {
+    console.log({ params })
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const analysis = await useCaseService.execute(GetAnalysisQry, { id: Id.create(params.id) })
     if (!analysis) {

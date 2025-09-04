@@ -5,6 +5,8 @@ import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
+import { CreateWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/create-water-meter-reading.cmd'
+import { WaterMeterReadingApiRestRepository } from '@/src/features/water-meter-reading/infrastructure/water-meter-reading.api-rest-repository'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { WaterZoneApiRestRepository } from '@/src/features/water-zone/infrastructure/water-zone.api-rest-repository'
 import { CreateAnalysisCmd } from '../../features/analysis/application/create-analysis.cmd'
@@ -73,6 +75,13 @@ export class WebappContainer extends CoreContainer {
     const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
+
+    // Water meter reading commands
+    const waterMeterReadingApiRestRepository = new WaterMeterReadingApiRestRepository(httpClient)
+    const createWaterMeterReadingCmd = new CreateWaterMeterReadingCmd(
+      waterMeterReadingApiRestRepository
+    )
+    this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

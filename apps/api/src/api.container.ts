@@ -51,6 +51,9 @@ export class ApiContainer extends CoreContainer {
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterPrismaRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
 
+    const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
+    this.register(GetWaterMeterQry.ID, getWaterMeterQry)
+
     // Water Meter Readings
     const waterMeterReadingPrismaRepository = new WaterMeterReadingPrismaRepository(client)
     this.register(WATER_METER_READING_REPOSITORY, waterMeterReadingPrismaRepository)

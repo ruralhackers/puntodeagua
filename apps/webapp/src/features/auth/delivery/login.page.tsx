@@ -32,9 +32,8 @@ export const LoginPage: FC = () => {
       const result = await loginCommand.execute(dto)
 
       if (result?.token) {
-        login(result) // Use AuthContext login function
+        login(result)
 
-        // Check for redirect path
         const redirectPath = localStorage.getItem('auth_redirect')
         localStorage.removeItem('auth_redirect')
 
@@ -57,36 +56,67 @@ export const LoginPage: FC = () => {
 
   return (
     <Page>
-      <div className="flex h-full w-full items-center justify-center">
-        <form onSubmit={onSubmit} className="flex w-full max-w-sm flex-col gap-4 p-4">
-          <h1 className="text-2xl font-semibold">Login</h1>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm" htmlFor={emailId}>
-              Email
-            </label>
-            <Input
-              id={emailId}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+      <div className="min-h-[calc(100vh-4rem)] w-full bg-gradient-to-b from-blue-50 to-white flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-md">
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-semibold tracking-tight text-blue-700">Punto de Agua</h1>
+            <p className="mt-2 text-sm text-gray-600">Accede para gestionar tu comunidad</p>
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm" htmlFor={passwordId}>
-              Password
-            </label>
-            <Input
-              id={passwordId}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+
+          <div className="rounded-xl border border-blue-100 bg-white shadow-sm">
+            <div className="border-b border-blue-100 bg-blue-50/60 px-5 py-4 rounded-t-xl">
+              <h2 className="text-base font-medium text-blue-800">Iniciar sesión</h2>
+            </div>
+
+            <form onSubmit={onSubmit} className="flex flex-col gap-4 p-5">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm text-gray-700" htmlFor={emailId}>
+                  Email
+                </label>
+                <Input
+                  id={emailId}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11"
+                  placeholder="tucorreo@dominio.com"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm text-gray-700" htmlFor={passwordId}>
+                  Contraseña
+                </label>
+                <Input
+                  id={passwordId}
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              {error && (
+                <div className="text-sm rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-11 bg-blue-600 hover:bg-blue-700"
+              >
+                {loading ? 'Accediendo…' : 'Acceder'}
+              </Button>
+            </form>
           </div>
-          {error && <div className="text-sm text-red-600">{error}</div>}
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
+
+          <p className="mt-6 text-center text-xs text-gray-500">
+            © {new Date().getFullYear()} Punto de Agua
+          </p>
+        </div>
       </div>
     </Page>
   )

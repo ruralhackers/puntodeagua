@@ -4,5 +4,4 @@ import { CreateAnalysisPage } from '@/src/features/analysis/delivery/create-anal
 const Page: NextPage = async () => {
   return <CreateAnalysisPage />
 }
-
 export default Page

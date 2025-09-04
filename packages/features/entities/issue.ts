@@ -10,7 +10,9 @@ export class Issue {
   ) {}
 
   static create(issueSchema: Omit<IssueSchema, 'id'>) {
-    return new Issue(Id.generateUniqueId(), issueSchema.title, Id.create(issueSchema.waterZoneId))
+    const id1 = Id.generateUniqueId()
+    console.log(id1)
+    return new Issue(id1, issueSchema.title, Id.create(issueSchema.waterZoneId))
   }
 
   static fromDto(dto: IssueSchema): Issue {

@@ -6,7 +6,7 @@ import { Issue, issueSchema } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -60,7 +60,7 @@ export const CreateIssuePage: NextPage = () => {
     resolver: zodResolver(createSchema),
     defaultValues: {
       title: '',
-      waterZoneId: z.cuid2()
+      waterZoneId: Id.generateUniqueId().toString()
       // tipo: '',
       // prioridad: '',
       // puntoAgua: '',
@@ -74,8 +74,9 @@ export const CreateIssuePage: NextPage = () => {
   })
 
   async function onSubmit(values: z.infer<Omit<typeof issueSchema, 'id'>>) {
-    console.log('hi')
-    await saveIssueCommand.execute(Issue.create({ title: values.title, waterZoneId: '' }))
+    await saveIssueCommand.execute(
+      Issue.create({ title: values.title, waterZoneId: values.waterZoneId })
+    )
     router.push('/')
   }
 

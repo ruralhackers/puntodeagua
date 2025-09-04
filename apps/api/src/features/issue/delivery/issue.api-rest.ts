@@ -1,12 +1,29 @@
 import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
-import { Issue, issueSchema } from 'features'
+import { createIssueSchema, issueSchema } from 'features'
+import { GetIssueByIdQry } from 'webapp/src/features/issue/application/get-issue-by-id.qry'
 import { apiContainer } from '../../../api.container'
+import { GetAnalysesQry } from '../../analysis/application/get-analyses.qry'
 import { SaveIssueCmd } from '../application/save-issue.cmd'
 
-export const issueApiRest = new Elysia().post('/issues', async ({ body }) => {
-  const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-  const issueSchemaDto = issueSchema.parse(body)
-  const issue = Issue.fromDto(issueSchemaDto)
-  await useCaseService.execute(SaveIssueCmd, issue)
-})
+export const issueApiRest = new Elysia({ prefix: '/issues' })
+  .get('/', async () => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const issues = await useCaseService.execute(GetAnalysesQry)
+    return issues.map((x) => x.toDto())
+  })
+  .get('/:id', async () => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const issue = await useCaseService.execute(GetIssueByIdQry)
+    return issue.toDto()
+  })
+  .post('/', async ({ body }) => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const dto = createIssueSchema.parse(body)
+    await useCaseService.execute(SaveIssueCmd, dto)
+  })
+  .put('/:id', async ({ body }) => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const dto = issueSchema.parse(body)
+    await useCaseService.execute(SaveIssueCmd, dto)
+  })

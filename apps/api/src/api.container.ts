@@ -22,6 +22,7 @@ import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
@@ -111,6 +112,9 @@ export class ApiContainer extends CoreContainer {
       fileUploadService
     )
     this.register(CreateWaterMeterReadingCmd.ID, createWaterMeterReadingCmd)
+
+    const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
+    this.register(GetIssueByIdQry.ID, getIssueByIdQry)
 
     // Note: We register the command without JWT function as it will be injected at runtime
     const authenticateUserCmd = new AuthenticateUserCmd(userPrismaRepository, async () => {

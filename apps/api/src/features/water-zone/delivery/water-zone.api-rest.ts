@@ -6,5 +6,6 @@ import { GetWaterZonesQry } from '../application/get-water-zones.qry'
 export const waterZonesApiRest = new Elysia().get('/water-zones', async () => {
   const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
   const waterZones = await useCaseService.execute(GetWaterZonesQry)
+  console.warn({ waterZones })
   return waterZones.map((x) => x.toDto())
 })

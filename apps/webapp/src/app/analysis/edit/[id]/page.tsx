@@ -6,7 +6,6 @@ import { GetWaterZonesQry } from '../../../../features/water-zone/application/ge
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = params
-  console.log({ id })
   const analysis = await webAppContainer
     .get<UseCaseService>(UseCaseService.ID)
     .execute(GetAnalysisQry, { id })

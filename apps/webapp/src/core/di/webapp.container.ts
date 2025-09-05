@@ -39,6 +39,8 @@ import { GetProvidersQry } from '../../features/providers/application/get-provid
 import { ProvidersApiRestRepository } from '../../features/providers/infrastructure/providers.api-rest-repository'
 import { GetRegistrosStatsQry } from '../../features/registros/application/get-registros-stats.qry'
 import { RegistrosStatsApiRestRepository } from '../../features/registros/infrastructure/registros-stats.api-rest-repository'
+import { GetSummaryQry } from '../../features/summary/application/get-summary.qry'
+import { SummaryApiRestRepository } from '../../features/summary/infrastructure/summary.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
 import { UserApiRestRepository } from '../../features/user/infrastructure/user.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
@@ -51,6 +53,7 @@ import {
   HOLDER_REPOSITORY,
   ISSUE_REPOSITORY,
   MAINTENANCE_REPOSITORY,
+  SUMMARY_REPOSITORY,
   PROVIDER_REPOSITORY,
   USER_REPOSITORY,
   WATER_METER_REPOSITORY,
@@ -191,6 +194,12 @@ export class WebappContainer extends CoreContainer {
     const registrosStatsRepository = new RegistrosStatsApiRestRepository(serverAuthHttpClient)
     const getRegistrosStatsQry = new GetRegistrosStatsQry(registrosStatsRepository)
     this.register(GetRegistrosStatsQry.ID, getRegistrosStatsQry)
+
+    // summary
+    const summaryRepository = new SummaryApiRestRepository(serverAuthHttpClient)
+    this.register(SUMMARY_REPOSITORY, summaryRepository)
+    const getSummaryQry = new GetSummaryQry(summaryRepository)
+    this.register(GetSummaryQry.ID, getSummaryQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

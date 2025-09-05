@@ -46,16 +46,18 @@ export default function AnalysisItemCard({
             )}
           </CardTitle>
           <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
-          <CardAction>
-            <span className="text-gray-400">›</span>
-          </CardAction>
+          {!showDetails && (
+            <CardAction>
+              <span className="text-gray-400">›</span>
+            </CardAction>
+          )}
         </Link>
       </CardHeader>
 
       <CardContent className="pt-0 pb-2 space-y-1">
-        <div className="text-sm text-gray-600">
+        {/* <div className="text-sm text-gray-600">
           Zona: {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
-        </div>
+        </div> */}
         {/* Información extra solo en detailed */}
         {showDetails && (
           <div className="text-sm text-gray-600 mt-1">

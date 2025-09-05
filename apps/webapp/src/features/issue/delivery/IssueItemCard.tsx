@@ -19,7 +19,8 @@ export default function IssueItemCard({ dto, waterZoneName }: IssueItemCardProps
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-2">
               <CardTitle className="text-base">{toTitle(dto.title)}</CardTitle>
-              <CardDescription className="flex items-center gap-2 m-t-1">
+              <CardDescription>
+              <div className="flex items-center gap-2">
                 {dto.status === 'closed' ? (
                   <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Resuelta
@@ -30,6 +31,8 @@ export default function IssueItemCard({ dto, waterZoneName }: IssueItemCardProps
                   </span>
                 )}
                 {waterZoneName}
+              </div>
+              <div className="block mt-3">{dto.description ?? '-'}</div>
               </CardDescription>
             </div>
             <Link href={`/dashboard/registros/incidencias/${dto.id}/editar`}>
@@ -46,16 +49,6 @@ export default function IssueItemCard({ dto, waterZoneName }: IssueItemCardProps
         </CardHeader>
 
         <CardContent className="pt-0 pb-2 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Descripción:</span>
-            <span>{dto.description ?? '-'}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Zona:</span>
-            <span>{waterZoneName}</span>
-          </div>
-
           <div className="flex items-center gap-2">
             <span className="font-medium">Persona que firma:</span>
             <span>{dto.reporterName}</span>

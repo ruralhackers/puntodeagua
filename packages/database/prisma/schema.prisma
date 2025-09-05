@@ -273,3 +273,13 @@ model Maintenance {
 
   @@index([waterZoneId])
 }
+
+model Provider {
+  id String @id @default(cuid())
+  name String
+  phone String
+  description String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

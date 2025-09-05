@@ -10,6 +10,7 @@ import {
   FILE_UPLOAD_SERVICE,
   HOLDER_REPOSITORY,
   MAINTENANCE_REPOSITORY,
+  PROVIDER_REPOSITORY,
   STORAGE_SERVICE,
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
@@ -40,6 +41,11 @@ import { GetMaintenanceQry } from './features/maintenance/application/get-mainte
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { CreateProviderCmd } from './features/providers/application/create-provider.cmd'
+import { GetProviderQry } from './features/providers/application/get-provider.qry'
+import { GetProvidersQry } from './features/providers/application/get-providers.qry'
+import { SaveProviderCmd } from './features/providers/application/save-provider.cmd'
+import { ProvidersPrismaRepository } from './features/providers/infrastructure/providers.prisma-repository'
 import { GetRegistrosStatsQry } from './features/registros/application/get-registros-stats.qry'
 import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
@@ -89,7 +95,10 @@ export class ApiContainer extends CoreContainer {
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
-    const updateWaterMeterCmd = new UpdateWaterMeterCmd(waterMeterPrismaRepository)
+    const updateWaterMeterCmd = new UpdateWaterMeterCmd(
+      waterMeterPrismaRepository,
+      waterPointPrismaRepository
+    )
     this.register(UpdateWaterMeterCmd.ID, updateWaterMeterCmd)
 
     // Water Meter Readings
@@ -152,6 +161,18 @@ export class ApiContainer extends CoreContainer {
     this.register(GetMaintenanceQry.ID, getMaintenanceQry)
     const saveMaintenanceCmd = new SaveMaintenanceCmd(maintenanceRepository)
     this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
+
+    // Providers
+    const providersRepository = new ProvidersPrismaRepository(client)
+    this.register(PROVIDER_REPOSITORY, providersRepository)
+    const getProvidersQry = new GetProvidersQry(providersRepository)
+    this.register(GetProvidersQry.ID, getProvidersQry)
+    const createProviderCmd = new CreateProviderCmd(providersRepository)
+    this.register(CreateProviderCmd.ID, createProviderCmd)
+    const getProviderQry = new GetProviderQry(providersRepository)
+    this.register(GetProviderQry.ID, getProviderQry)
+    const saveProviderCmd = new SaveProviderCmd(providersRepository)
+    this.register(SaveProviderCmd.ID, saveProviderCmd)
 
     // Summary
     const getSummaryQry = new GetSummaryQry(

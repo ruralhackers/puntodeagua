@@ -31,6 +31,11 @@ import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-
 import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
+import { CreateProviderCmd } from '../../features/providers/application/create-provider.cmd'
+import { EditProviderCmd } from '../../features/providers/application/edit-provider.cmd'
+import { GetProviderQry } from '../../features/providers/application/get-provider.qry'
+import { GetProvidersQry } from '../../features/providers/application/get-providers.qry'
+import { ProvidersApiRestRepository } from '../../features/providers/infrastructure/providers.api-rest-repository'
 import { GetRegistrosStatsQry } from '../../features/registros/application/get-registros-stats.qry'
 import { RegistrosStatsApiRestRepository } from '../../features/registros/infrastructure/registros-stats.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
@@ -45,6 +50,7 @@ import {
   HOLDER_REPOSITORY,
   ISSUE_REPOSITORY,
   MAINTENANCE_REPOSITORY,
+  PROVIDER_REPOSITORY,
   USER_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY
@@ -83,6 +89,17 @@ export class WebappContainer extends CoreContainer {
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
 
+    const providersApiRestRepository = new ProvidersApiRestRepository(httpClient)
+    this.register(PROVIDER_REPOSITORY, providersApiRestRepository)
+
+    const getProvidersQry = new GetProvidersQry(providersApiRestRepository)
+    this.register(GetProvidersQry.ID, getProvidersQry)
+    const createProviderCmd = new CreateProviderCmd(providersApiRestRepository)
+    this.register(CreateProviderCmd.ID, createProviderCmd)
+    const editProviderCmd = new EditProviderCmd(providersApiRestRepository)
+    this.register(EditProviderCmd.ID, editProviderCmd)
+    const getProviderQry = new GetProviderQry(providersApiRestRepository)
+    this.register(GetProviderQry.ID, getProviderQry)
     const getWaterPointQry = new GetWaterPointQry(waterPointApiRestRepository)
     this.register(GetWaterPointQry.ID, getWaterPointQry)
 

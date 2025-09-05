@@ -24,7 +24,6 @@ import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
 
 export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ waterZones }) => {
-  console.log('CreateAnalysisPage', waterZones)
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
   const createAnalysisSchema = analysisSchema.omit({ id: true })
@@ -44,6 +43,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
       chlorine: ''
     }
   })
+
   const selectedType = form.watch('analysisType')
   const analysisTypeId = useId()
   const analysisParams = useMemo(() => {
@@ -114,8 +114,8 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                         >
                           <option value="">Selecciona una zona</option>
                           {(waterZones ?? []).map((z) => (
-                            <option key={(z as any).id.toString()} value={(z as any).id.toString()}>
-                              {(z as any).name}
+                            <option key={z.id} value={z.id.toString()}>
+                              {z.name}
                             </option>
                           ))}
                         </select>

@@ -27,6 +27,7 @@ import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-
 import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
+import { CreateProviderCmd } from '../../features/providers/application/create-provider.cmd'
 import { GetProvidersQry } from '../../features/providers/application/get-providers.qry'
 import { ProvidersApiRestRepository } from '../../features/providers/infrastructure/providers.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
@@ -77,6 +78,8 @@ export class WebappContainer extends CoreContainer {
 
     const getProvidersQry = new GetProvidersQry(providersApiRestRepository)
     this.register(GetProvidersQry.ID, getProvidersQry)
+    const createProviderCmd = new CreateProviderCmd(providersApiRestRepository)
+    this.register(CreateProviderCmd.ID, createProviderCmd)
 
     const waterMeterApiRestRepository = new WaterMeterApiRestRepository(serverAuthHttpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)

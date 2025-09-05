@@ -2,7 +2,11 @@ import type { HttpClient, Id } from 'core'
 import { Provider, type ProviderRepository } from 'features'
 import type { ProviderSchema } from 'features/providers/schemas/provider.schema'
 
-export class ProvidersApiRestRepository implements ProviderRepository {
+export interface ProvidersCreateRepository extends ProviderRepository {
+  create(data: Omit<ProviderSchema, 'id'>): Promise<void>
+}
+
+export class ProvidersApiRestRepository implements ProvidersCreateRepository {
   constructor(private readonly httpClient: HttpClient) {}
 
   async findAll(): Promise<Provider[]> {
@@ -22,7 +26,12 @@ export class ProvidersApiRestRepository implements ProviderRepository {
   }
 
   async save(provider: Provider): Promise<void> {
-    await this.httpClient.post<void, ProviderSchema>(`providers/${provider.id}`, provider.toDto())
+    const dto = provider.toDto()
+    await this.httpClient.post<void, ProviderSchema>(`providers/${dto.id}`, dto)
+  }
+
+  async create(data: Omit<ProviderSchema, 'id'>): Promise<void> {
+    await this.httpClient.post<void, Omit<ProviderSchema, 'id'>>(`providers`, data)
   }
 
   async delete(id: Id): Promise<void> {

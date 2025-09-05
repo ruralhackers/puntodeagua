@@ -32,6 +32,7 @@ import { GetMaintenanceQry } from './features/maintenance/application/get-mainte
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { CreateProviderCmd } from './features/providers/application/create-provider.cmd'
 import { GetProvidersQry } from './features/providers/application/get-providers.qry'
 import { ProvidersPrismaRepository } from './features/providers/infrastructure/providers.prisma-repository'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
@@ -122,6 +123,8 @@ export class ApiContainer extends CoreContainer {
     this.register(PROVIDER_REPOSITORY, providersRepository)
     const getProvidersQry = new GetProvidersQry(providersRepository)
     this.register(GetProvidersQry.ID, getProvidersQry)
+    const createProviderCmd = new CreateProviderCmd(providersRepository)
+    this.register(CreateProviderCmd.ID, createProviderCmd)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { WaterZoneDto } from 'features'
 import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
@@ -21,9 +22,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
-import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 
-export const CreateAnalysisPage: NextPage = () => {
+export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ waterZones }) => {
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
   const createAnalysisSchema = analysisSchema.omit({ id: true })
@@ -41,8 +41,6 @@ export const CreateAnalysisPage: NextPage = () => {
       chlorine: ''
     }
   })
-
-  const { data: waterZones } = useUseCase(GetWaterZonesQry, { immediate: true })
 
   const selectedType = form.watch('analysisType')
   const analysisTypeId = useId()

@@ -1,5 +1,5 @@
 import type { Provider } from 'features'
-import { ArrowLeft, Edit3, Trash2 } from 'lucide-react'
+import { ArrowLeft, Edit3, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,14 @@ export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Proveedores</h1>
             <p className="text-gray-600">Listado de proveedores del sistema</p>
+          </div>
+          <div className="ml-auto">
+            <Button className="flex items-center gap-2" variant="destructive">
+              <Link href="/dashboard/proveedores/nuevo" className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Añadir proveedor
+              </Link>
+            </Button>
           </div>
         </div>
 

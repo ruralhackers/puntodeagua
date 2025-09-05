@@ -1,3 +1,4 @@
+import { Id } from 'core'
 import type { ProviderSchema } from '../schemas/provider.schema'
 
 export class Provider {
@@ -9,9 +10,9 @@ export class Provider {
     public description?: string
   ) {}
 
-  static create(providerSchema: ProviderSchema) {
+  static create(providerSchema: Omit<ProviderSchema, 'id'>) {
     return new Provider(
-      providerSchema.id,
+      Id.generateUniqueId().toString(),
       providerSchema.communityId,
       providerSchema.name,
       providerSchema.phone,

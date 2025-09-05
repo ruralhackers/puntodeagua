@@ -1,4 +1,5 @@
 import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
+import IssueItemCard from '../../issue/delivery/IssueItemCard'
 import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
 
 export default function ShareDataPage() {
@@ -19,6 +20,7 @@ export default function ShareDataPage() {
         </div>
         <div>
           <p>Incidencias</p>
+          <IssueItemCard />
         </div>
       </div>
     </div>

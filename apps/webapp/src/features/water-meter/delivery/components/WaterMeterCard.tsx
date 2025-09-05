@@ -7,9 +7,15 @@ interface WaterMeterCardProps {
   meter: WaterMeterDto
   holder?: HolderDto
   waterPoint?: WaterPointDto
+  onClickLink?: string
 }
 
-export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeterCardProps) {
+export default function WaterMeterCard({
+  meter,
+  holder,
+  waterPoint,
+  onClickLink
+}: WaterMeterCardProps) {
   const router = useRouter()
 
   // we calculate the consumption of the 2 last readings.
@@ -25,7 +31,7 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
       : 0
 
   const handleCardClick = () => {
-    router.push(`/dashboard/registros/contadores/${meter.id}`)
+    router.push(onClickLink || `/dashboard/registros/contadores/${meter.id}`)
   }
 
   return (

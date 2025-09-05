@@ -27,6 +27,7 @@ const Page = async () => {
       waterZones={waterZones.map((zone: WaterZone) => zone.toDto())}
       holders={holders.map((holder: Holder) => holder.toDto())}
       waterPoints={waterPoints.map((point: WaterPoint) => point.toDto())}
+      cardTo="detail"
     />
   )
 }

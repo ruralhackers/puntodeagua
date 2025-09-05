@@ -20,9 +20,16 @@ type Props = {
   waterZones: WaterZoneDto[]
   holders: HolderDto[]
   waterPoints: WaterPointDto[]
+  cardTo: 'detail' | 'new'
 }
 
-export default function WaterMeterPage({ waterMeters, waterZones, holders, waterPoints }: Props) {
+export default function WaterMeterPage({
+  waterMeters,
+  waterZones,
+  holders,
+  waterPoints,
+  cardTo
+}: Props) {
   const zoneFilterId = useId()
   const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
@@ -67,21 +74,29 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
         <div className="flex-1 min-w-0">
           <h1 className="text-3xl font-bold tracking-tight truncate">Contadores</h1>
           <p className="text-muted-foreground">
-            Gestiona los contadores y puntos de agua de la comunidad
+            {cardTo === 'detail'
+              ? 'Gestiona los contadores y puntos de agua de la comunidad'
+              : 'Selecciona un contador para registrar una nueva lectura'}
           </p>
         </div>
-        <div className="flex gap-2 flex-shrink-0 hover:cursor-pointer">
-          <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap" disabled>
-            <Upload className="h-4 w-4" />
-            Importar CSV
-          </Button>
-          <Link href="#">
-            <Button className="flex items-center gap-2 whitespace-nowrap" disabled>
-              <Plus className="h-4 w-4" />
-              Nuevo Contador
+        {cardTo === 'detail' && (
+          <div className="flex gap-2 flex-shrink-0 hover:cursor-pointer">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 whitespace-nowrap"
+              disabled
+            >
+              <Upload className="h-4 w-4" />
+              Importar CSV
             </Button>
-          </Link>
-        </div>
+            <Link href="#">
+              <Button className="flex items-center gap-2 whitespace-nowrap" disabled>
+                <Plus className="h-4 w-4" />
+                Nuevo Contador
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Estadísticas rápidas */}
@@ -154,6 +169,11 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
               meter={meter}
               holder={getHolderById(meter.holderId)}
               waterPoint={getWaterPointById(meter.waterPointId)}
+              onClickLink={
+                cardTo === 'detail'
+                  ? `/dashboard/registros/contadores/${meter.id}`
+                  : `/dashboard/nuevo-registro/contador/${meter.id}`
+              }
             />
           ))
         )}

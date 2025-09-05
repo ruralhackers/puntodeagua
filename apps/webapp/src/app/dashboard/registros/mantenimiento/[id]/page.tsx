@@ -2,7 +2,7 @@ import { UseCaseService } from 'core'
 import type { WaterZone } from 'features/entities/water-zone'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetMaintenanceQry } from '@/src/features/maintenance/application/get-maintenance.qry'
-import { DetailMaintenancePage } from '@/src/features/maintenance/delivery/detail-maintenance.page'
+import { MaintenanceDetailPage } from '@/src/features/maintenance/delivery/maintenance.page'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -35,7 +35,7 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     )
   }
 
-  return <DetailMaintenancePage maintenance={maintenance.toDto()} waterZone={waterZone.toDto()} />
+  return <MaintenanceDetailPage maintenance={maintenance.toDto()} waterZone={waterZone.toDto()} />
 }
 
 export default Page

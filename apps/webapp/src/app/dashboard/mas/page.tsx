@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Droplets, Users } from 'lucide-react'
+import { Calendar, Droplets, Store, Users } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,6 +39,13 @@ export default function MasPage() {
       icon: Droplets,
       href: '/dashboard/contadores',
       color: 'text-cyan-600'
+    },
+    {
+      title: 'Proveedores',
+      description: 'Gestiona los proveedores del sistema',
+      icon: Store,
+      href: '/dashboard/proveedores',
+      color: 'text-emerald-600'
     },
     {
       title: 'Crear Recordatorio',

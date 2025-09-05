@@ -20,7 +20,7 @@ export default function ShareDataPage() {
         </div>
         <div>
           <p>Incidencias</p>
-          <IssueItemCard />
+          <IssueItemCard variant="simple" />
         </div>
       </div>
     </div>

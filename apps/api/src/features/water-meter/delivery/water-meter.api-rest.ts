@@ -14,6 +14,13 @@ interface UpdateWaterMeterBody {
   images?: string[]
 }
 
+interface AuthenticatedUser {
+  userId: string
+  email: string
+  roles: string[]
+  communityId: string | null
+}
+
 export const waterMeterApiRest = authMiddleware(new Elysia())
   .get('/water-meters', async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
@@ -26,14 +33,9 @@ export const waterMeterApiRest = authMiddleware(new Elysia())
       throw new Error('Authentication required')
     }
 
-    const authUser = user as {
-      userId: string
-      email: string
-      roles: string[]
-      communityId: string | null
-    }
-    if (authUser.communityId && !authUser.roles.includes('SUPER_ADMIN')) {
-      filters.communityId = authUser.communityId
+    const authenticatedUser = user as AuthenticatedUser
+    if (authenticatedUser.communityId && !authenticatedUser.roles.includes('SUPER_ADMIN')) {
+      filters.communityId = authenticatedUser.communityId
     }
 
     const waterMeters = await useCaseService.execute(GetWaterMetersQry, filters)
@@ -46,17 +48,12 @@ export const waterMeterApiRest = authMiddleware(new Elysia())
       throw new Error('Authentication required')
     }
 
-    const authUser = user as {
-      userId: string
-      email: string
-      roles: string[]
-      communityId: string | null
-    }
+    const authenticatedUser = user as AuthenticatedUser
     const queryParams = {
       id: params.id,
       communityId:
-        authUser.communityId && !authUser.roles.includes('SUPER_ADMIN')
-          ? authUser.communityId
+        authenticatedUser.communityId && !authenticatedUser.roles.includes('SUPER_ADMIN')
+          ? authenticatedUser.communityId
           : undefined
     }
 

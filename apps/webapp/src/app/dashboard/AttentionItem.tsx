@@ -1,13 +1,15 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { CardDescription } from '@/components/ui/card'
+import { formatDate } from '@/src/features/analysis/delivery/analysis.utils'
 
 interface AttentionItemProps {
   item: {
     id: string | number
     titulo: string
     ubicacion?: string
-    fecha?: string
+    fecha: Date
     tipoRegistro?: string
     fechaVencimiento?: string
   }
@@ -33,6 +35,7 @@ export function AttentionItem({ item: e }: AttentionItemProps) {
             </span>
           </div>
           <h3 className="font-medium text-sm">{e.titulo}</h3>
+          <CardDescription>{formatDate(e.fecha)}</CardDescription>
           <p className="text-xs text-gray-600 mt-1">{e.ubicacion || ''}</p>
         </div>
       </div>

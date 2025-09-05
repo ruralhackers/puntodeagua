@@ -43,7 +43,6 @@ export const issueApiRest = new Elysia()
   })
   .post('/issues/', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    console.log({ body })
     const dto = createIssueSchema.parse(body)
     await useCaseService.execute(SaveIssueCmd, dto)
   })

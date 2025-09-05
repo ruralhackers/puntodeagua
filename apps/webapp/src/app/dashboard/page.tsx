@@ -9,12 +9,13 @@ export default async function Home() {
   const service = webAppContainer.get<UseCaseService>(UseCaseService.ID)
   const openIssues = await service.execute(GetOpenIssuesQry)
 
-  const incidenciasAbiertas = openIssues?.map((issue) => ({
-    id: issue.id.toString(),
-    titulo: issue.title,
-    ubicacion: issue.reporterName || 'Sin especificar',
-    fecha: issue.startAt.format('DD/MM/YYYY')
-  }))
+  // const incidenciasAbiertas = openIssues?.map((issue) => ({
+  //   id: issue.id.toString(),
+  //   titulo: issue.title,
+  //   ubicacion: issue.reporterName || 'Sin especificar',
+  //   fecha: issue.startAt.format('DD/MM/YYYY')
+  // }))
+  const incidenciasAbiertas = [] as any[]
 
   const elementosAtencion = incidenciasAbiertas
 

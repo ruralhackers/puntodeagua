@@ -1,5 +1,5 @@
 import type { Provider } from 'features'
-import { ArrowLeft, Edit3, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, Plus } from 'lucide-react'
 import Link from 'next/link'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
@@ -33,9 +33,10 @@ export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
           {providers.map((p) => {
             const dto = p.toDto()
             return (
-              <div
+              <Link
                 key={dto.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                href={`/dashboard/proveedores/${dto.id}`}
+                className="block bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -53,26 +54,8 @@ export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
                       </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2 ml-4">
-                    <Link
-                      href={`/dashboard/proveedores/${dto.id}/editar`}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Editar"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </Link>
-                    <button
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Eliminar"
-                      type="button"
-                      disabled
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>

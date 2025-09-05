@@ -8,13 +8,13 @@ import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
   FILE_UPLOAD_SERVICE,
+  MAINTENANCE_REPOSITORY,
   STORAGE_SERVICE,
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY,
-  WATER_ZONE_REPOSITORY,
-  MAINTENANCE_REPOSITORY
+  WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
 import { DeleteAnalysisCmd } from './features/analysis/application/delete-analysis.cmd'
@@ -22,16 +22,17 @@ import { EditAnalysisCmd } from './features/analysis/application/edit-analysis.c
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
-import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
+import { GetIssuesQry } from './features/issue/application/get-issues.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetMaintenanceQry } from './features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
 import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
 import { GetUsersQry } from './features/user/application/get-users.qry'
@@ -116,7 +117,11 @@ export class ApiContainer extends CoreContainer {
     this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
 
     // Summary
-    const getSummaryQry = new GetSummaryQry(analysisRepository, issuePrismaRepository, maintenanceRepository)
+    const getSummaryQry = new GetSummaryQry(
+      analysisRepository,
+      issuePrismaRepository,
+      maintenanceRepository
+    )
     this.register(GetSummaryQry.ID, getSummaryQry)
 
     // Storage and File Upload Services
@@ -148,6 +153,9 @@ export class ApiContainer extends CoreContainer {
 
     const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
+
+    const getIssuesQry = new GetIssuesQry(issuePrismaRepository)
+    this.register(GetIssuesQry.ID, getIssuesQry)
 
     // User commands
     const getUsersQry = new GetUsersQry(userPrismaRepository)

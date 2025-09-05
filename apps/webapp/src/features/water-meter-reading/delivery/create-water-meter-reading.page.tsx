@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { useAuth } from '@/src/features/auth/context/auth-context'
 import { CreateWaterMeterReadingCmd } from '../application/create-water-meter-reading.cmd'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 const createWaterMeterReadingSchema = z.object({
   reading: z
@@ -75,17 +76,7 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
     <div className="px-3 py-4 pb-20">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button
-          aria-label="Volver"
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Lectura</h1>
-          <p className="text-gray-600">Registra una nueva lectura para {waterMeter.name}</p>
-        </div>
+        <PageHeader title="Nueva Lectura" subtitle={`Registra una nueva lectura para ${waterMeter.name}`} />
       </div>
 
       {/* Formulario */}

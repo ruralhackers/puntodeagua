@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { PageHeader } from '../../../components/analysis/page-header'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { EditAnalysisCmd } from '../application/edit-analysis.cmd'
 
 export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneDto }> = ({

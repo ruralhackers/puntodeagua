@@ -12,6 +12,7 @@ import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { holderApiRest } from './features/holder/delivery/holder.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
+import { GetRegistrosStatsQry } from './features/registros/application/get-registros-stats.qry'
 import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { userApiRest } from './features/user/delivery/user.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
@@ -56,6 +57,10 @@ export const app = new Elysia({ prefix: '/api' })
       issues: summary.issues.map((x) => x.toDto()),
       maintenance: summary.maintenance.map((x) => x.toDto())
     }
+  })
+  .get('/registros/stats', async () => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    return await useCaseService.execute(GetRegistrosStatsQry)
   })
   .use(authApiRest)
   .use(holderApiRest)

@@ -12,7 +12,7 @@ interface SummaryParams {
   year?: number
 }
 
-export class GetSummaryQry implements Query<SummaryResponse> {
+export class GetSummaryQry implements Query<SummaryResponse, SummaryParams> {
   static readonly ID = 'GetSummaryQry'
   
   constructor(
@@ -21,8 +21,8 @@ export class GetSummaryQry implements Query<SummaryResponse> {
     private readonly maintenanceRepository: MaintenanceRepository
   ) {}
 
-  async handle(params: SummaryParams = {}): Promise<SummaryResponse> {
-    const { month, year } = params
+  async handle(params?: SummaryParams): Promise<SummaryResponse> {
+    const { month, year } = params || {}
     
     let startDate: Date | undefined
     let endDate: Date | undefined

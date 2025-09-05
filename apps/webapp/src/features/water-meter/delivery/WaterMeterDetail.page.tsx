@@ -1,5 +1,6 @@
 'use client'
 
+import { MeasurementUnit } from 'core'
 import type { HolderDto, WaterMeterDto, WaterPointDto } from 'features'
 import { AlertTriangle, ArrowLeft, Camera, Droplets, Edit, Plus, Save, X } from 'lucide-react'
 import Link from 'next/link'
@@ -16,6 +17,8 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { useGetWaterMeter } from '@/src/features/water-meter/hooks/use-get-water-meter'
+import { useUpdateWaterMeter } from '@/src/features/water-meter/hooks/use-update-water-meter'
+import { useGetWaterZones } from '@/src/features/water-zone/hooks/use-get-water-zones'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
 interface WaterMeterDetailPageProps {
@@ -35,6 +38,8 @@ export default function WaterMeterDetailPage({
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState<WaterMeterDto>(waterMeter)
   const { getWaterMeter } = useGetWaterMeter()
+  const { updateWaterMeter, isLoading: isUpdating } = useUpdateWaterMeter()
+  const { waterZones } = useGetWaterZones()
   const nameInputId = useId()
   const waterZoneInputId = useId()
 
@@ -55,11 +60,25 @@ export default function WaterMeterDetailPage({
     setIsEditing(true)
   }
 
-  const handleSave = () => {
-    setWaterMeter(editData)
-    setIsEditing(false)
-    // TODO: Implementar guardado en backend
-    alert('Contador actualizado exitosamente')
+  const handleSave = async () => {
+    try {
+      // Update water meter with the edited data
+      await updateWaterMeter(waterMeterId, {
+        name: editData.name || '',
+        measurementUnit: editData.measurementUnit || 'litros',
+        waterZoneId: editData.waterZoneId,
+        images: editData.images
+      })
+
+      // Refresh the water meter data to get the latest from server
+      await refreshWaterMeter()
+
+      setIsEditing(false)
+      alert('Contador actualizado exitosamente')
+    } catch (error) {
+      console.error('Error updating water meter:', error)
+      alert('Error al actualizar el contador. Por favor, inténtalo de nuevo.')
+    }
   }
 
   const handleCancel = () => {
@@ -131,9 +150,9 @@ export default function WaterMeterDetailPage({
                 <X className="h-4 w-4 mr-2" />
                 Cancelar
               </Button>
-              <Button onClick={handleSave} className="whitespace-nowrap">
+              <Button onClick={handleSave} className="whitespace-nowrap" disabled={isUpdating}>
                 <Save className="h-4 w-4 mr-2" />
-                Guardar
+                {isUpdating ? 'Guardando...' : 'Guardar'}
               </Button>
             </>
           ) : (
@@ -250,20 +269,24 @@ export default function WaterMeterDetailPage({
                 <Label htmlFor="measurementUnit">Unidad de Medida</Label>
                 {isEditing ? (
                   <Select
-                    value={editData?.measurementUnit || 'litros'}
+                    value={editData?.measurementUnit || MeasurementUnit.L.toString()}
                     onValueChange={(value) => handleInputChange('measurementUnit', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona la unidad" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="litros">Litros</SelectItem>
-                      <SelectItem value="m3">Metros cúbicos (m³)</SelectItem>
+                      <SelectItem value={MeasurementUnit.L.toString()}>Litros</SelectItem>
+                      <SelectItem value={MeasurementUnit.M3.toString()}>
+                        Metros cúbicos (m³)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
                   <div className="p-2 bg-muted rounded">
-                    {displayData?.measurementUnit === 'm3' ? 'Metros cúbicos (m³)' : 'Litros'}
+                    {displayData?.measurementUnit === MeasurementUnit.M3.toString()
+                      ? 'Metros cúbicos (m³)'
+                      : 'Litros'}
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
@@ -276,12 +299,30 @@ export default function WaterMeterDetailPage({
               <div className="space-y-2">
                 <Label htmlFor={waterZoneInputId}>Zona de Agua</Label>
                 {isEditing ? (
-                  <Input
-                    id={waterZoneInputId}
-                    value={editData?.waterZoneName || ''}
-                    onChange={(e) => handleInputChange('waterZoneName', e.target.value)}
-                    placeholder="Nombre de la zona de agua"
-                  />
+                  <Select
+                    value={editData?.waterZoneId || ''}
+                    onValueChange={(value) => {
+                      const selectedZone = waterZones?.find(
+                        (zone: any) => zone.id.toString() === value
+                      )
+                      setEditData({
+                        ...editData,
+                        waterZoneId: value,
+                        waterZoneName: selectedZone?.name || ''
+                      })
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una zona de agua" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {waterZones?.map((zone: any) => (
+                        <SelectItem key={zone.id.toString()} value={zone.id.toString()}>
+                          {zone.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <div className="p-2 bg-muted rounded">
                     {displayData?.waterZoneName || 'No especificada'}

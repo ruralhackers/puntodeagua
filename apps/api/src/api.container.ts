@@ -47,6 +47,7 @@ import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
 import { GetUsersQry } from './features/user/application/get-users.qry'
 import { GetWaterMeterQry } from './features/water-meter/application/get-water-meter.qry'
 import { GetWaterMetersQry } from './features/water-meter/application/get-water-meters.qry'
+import { UpdateWaterMeterCmd } from './features/water-meter/application/update-water-meter.cmd'
 import { WaterMeterPrismaRepository } from './features/water-meter/infrastructure/water-meter.prisma-repository'
 import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
 import { DeleteWaterMeterReadingCmd } from './features/water-meter-reading/application/delete-water-meter-reading.cmd'
@@ -88,6 +89,8 @@ export class ApiContainer extends CoreContainer {
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
+    const updateWaterMeterCmd = new UpdateWaterMeterCmd(waterMeterPrismaRepository)
+    this.register(UpdateWaterMeterCmd.ID, updateWaterMeterCmd)
 
     // Water Meter Readings
     const waterMeterReadingPrismaRepository = new WaterMeterReadingPrismaRepository(client)

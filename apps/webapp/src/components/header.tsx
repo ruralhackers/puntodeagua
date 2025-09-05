@@ -42,7 +42,7 @@ export function Header() {
           <div className="hidden md:flex items-center gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link
-                to="/dashboard/contadores"
+                to="/dashboard/registros/contadores"
                 className="text-xs font-bold no-underline hover:no-underline"
               >
                 Contadores

@@ -2,7 +2,19 @@ import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
 import IssueItemCard from '../../issue/delivery/IssueItemCard'
 import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
 
-export default function ShareDataPage() {
+interface SummaryData {
+  analyses: any[]
+  issues: any[]
+  maintenance: any[]
+}
+
+interface ShareDataPageProps {
+  summaryData: SummaryData
+}
+
+export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
+  const { analyses, issues, maintenance } = summaryData
+
   return (
     <div>
       <p>Resumen de analíticas, incidencias y mantenimiento</p>

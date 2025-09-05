@@ -1,7 +1,7 @@
 'use client'
 
 import type { WaterMeterDto } from 'features'
-import { AlertTriangle, ArrowLeft, Camera, Droplets, Edit, Save, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Camera, Droplets, Edit, Plus, Save, X } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -15,8 +15,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
+import { useGetWaterMeter } from '@/src/features/water-meter/hooks/use-get-water-meter'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
 interface WaterMeterDetailPageProps {
@@ -31,17 +30,16 @@ export default function WaterMeterDetailPage({
   const [waterMeter, setWaterMeter] = useState<WaterMeterDto>(initialWaterMeter)
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState<WaterMeterDto>(waterMeter)
-  const getWaterMeterQry = useUseCase(GetWaterMeterQry)
+  const { getWaterMeter } = useGetWaterMeter()
   const nameInputId = useId()
   const waterZoneInputId = useId()
 
   const refreshWaterMeter = async () => {
     try {
-      const updatedWaterMeter = await getWaterMeterQry.execute(waterMeterId)
+      const updatedWaterMeter = await getWaterMeter(waterMeterId)
       if (updatedWaterMeter) {
-        const dto = updatedWaterMeter.toDto()
-        setWaterMeter(dto as WaterMeterDto)
-        setEditData(dto as WaterMeterDto)
+        setWaterMeter(updatedWaterMeter as unknown as WaterMeterDto)
+        setEditData(updatedWaterMeter as unknown as WaterMeterDto)
       }
     } catch (error) {
       console.error('Error refreshing water meter:', error)
@@ -135,10 +133,18 @@ export default function WaterMeterDetailPage({
               </Button>
             </>
           ) : (
-            <Button onClick={handleEdit} className="whitespace-nowrap">
-              <Edit className="h-4 w-4 mr-2" />
-              Editar
-            </Button>
+            <>
+              <Link href={`/dashboard/nuevo-registro/contador/${waterMeterId}`}>
+                <Button className="whitespace-nowrap hover:cursor-pointer">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Medida
+                </Button>
+              </Link>
+              <Button onClick={handleEdit} className="whitespace-nowrap hover:cursor-pointer">
+                <Edit className="h-4 w-4 mr-2" />
+                Editar
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -333,9 +339,8 @@ export default function WaterMeterDetailPage({
           <CardContent>
             <WaterMeterReadingHistory
               readings={
-                waterMeter.readings?.map((reading, index) => ({
-                  ...reading,
-                  id: `reading-${index}` // Generar ID temporal para compatibilidad
+                waterMeter.readings?.map((reading) => ({
+                  ...reading
                 })) ?? []
               }
               onReadingDeleted={refreshWaterMeter}

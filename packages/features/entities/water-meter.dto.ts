@@ -10,6 +10,7 @@ export interface WaterMeterDto {
   lastReadingValue?: string
   lastReadingDate?: Date
   readings?: Array<{
+    id: string
     readingDate: Date
     reading: string
     normalizedReading: string

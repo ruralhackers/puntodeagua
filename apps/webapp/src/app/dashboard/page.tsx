@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 
-// --- Datos mock (iteración 1) ---
 const incidenciasAbiertas = [
   {
     id: 1,
@@ -45,82 +44,6 @@ const recordatoriosVencidos = [
 
 const elementosAtencion = [...incidenciasAbiertas, ...recordatoriosVencidos]
 
-const hoy = new Date()
-const d = (n: number) => {
-  const x = new Date(hoy)
-  x.setDate(hoy.getDate() + n)
-  return x.toISOString().split('T')[0]
-}
-
-const recordatorios = [
-  {
-    id: 1,
-    titulo: 'Lectura mensual de contadores',
-    tipoRegistro: 'contador',
-    fecha: d(0),
-    periodicidad: 'mensual'
-  },
-  {
-    id: 2,
-    titulo: 'Análisis de calidad del agua',
-    tipoRegistro: 'analitica',
-    fecha: d(1),
-    periodicidad: 'semanal'
-  },
-  {
-    id: 3,
-    titulo: 'Mantenimiento preventivo bombas',
-    tipoRegistro: 'mantenimiento',
-    fecha: d(3),
-    periodicidad: 'trimestral'
-  },
-  {
-    id: 4,
-    titulo: 'Inspección de válvulas',
-    tipoRegistro: 'mantenimiento',
-    fecha: d(5),
-    periodicidad: 'mensual'
-  },
-  {
-    id: 5,
-    titulo: 'Control de cloro residual',
-    tipoRegistro: 'analitica',
-    fecha: d(10),
-    periodicidad: 'semanal'
-  }
-]
-
-const obtenerDiaSemana = (fecha: string) =>
-  ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][
-    new Date(fecha + 'T00:00:00').getDay()
-  ]
-
-const formatearFechaConDia = (fecha: string) => {
-  const f = new Date(fecha + 'T00:00:00')
-  return `${obtenerDiaSemana(fecha)}, ${f.getDate()} de ${f.toLocaleString('es', { month: 'long' })} de ${f.getFullYear()}`
-}
-
-const categorizarFecha = (fecha: string) => {
-  const base = new Date()
-  const t = new Date(fecha + 'T00:00:00')
-  const diffDays = Math.ceil((t.getTime() - base.getTime()) / 86400000)
-  if (diffDays === 0) return 'hoy'
-  if (diffDays > 0 && diffDays <= 7) return 'esta-semana'
-  return 'proximamente'
-}
-
-const recordatoriosAgrupados = recordatorios.reduce(
-  (acc, r) => {
-    const cat = categorizarFecha(r.fecha)
-    acc[cat] ||= {}
-    acc[cat][r.fecha] ||= []
-    acc[cat][r.fecha].push(r)
-    return acc
-  },
-  {} as Record<string, Record<string, typeof recordatorios>>
-)
-
-// --- Componente ---
 export default function Home() {
   const router = useRouter()
 

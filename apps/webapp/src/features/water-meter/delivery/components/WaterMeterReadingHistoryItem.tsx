@@ -11,8 +11,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { DeleteWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/delete-water-meter-reading.cmd'
+import { useDeleteWaterMeterReading } from '@/src/features/water-meter-reading/hooks/use-delete-water-meter-reading'
 
 interface WaterMeterReadingHistoryItemProps {
   item: {
@@ -32,12 +31,12 @@ export default function WaterMeterReadingHistoryItem({
 }: WaterMeterReadingHistoryItemProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const deleteCommand = useUseCase(DeleteWaterMeterReadingCmd)
+  const { deleteWaterMeterReading } = useDeleteWaterMeterReading()
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteCommand.execute({ id: item.id })
+      await deleteWaterMeterReading(item.id)
       setShowDeleteDialog(false)
       onDeleted?.()
     } catch (error) {
@@ -117,11 +116,6 @@ export default function WaterMeterReadingHistoryItem({
 
             {/* Acciones */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="h-8">
-                <Edit className="h-3 w-3 mr-1" />
-                Editar
-              </Button>
-
               <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                 <DialogTrigger asChild>
                   <Button variant="destructive" size="sm" className="h-8">

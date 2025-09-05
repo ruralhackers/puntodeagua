@@ -65,7 +65,7 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
         uploadedBy: user?.id || 'anonymous'
       })
 
-      router.push('/dashboard/nuevo-registro/contador')
+      router.push(`/dashboard/contadores/${waterMeter.id}`)
     } catch (error) {
       console.error('Error creating water meter reading:', error)
     }
@@ -195,10 +195,14 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
 
           {/* Botones */}
           <div className="flex gap-3 w-full">
-            <Button className="flex-1" type="button" onClick={() => router.back()}>
+            <Button
+              className="flex-1 hover:cursor-pointer"
+              type="button"
+              onClick={() => router.back()}
+            >
               Cancelar
             </Button>
-            <Button className="flex-1" variant="destructive" type="submit">
+            <Button className="flex-1 hover:cursor-pointer" variant="destructive" type="submit">
               Guardar Lectura
             </Button>
           </div>

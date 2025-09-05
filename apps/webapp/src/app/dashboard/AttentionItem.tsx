@@ -18,7 +18,7 @@ export function AttentionItem({ item: e }: AttentionItemProps) {
   const router = useRouter()
 
   const handleClick = () => {
-    router.push(`/dashboard/incidencias/${e.id}/editar`)
+    router.push(`/dashboard/registros/incidencias/${e.id}/editar`)
   }
 
   return (

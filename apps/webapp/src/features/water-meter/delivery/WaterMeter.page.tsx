@@ -70,13 +70,13 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
             Gestiona los contadores y puntos de agua de la comunidad
           </p>
         </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap">
+        <div className="flex gap-2 flex-shrink-0 hover:cursor-pointer">
+          <Button variant="outline" className="flex items-center gap-2 whitespace-nowrap" disabled>
             <Upload className="h-4 w-4" />
             Importar CSV
           </Button>
-          <Link href="/dashboard/contadores/nuevo">
-            <Button className="flex items-center gap-2 whitespace-nowrap">
+          <Link href="#">
+            <Button className="flex items-center gap-2 whitespace-nowrap" disabled>
               <Plus className="h-4 w-4" />
               Nuevo Contador
             </Button>

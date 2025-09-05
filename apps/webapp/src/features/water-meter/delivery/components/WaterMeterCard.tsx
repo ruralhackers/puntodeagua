@@ -25,7 +25,7 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
       : 0
 
   const handleCardClick = () => {
-    router.push(`/dashboard/contadores/${meter.id}`)
+    router.push(`/dashboard/registros/contadores/${meter.id}`)
   }
 
   return (
@@ -34,7 +34,9 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="mb-3">
-              <h3 className="font-semibold text-lg truncate">{holder?.name || meter.name}</h3>
+              <h3 className="font-semibold text-lg truncate">
+                {holder?.name} • {meter.name}
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {holder?.nationalId && `DNI: ${holder.nationalId}`}
               </p>

@@ -8,13 +8,14 @@ import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
   FILE_UPLOAD_SERVICE,
+  HOLDER_REPOSITORY,
+  MAINTENANCE_REPOSITORY,
   STORAGE_SERVICE,
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
-  WATER_REPOSITORY,
-  WATER_ZONE_REPOSITORY,
-  MAINTENANCE_REPOSITORY
+  WATER_POINT_REPOSITORY,
+  WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
 import { DeleteAnalysisCmd } from './features/analysis/application/delete-analysis.cmd'
@@ -24,13 +25,21 @@ import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { CreateHolderCmd } from './features/holder/application/create-holder.cmd'
+import { DeleteHolderCmd } from './features/holder/application/delete-holder.cmd'
+import { EditHolderCmd } from './features/holder/application/edit-holder.cmd'
+import { GetHolderQry } from './features/holder/application/get-holder.qry'
+import { GetHoldersQry } from './features/holder/application/get-holders.qry'
+import { HolderPrismaRepository } from './features/holder/infrastructure/holder.prisma-repository'
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
+import { GetIssuesQry } from './features/issue/application/get-issues.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
 import { GetMaintenanceQry } from './features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
 import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
 import { GetUsersQry } from './features/user/application/get-users.qry'
@@ -40,6 +49,10 @@ import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/appli
 import { DeleteWaterMeterReadingCmd } from './features/water-meter-reading/application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
+import { CreateWaterPointCmd } from './features/water-point/application/create-water-point.cmd'
+import { DeleteWaterPointCmd } from './features/water-point/application/delete-water-point.cmd'
+import { EditWaterPointCmd } from './features/water-point/application/edit-water-point.cmd'
+import { GetWaterPointQry } from './features/water-point/application/get-water-point.qry'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
 import { WaterMeterPrismaRepository } from './features/water-point/infrastructure/water-meter.prisma-repository'
 import { WaterPointPrismaRepository } from './features/water-point/infrastructure/water-point.prisma-repository'
@@ -52,34 +65,40 @@ export class ApiContainer extends CoreContainer {
   protected override registerInstances(): void {
     super.registerInstances()
 
+    // Water Points
     const waterPointPrismaRepository = new WaterPointPrismaRepository(client)
-    this.register(WATER_REPOSITORY, waterPointPrismaRepository)
-
+    this.register(WATER_POINT_REPOSITORY, waterPointPrismaRepository)
     const getWaterPointsQry = new GetWaterPointsQry(waterPointPrismaRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
+    const getWaterPointQry = new GetWaterPointQry(waterPointPrismaRepository)
+    this.register(GetWaterPointQry.ID, getWaterPointQry)
+    const createWaterPointCmd = new CreateWaterPointCmd(waterPointPrismaRepository)
+    this.register(CreateWaterPointCmd.ID, createWaterPointCmd)
+    const deleteWaterPointCmd = new DeleteWaterPointCmd(waterPointPrismaRepository)
+    this.register(DeleteWaterPointCmd.ID, deleteWaterPointCmd)
+    const editWaterPointCmd = new EditWaterPointCmd(waterPointPrismaRepository)
+    this.register(EditWaterPointCmd.ID, editWaterPointCmd)
 
+    // Water Meters
     const waterMeterPrismaRepository = new WaterMeterPrismaRepository(client)
     this.register(WATER_METER_REPOSITORY, waterMeterPrismaRepository)
-
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterPrismaRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
-
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
 
     // Water Meter Readings
     const waterMeterReadingPrismaRepository = new WaterMeterReadingPrismaRepository(client)
     this.register(WATER_METER_READING_REPOSITORY, waterMeterReadingPrismaRepository)
-
     const getWaterMeterReadingsQry = new GetWaterMeterReadingsQry(waterMeterReadingPrismaRepository)
     this.register(GetWaterMeterReadingsQry.ID, getWaterMeterReadingsQry)
 
     const userPrismaRepository = new UserPrismaRepository(client)
     this.register(USER_REPOSITORY, userPrismaRepository)
 
+    // Issues
     const issuePrismaRepository = new IssuePrismaRepository(client)
     this.register(ISSUE_REPOSITORY, issuePrismaRepository)
-
     const saveIssueCmd = new SaveIssueCmd(issuePrismaRepository)
     this.register(SaveIssueCmd.ID, saveIssueCmd)
 
@@ -97,10 +116,23 @@ export class ApiContainer extends CoreContainer {
     const deleteAnalysisCmd = new DeleteAnalysisCmd(analysisRepository)
     this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
 
+    // Holders
+    const holderRepository = new HolderPrismaRepository(client)
+    this.register(HOLDER_REPOSITORY, holderRepository)
+    const getHoldersQry = new GetHoldersQry(holderRepository)
+    this.register(GetHoldersQry.ID, getHoldersQry)
+    const getHolderQry = new GetHolderQry(holderRepository)
+    this.register(GetHolderQry.ID, getHolderQry)
+    const createHolderCmd = new CreateHolderCmd(holderRepository)
+    this.register(CreateHolderCmd.ID, createHolderCmd)
+    const editHolderCmd = new EditHolderCmd(holderRepository)
+    this.register(EditHolderCmd.ID, editHolderCmd)
+    const deleteHolderCmd = new DeleteHolderCmd(holderRepository)
+    this.register(DeleteHolderCmd.ID, deleteHolderCmd)
+
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)
     this.register(WATER_ZONE_REPOSITORY, waterZonePrismaRepository)
-
     const getWaterZonesQry = new GetWaterZonesQry(waterZonePrismaRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 
@@ -113,6 +145,14 @@ export class ApiContainer extends CoreContainer {
     this.register(GetMaintenanceQry.ID, getMaintenanceQry)
     const saveMaintenanceCmd = new SaveMaintenanceCmd(maintenanceRepository)
     this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
+
+    // Summary
+    const getSummaryQry = new GetSummaryQry(
+      analysisRepository,
+      issuePrismaRepository,
+      maintenanceRepository
+    )
+    this.register(GetSummaryQry.ID, getSummaryQry)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({
@@ -143,6 +183,9 @@ export class ApiContainer extends CoreContainer {
 
     const getIssueByIdQry = new GetIssueByIdQry(issuePrismaRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
+
+    const getIssuesQry = new GetIssuesQry(issuePrismaRepository)
+    this.register(GetIssuesQry.ID, getIssuesQry)
 
     // User commands
     const getUsersQry = new GetUsersQry(userPrismaRepository)

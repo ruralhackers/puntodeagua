@@ -14,22 +14,33 @@ export class WaterPoint {
   ) {}
 
   static create({
-    id,
     location,
     description,
     communityId,
     name,
     fixedPopulation,
     floatingPopulation
-  }: WaterPointSchema) {
+  }: Omit<WaterPointSchema, 'id'>) {
     return new WaterPoint(
-      Id.create(id),
+      Id.generateUniqueId(),
       Id.create(communityId),
       name,
       Location.create(location),
       fixedPopulation,
       floatingPopulation,
       description || undefined
+    )
+  }
+
+  static fromDto(dto: WaterPointSchema) {
+    return new WaterPoint(
+      Id.create(dto.id),
+      Id.create(dto.communityId),
+      dto.name,
+      Location.create(dto.location),
+      dto.fixedPopulation,
+      dto.floatingPopulation,
+      dto.description || undefined
     )
   }
 

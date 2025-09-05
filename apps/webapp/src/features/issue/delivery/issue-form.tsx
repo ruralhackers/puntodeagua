@@ -1,8 +1,11 @@
+import { DateTime } from 'core'
 import type { IssueSchema, WaterZoneDto } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
+import { CalendarIcon } from 'lucide-react'
 import type { FC } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   FormControl,
   FormDescription,
@@ -12,6 +15,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -20,6 +24,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 export const IssueForm: FC<{
   onCancel: () => void
@@ -202,20 +207,42 @@ export const IssueForm: FC<{
               control={form.control}
               name="startAt"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Fecha de apertura *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      placeholder="dd/mm/aaaa"
-                      defaultValue={
-                        field.value
-                          ? new Date(field.value).toISOString().split('T')[0]
-                          : new Date().toISOString().split('T')[0]
-                      }
-                      required
-                    ></Input>
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            DateTime.fromISO(field.value).format('cccc, dd LLL yyyy')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
+                        onSelect={(x, ...args) => {
+                          if (x) {
+                            field.onChange(DateTime.fromDate(x).toISO(), ...args)
+                          } else {
+                            field.onChange('', ...args)
+                          }
+                        }}
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription />
                   <FormMessage />
                 </FormItem>
@@ -228,19 +255,44 @@ export const IssueForm: FC<{
               control={form.control}
               name="endAt"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Fecha de resolución</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      placeholder="dd/mm/aaaa"
-                      defaultValue={
-                        field.value ? new Date(field.value).toISOString().split('T')[0] : ''
-                      }
-                      disabled={selectedStatus === 'closed' ? '' : 'disabled'}
-                      required={selectedStatus === 'open' ? '' : 'required'}
-                    ></Input>
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            DateTime.fromISO(field.value).format('cccc, dd LLL yyyy')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        required={selectedStatus === 'closed'}
+                        mode="single"
+                        disabled={selectedStatus !== 'closed'}
+                        selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
+                        onSelect={(x, ...args) => {
+                          if (x) {
+                            field.onChange(DateTime.fromDate(x).toISO(), ...args)
+                          } else {
+                            field.onChange('', ...args)
+                          }
+                        }}
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription />
                   <FormMessage />
                 </FormItem>

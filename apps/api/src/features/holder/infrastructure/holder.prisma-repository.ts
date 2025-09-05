@@ -9,30 +9,33 @@ export class HolderPrismaRepository extends BasePrismaRepository implements Hold
   }
 
   async save(input: Holder): Promise<void> {
-    const data = {
-      id: input.id.toString(),
-      name: input.name
+    const update = {
+      name: input.name,
+      nationalId: input.nationalId,
+      cadastralReference: input.cadastralReference,
+      description: input.description
+    }
+
+    const create = {
+      ...update,
+      id: input.id.toString()
     }
 
     await this.getModel().upsert({
       where: { id: input.id.toString() },
-      create: {
-        ...data
-      },
-      update: {
-        name: data.name
-      }
+      create,
+      update
     })
   }
 
   async findById(id: Id): Promise<Holder | undefined> {
     const holder = await this.getModel().findUnique({ where: { id: id.toString() } })
-    return holder ? Holder.create(holder) : undefined
+    return holder ? Holder.fromDto(holder) : undefined
   }
 
   async findAll(): Promise<Holder[]> {
     const holders = await this.getModel().findMany()
-    return holders.map((h) => Holder.create(h))
+    return holders.map((h) => Holder.fromDto(h))
   }
 
   async delete(id: Id): Promise<void> {

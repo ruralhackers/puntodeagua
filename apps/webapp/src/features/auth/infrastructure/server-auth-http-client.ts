@@ -1,23 +1,13 @@
+import { HttpClient } from 'core'
 import { type GretchResponse, gretch } from 'gretchen'
-import { AuthHttpClient } from './auth-http-client'
 
 /**
  * Server-side HTTP client that automatically gets tokens from cookies
  * This version uses next/headers internally to avoid import issues
  */
-export class ServerAuthHttpClient extends AuthHttpClient {
+export class ServerAuthHttpClient extends HttpClient {
   constructor(baseUrl: string) {
-    super(
-      baseUrl,
-      () => {
-        // This won't work on server, but we'll handle it in the server methods
-        return null
-      },
-      () => {
-        // Server-side error handling
-        throw new Error('Unauthorized')
-      }
-    )
+    super(baseUrl)
   }
 
   /**

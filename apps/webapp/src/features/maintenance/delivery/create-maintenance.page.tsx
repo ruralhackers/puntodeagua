@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { WaterZoneDto } from 'features'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
@@ -20,9 +21,10 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateMaintenanceCmd } from '@/src/features/maintenance/application/create-maintenance.cmd'
-import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 
-export const CreateMaintenancePage: NextPage = () => {
+export const CreateMaintenancePage: NextPage<{
+  waterZones: WaterZoneDto[]
+}> = ({ waterZones }) => {
   const router = useRouter()
   const createMaintenanceCommand = useUseCase(CreateMaintenanceCmd)
   const createMaintenanceSchema = maintenanceSchema.omit({ id: true })
@@ -43,8 +45,6 @@ export const CreateMaintenancePage: NextPage = () => {
       observations: ''
     }
   })
-
-  const { data: waterZones } = useUseCase(GetWaterZonesQry, { immediate: true })
 
   async function onSubmit(values: FormValues) {
     await createMaintenanceCommand.execute(values)

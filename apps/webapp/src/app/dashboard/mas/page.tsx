@@ -37,7 +37,7 @@ export default function MasPage() {
       title: 'Contadores',
       description: 'Gestiona contadores y puntos de agua',
       icon: Droplets,
-      href: '/dashboard/contadores',
+      href: '/dashboard/registros/contadores',
       color: 'text-cyan-600'
     },
     {
@@ -45,7 +45,8 @@ export default function MasPage() {
       description: 'Programa recordatorios para registros',
       icon: Calendar,
       href: '/dashboard/recordatorios/nuevo',
-      color: 'text-orange-600'
+      color: 'text-orange-600',
+      disabled: true
     }
   ]
 
@@ -58,7 +59,11 @@ export default function MasPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {options.map((option) => (
-          <Link key={option.href} href={option.href}>
+          <Link
+            key={option.disabled ? 'disabled' : option.href}
+            href={option.disabled ? '#' : option.href}
+            className={option.disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          >
             <Card className="h-full transition-all duration-200 hover:shadow-md hover:scale-[1.02] cursor-pointer border-gray-200">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">

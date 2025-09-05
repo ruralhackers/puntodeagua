@@ -5,4 +5,6 @@ export interface AnalysisRepository
   extends Savable<Analysis>,
     Deletable<Analysis>,
     FindableById<Analysis>,
-    FindableAll<Analysis> {}
+    FindableAll<Analysis> {
+  findAllOrderedByAnalyzedAt(): Promise<Analysis[]>
+}

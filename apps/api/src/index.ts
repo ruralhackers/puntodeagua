@@ -2,7 +2,7 @@ import cors from '@elysiajs/cors'
 import jwt from '@elysiajs/jwt'
 import swagger from '@elysiajs/swagger'
 import { Elysia } from 'elysia'
-// import { UseCaseService } from 'core'
+import { UseCaseService } from 'core'
 import type { UserRepository } from 'features'
 import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
@@ -10,6 +10,7 @@ import { loginSchema } from './features/auth/application/auth.schema'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
+import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
 import { userApiRest } from './features/user/delivery/user.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
@@ -45,6 +46,15 @@ export const app = new Elysia({ prefix: '/api' })
   .use(issueApiRest)
   .use(waterMeterReadingApiRest)
   .use(userApiRest)
+  .get('/summary', async () => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const summary = await useCaseService.execute(GetSummaryQry)
+    return {
+      analyses: summary.analyses.map((x) => x.toDto()),
+      issues: summary.issues.map((x) => x.toDto()),
+      maintenance: summary.maintenance.map((x) => x.toDto())
+    }
+  })
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)

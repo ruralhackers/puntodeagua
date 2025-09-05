@@ -8,4 +8,6 @@ export interface MaintenanceRepository
   extends Savable<Maintenance>,
     Deletable<Maintenance>,
     FindableById<Maintenance>,
-    FindableAll<Maintenance> {}
+    FindableAll<Maintenance> {
+  findAllOrderedByExecutionDate(): Promise<Maintenance[]>
+}

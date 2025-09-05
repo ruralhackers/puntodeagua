@@ -42,6 +42,13 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }
 
+  async findAllOrderedByEndAt(): Promise<Issue[]> {
+    const entityDtos = await this.getModel().findMany({
+      orderBy: { endAt: 'asc' }
+    })
+    return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
+  }
+
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
   }

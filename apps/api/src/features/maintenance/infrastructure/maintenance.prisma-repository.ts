@@ -48,6 +48,13 @@ export class MaintenancePrismaRepository
     return entityDtos.map((c) => Maintenance.fromDto(this.fromPrismaPayload(c)))
   }
 
+  async findAllOrderedByExecutionDate(): Promise<Maintenance[]> {
+    const entityDtos = await this.getModel().findMany({
+      orderBy: { executionDate: 'asc' }
+    })
+    return entityDtos.map((c) => Maintenance.fromDto(this.fromPrismaPayload(c)))
+  }
+
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
   }

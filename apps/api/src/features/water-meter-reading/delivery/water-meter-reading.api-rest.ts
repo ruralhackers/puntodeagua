@@ -50,7 +50,6 @@ export const waterMeterReadingApiRest = new Elysia()
       const result = await createCmd.handle({
         waterMeterId: validatedBody.waterMeterId,
         reading: validatedBody.reading,
-        normalizedReading: validatedBody.normalizedReading,
         readingDate,
         notes: validatedBody.notes,
         files: validatedBody.files,

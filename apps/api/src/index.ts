@@ -11,6 +11,7 @@ import { AuthenticateUserCmd } from './features/auth/application/authenticate-us
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
+import { providersApiRest } from './features/providers/delivery/providers.api-rest'
 import { userApiRest } from './features/user/delivery/user.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterMeterReadingApiRest } from './features/water-meter-reading/delivery/water-meter-reading.api-rest'
@@ -40,6 +41,7 @@ export const app = new Elysia({ prefix: '/api' })
   .use(waterPointApiRest)
   .use(waterZonesApiRest)
   .use(maintenanceApiRest)
+  .use(providersApiRest)
   .use(analysisApiRest)
   .use(waterMeterApiRest)
   .use(issueApiRest)

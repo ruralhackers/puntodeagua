@@ -21,6 +21,7 @@ async function main() {
   await seedIssues()
   await seedWaterMeterReadings()
   await seedMaintenances()
+  await seedProviders()
 }
 
 main()
@@ -193,6 +194,11 @@ async function seedWaterZones(communityId: string) {
 async function seedAnalyses() {
   const waterZone = await prisma.waterZone.findFirst()
 
+  if (!waterZone) {
+    console.log('No water zone found, skipping analysis seed')
+    return
+  }
+
   await prisma.analysis.createMany({
     data: [
       {
@@ -242,6 +248,38 @@ async function seedMaintenances() {
         name: 'Maintenance 3',
         scheduledDate: new Date(),
         responsible: 'Carlos Rodríguez'
+      }
+    ]
+  })
+}
+
+async function seedProviders() {
+  const community = await prisma.community.findFirst()
+
+  if (!community) {
+    console.log('No community found, skipping provider seed')
+    return
+  }
+
+  await prisma.provider.createMany({
+    data: [
+      {
+        communityId: community.id,
+        name: 'Proveedor 1',
+        phone: '1234567890',
+        description: 'Proveedor 1'
+      },
+      {
+        communityId: community.id,
+        name: 'Proveedor 2',
+        phone: '1234567890',
+        description: 'Proveedor 2'
+      },
+      {
+        communityId: community.id,
+        name: 'Proveedor 3',
+        phone: '1234567890',
+        description: 'Proveedor 3'
       }
     ]
   })

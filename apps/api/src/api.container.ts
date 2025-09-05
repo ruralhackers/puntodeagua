@@ -14,7 +14,8 @@ import {
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY,
   WATER_ZONE_REPOSITORY,
-  MAINTENANCE_REPOSITORY
+  MAINTENANCE_REPOSITORY,
+  PROVIDER_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
 import { DeleteAnalysisCmd } from './features/analysis/application/delete-analysis.cmd'
@@ -31,6 +32,8 @@ import { GetMaintenanceQry } from './features/maintenance/application/get-mainte
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { GetProvidersQry } from './features/providers/application/get-providers.qry'
+import { ProvidersPrismaRepository } from './features/providers/infrastructure/providers.prisma-repository'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
 import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
 import { GetUsersQry } from './features/user/application/get-users.qry'
@@ -113,6 +116,12 @@ export class ApiContainer extends CoreContainer {
     this.register(GetMaintenanceQry.ID, getMaintenanceQry)
     const saveMaintenanceCmd = new SaveMaintenanceCmd(maintenanceRepository)
     this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
+
+    // Providers
+    const providersRepository = new ProvidersPrismaRepository(client)
+    this.register(PROVIDER_REPOSITORY, providersRepository)
+    const getProvidersQry = new GetProvidersQry(providersRepository)
+    this.register(GetProvidersQry.ID, getProvidersQry)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

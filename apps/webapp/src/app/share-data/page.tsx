@@ -1,44 +1,32 @@
 import type { NextPage } from 'next'
+import { SUMMARY_REPOSITORY } from '@/src/core/di/injection-tokens'
+import { webAppContainer } from '@/src/core/di/webapp.container'
 import ShareDataPage from '@/src/features/share-data/delivery/ShareData.page'
-
-interface SummaryData {
-  analyses: any[]
-  issues: any[]
-  maintenance: any[]
-}
-
-// const fetchSummaryData = async (): Promise<SummaryData> => {
-//   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-
-//   try {
-//     const response = await fetch(`${apiUrl}/api/summary`, {
-//       cache: 'no-store' // Always fetch fresh data
-//     })
-
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch summary data: ${response.status}`)
-//     }
-
-//     return await response.json()
-//   } catch (error) {
-//     console.error('Error fetching summary data:', error)
-//     // Return empty data on error
-//     return {
-//       analyses: [],
-//       issues: [],
-//       maintenance: []
-//     }
-//   }
-// }
+import { GetSummaryQry } from '@/src/features/summary/application/get-summary.qry'
+import type {
+  SummaryRepository,
+  SummaryResponse
+} from '@/src/features/summary/infrastructure/summary.api-rest-repository'
 
 const Page: NextPage = async () => {
-  const summaryData = {
-    analyses: [],
-    issues: [],
-    maintenance: []
-  }
+  try {
+    const summaryRepository = webAppContainer.get<SummaryRepository>(SUMMARY_REPOSITORY)
+    const getSummaryQry = new GetSummaryQry(summaryRepository)
+    const summaryData: SummaryResponse = await getSummaryQry.handle()
 
-  return <ShareDataPage summaryData={summaryData} />
+    return <ShareDataPage summaryData={summaryData} />
+  } catch (error) {
+    console.error('Failed to fetch summary data:', error)
+
+    // Fallback to empty data if API fails
+    const fallbackData: SummaryResponse = {
+      analyses: [],
+      issues: [],
+      maintenance: []
+    }
+
+    return <ShareDataPage summaryData={fallbackData} />
+  }
 }
 
 export default Page

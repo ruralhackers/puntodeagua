@@ -1,15 +1,10 @@
 import { IssueItemCard } from '@/src/features/issue/delivery/issue-item-card'
 import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
 import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
-
-interface SummaryData {
-  analyses: any[]
-  issues: any[]
-  maintenance: any[]
-}
+import type { SummaryResponse } from '../../summary/infrastructure/summary.api-rest-repository'
 
 interface ShareDataPageProps {
-  summaryData: SummaryData
+  summaryData: SummaryResponse
 }
 
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {

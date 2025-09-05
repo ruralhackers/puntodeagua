@@ -54,7 +54,7 @@ export default function AnalysisItemCard({
 
       <CardContent className="pt-0 pb-2 space-y-1">
         <div className="text-sm text-gray-600">
-          Zona: {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
+          {/* Zona: {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`} */}
         </div>
         {/* Información extra solo en detailed */}
         {showDetails && (

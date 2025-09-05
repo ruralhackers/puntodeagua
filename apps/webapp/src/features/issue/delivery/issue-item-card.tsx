@@ -18,10 +18,10 @@ export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName }) =>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="flex flex-col gap-2">
-            <CardTitle className="text-base">{toTitle(dto.title)}</CardTitle>
+            <CardTitle className="text-base">{toTitle(dto?.title ?? '')}</CardTitle>
             <CardDescription>
               <div className="flex items-center gap-2">
-                {dto.status === 'closed' ? (
+                {dto?.status === 'closed' ? (
                   <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Resuelta
                   </span>

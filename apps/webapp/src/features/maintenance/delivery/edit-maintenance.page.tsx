@@ -25,7 +25,6 @@ import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-wate
 import { EditMaintenanceCmd } from '../application/edit-maintenance.cmd'
 
 type FormValues = z.infer<typeof maintenanceSchema>
-type FormFieldType = ControllerRenderProps<FormValues, any>
 
 export const EditMaintenancePage: NextPage<{
   maintenance: MaintenanceSchema
@@ -92,7 +91,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Objeto del Mantenimiento</FormLabel>
                       <FormControl>
@@ -115,7 +114,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="scheduledDate"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Fecha de Realización</FormLabel>
                       <FormControl>
@@ -146,7 +145,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="responsible"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Persona/Empresa responsable</FormLabel>
                       <FormControl>
@@ -169,18 +168,18 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Zona del Mantenimiento</FormLabel>
                       <FormControl>
                         <select
                           required
                           value={field.value}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona la zona</option>
-                          {(waterZones ?? []).map((z: WaterZone) => (
+                          {(waterZones ?? []).map((z) => (
                             <option key={z.id.toString()} value={z.id.toString()}>
                               {z.name}
                             </option>
@@ -199,7 +198,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="executionDate"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Fecha de Ejecución</FormLabel>
                       <FormControl>
@@ -229,7 +228,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="nextMaintenanceDate"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Próxima Fecha de Mantenimiento</FormLabel>
                       <FormControl>
@@ -259,7 +258,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="duration"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Duración (horas)</FormLabel>
                       <FormControl>
@@ -284,7 +283,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Descripción del mantenimiento</FormLabel>
                       <FormControl>
@@ -306,7 +305,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="observations"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Observaciones</FormLabel>
                       <FormControl>

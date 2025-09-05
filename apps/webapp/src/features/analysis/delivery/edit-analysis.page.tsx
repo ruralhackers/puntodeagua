@@ -114,7 +114,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                           value={
                             field.value ? new Date(field.value).toISOString().slice(0, 10) : ''
                           }
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(
                               e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
                             )

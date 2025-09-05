@@ -24,7 +24,8 @@ import {
 } from '@/components/ui/select'
 
 const registerFormSchema = z.object({
-  registerType: z.string().min(1, 'Por favor selecciona un tipo de registro')
+  registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
+  analyticsSubtype: z.string().optional()
 })
 
 type RegisterFormValues = z.infer<typeof registerFormSchema>
@@ -80,11 +81,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
           <FormField
             control={form.control}
             name="registerType"
-            render={({
-              field
-            }: {
-              field: ControllerRenderProps<RegisterFormValues, 'registerType'>
-            }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Tipo de Registro</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>

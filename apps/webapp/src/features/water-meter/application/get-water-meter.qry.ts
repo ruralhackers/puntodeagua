@@ -1,4 +1,5 @@
-import { Id, Query } from 'core'
+import type { Query } from 'core'
+import { Id } from 'core'
 import type { WaterMeterRepository } from 'features'
 import type { WaterMeter } from 'features/entities/water-meter'
 

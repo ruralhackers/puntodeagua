@@ -36,7 +36,7 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
   const daysDifference = dateDifference / (1000 * 60 * 60 * 24)
 
   const handleCardClick = () => {
-    router.push(`/dashboard/registros/contadores/${meter.id}`)
+    router.push(`/dashboard/nuevo-registro/contador/${meter.id}`)
   }
 
   return (
@@ -46,9 +46,16 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
           <span>
             {meter.name} ({meter.waterZoneName})
           </span>
-          <Button asChild size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
-            <Link href={`/dashboard/nuevo-registro/contador/${meter.id}`}>Nueva Lectura</Link>
-          </Button>
+          <div className="flex items-center">
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
         </CardTitle>
         {meter.readings && meter.readings.length > 0 && meter.readings[0]['excess-consumption'] && (
           <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>

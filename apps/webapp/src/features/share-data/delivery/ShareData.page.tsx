@@ -11,11 +11,11 @@ export default function ShareDataPage() {
         <div>
           <p>Analítica</p>
           {/* {iterar por cada una} */}
-          <AnalysisItemCard />
+          {/* <AnalysisItemCard /> */}
         </div>
         <div>
           <p>Mantenimiento</p>
-          <MaintenanceItemCard />
+          {/* <MaintenanceItemCard /> */}
         </div>
         <div>
           <p>Incidencias</p>

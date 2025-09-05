@@ -20,7 +20,7 @@ export class AnalysisApiRestRepository implements AnalysisCreateRepository {
       const json = await this.httpClient.get<AnalysisDto>(`analyses/${id.toString()}`)
       if (!json.data) return undefined
 
-      return Analysis.fromDto(json.data!)
+      return Analysis.fromDto(json.data)
     } catch (error) {
       return undefined
     }

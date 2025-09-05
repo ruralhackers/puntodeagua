@@ -6,12 +6,17 @@ interface GetWaterPointParams {
   communityId?: string
 }
 
-export class GetWaterPointQry implements Query<WaterPoint | undefined, GetWaterPointParams> {
+export class GetWaterPointQry implements Query<WaterPoint, GetWaterPointParams> {
   static readonly ID = 'GetWaterPointQry'
-  constructor(private readonly repo: WaterPointRepository) {}
+  constructor(private readonly waterPointRepository: WaterPointRepository) {}
 
-  async handle(params: GetWaterPointParams): Promise<WaterPoint | undefined> {
+  async handle(params: GetWaterPointParams): Promise<WaterPoint> {
     const id = Id.create(params.id)
-    return this.repo.findById(id)
+    const waterPoint = await this.waterPointRepository.findById(id)
+    if (waterPoint === undefined) {
+      throw new Error(`Water point with id ${id} not found`)
+    }
+
+    return waterPoint
   }
 }

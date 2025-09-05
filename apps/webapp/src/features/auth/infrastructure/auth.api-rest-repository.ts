@@ -10,7 +10,6 @@ export class AuthApiRestRepository implements AuthRepository {
     user: { id: string; email: string; name: string | null; roles: string[] }
   }> {
     const response = await this.httpClient.post<AuthResponseDto, LoginDto>('auth/login', data)
-    if (!response.data) throw new Error('Empty login response')
     const { token, user } = response.data
     return {
       token,

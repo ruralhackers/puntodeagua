@@ -15,7 +15,7 @@ export class WaterPointApiRestRepository implements WaterPointRepository {
   async findById(id: Id): Promise<WaterPoint | undefined> {
     try {
       const json = await this.httpClient.get<any>(`water-points/${id.toString()}`)
-      return WaterPoint.create(json.data!)
+      return WaterPoint.create(json.data)
     } catch (error) {
       return undefined
     }

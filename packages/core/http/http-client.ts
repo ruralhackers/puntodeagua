@@ -1,96 +1,141 @@
-import { type GretchResponse, gretch } from 'gretchen'
+import { gretch } from 'gretchen'
+
+interface RequestParams<T> {
+  method: 'PUT' | 'POST' | 'GET' | 'DELETE'
+  endpoint: string
+  data?: T
+  options?: RequestInit
+}
+
+export type HttpClientResponse<T> = {
+  url: string
+  status: number
+  data: T
+  error: undefined
+  response: Response
+}
 
 /**
- * HTTP client wrapper that uses Gretchen underneath.
- * Provides simple methods for common HTTP operations with a configurable base URL.
+ * Interface for providing authentication tokens
  */
+export interface TokenProvider {
+  getToken(): string | null | Promise<string | null>
+  onUnauthorized?(): void
+}
+
 export class HttpClient {
   static readonly ID = 'HttpClient'
 
-  constructor(private readonly baseUrl: string) {}
+  constructor(
+    private readonly baseUrl: string,
+    private readonly tokenProvider?: TokenProvider
+  ) {}
 
   /**
-   * Performs a GET request to the specified endpoint.
-   * @param endpoint - The API endpoint (relative to base URL)
-   * @param options - Optional request options
-   * @returns Promise with the response data
+   * Gets authentication headers if token provider is available
    */
-  async get<T>(endpoint: string, options?: RequestInit): Promise<GretchResponse<T>> {
-    const url = this.buildUrl(endpoint)
-    const response = await gretch<T>(url, {
-      method: 'GET',
-      ...options
-    }).json()
+  private async getAuthHeaders(): Promise<Record<string, string>> {
+    if (!this.tokenProvider) {
+      return {}
+    }
 
-    return response
+    const token = await this.tokenProvider.getToken()
+    return token ? { Authorization: `Bearer ${token}` } : {}
   }
 
-  /**
-   * Performs a POST request to the specified endpoint.
-   * @param endpoint - The API endpoint (relative to base URL)
-   * @param data - The data to send in the request body
-   * @param options - Optional request options
-   * @returns Promise with the response data
-   */
-  async post<T, Data>(
-    endpoint: string,
-    data?: Data,
-    options?: RequestInit
-  ): Promise<GretchResponse<T>> {
+  private async request<Result, Body = void>(
+    params: RequestParams<Body>
+  ): Promise<HttpClientResponse<Result>> {
+    const { method, endpoint, data, options } = params
     const url = this.buildUrl(endpoint)
-    const response = await gretch<T>(url, {
-      method: 'POST',
+
+    // Get authentication headers if token provider is available
+    const authHeaders = await this.getAuthHeaders()
+
+    const gretchOptions = {
+      method,
+      ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...authHeaders,
         ...options?.headers
-      },
-      ...(data !== undefined && { body: JSON.stringify(data) }),
-      ...options
-    }).json()
+      }
+    }
 
-    return response
+    if ((method === 'POST' || method === 'PUT') && data !== undefined) {
+      gretchOptions.headers = {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+        ...options?.headers
+      }
+      gretchOptions.body = JSON.stringify(data)
+    }
+
+    const response = await gretch<Result>(url, gretchOptions).json()
+
+    // Handle unauthorized responses
+    if (response.status === 401 && this.tokenProvider?.onUnauthorized) {
+      this.tokenProvider.onUnauthorized()
+    }
+
+    if (response.error !== undefined) {
+      throw new Error(`HTTP ${method} request failed: ${response.error}`)
+    }
+
+    return {
+      url: response.url,
+      status: response.status,
+      // biome-ignore lint/style/noNonNullAssertion: Data should always be expected
+      data: response.data!,
+      error: undefined,
+      response: response.response
+    }
   }
 
-  /**
-   * Performs a PUT request to the specified endpoint.
-   * @param endpoint - The API endpoint (relative to base URL)
-   * @param data - The data to send in the request body
-   * @param options - Optional request options
-   * @returns Promise with the response data
-   */
-  async put<T, Body>(
+  async get<Result>(endpoint: string, options?: RequestInit): Promise<HttpClientResponse<Result>> {
+    return this.request<Result>({
+      method: 'GET',
+      endpoint,
+      data: undefined,
+      options
+    })
+  }
+
+  async post<Result, Body>(
     endpoint: string,
     data?: Body,
     options?: RequestInit
-  ): Promise<GretchResponse<T>> {
-    const url = this.buildUrl(endpoint)
-    const response = await gretch(url, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers
-      },
-      ...(data !== undefined && { body: JSON.stringify(data) }),
-      ...options
-    }).json()
-
-    return response
+  ): Promise<HttpClientResponse<Result>> {
+    return this.request<Result, Body>({
+      method: 'POST',
+      endpoint,
+      data,
+      options
+    })
   }
 
-  /**
-   * Performs a DELETE request to the specified endpoint.
-   * @param endpoint - The API endpoint (relative to base URL)
-   * @param options - Optional request options
-   * @returns Promise with the response data
-   */
-  async delete<T = any>(endpoint: string, options?: RequestInit): Promise<GretchResponse<T>> {
-    const url = this.buildUrl(endpoint)
-    const response = await gretch(url, {
-      method: 'DELETE',
-      ...options
-    }).json()
+  async put<Result, Body>(
+    endpoint: string,
+    data?: Body,
+    options?: RequestInit
+  ): Promise<HttpClientResponse<Result>> {
+    return this.request<Result, Body>({
+      method: 'PUT',
+      endpoint,
+      data,
+      options
+    })
+  }
 
-    return response
+  async delete<Result = void>(
+    endpoint: string,
+    options?: RequestInit
+  ): Promise<HttpClientResponse<Result>> {
+    return this.request<Result>({
+      method: 'DELETE',
+      endpoint,
+      data: undefined,
+      options
+    })
   }
 
   /**

@@ -30,8 +30,8 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
 
   async findById(id: Id): Promise<WaterMeter | undefined> {
     try {
-      const json = await this.httpClient.get<any>(`water-meter/${id.toString()}`)
-      return WaterMeter.create(json.data!)
+      const json = await this.httpClient.get<any>(`water-meters/${id.toString()}`)
+      return WaterMeter.create(json.data)
     } catch (error) {
       return undefined
     }

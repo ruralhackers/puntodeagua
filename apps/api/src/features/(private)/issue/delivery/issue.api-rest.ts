@@ -10,8 +10,8 @@ import { GetIssuesQry } from '../application/get-issues.qry'
 import { SaveIssueCmd } from '../application/save-issue.cmd'
 import type { IssueApiRepository } from '../domain/issue.api-repository'
 
-export const issueApiRest = new Elysia()
-  .get('/issues/', async ({ query }) => {
+export const issueApiRest = new Elysia({ prefix: '/issues' })
+  .get('/', async ({ query }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     // Handle optional status query parameter
@@ -33,7 +33,7 @@ export const issueApiRest = new Elysia()
     const issues = await issueRepository.findAllOrderedByEndAt()
     return issues.map((x) => x.toDto())
   })
-  .get('/issues/:id', async ({ params }) => {
+  .get('/:id', async ({ params }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const issue = await useCaseService.execute(GetIssueByIdQry, Id.create(params.id))
 
@@ -42,12 +42,12 @@ export const issueApiRest = new Elysia()
     }
     return issue.toDto()
   })
-  .post('/issues/', async ({ body }) => {
+  .post('/', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const dto = createIssueSchema.parse(body)
     await useCaseService.execute(SaveIssueCmd, dto)
   })
-  .put('/issues/:id', async ({ body }) => {
+  .put('/:id', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const dto = issueSchema.parse(body)
     await useCaseService.execute(EditIssueCmd, dto)

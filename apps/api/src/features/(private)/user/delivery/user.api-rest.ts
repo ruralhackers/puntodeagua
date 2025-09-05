@@ -1,6 +1,7 @@
 import { UseCaseService } from 'core'
 import { Elysia, t } from 'elysia'
 import { apiContainer } from '../../../../api.container'
+import { authMiddleware } from '../../../../middleware/auth-middleware'
 import { CreateUserCmd } from '../application/create-user.cmd'
 import { DeleteUserCmd } from '../application/delete-user.cmd'
 import { GetUsersQry } from '../application/get-users.qry'
@@ -13,8 +14,8 @@ const createUserSchema = t.Object({
   communityId: t.Optional(t.Union([t.String(), t.Null()]))
 })
 
-export const userApiRest = new Elysia()
-  .get('/users', async ({ user }) => {
+export const userApiRest = authMiddleware(new Elysia({ prefix: '/users' }))
+  .get('/', async ({ user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     const filters = {
@@ -27,7 +28,7 @@ export const userApiRest = new Elysia()
     return result
   })
   .post(
-    '/users',
+    '/',
     async ({ body, user }) => {
       const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
@@ -44,7 +45,7 @@ export const userApiRest = new Elysia()
       body: createUserSchema
     }
   )
-  .delete('/users/:id', async ({ params, user }) => {
+  .delete('/:id', async ({ params, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     const deleteUserDto = {

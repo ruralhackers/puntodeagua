@@ -11,7 +11,8 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { useDeleteWaterMeterReading } from '@/src/features/water-meter-reading/hooks/use-delete-water-meter-reading'
+import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { DeleteWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/delete-water-meter-reading.cmd'
 
 interface WaterMeterReadingHistoryItemProps {
   item: {
@@ -31,12 +32,12 @@ export default function WaterMeterReadingHistoryItem({
 }: WaterMeterReadingHistoryItemProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const { deleteWaterMeterReading } = useDeleteWaterMeterReading()
+  const { execute: deleteWaterMeterReading } = useUseCase(DeleteWaterMeterReadingCmd)
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await deleteWaterMeterReading(item.id)
+      await deleteWaterMeterReading({ id: item.id })
       setShowDeleteDialog(false)
       onDeleted?.()
     } catch (error) {

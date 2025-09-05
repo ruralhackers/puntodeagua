@@ -5,17 +5,12 @@ import { apiContainer } from '../../../../api.container'
 import { GetWaterMeterQry } from '../application/get-water-meter.qry'
 import { GetWaterMetersQry } from '../application/get-water-meters.qry'
 
-export const waterMeterApiRest = new Elysia()
-  .get('/water-meters', async ({ query, user }) => {
+export const waterMeterApiRest = new Elysia({ prefix: '/water-meters' })
+  .get('/', async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     // Parse and validate query parameters
     const filters = getWaterMetersFiltersSchema.parse(query)
-
-    // Add community filter for non-super-admin users
-    if (!user || 'error' in user) {
-      throw new Error('Authentication required')
-    }
 
     if (user.communityId && !user.roles.includes('SUPER_ADMIN')) {
       filters.communityId = user.communityId
@@ -24,12 +19,8 @@ export const waterMeterApiRest = new Elysia()
     const waterMeters = await useCaseService.execute(GetWaterMetersQry, filters)
     return waterMeters.map((x) => x.toDto())
   })
-  .get('/water-meter/:id', async ({ params, user }) => {
+  .get('/:id', async ({ params, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-
-    if (!user || 'error' in user) {
-      throw new Error('Authentication required')
-    }
 
     const queryParams = {
       id: params.id,

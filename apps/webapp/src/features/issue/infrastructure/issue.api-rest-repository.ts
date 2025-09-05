@@ -16,13 +16,13 @@ export class IssueApiRestRepository implements IssueCreateRepository {
     }
 
     const issueDtos = await this.httpClient.get<IssueSchema[]>(endpoint)
-    return issueDtos.data!.map(Issue.fromDto)
+    return issueDtos.data.map(Issue.fromDto)
   }
 
   async findById(id: Id): Promise<Issue | undefined> {
     try {
       const json = await this.httpClient.get<IssueSchema>(`issues/${id.toString()}`)
-      return Issue.fromDto(json.data!)
+      return Issue.fromDto(json.data)
     } catch (error) {
       return undefined
     }

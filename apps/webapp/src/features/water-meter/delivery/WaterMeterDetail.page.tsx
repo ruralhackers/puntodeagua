@@ -15,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { useGetWaterMeter } from '@/src/features/water-meter/hooks/use-get-water-meter'
+import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { GetWaterMeterQry } from '../application/get-water-meter.qry'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 
 interface WaterMeterDetailPageProps {
@@ -34,7 +35,7 @@ export default function WaterMeterDetailPage({
   const [waterMeter, setWaterMeter] = useState<WaterMeterDto>(initialWaterMeter)
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState<WaterMeterDto>(waterMeter)
-  const { getWaterMeter } = useGetWaterMeter()
+  const { execute: getWaterMeter } = useUseCase(GetWaterMeterQry)
   const nameInputId = useId()
   const waterZoneInputId = useId()
 

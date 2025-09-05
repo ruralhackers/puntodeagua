@@ -10,7 +10,7 @@ export class WaterMeterReadingApiRestRepository {
       WaterMeterReadingDto,
       CreateWaterMeterReadingCommand
     >('water-meter-readings', command)
-    return response.data!
+    return response.data
   }
 
   async delete(id: Id): Promise<void> {

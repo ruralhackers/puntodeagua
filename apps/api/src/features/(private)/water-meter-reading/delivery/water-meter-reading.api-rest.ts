@@ -6,16 +6,14 @@ import { createWaterMeterReadingSchema } from '../application/create-water-meter
 import { DeleteWaterMeterReadingCmd } from '../application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from '../application/get-water-meter-readings.qry'
 
-export const waterMeterReadingApiRest = new Elysia()
-  .get('/water-meter-readings', async () => {
+export const waterMeterReadingApiRest = new Elysia({ prefix: '/water-meter-readings' })
+  .get('/', async () => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const waterMeterReadings = await useCaseService.execute(GetWaterMeterReadingsQry)
     return waterMeterReadings
   })
-  .post('/water-meter-readings', async ({ body, set }) => {
+  .post('/', async ({ body, set }) => {
     try {
-      // Por ahora, manejamos solo el body sin archivos
-      // Los archivos se implementarán cuando agreguemos multer
       const validationResult = createWaterMeterReadingSchema.safeParse(body)
 
       if (!validationResult.success) {
@@ -60,7 +58,6 @@ export const waterMeterReadingApiRest = new Elysia()
       set.status = 201
       return result
     } catch (error) {
-      console.error('Error creating water meter reading:', error)
       set.status = 500
       return {
         error: 'Internal server error',

@@ -1,8 +1,6 @@
 import cors from '@elysiajs/cors'
 import swagger from '@elysiajs/swagger'
-import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
-import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/(private)/analysis/delivery/analysis.api-rest'
 import { holderApiRest } from './features/(private)/holder/delivery/holder.api-rest'
 import { issueApiRest } from './features/(private)/issue/delivery/issue.api-rest'
@@ -13,31 +11,14 @@ import { waterMeterReadingApiRest } from './features/(private)/water-meter-readi
 import { waterPointApiRest } from './features/(private)/water-point/delivery/water-point.api-rest'
 import { waterZonesApiRest } from './features/(private)/water-zone/delivery/water-zone.api-rest'
 import { authApiRest } from './features/(public)/auth/delivery/auth.api-rest'
-import { GetSummaryQry } from './features/(public)/summary/application/get-summary.qry'
+import { summaryApiRest } from './features/(public)/summary/delivery/summary.api-rest'
 import { authMiddleware } from './middleware/auth-middleware'
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000
 const WEBAPP_ORIGIN = process.env.WEBAPP_ORIGIN || 'http://localhost:3000'
 
-// Public API group (no authentication required)
-const publicApi = new Elysia().use(authApiRest).get('/summary', async ({ query }) => {
-  const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+const publicApi = new Elysia().use(authApiRest).use(summaryApiRest)
 
-  // Parse query parameters if provided
-  const params = {
-    month: query.month ? parseInt(query.month as string) : undefined,
-    year: query.year ? parseInt(query.year as string) : undefined
-  }
-
-  const summary = await useCaseService.execute(GetSummaryQry, params)
-  return {
-    analyses: summary.analyses.map((x) => x.toDto()),
-    issues: summary.issues.map((x) => x.toDto()),
-    maintenance: summary.maintenance.map((x) => x.toDto())
-  }
-})
-
-// Private API group (authentication required)
 const privateApi = authMiddleware(new Elysia())
   .use(waterPointApiRest)
   .use(waterZonesApiRest)

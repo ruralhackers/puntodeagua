@@ -9,7 +9,6 @@ interface ShareDataPageProps {
 
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
   const { analyses, issues, maintenance } = summaryData
-  console.log(summaryData.issues)
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold tracking-tight mb-1">

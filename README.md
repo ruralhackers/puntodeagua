@@ -144,3 +144,9 @@ This architecture enables:
 - [ ] Test con BunTest
 - [ ] Test con Playwright
 - [ ] Mover la creación de UUIDs en el back
+
+# Refactors
+
+- [ ] Mover seguridad a pieza genérica
+- [ ] Hacer uso de New Url Search Params
+- [ ] Hacer DateTime en entidades

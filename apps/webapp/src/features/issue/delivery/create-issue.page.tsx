@@ -35,15 +35,17 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
   })
 
   async function onSubmit(values: CreateIssueSchema) {
+    console.log({ values })
     await createIssueCommand.execute({
       title: values.title,
       description: values.description,
       reporterName: values.reporterName,
       startAt: values.startAt,
+      endAt: values.endAt,
       waterZoneId: values.waterZoneId,
       status: values.status
     })
-    router.push('/')
+    // router.push('/')
   }
 
   return (

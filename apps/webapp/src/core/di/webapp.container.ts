@@ -3,10 +3,10 @@ import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { GetIssuesQry } from '@/src/features/issue/application/get-issues.qry'
 import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issues.qry'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-rest-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import { CreateWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/create-water-meter-reading.cmd'
@@ -75,8 +75,8 @@ export class WebappContainer extends CoreContainer {
     const issueApiRestRepository = new IssueApiRestRepository(httpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
-    const saveIssueCmd = new SaveIssueCmd(issueApiRestRepository)
-    this.register(SaveIssueCmd.ID, saveIssueCmd)
+    const saveIssueCmd = new EditIssueCmd(issueApiRestRepository)
+    this.register(EditIssueCmd.ID, saveIssueCmd)
 
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)

@@ -10,8 +10,8 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
 
 export const EditIssuePage: NextPage<{
@@ -19,7 +19,7 @@ export const EditIssuePage: NextPage<{
   waterZones: WaterZoneDto[]
 }> = ({ waterZones, id }) => {
   const router = useRouter()
-  const saveIssueCommand = useUseCase(SaveIssueCmd)
+  const editIssueCommand = useUseCase(EditIssueCmd)
   const getIssueByIdQry = useUseCase(GetIssueByIdQry)
 
   const form = useForm<IssueSchema>({
@@ -29,6 +29,7 @@ export const EditIssuePage: NextPage<{
       waterZoneId: '',
       description: '',
       startAt: DateTime.fromNow().toISO(),
+      endAt: '',
       reporterName: '',
       status: 'open'
     }
@@ -45,19 +46,13 @@ export const EditIssuePage: NextPage<{
   }, [])
 
   async function onSubmit(values: IssueSchema) {
-    await saveIssueCommand.execute(
+    await editIssueCommand.execute(
       Issue.fromDto({
-        id,
-        title: values.title,
-        description: values.description,
-        reporterName: values.reporterName,
-        startAt: values.startAt,
-        endAt: values.endAt,
-        waterZoneId: values.waterZoneId,
-        status: values.status
+        ...values,
+        id
       })
     )
-    router.push('/')
+    router.push('/dashboard/registros/incidencias')
   }
 
   return (

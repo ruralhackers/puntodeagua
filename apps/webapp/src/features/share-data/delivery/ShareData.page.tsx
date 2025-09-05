@@ -1,5 +1,5 @@
+import { IssueItemCard } from '@/src/features/issue/delivery/issue-item-card'
 import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
-import IssueItemCard from '../../issue/delivery/IssueItemCard'
 import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
 
 interface SummaryData {

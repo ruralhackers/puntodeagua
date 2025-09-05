@@ -31,6 +31,7 @@ import { EditHolderCmd } from './features/holder/application/edit-holder.cmd'
 import { GetHolderQry } from './features/holder/application/get-holder.qry'
 import { GetHoldersQry } from './features/holder/application/get-holders.qry'
 import { HolderPrismaRepository } from './features/holder/infrastructure/holder.prisma-repository'
+import { EditIssueCmd } from './features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { GetIssuesQry } from './features/issue/application/get-issues.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
@@ -101,6 +102,8 @@ export class ApiContainer extends CoreContainer {
     this.register(ISSUE_REPOSITORY, issuePrismaRepository)
     const saveIssueCmd = new SaveIssueCmd(issuePrismaRepository)
     this.register(SaveIssueCmd.ID, saveIssueCmd)
+    const editIssueCmd = new EditIssueCmd(issuePrismaRepository)
+    this.register(EditIssueCmd.ID, editIssueCmd)
 
     // Analysis
     const analysisRepository = new AnalysisPrismaRepository(client)

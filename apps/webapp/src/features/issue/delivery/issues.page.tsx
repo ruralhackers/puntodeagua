@@ -1,13 +1,10 @@
-import type {Issue, WaterZone} from 'features'
+import type { Issue, WaterZone } from 'features'
 import type { FC } from 'react'
 import { Link } from '@/components/ui/link'
 import { Page } from '@/src/core/components/page'
-import IssueItemCard from "@/src/features/issue/delivery/IssueItemCard";
+import { IssueItemCard } from '@/src/features/issue/delivery/issue-item-card'
 
-export const IssuesPage: FC<{ issues: Issue[]; zones?: WaterZone[] }> = ({
-  issues,
-  zones
-}) => {
+export const IssuesPage: FC<{ issues: Issue[]; zones?: WaterZone[] }> = ({ issues, zones }) => {
   const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
 
   return (
@@ -46,7 +43,13 @@ export const IssuesPage: FC<{ issues: Issue[]; zones?: WaterZone[] }> = ({
         <div className="flex flex-col gap-3">
           {issues.map((i) => {
             const dto = i.toDto()
-            return <IssueItemCard key={dto.id} dto={dto} waterZoneName={zoneById.get(dto.waterZoneId) ?? ''} />
+            return (
+              <IssueItemCard
+                key={dto.id}
+                dto={dto}
+                waterZoneName={zoneById.get(dto.waterZoneId) ?? ''}
+              />
+            )
           })}
         </div>
       </div>

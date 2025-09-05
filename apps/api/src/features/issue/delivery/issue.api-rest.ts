@@ -5,6 +5,7 @@ import { IssueStatusType } from 'features/issues/value-objects/issue-status-type
 import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import { GetIssueByIdQry } from 'webapp/src/features/issue/application/get-issue-by-id.qry'
 import { apiContainer } from '../../../api.container'
+import { EditIssueCmd } from '../application/edit-issue.cmd'
 import { GetIssuesQry } from '../application/get-issues.qry'
 import { SaveIssueCmd } from '../application/save-issue.cmd'
 import type { IssueApiRepository } from '../domain/issue.api-repository'
@@ -49,5 +50,5 @@ export const issueApiRest = new Elysia()
   .put('/issues/:id', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const dto = issueSchema.parse(body)
-    await useCaseService.execute(SaveIssueCmd, dto)
+    await useCaseService.execute(EditIssueCmd, dto)
   })

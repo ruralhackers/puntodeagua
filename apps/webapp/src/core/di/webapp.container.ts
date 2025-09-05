@@ -32,6 +32,7 @@ import { GetMaintenanceQry } from '../../features/maintenance/application/get-ma
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
 import { CreateProviderCmd } from '../../features/providers/application/create-provider.cmd'
+import { DeleteProviderCmd } from '../../features/providers/application/delete-provider.cmd'
 import { EditProviderCmd } from '../../features/providers/application/edit-provider.cmd'
 import { GetProviderQry } from '../../features/providers/application/get-provider.qry'
 import { GetProvidersQry } from '../../features/providers/application/get-providers.qry'
@@ -98,6 +99,8 @@ export class WebappContainer extends CoreContainer {
     this.register(CreateProviderCmd.ID, createProviderCmd)
     const editProviderCmd = new EditProviderCmd(providersApiRestRepository)
     this.register(EditProviderCmd.ID, editProviderCmd)
+    const deleteProviderCmd = new DeleteProviderCmd(providersApiRestRepository)
+    this.register(DeleteProviderCmd.ID, deleteProviderCmd)
     const getProviderQry = new GetProviderQry(providersApiRestRepository)
     this.register(GetProviderQry.ID, getProviderQry)
     const getWaterPointQry = new GetWaterPointQry(waterPointApiRestRepository)

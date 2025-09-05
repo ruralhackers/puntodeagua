@@ -42,6 +42,7 @@ import { GetMaintenancesQry } from './features/maintenance/application/get-maint
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
 import { CreateProviderCmd } from './features/providers/application/create-provider.cmd'
+import { DeleteProviderCmd } from './features/providers/application/delete-provider.cmd'
 import { GetProviderQry } from './features/providers/application/get-provider.qry'
 import { GetProvidersQry } from './features/providers/application/get-providers.qry'
 import { SaveProviderCmd } from './features/providers/application/save-provider.cmd'
@@ -173,6 +174,8 @@ export class ApiContainer extends CoreContainer {
     this.register(GetProviderQry.ID, getProviderQry)
     const saveProviderCmd = new SaveProviderCmd(providersRepository)
     this.register(SaveProviderCmd.ID, saveProviderCmd)
+    const deleteProviderCmd = new DeleteProviderCmd(providersRepository)
+    this.register(DeleteProviderCmd.ID, deleteProviderCmd)
 
     // Summary
     const getSummaryQry = new GetSummaryQry(

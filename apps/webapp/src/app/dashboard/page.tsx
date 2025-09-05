@@ -51,7 +51,7 @@ export default async function Home() {
             )}
           </div>
           <a
-            href="/dashboard/atencion"
+            href="/dashboard/registros/incidencias"
             className="block w-full mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium text-center"
           >
             Ver todos los elementos

@@ -1,3 +1,7 @@
+import { Holder } from 'features/entities/holder'
+import { WaterMeter } from 'features/entities/water-meter'
+import { WaterPoint } from 'features/entities/water-point'
+import { WaterZone } from 'features/entities/water-zone'
 import type { NextPage } from 'next'
 import { getUseCase } from '@/src/core/use-cases/get-use-case'
 import { GetHoldersQry } from '@/src/features/holder/application/get-holders.qry'
@@ -21,10 +25,10 @@ const Page: NextPage = async () => {
 
   return (
     <WaterMeterPage
-      waterMeters={waterMeters.map((meter) => meter.toDto())}
-      waterZones={waterZones.map((zone) => zone.toDto())}
-      holders={holders.map((holder) => holder.toDto())}
-      waterPoints={waterPoints.map((point) => point.toDto())}
+      waterMeters={waterMeters.map((meter: WaterMeter) => meter.toDto())}
+      waterZones={waterZones.map((zone: WaterZone) => zone.toDto())}
+      holders={holders.map((holder: Holder) => holder.toDto())}
+      waterPoints={waterPoints.map((point: WaterPoint) => point.toDto())}
     />
   )
 }

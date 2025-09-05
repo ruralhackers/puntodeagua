@@ -1,3 +1,4 @@
+import { WaterZone } from 'features/entities/water-zone'
 import type { NextPage } from 'next'
 import { getUseCase } from '@/src/core/use-cases/get-use-case'
 import { EditIssuePage } from '@/src/features/issue/delivery/edit-issue.page'
@@ -14,7 +15,7 @@ const Page: NextPage<PageProps> = async ({ params }) => {
 
   const waterZones = await getWaterZonesQry.execute()
 
-  return <EditIssuePage id={id} waterZones={waterZones.map((x) => x.toDto())} />
+  return <EditIssuePage id={id} waterZones={waterZones.map((x: WaterZone) => x.toDto())} />
 }
 
 export default Page

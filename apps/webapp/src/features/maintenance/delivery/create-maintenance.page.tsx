@@ -3,9 +3,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { WaterZoneDto } from 'features'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
+import { WaterZone } from 'features/entities/water-zone'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, type ControllerRenderProps } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,6 +31,7 @@ export const CreateMaintenancePage: NextPage<{
   const createMaintenanceSchema = maintenanceSchema.omit({ id: true })
 
   type FormValues = z.infer<typeof createMaintenanceSchema>
+  type FormFieldType = ControllerRenderProps<FormValues, any>
 
   const form = useForm<FormValues>({
     resolver: zodResolver(createMaintenanceSchema),
@@ -92,7 +94,7 @@ export const CreateMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Objeto del Mantenimiento</FormLabel>
                       <FormControl>
@@ -115,7 +117,7 @@ export const CreateMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="scheduledDate"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Fecha de Realización</FormLabel>
                       <FormControl>
@@ -146,7 +148,7 @@ export const CreateMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="responsible"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Persona/Empresa responsable</FormLabel>
                       <FormControl>
@@ -169,7 +171,7 @@ export const CreateMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Zona del Mantenimiento</FormLabel>
                       <FormControl>
@@ -180,7 +182,7 @@ export const CreateMaintenancePage: NextPage<{
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona la zona</option>
-                          {(waterZones ?? []).map((z) => (
+                          {(waterZones ?? []).map((z: WaterZone) => (
                             <option key={z.id.toString()} value={z.id.toString()}>
                               {z.name}
                             </option>
@@ -199,7 +201,7 @@ export const CreateMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Descripción del mantenimiento</FormLabel>
                       <FormControl>

@@ -1,15 +1,23 @@
 import { UseCaseService } from 'core'
+import { Issue } from 'features/issues/entities/issue'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/components/ui/link'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issues.qry'
 import { AttentionItem } from './AttentionItem'
 
+type AttentionItemType = {
+  id: string
+  titulo: string
+  ubicacion: string
+  fecha: string
+}
+
 export default async function Home() {
   const service = webAppContainer.get<UseCaseService>(UseCaseService.ID)
   const openIssues = await service.execute(GetOpenIssuesQry)
 
-  const incidenciasAbiertas = openIssues.map((issue) => ({
+  const incidenciasAbiertas = openIssues.map((issue: Issue) => ({
     id: issue.id.toString(),
     titulo: issue.title,
     ubicacion: issue.reporterName || 'Sin especificar',
@@ -38,8 +46,8 @@ export default async function Home() {
             <span className="text-sm text-gray-500">{elementosAtencion.length} elementos</span>
           </div>
           <div className="space-y-2">
-            {elementosAtencion.slice(0, 2).map((e) => (
-              <AttentionItem key={`${e.tipo}-${e.id}`} item={e} />
+            {elementosAtencion.slice(0, 2).map((e: AttentionItemType) => (
+              <AttentionItem key={`${e.id}`} item={e} />
             ))}
             {elementosAtencion.length > 2 && (
               <div className="text-center text-sm text-gray-500 mt-2">

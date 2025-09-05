@@ -7,7 +7,7 @@ import { analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import { useRouter } from 'next/navigation'
 import type { FC } from 'react'
-import { useForm } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,6 +30,8 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
 }) => {
   const router = useRouter()
   const editAnalysisCommand = useUseCase(EditAnalysisCmd)
+
+  type FormFieldType = ControllerRenderProps<z.infer<typeof analysisSchema>, any>
 
   const form = useForm<z.infer<typeof analysisSchema>>({
     resolver: zodResolver(analysisSchema),
@@ -60,7 +62,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }) => {
+                  render={({ field }: { field: FormFieldType }) => {
                     const zoneName = waterZone?.name ?? 'No encontrada'
                     return (
                       <FormItem>
@@ -83,7 +85,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                 <FormField
                   control={form.control}
                   name="analyst"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Analista</FormLabel>
                       <FormControl>
@@ -101,7 +103,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                 <FormField
                   control={form.control}
                   name="analyzedAt"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
@@ -154,7 +156,7 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
                   <FormField
                     control={form.control}
                     name={param as keyof z.infer<typeof analysisSchema>}
-                    render={({ field }) => (
+                    render={({ field }: { field: FormFieldType }) => (
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>

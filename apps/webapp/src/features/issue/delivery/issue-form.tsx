@@ -3,7 +3,7 @@ import type { IssueSchema, WaterZoneDto } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import { CalendarIcon } from 'lucide-react'
 import type { FC } from 'react'
-import type { UseFormReturn } from 'react-hook-form'
+import type { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -32,6 +32,7 @@ export const IssueForm: FC<{
   form: UseFormReturn<IssueSchema | CreateIssueSchema>
   waterZones: WaterZoneDto[]
 }> = ({ form, onSubmit, onCancel, waterZones }) => {
+  type FormFieldType = ControllerRenderProps<IssueSchema | CreateIssueSchema, any>
   const selectedStatus = form.watch('status')
 
   return (
@@ -51,7 +52,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="waterZoneId"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Zona *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
@@ -75,7 +76,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="reporterName"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Persona que firma *</FormLabel>
                   <FormControl>
@@ -97,7 +98,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="title"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Incidencia *</FormLabel>
                   <FormControl>
@@ -119,7 +120,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Descripción de la incidencia</FormLabel>
                   <FormControl>
@@ -149,7 +150,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="status"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
@@ -211,7 +212,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="startAt"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Fecha de apertura *</FormLabel>
                   <Popover>
@@ -259,7 +260,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="endAt"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Fecha de resolución</FormLabel>
                   <Popover>

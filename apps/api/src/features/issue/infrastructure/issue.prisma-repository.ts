@@ -6,9 +6,9 @@ import {
   type IssueRepositoryFilters,
   type IssueSchema
 } from 'features'
-import type { IssueRepository } from 'features/issues/repositories/issue.repository'
+import type { IssueApiRepository } from '../domain/issue.api-repository'
 
-export class IssuePrismaRepository extends BasePrismaRepository implements IssueRepository {
+export class IssuePrismaRepository extends BasePrismaRepository implements IssueApiRepository {
   protected readonly model = 'issue'
   protected getModel(): PrismaClient['issue'] {
     return this.db.issue
@@ -21,8 +21,8 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       reporterName: input.reporterName,
       description: input.description,
       status: input.status.toString(),
-      startAt: input.startAt,
-      endAt: input.endAt
+      startAt: input.startAt.toDate(),
+      endAt: input.endAt ? input.endAt.toDate() : undefined
     }
 
     const create = {
@@ -43,18 +43,24 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
   }
 
   async findAll(filters?: IssueRepositoryFilters): Promise<Issue[]> {
-    const where = filters?.status ? { status: filters.status.toString() } : undefined
-    const entityDtos = await this.getModel().findMany({ where })
+    const entityDtos = await this.getModel().findMany({
+      where: {
+        ...(filters?.status && { status: filters.status.toString() })
+      }
+    })
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }
 
   async findAllOrderedByEndAt(startDate?: Date, endDate?: Date): Promise<Issue[]> {
-    const where = startDate && endDate ? {
-      endAt: {
-        gte: startDate,
-        lt: endDate
-      }
-    } : undefined
+    const where =
+      startDate && endDate
+        ? {
+            endAt: {
+              gte: startDate,
+              lt: endDate
+            }
+          }
+        : undefined
 
     const entityDtos = await this.getModel().findMany({
       where,

@@ -22,19 +22,16 @@ export class GetSummaryQry implements Query<SummaryResponse> {
   ) {}
 
   async handle(params: SummaryParams = {}): Promise<SummaryResponse> {
-    let { month, year } = params
+    const { month, year } = params
     
-    // Default to previous month if not provided
-    if (!month || !year) {
-      const now = new Date()
-      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1)
-      month = prevMonth.getMonth() + 1 // Convert back to 1-indexed
-      year = prevMonth.getFullYear()
+    let startDate: Date | undefined
+    let endDate: Date | undefined
+    
+    // Only filter by date if both month and year are provided
+    if (month && year) {
+      startDate = new Date(year, month - 1, 1) // month is 0-indexed in Date constructor
+      endDate = new Date(year, month, 1) // first day of next month
     }
-    
-    // Calculate start and end dates for the month
-    const startDate = new Date(year, month - 1, 1) // month is 0-indexed in Date constructor
-    const endDate = new Date(year, month, 1) // first day of next month
     
     const [analyses, issues, maintenance] = await Promise.all([
       this.analysisRepository.findAllOrderedByAnalyzedAt(startDate, endDate),

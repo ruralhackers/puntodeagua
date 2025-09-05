@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Id } from 'core'
+import { DateTime, Id } from 'core'
 import { Issue, type IssueSchema, issueSchema, type WaterZoneDto } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
@@ -28,7 +28,7 @@ export const EditIssuePage: NextPage<{
       title: '',
       waterZoneId: '',
       description: '',
-      startAt: new Date(),
+      startAt: DateTime.fromNow().toISO(),
       reporterName: '',
       status: 'open'
     }
@@ -52,6 +52,7 @@ export const EditIssuePage: NextPage<{
         description: values.description,
         reporterName: values.reporterName,
         startAt: values.startAt,
+        endAt: values.endAt,
         waterZoneId: values.waterZoneId,
         status: values.status
       })

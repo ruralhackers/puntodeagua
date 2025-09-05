@@ -40,6 +40,7 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       description: values.description,
       reporterName: values.reporterName,
       startAt: values.startAt,
+      endAt: values.endAt,
       waterZoneId: values.waterZoneId,
       status: values.status
     })

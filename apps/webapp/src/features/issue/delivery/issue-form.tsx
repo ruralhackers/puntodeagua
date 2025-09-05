@@ -35,7 +35,12 @@ export const IssueForm: FC<{
   const selectedStatus = form.watch('status')
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, (x) => {})} className="space-y-8">
+    <form
+      onSubmit={form.handleSubmit(onSubmit, (x) => {
+        console.log(x)
+      })}
+      className="space-y-8"
+    >
       <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-3 mb-4">
           📋 Información Básica
@@ -262,6 +267,7 @@ export const IssueForm: FC<{
                       <FormControl>
                         <Button
                           variant={'outline'}
+                          disabled={selectedStatus !== 'closed'}
                           className={cn(
                             'w-[240px] pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
@@ -278,7 +284,6 @@ export const IssueForm: FC<{
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
-                        required={selectedStatus === 'closed'}
                         mode="single"
                         disabled={selectedStatus !== 'closed'}
                         selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}

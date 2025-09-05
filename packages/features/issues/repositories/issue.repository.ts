@@ -5,6 +5,4 @@ import type { IssueRepositoryFilters } from './issue.repository-filters.ts'
 export interface IssueRepository
   extends Savable<Issue>,
     FindableAll<Issue, IssueRepositoryFilters>,
-    FindableById<Issue> {
-  findAllOrderedByEndAt(startDate?: Date, endDate?: Date): Promise<Issue[]>
-}
+    FindableById<Issue> {}

@@ -21,6 +21,7 @@ import { GetAnalysisQry } from '../../features/analysis/application/get-analysis
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { ServerAuthHttpClient } from '../../features/auth/infrastructure/server-auth-http-client'
 import { CreateMaintenanceCmd } from '../../features/maintenance/application/create-maintenance.cmd'
 import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-maintenance.cmd'
 import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
@@ -50,6 +51,12 @@ export class WebappContainer extends CoreContainer {
     )
     this.register(HttpClient.ID, httpClient)
 
+    // Server-side authenticated HTTP client
+    const serverAuthHttpClient = new ServerAuthHttpClient(
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+    )
+    this.register('ServerAuthHttpClient', serverAuthHttpClient)
+
     const waterPointApiRestRepository = new WaterPointApiRestRepository(httpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)
 
@@ -62,7 +69,7 @@ export class WebappContainer extends CoreContainer {
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
 
-    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(httpClient)
+    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(serverAuthHttpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)
 
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)

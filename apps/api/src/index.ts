@@ -43,7 +43,6 @@ export const app = new Elysia({ prefix: '/api' })
   .use(analysisApiRest)
   .use(waterMeterApiRest)
   .use(issueApiRest)
-  .use(waterZonesApiRest)
   .use(waterMeterReadingApiRest)
   .use(userApiRest)
   .post('/auth/login', async ({ body, jwt, set }) => {

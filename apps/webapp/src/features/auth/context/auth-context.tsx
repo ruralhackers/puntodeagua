@@ -2,6 +2,7 @@
 
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react'
 import type { AuthResponseDto } from '../schemas/auth.schema'
+import { hybridAuth } from '../utils/hybrid-storage'
 
 interface User {
   id: string
@@ -34,20 +35,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = !!user && !!token
 
   useEffect(() => {
-    // Check for stored auth data on app start
-    const storedToken = localStorage.getItem('auth_token')
-    const storedUser = localStorage.getItem('auth_user')
+    // Check for stored auth data on app start using hybrid storage
+    const storedToken = hybridAuth.getToken()
+    const storedUser = hybridAuth.getUser()
 
     if (storedToken && storedUser) {
-      try {
-        const userData = JSON.parse(storedUser)
-        setToken(storedToken)
-        setUser(userData)
-      } catch (error) {
-        // Invalid stored data, clear it
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('auth_user')
-      }
+      setToken(storedToken)
+      setUser(storedUser)
     }
 
     setIsLoading(false)
@@ -56,9 +50,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = (authResponse: AuthResponseDto) => {
     const { token: newToken, user: userData } = authResponse
 
-    // Store in localStorage
-    localStorage.setItem('auth_token', newToken)
-    localStorage.setItem('auth_user', JSON.stringify(userData))
+    // Store using hybrid storage (localStorage + cookies)
+    hybridAuth.setToken(newToken)
+    hybridAuth.setUser(userData)
 
     // Update state
     setToken(newToken)
@@ -66,9 +60,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const logout = () => {
-    // Clear localStorage
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
+    // Clear using hybrid storage (localStorage + cookies)
+    hybridAuth.clear()
 
     // Clear state
     setToken(null)

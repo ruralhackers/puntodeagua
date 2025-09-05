@@ -17,6 +17,8 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
     }
 
     const url = `water-meters${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    // The httpClient will automatically handle authentication if it's ServerAuthHttpClient
     const response = await this.httpClient.get<WaterMeterDto[]>(url)
     const data = response.data ?? []
     return data.map(WaterMeter.create)

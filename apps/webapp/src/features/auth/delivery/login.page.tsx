@@ -11,6 +11,7 @@ import { useUseCase } from '../../../core/use-cases/use-use-case'
 import { LoginCmd } from '../application/login.cmd'
 import { useAuth } from '../context/auth-context'
 import { type LoginDto, loginSchema } from '../schemas/auth.schema'
+import { hybridAuth } from '../utils/hybrid-storage'
 
 export const LoginPage: FC = () => {
   const router = useRouter()
@@ -34,8 +35,8 @@ export const LoginPage: FC = () => {
       if (result?.token) {
         login(result)
 
-        const redirectPath = localStorage.getItem('auth_redirect')
-        localStorage.removeItem('auth_redirect')
+        const redirectPath = hybridAuth.getRedirect()
+        hybridAuth.removeRedirect()
 
         router.push(redirectPath || '/dashboard')
         return

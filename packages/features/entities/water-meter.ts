@@ -19,6 +19,8 @@ export class WaterMeter {
       readingDate: Date
       reading: string
       normalizedReading: string
+      consumption: number
+      'excess-consumption': boolean
     }>
   ) {}
 

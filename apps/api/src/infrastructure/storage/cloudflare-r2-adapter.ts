@@ -56,7 +56,7 @@ export class CloudflareR2Adapter implements StorageService {
       Body: file,
       ContentType: options.mimeType,
       ContentLength: options.size,
-      Metadata: metadata
+      Metadata: metadata as Record<string, string>
     })
 
     await this.s3Client.send(command)

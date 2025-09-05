@@ -237,7 +237,7 @@ export const IssueForm: FC<{
                       <Calendar
                         mode="single"
                         selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
-                        onSelect={(x, ...args) => {
+                        onSelect={(x: Date | undefined, ...args: any[]) => {
                           if (x) {
                             field.onChange(DateTime.fromDate(x).toISO(), ...args)
                           } else {
@@ -287,7 +287,7 @@ export const IssueForm: FC<{
                         mode="single"
                         disabled={selectedStatus !== 'closed'}
                         selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
-                        onSelect={(x, ...args) => {
+                        onSelect={(x: Date | undefined, ...args: any[]) => {
                           if (x) {
                             field.onChange(DateTime.fromDate(x).toISO(), ...args)
                           } else {

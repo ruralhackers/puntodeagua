@@ -1,9 +1,10 @@
 import { Id } from 'core'
+import type { PrismaClient } from 'database'
 import type { FileRepository } from 'features'
 import { File } from 'features'
 
 export class FilePrismaRepository implements FileRepository {
-  constructor(private readonly client: any) {}
+  constructor(private readonly client: PrismaClient) {}
 
   async findAll(): Promise<File[]> {
     const files = await this.client.file.findMany({

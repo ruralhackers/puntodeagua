@@ -72,7 +72,7 @@ export class WaterMeterPrismaRepository
               let consumption = 0
               let excessConsumption = false
 
-              if (index > 0) {
+              if (index > 0 && arr[index - 1]) {
                 const currentValue = parseFloat(reading.normalizedReading.toString())
                 const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
                 consumption = currentValue - previousValue
@@ -157,7 +157,7 @@ export class WaterMeterPrismaRepository
             let consumption = 0
             let excessConsumption = false
 
-            if (index > 0) {
+            if (index > 0 && arr[index - 1]) {
               const currentValue = parseFloat(reading.normalizedReading.toString())
               const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
               consumption = currentValue - previousValue

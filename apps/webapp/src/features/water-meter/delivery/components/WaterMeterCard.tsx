@@ -57,9 +57,11 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
             </svg>
           </div>
         </CardTitle>
-        {meter.readings && meter.readings.length > 0 && meter.readings[0]['excess-consumption'] && (
-          <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>
-        )}
+        {meter.readings &&
+          meter.readings.length > 0 &&
+          meter.readings[0]?.['excess-consumption'] && (
+            <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>
+          )}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

@@ -4,7 +4,7 @@ import type { WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { type FC } from 'react'
-import { useForm } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -80,7 +80,11 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
           <FormField
             control={form.control}
             name="registerType"
-            render={({ field }) => (
+            render={({
+              field
+            }: {
+              field: ControllerRenderProps<RegisterFormValues, 'registerType'>
+            }) => (
               <FormItem>
                 <FormLabel>Tipo de Registro</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>

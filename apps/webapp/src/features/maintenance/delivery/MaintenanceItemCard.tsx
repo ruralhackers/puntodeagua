@@ -1,8 +1,21 @@
+import type { Maintenance } from 'features'
 import { Edit3, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { formatDate } from '../../analysis/delivery/analysis.utils'
 
-export default function MaintenanceItemCard({ dto, status, type, variant = 'detailed' }) {
+interface MaintenanceItemCardProps {
+  dto: Maintenance
+  status?: { label: string; classes: string }
+  type?: string
+  variant?: 'detailed' | 'simple'
+}
+
+export default function MaintenanceItemCard({
+  dto,
+  status,
+  type,
+  variant = 'detailed'
+}: MaintenanceItemCardProps) {
   const showDetails = variant === 'detailed'
 
   return (

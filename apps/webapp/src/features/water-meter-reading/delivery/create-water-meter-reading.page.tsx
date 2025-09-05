@@ -5,7 +5,7 @@ import type { WaterMeterDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useId } from 'react'
-import { useForm } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -116,7 +116,11 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
                 <FormField
                   control={form.control}
                   name="reading"
-                  render={({ field }) => (
+                  render={({
+                    field
+                  }: {
+                    field: ControllerRenderProps<CreateWaterMeterReadingFormValues, 'reading'>
+                  }) => (
                     <FormItem>
                       <FormLabel>Lectura ({waterMeter.measurementUnit})</FormLabel>
                       <FormControl>
@@ -143,7 +147,11 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
                 <FormField
                   control={form.control}
                   name="readingDate"
-                  render={({ field }) => (
+                  render={({
+                    field
+                  }: {
+                    field: ControllerRenderProps<CreateWaterMeterReadingFormValues, 'readingDate'>
+                  }) => (
                     <FormItem>
                       <FormLabel>Fecha de Lectura</FormLabel>
                       <FormControl>
@@ -153,7 +161,7 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
                           value={
                             field.value ? new Date(field.value).toISOString().slice(0, 10) : ''
                           }
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(
                               e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
                             )
@@ -172,7 +180,11 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
                 <FormField
                   control={form.control}
                   name="notes"
-                  render={({ field }) => (
+                  render={({
+                    field
+                  }: {
+                    field: ControllerRenderProps<CreateWaterMeterReadingFormValues, 'notes'>
+                  }) => (
                     <FormItem>
                       <FormLabel>Notas (opcional)</FormLabel>
                       <FormControl>

@@ -78,7 +78,7 @@ export const LoginPage: FC = () => {
                   id={emailId}
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                   className="h-11"
                   placeholder="tucorreo@dominio.com"
                 />
@@ -92,7 +92,7 @@ export const LoginPage: FC = () => {
                   id={passwordId}
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                   className="h-11"
                   placeholder="••••••••"
                 />

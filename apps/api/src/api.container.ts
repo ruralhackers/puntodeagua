@@ -14,7 +14,7 @@ import {
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
-  WATER_REPOSITORY,
+  WATER_POINT_REPOSITORY,
   WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
@@ -47,6 +47,10 @@ import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/appli
 import { DeleteWaterMeterReadingCmd } from './features/water-meter-reading/application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
+import { CreateWaterPointCmd } from './features/water-point/application/create-water-point.cmd'
+import { DeleteWaterPointCmd } from './features/water-point/application/delete-water-point.cmd'
+import { EditWaterPointCmd } from './features/water-point/application/edit-water-point.cmd'
+import { GetWaterPointQry } from './features/water-point/application/get-water-point.qry'
 import { GetWaterPointsQry } from './features/water-point/application/get-water-points.qry'
 import { WaterMeterPrismaRepository } from './features/water-point/infrastructure/water-meter.prisma-repository'
 import { WaterPointPrismaRepository } from './features/water-point/infrastructure/water-point.prisma-repository'
@@ -59,34 +63,40 @@ export class ApiContainer extends CoreContainer {
   protected override registerInstances(): void {
     super.registerInstances()
 
+    // Water Points
     const waterPointPrismaRepository = new WaterPointPrismaRepository(client)
-    this.register(WATER_REPOSITORY, waterPointPrismaRepository)
-
+    this.register(WATER_POINT_REPOSITORY, waterPointPrismaRepository)
     const getWaterPointsQry = new GetWaterPointsQry(waterPointPrismaRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
+    const getWaterPointQry = new GetWaterPointQry(waterPointPrismaRepository)
+    this.register(GetWaterPointQry.ID, getWaterPointQry)
+    const createWaterPointCmd = new CreateWaterPointCmd(waterPointPrismaRepository)
+    this.register(CreateWaterPointCmd.ID, createWaterPointCmd)
+    const deleteWaterPointCmd = new DeleteWaterPointCmd(waterPointPrismaRepository)
+    this.register(DeleteWaterPointCmd.ID, deleteWaterPointCmd)
+    const editWaterPointCmd = new EditWaterPointCmd(waterPointPrismaRepository)
+    this.register(EditWaterPointCmd.ID, editWaterPointCmd)
 
+    // Water Meters
     const waterMeterPrismaRepository = new WaterMeterPrismaRepository(client)
     this.register(WATER_METER_REPOSITORY, waterMeterPrismaRepository)
-
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterPrismaRepository)
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
-
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
 
     // Water Meter Readings
     const waterMeterReadingPrismaRepository = new WaterMeterReadingPrismaRepository(client)
     this.register(WATER_METER_READING_REPOSITORY, waterMeterReadingPrismaRepository)
-
     const getWaterMeterReadingsQry = new GetWaterMeterReadingsQry(waterMeterReadingPrismaRepository)
     this.register(GetWaterMeterReadingsQry.ID, getWaterMeterReadingsQry)
 
     const userPrismaRepository = new UserPrismaRepository(client)
     this.register(USER_REPOSITORY, userPrismaRepository)
 
+    // Issues
     const issuePrismaRepository = new IssuePrismaRepository(client)
     this.register(ISSUE_REPOSITORY, issuePrismaRepository)
-
     const saveIssueCmd = new SaveIssueCmd(issuePrismaRepository)
     this.register(SaveIssueCmd.ID, saveIssueCmd)
 
@@ -121,7 +131,6 @@ export class ApiContainer extends CoreContainer {
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)
     this.register(WATER_ZONE_REPOSITORY, waterZonePrismaRepository)
-
     const getWaterZonesQry = new GetWaterZonesQry(waterZonePrismaRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 

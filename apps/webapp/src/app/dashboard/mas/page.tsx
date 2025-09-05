@@ -20,7 +20,7 @@ export default function MasPage() {
     {
       title: 'Proveedores',
       description: 'Gestiona los proveedores del sistema',
-      icon: Store,
+      icon: '🏪',
       href: '/dashboard/proveedores',
       color: 'text-emerald-600'
     },

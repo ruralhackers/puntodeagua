@@ -44,10 +44,10 @@ export function Header() {
             )}
             <Button variant="outline" size="sm" asChild>
               <Link
-                to="/dashboard/registros/contadores"
+                to="/dashboard/registros"
                 className="text-xs font-bold no-underline hover:no-underline"
               >
-                Contadores
+                Registros
               </Link>
             </Button>
             {canSeeMore() && (

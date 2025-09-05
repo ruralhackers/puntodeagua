@@ -1,7 +1,7 @@
 import { Decimal } from 'core'
 import { Id } from 'core/value-object/id.ts'
 import type { WaterMeterReadingSchema } from '../schemas/water-meter-reading.schema.ts'
-import type { File } from './file'
+import { File } from './file'
 import type { WaterMeterReadingDto } from './water-meter-reading.dto.ts'
 
 export class WaterMeterReading {
@@ -31,7 +31,7 @@ export class WaterMeterReading {
       Decimal.create(normalizedReading),
       readingDate,
       notes,
-      files || []
+      files ? files.map(file => File.create(file)) : []
     )
   }
 

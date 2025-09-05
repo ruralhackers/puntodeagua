@@ -35,27 +35,26 @@ export default function AnalysisItemCard({
 
   return (
     <Card key={dto.id} className="bg-white gap-3 py-4">
-      <CardHeader>
-        <Link href={`/dashboard/registros/analiticas/${dto.id}`} className="block">
-          <CardTitle className="text-base">
-            {toTitle(dto.analysisType)}
-            {alert && (
-              <span aria-hidden="true" className="inline-flex align-middle ml-1 text-red-600">
-                ⚠️
-              </span>
-            )}
-          </CardTitle>
-          <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
-          <CardAction>
-            <span className="text-gray-400">›</span>
-          </CardAction>
-        </Link>
-      </CardHeader>
+      {showDetails && (
+        <CardHeader>
+          <Link href={`/dashboard/registros/analiticas/${dto.id}`} className="block">
+            <CardTitle className="text-base">
+              {toTitle(dto.analysisType)}
+              {alert && (
+                <span aria-hidden="true" className="inline-flex align-middle ml-1 text-red-600">
+                  ⚠️
+                </span>
+              )}
+            </CardTitle>
+            <CardDescription>{formatDate(dto.analyzedAt)}</CardDescription>
+          </Link>
+        </CardHeader>
+      )}
 
       <CardContent className="pt-0 pb-2 space-y-1">
-        <div className="text-sm text-gray-600">
-          Zona: {zoneById.get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
-        </div>
+        {/* <div className="text-sm text-gray-600">
+          Zona: {zoneById .get(dto.waterZoneId) ?? `Zona #${dto.waterZoneId}`}
+        </div> */}
         {/* Información extra solo en detailed */}
         {showDetails && (
           <div className="text-sm text-gray-600 mt-1">

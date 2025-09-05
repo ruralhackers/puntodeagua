@@ -1,13 +1,17 @@
-import {IssueDto, WaterZone} from "features";
+import { IssueDto, WaterZone } from 'features'
 import { Button } from '@/components/ui/button'
 
 type IssueItemCardProps = {
-  dto: IssueDto,
-  waterZoneName: string,
+  dto: IssueDto
+  waterZoneName: string
   variant?: 'simple' | 'detailed'
 }
 
-export default function IssueItemCard({ dto, waterZoneName, variant = 'detailed' }: IssueItemCardProps) {
+export default function IssueItemCard({
+  dto,
+  waterZoneName,
+  variant = 'detailed'
+}: IssueItemCardProps) {
   const showDetails = variant === 'detailed'
 
   return (
@@ -20,17 +24,17 @@ export default function IssueItemCard({ dto, waterZoneName, variant = 'detailed'
             </div>
 
             <div className="grid grid-cols-1 gap-2 text-sm text-gray-600 mb-3">
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <span className="font-medium">Zona:</span>
                 <span>{waterZoneName}</span>
-              </div>
+              </div> */}
 
               {showDetails && (
                 <>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <span className="font-medium">Punto de agua:</span>
                     <span>Red Distribución Este</span>
-                  </div>
+                  </div> */}
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Fecha reporte:</span>
                     <span>2024-06-10</span>

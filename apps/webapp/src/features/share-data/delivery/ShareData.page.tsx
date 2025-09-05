@@ -14,34 +14,42 @@ interface ShareDataPageProps {
 
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
   const { analyses, issues, maintenance } = summaryData
-  console.log(summaryData)
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold tracking-tight mb-1">
         Resumen de analíticas, incidencias y mantenimiento
       </h1>
       <p className="text-sm text-muted-foreground">
-        Ordenado por fecha, de más reciente a más antigua
+        Ordenado por categoría y fecha, de más reciente a más antigua
       </p>
       <div>
         {/* marcar aquellos que necesiten un documento */}
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold mb-2">Analíticas</h2>
-          {analyses.map((item) => (
-            <AnalysisItemCard key={item.id} variant="detailed" dto={item} />
-          ))}
+          <h2 className="text-lg font-semibold mb-2 mt-2">Analíticas</h2>
+          {analyses.length > 0 ? (
+            analyses.map((item) => <AnalysisItemCard key={item.id} variant="detailed" dto={item} />)
+          ) : (
+            <p className="text-sm text-gray-500">No hay analíticas registradas</p>
+          )}
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Mantenimiento</h2>
-          {maintenance.map((item) => (
-            <MaintenanceItemCard key={item.id} variant="simple" dto={item} />
-          ))}
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold mb-2 mt-2">Mantenimiento</h2>
+          {maintenance.length > 0 ? (
+            maintenance.map((item) => (
+              <MaintenanceItemCard key={item.id} dto={item} variant="simple" />
+            ))
+          ) : (
+            <p className="text-sm text-gray-500">No hay mantenimientos registrados</p>
+          )}
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Incidencias</h2>
-          {issues.map((item) => (
-            <IssueItemCard key={item.id} variant="simple" />
-          ))}
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold mb-2 mt-2">Incidencias</h2>
+          {issues.length > 0 ? (
+            issues.map((item) => <IssueItemCard key={item.id} dto={item} variant="simple" />)
+          ) : (
+            <p className="text-sm text-gray-500">No hay incidencias registradas</p>
+          )}
         </div>
       </div>
     </div>

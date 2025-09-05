@@ -23,6 +23,7 @@ import { AnalysisApiRestRepository } from '../../features/analysis/infrastructur
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
 import { ServerAuthHttpClient } from '../../features/auth/infrastructure/server-auth-http-client'
+import { GetHolderQry } from '../../features/holder/application/get-holder.qry'
 import { GetHoldersQry } from '../../features/holder/application/get-holders.qry'
 import { HolderApiRestRepository } from '../../features/holder/infrastructure/holder.api-rest-repository'
 import { CreateMaintenanceCmd } from '../../features/maintenance/application/create-maintenance.cmd'
@@ -34,6 +35,7 @@ import { GetUsersQry } from '../../features/user/application/get-users.qry'
 import { UserApiRestRepository } from '../../features/user/infrastructure/user.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
 import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
+import { GetWaterPointQry } from '../../features/water-point/application/get-water-point.qry'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
 import {
@@ -79,8 +81,14 @@ export class WebappContainer extends CoreContainer {
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
 
+    const getWaterPointQry = new GetWaterPointQry(waterPointApiRestRepository)
+    this.register(GetWaterPointQry.ID, getWaterPointQry)
+
     const getHoldersQry = new GetHoldersQry(holderApiRestRepository)
     this.register(GetHoldersQry.ID, getHoldersQry)
+
+    const getHolderQry = new GetHolderQry(holderApiRestRepository)
+    this.register(GetHolderQry.ID, getHolderQry)
 
     const waterMeterApiRestRepository = new WaterMeterApiRestRepository(serverAuthHttpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)

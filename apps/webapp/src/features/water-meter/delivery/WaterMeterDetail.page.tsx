@@ -1,6 +1,6 @@
 'use client'
 
-import type { WaterMeterDto } from 'features'
+import type { HolderDto, WaterMeterDto, WaterPointDto } from 'features'
 import { AlertTriangle, ArrowLeft, Camera, Droplets, Edit, Plus, Save, X } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
@@ -21,11 +21,15 @@ import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
 interface WaterMeterDetailPageProps {
   waterMeter: WaterMeterDto
   waterMeterId: string
+  holder?: HolderDto
+  waterPoint?: WaterPointDto
 }
 
 export default function WaterMeterDetailPage({
   waterMeter: initialWaterMeter,
-  waterMeterId
+  waterMeterId,
+  holder,
+  waterPoint
 }: WaterMeterDetailPageProps) {
   const [waterMeter, setWaterMeter] = useState<WaterMeterDto>(initialWaterMeter)
   const [isEditing, setIsEditing] = useState(false)
@@ -137,7 +141,7 @@ export default function WaterMeterDetailPage({
               <Link href={`/dashboard/nuevo-registro/contador/${waterMeterId}`}>
                 <Button className="whitespace-nowrap hover:cursor-pointer">
                   <Plus className="h-4 w-4 mr-2" />
-                  Crear Medida
+                  Nueva Lectura
                 </Button>
               </Link>
               <Button onClick={handleEdit} className="whitespace-nowrap hover:cursor-pointer">
@@ -286,12 +290,53 @@ export default function WaterMeterDetailPage({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="holderId">ID del Titular</Label>
-                <div className="p-2 bg-muted rounded font-mono text-sm">
-                  {displayData?.holderId}
-                </div>
+                <Label htmlFor="holderId">Titular</Label>
+                {holder ? (
+                  <div className="p-3 bg-muted rounded">
+                    <p className="font-medium">{holder.name}</p>
+                    <p className="text-sm text-muted-foreground">DNI: {holder.nationalId}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ref. Catastral: {holder.cadastralReference}
+                    </p>
+                    {holder.description && (
+                      <p className="text-sm text-muted-foreground mt-1">{holder.description}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-2 bg-muted rounded font-mono text-sm">
+                    {displayData?.holderId}
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">
-                  Identificador del titular del contador
+                  {holder
+                    ? 'Información del titular del contador'
+                    : 'Identificador del titular del contador'}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="waterPointId">Punto de Agua</Label>
+                {waterPoint ? (
+                  <div className="p-3 bg-muted rounded">
+                    <p className="font-medium">{waterPoint.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ubicación: {waterPoint.location}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Población: {waterPoint.fixedPopulation + waterPoint.floatingPopulation}{' '}
+                      personas
+                    </p>
+                    {waterPoint.description && (
+                      <p className="text-sm text-muted-foreground mt-1">{waterPoint.description}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-2 bg-muted rounded font-mono text-sm">
+                    {displayData?.waterPointId}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {waterPoint ? 'Información del punto de agua' : 'Identificador del punto de agua'}
                 </p>
               </div>
             </div>

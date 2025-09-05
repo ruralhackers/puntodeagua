@@ -16,6 +16,7 @@ export const holdersApiRest = authMiddleware(new Elysia())
     return holders.map((x) => x.toDto())
   })
   .get('/holders/:id', async ({ params, set }) => {
+    console.log('entra ids', { params })
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const holder = await useCaseService.execute(GetHolderQry, { id: params.id })
     return holder ? holder.toDto() : { error: 'Holder not found' }

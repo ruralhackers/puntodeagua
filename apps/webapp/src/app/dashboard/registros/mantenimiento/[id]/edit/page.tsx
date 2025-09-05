@@ -1,4 +1,5 @@
 import { UseCaseService } from 'core'
+import { WaterZone } from 'features/entities/water-zone'
 import type { NextPage } from 'next'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetMaintenanceQry } from '@/src/features/maintenance/application/get-maintenance.qry'
@@ -16,7 +17,7 @@ const Page: NextPage = async ({ params }: { params: Promise<{ id: string }> }) =
     return <div>Maintenance not found</div>
   }
 
-  const waterZone = waterZones.find((wz) => wz.id.equals(maintenance.waterZoneId))
+  const waterZone = waterZones.find((wz: WaterZone) => wz.id.equals(maintenance.waterZoneId))
   if (!waterZone) {
     return <div>Water zone not found</div>
   }

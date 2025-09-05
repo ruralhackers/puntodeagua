@@ -20,6 +20,7 @@ import { useGetWaterMeter } from '@/src/features/water-meter/hooks/use-get-water
 import { useUpdateWaterMeter } from '@/src/features/water-meter/hooks/use-update-water-meter'
 import { useGetWaterZones } from '@/src/features/water-zone/hooks/use-get-water-zones'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 interface WaterMeterDetailPageProps {
   waterMeter: WaterMeterDto
@@ -125,22 +126,8 @@ export default function WaterMeterDetailPage({
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 min-w-0">
-          <Link href="/dashboard/contadores">
-            <Button variant="outline" size="sm" className="whitespace-nowrap">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver
-            </Button>
-          </Link>
-          <div className="min-w-0">
-            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight truncate">
-              {displayData?.name}
-            </h1>
-            <p className="text-muted-foreground text-sm lg:text-base">
-              Detalles del contador • ID: {displayData?.id}
-            </p>
-          </div>
-        </div>
+        <PageHeader title={displayData?.name} subtitle={`Detalles del contador • ID: ${displayData?.id}`} subtitleClassName="text-muted-foreground text-sm lg:text-base" />
+
         <div className="flex gap-2 flex-shrink-0">
           {isEditing ? (
             <>

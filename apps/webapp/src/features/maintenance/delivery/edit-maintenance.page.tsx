@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { EditMaintenanceCmd } from '../application/edit-maintenance.cmd'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 type FormValues = z.infer<typeof maintenanceSchema>
 
@@ -46,32 +47,7 @@ export const EditMaintenancePage: NextPage<{
 
   return (
     <div className="px-3 py-4 pb-20">
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          aria-label="Volver"
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg
-            aria-hidden="true"
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Editar Mantenimiento</h1>
-          <p className="text-gray-600">Actualiza los datos del mantenimiento</p>
-        </div>
-      </div>
+      <PageHeader title="Editar mantenimiento" subtitle="Actualiza los datos del mantenimiento" />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

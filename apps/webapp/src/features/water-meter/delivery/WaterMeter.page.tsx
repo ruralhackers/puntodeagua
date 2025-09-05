@@ -1,6 +1,6 @@
 'use client'
 import type { HolderDto, WaterMeterDto, WaterPointDto, WaterZoneDto } from 'features'
-import { ArrowLeft, Droplets, Filter, Plus, Search, Upload } from 'lucide-react'
+import { Droplets, Filter, Plus, Search, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import WaterMeterCard from './components/WaterMeterCard'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 type Props = {
   waterMeters: WaterMeterDto[]
@@ -62,23 +63,11 @@ export default function WaterMeterPage({
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="mb-4">
-        <Button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <Link href={'/dashboard'}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-      </div>
+      <PageHeader title="Contadores" subtitle={cardTo === 'detail'
+              ? 'Gestiona los contadores y puntos de agua de la comunidad'
+              : 'Selecciona un contador para registrar una nueva lectura'} />
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight truncate">Contadores</h1>
-          <p className="text-muted-foreground">
-            {cardTo === 'detail'
-              ? 'Gestiona los contadores y puntos de agua de la comunidad'
-              : 'Selecciona un contador para registrar una nueva lectura'}
-          </p>
-        </div>
         {cardTo === 'detail' && (
           <div className="flex gap-2 flex-shrink-0 hover:cursor-pointer">
             <Button

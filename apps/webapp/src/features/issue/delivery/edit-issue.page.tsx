@@ -12,7 +12,7 @@ import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
-import { Link } from "@/components/ui/link";
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 export const EditIssuePage: NextPage<{
   id: string
@@ -57,36 +57,7 @@ export const EditIssuePage: NextPage<{
 
   return (
     <div className="px-3 py-4 pb-20">
-      <div className="mb-6">
-        <div className="mb-4">
-          <Link
-            to="/dashboard/registros/incidencias"
-            type="invisible"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
-          >
-              <span className="p-2 hover:bg-gray-100 rounded-lg">
-                <svg
-                  aria-hidden="true"
-                  focusable="false"
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </span>
-            <span className="text-sm">Volver</span>
-          </Link>
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900">Editar Incidencia</h1>
-        <p className="text-gray-600">Modifica los datos de la incidencia</p>
-      </div>
+      <PageHeader title="Editar incidencia" subtitle="Modifica los datos de la incidencia" />
 
       <Form {...form}>
         <IssueForm

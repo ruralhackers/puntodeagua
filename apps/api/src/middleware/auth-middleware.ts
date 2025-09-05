@@ -1,7 +1,5 @@
 import jwt from '@elysiajs/jwt'
-import type { Elysia } from 'elysia'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+import { Elysia } from 'elysia'
 
 interface JwtPayload {
   userId: string
@@ -10,40 +8,56 @@ interface JwtPayload {
   communityId: string | null
 }
 
-export const authMiddleware = <T extends string>(app: Elysia<T>) =>
-  app
-    .use(jwt({ name: 'jwt', secret: JWT_SECRET }))
-    .derive({ as: 'scoped' }, async ({ headers, jwt, set }) => {
-      const authHeader = headers.authorization
-      if (!authHeader) {
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+
+export const authMiddleware = new Elysia({ name: 'auth/middleware' })
+  .use(jwt({ name: 'jwt', secret: JWT_SECRET }))
+  .derive(async ({ headers, jwt, set }) => {
+    console.log('middleware')
+    console.log({ headers, jwt })
+    const authHeader = headers.authorization
+    if (!authHeader) {
+      set.status = 401
+      return { error: 'Authorization header required' }
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    if (!token) {
+      set.status = 401
+      return { error: 'Bearer token required' }
+    }
+
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload) {
         set.status = 401
-        throw new Error('Authorization header required')
+        return { error: 'Invalid token' }
       }
 
-      const token = authHeader.replace('Bearer ', '')
-      if (!token) {
+      const jwtPayload = payload as unknown as JwtPayload
+      if (!jwtPayload.userId || !jwtPayload.email) {
         set.status = 401
-        throw new Error('Bearer token required')
+        return { error: 'Invalid token payload' }
       }
 
-      try {
-        const payload = await jwt.verify(token)
-        if (!payload) {
-          set.status = 401
-          throw new Error('Invalid token')
-        }
-
-        const jwtPayload = payload as unknown as JwtPayload
-        if (!jwtPayload.userId || !jwtPayload.email) {
-          set.status = 401
-          throw new Error('Invalid token payload')
-        }
-
-        return {
-          user: jwtPayload as JwtPayload
-        }
-      } catch (error) {
-        set.status = 401
-        throw new Error('Invalid or expired token')
+      return {
+        user: jwtPayload
       }
-    })
+    } catch (error) {
+      set.status = 401
+      return { error: 'Invalid or expired token' }
+    }
+  })
+
+function isExcludedEndpoint(path: string, method: string): boolean {
+  if (method === 'OPTIONS') {
+    return true
+  }
+  if (path === '/api/auth/login') {
+    return true
+  }
+  if (path === '/api/summary') {
+    return true
+  }
+  return false
+}

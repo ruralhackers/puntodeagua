@@ -17,19 +17,6 @@ import { authMiddleware } from './middleware/auth-middleware'
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000
 const WEBAPP_ORIGIN = process.env.WEBAPP_ORIGIN || 'http://localhost:3000'
 
-const publicApi = new Elysia().use(authApiRest).use(summaryApiRest)
-
-const privateApi = authMiddleware(new Elysia())
-  .use(waterPointApiRest)
-  .use(waterZonesApiRest)
-  .use(maintenanceApiRest)
-  .use(analysisApiRest)
-  .use(waterMeterApiRest)
-  .use(issueApiRest)
-  .use(waterMeterReadingApiRest)
-  .use(userApiRest)
-  .use(holderApiRest)
-
 export const app = new Elysia({ prefix: '/api' })
   .use(swagger())
   .use(
@@ -40,8 +27,20 @@ export const app = new Elysia({ prefix: '/api' })
       allowedHeaders: ['Content-Type', 'Authorization']
     })
   )
-  .use(publicApi)
-  .use(privateApi)
+  //  Public API
+  .use(authApiRest)
+  .use(summaryApiRest)
+  .use(authMiddleware)
+  //  Private API
+  .use(waterPointApiRest)
+  .use(waterZonesApiRest)
+  .use(maintenanceApiRest)
+  .use(analysisApiRest)
+  .use(waterMeterApiRest)
+  .use(issueApiRest)
+  .use(waterMeterReadingApiRest)
+  .use(userApiRest)
+  .use(holderApiRest)
   .listen(PORT)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

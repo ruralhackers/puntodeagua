@@ -1,7 +1,6 @@
 import { UseCaseService } from 'core'
 import { Elysia, t } from 'elysia'
 import { apiContainer } from '../../../../api.container'
-import { authMiddleware } from '../../../../middleware/auth-middleware'
 import { CreateUserCmd } from '../application/create-user.cmd'
 import { DeleteUserCmd } from '../application/delete-user.cmd'
 import { GetUsersQry } from '../application/get-users.qry'
@@ -14,9 +13,11 @@ const createUserSchema = t.Object({
   communityId: t.Optional(t.Union([t.String(), t.Null()]))
 })
 
-export const userApiRest = authMiddleware(new Elysia({ prefix: '/users' }))
+export const userApiRest = new Elysia({ prefix: '/users' })
   .get('/', async ({ user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+
+    console.log('hit')
 
     const filters = {
       requestingUserId: user.userId,

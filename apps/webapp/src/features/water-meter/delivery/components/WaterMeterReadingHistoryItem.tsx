@@ -41,10 +41,15 @@ export default function WaterMeterReadingHistoryItem({
 
   return (
     <div className="flex gap-4">
-      <p>{item.readingDate.toLocaleString()}</p>
-      <p>Consumo en litros</p>
-      <p>{item.consumption}</p>
-      <p>Señal de advertencia si sobrepasa límite</p>
+      <p>{JSON.stringify(item)}</p>
+
+      <p>{new Date(item.readingDate).toLocaleDateString('es-ES')}</p>
+      <div className="flex items-center gap-2">
+        <p>Consumo: {item.consumption} l.</p>
+        {item['excess-consumption'] && (
+          <span className="text-red-600 text-sm font-medium">⚠️ Exceso</span>
+        )}
+      </div>
       <div className="flex gap-2">
         <Button variant="outline" size="sm">
           Editar

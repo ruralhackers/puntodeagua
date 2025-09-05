@@ -9,6 +9,7 @@ interface ShareDataPageProps {
 
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
   const { analyses, issues, maintenance } = summaryData
+  console.log(summaryData.issues)
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold tracking-tight mb-1">
@@ -19,22 +20,22 @@ export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
       </p>
       <div>
         {/* marcar aquellos que necesiten un documento */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold mb-2">Analíticas</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold mb-2 mt-2">Analíticas</h2>
           {analyses.map((item) => (
             <AnalysisItemCard key={item.id} variant="detailed" dto={item} />
           ))}
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Mantenimiento</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold mb-2 mt-2">Mantenimiento</h2>
           {maintenance.map((item) => (
             <MaintenanceItemCard key={item.id} variant="simple" dto={item} />
           ))}
         </div>
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Incidencias</h2>
+        <h2 className="text-lg font-semibold mb-2 mt-2">Incidencias</h2>
+        <div className="flex flex-col gap-2">
           {issues.map((item) => (
-            <IssueItemCard key={item.id} variant="simple" />
+            <IssueItemCard key={item.id} variant="simple" dto={item} />
           ))}
         </div>
       </div>

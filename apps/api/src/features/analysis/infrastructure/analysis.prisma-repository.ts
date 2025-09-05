@@ -42,6 +42,21 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
     return entityDtos.map((c) => Analysis.fromDto(this.fromPrismaPayload(c)))
   }
 
+  async findAllOrderedByAnalyzedAt(startDate?: Date, endDate?: Date): Promise<Analysis[]> {
+    const where = startDate && endDate ? {
+      analyzedAt: {
+        gte: startDate,
+        lt: endDate
+      }
+    } : undefined
+
+    const entityDtos = await this.getModel().findMany({
+      where,
+      orderBy: { analyzedAt: 'asc' }
+    })
+    return entityDtos.map((c) => Analysis.fromDto(this.fromPrismaPayload(c)))
+  }
+
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
   }

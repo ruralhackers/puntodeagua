@@ -23,6 +23,7 @@ import { EditAnalysisCmd } from './features/analysis/application/edit-analysis.c
 import { GetAnalysesQry } from './features/analysis/application/get-analyses.qry'
 import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry'
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
+import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
 import { CreateHolderCmd } from './features/holder/application/create-holder.cmd'
@@ -143,6 +144,10 @@ export class ApiContainer extends CoreContainer {
     this.register(GetMaintenanceQry.ID, getMaintenanceQry)
     const saveMaintenanceCmd = new SaveMaintenanceCmd(maintenanceRepository)
     this.register(SaveMaintenanceCmd.ID, saveMaintenanceCmd)
+
+    // Summary
+    const getSummaryQry = new GetSummaryQry(analysisRepository, issuePrismaRepository, maintenanceRepository)
+    this.register(GetSummaryQry.ID, getSummaryQry)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

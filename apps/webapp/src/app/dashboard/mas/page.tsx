@@ -25,6 +25,13 @@ export default function MasPage() {
       color: 'text-emerald-600'
     },
     {
+      title: 'Comparte tus registros',
+      description: 'Comparte analíticas, incidencias y mantenimientos',
+      icon: '📖',
+      href: '/share-data',
+      color: 'text-emerald-600'
+    },
+    {
       title: 'Crear Recordatorio',
       description: 'Programa recordatorios para registros',
       href: '/dashboard/recordatorios/nuevo',

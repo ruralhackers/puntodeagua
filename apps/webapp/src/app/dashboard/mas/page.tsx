@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Droplets, Store, Users } from 'lucide-react'
+import { Store } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MasPage() {
@@ -20,9 +20,8 @@ export default function MasPage() {
     {
       title: 'Proveedores',
       description: 'Gestiona los proveedores del sistema',
-      icon: Store,
-      href: '/dashboard/proveedores',
-      color: 'text-emerald-600'
+      icon: <Store className="w-5 h-5 text-emerald-600" />,
+      href: '/dashboard/proveedores'
     },
     {
       title: 'Crear Recordatorio',

@@ -1,6 +1,11 @@
 import type { Id } from 'core'
 import type { PrismaClient } from 'database'
-import { BasePrismaRepository, WaterPoint, type WaterPointRepository } from 'features'
+import {
+  BasePrismaRepository,
+  type GetWaterPointsFiltersDto,
+  WaterPoint,
+  type WaterPointRepository
+} from 'features'
 
 export class WaterPointPrismaRepository
   extends BasePrismaRepository
@@ -44,5 +49,38 @@ export class WaterPointPrismaRepository
 
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
+  }
+
+  async findWithFilters(filters: GetWaterPointsFiltersDto): Promise<WaterPoint[]> {
+    const where: {
+      communityId?: string
+      name?: { contains: string; mode: 'insensitive' }
+    } = {}
+
+    if (filters.communityId) {
+      where.communityId = filters.communityId
+    }
+
+    if (filters.name) {
+      where.name = {
+        contains: filters.name,
+        mode: 'insensitive'
+      }
+    }
+
+    const waterPoints = await this.getModel().findMany({
+      where,
+      include: {
+        community: true,
+        waterMeters: {
+          include: {
+            holder: true,
+            waterZone: true
+          }
+        }
+      }
+    })
+
+    return waterPoints.map((wp) => WaterPoint.fromDto(wp))
   }
 }

@@ -1,17 +1,17 @@
 import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
-import { getWaterPointsFiltersSchema } from 'features'
+import { getHoldersFiltersSchema } from 'features'
 import { apiContainer } from '../../../api.container'
 import { authMiddleware } from '../../../middleware/auth.middleware'
-import { GetWaterPointsQry } from '../application/get-water-points.qry'
+import { GetHoldersQry } from '../application/get-holders.qry'
 
-export const waterPointApiRest = authMiddleware(new Elysia()).get(
-  '/water-points',
+export const holderApiRest = authMiddleware(new Elysia()).get(
+  '/holders',
   async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     // Parse and validate query parameters
-    const filters = getWaterPointsFiltersSchema.parse(query)
+    const filters = getHoldersFiltersSchema.parse(query)
 
     // Add community filter for non-super-admin users
     if (!user || 'error' in user) {
@@ -30,7 +30,7 @@ export const waterPointApiRest = authMiddleware(new Elysia()).get(
       filters.communityId = authenticatedUser.communityId
     }
 
-    const waterPoints = await useCaseService.execute(GetWaterPointsQry, filters)
-    return waterPoints.map((x) => x.toDto())
+    const holders = await useCaseService.execute(GetHoldersQry, filters)
+    return holders.map((x) => x.toDto())
   }
 )

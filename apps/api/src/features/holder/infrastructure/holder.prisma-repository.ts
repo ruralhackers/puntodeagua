@@ -1,6 +1,11 @@
 import type { Id } from 'core'
 import type { PrismaClient } from 'database'
-import { BasePrismaRepository, Holder, type HolderRepository } from 'features'
+import {
+  BasePrismaRepository,
+  type GetHoldersFiltersDto,
+  Holder,
+  type HolderRepository
+} from 'features'
 
 export class HolderPrismaRepository extends BasePrismaRepository implements HolderRepository {
   protected readonly model = 'holder'
@@ -40,5 +45,54 @@ export class HolderPrismaRepository extends BasePrismaRepository implements Hold
 
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
+  }
+
+  async findWithFilters(filters: GetHoldersFiltersDto): Promise<Holder[]> {
+    const where: {
+      name?: { contains: string; mode: 'insensitive' }
+      nationalId?: { contains: string; mode: 'insensitive' }
+      waterMeters?: { some: { waterZone: { communityId: string } } }
+    } = {}
+
+    if (filters.name) {
+      where.name = {
+        contains: filters.name,
+        mode: 'insensitive'
+      }
+    }
+
+    if (filters.nationalId) {
+      where.nationalId = {
+        contains: filters.nationalId,
+        mode: 'insensitive'
+      }
+    }
+
+    if (filters.communityId) {
+      where.waterMeters = {
+        some: {
+          waterZone: {
+            communityId: filters.communityId
+          }
+        }
+      }
+    }
+
+    const holders = await this.getModel().findMany({
+      where,
+      include: {
+        waterMeters: {
+          include: {
+            waterZone: {
+              include: {
+                community: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    return holders.map((h) => Holder.fromDto(h))
   }
 }

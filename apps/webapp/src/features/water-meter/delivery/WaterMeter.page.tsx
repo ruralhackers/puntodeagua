@@ -1,5 +1,5 @@
 'use client'
-import type { WaterMeterDto, WaterZoneDto } from 'features'
+import type { HolderDto, WaterMeterDto, WaterPointDto, WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
@@ -17,13 +17,17 @@ import WaterMeterCard from './components/WaterMeterCard'
 type Props = {
   waterMeters: WaterMeterDto[]
   waterZones: WaterZoneDto[]
+  holders: HolderDto[]
+  waterPoints: WaterPointDto[]
 }
 
-export default function WaterMeterPage({ waterMeters, waterZones }: Props) {
+export default function WaterMeterPage({ waterMeters, waterZones, holders, waterPoints }: Props) {
   const zoneFilterId = useId()
   const nameFilterId = useId()
   const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
+
+  console.log({ holders, waterPoints })
 
   // Filter water meters based on selected zone and name
   const filteredWaterMeters = waterMeters.filter((meter) => {

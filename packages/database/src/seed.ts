@@ -40,6 +40,11 @@ async function deleteAll() {
   await prisma.waterPoint.deleteMany({})
   await prisma.waterZone.deleteMany({})
   await prisma.issue.deleteMany({})
+  await prisma.holder.deleteMany({})
+  await prisma.analysis.deleteMany({})
+  await prisma.maintenance.deleteMany({})
+  await prisma.community.deleteMany({})
+  await prisma.plan.deleteMany({})
 }
 
 async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {

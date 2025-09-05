@@ -1,6 +1,6 @@
 import type { HttpClient } from 'core'
 import type { AuthRepository } from 'features/repositories/auth.repository'
-import type { LoginDto, AuthResponseDto } from '../../auth/schemas/auth.schema'
+import type { AuthResponseDto, LoginDto } from '../../auth/schemas/auth.schema'
 
 export class AuthApiRestRepository implements AuthRepository {
   constructor(private readonly httpClient: HttpClient) {}

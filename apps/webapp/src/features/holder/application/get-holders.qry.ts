@@ -3,9 +3,11 @@ import type { GetHoldersFiltersDto, Holder, HolderRepository } from 'features'
 
 export class GetHoldersQry implements Query<Holder[], GetHoldersFiltersDto> {
   static readonly ID = 'GetHoldersQry'
-  constructor(private readonly repo: HolderRepository) {}
+
+  constructor(private readonly holderRepository: HolderRepository) {}
 
   async handle(filters: GetHoldersFiltersDto = {}): Promise<Holder[]> {
-    return this.repo.findWithFilters(filters)
+    const holders = await this.holderRepository.findWithFilters(filters)
+    return holders
   }
 }

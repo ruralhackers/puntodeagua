@@ -256,7 +256,7 @@ export default function WaterMeterDetailPage({
                   <Input
                     id={nameInputId}
                     value={editData?.name || ''}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
                   />
                 ) : (
                   <div className="p-2 bg-muted rounded">{displayData?.name}</div>
@@ -268,7 +268,7 @@ export default function WaterMeterDetailPage({
                 {isEditing ? (
                   <Select
                     value={editData?.measurementUnit || MeasurementUnit.L.toString()}
-                    onValueChange={(value) => handleInputChange('measurementUnit', value)}
+                    onValueChange={(value: string) => handleInputChange('measurementUnit', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona la unidad" />
@@ -299,7 +299,7 @@ export default function WaterMeterDetailPage({
                 {isEditing ? (
                   <Select
                     value={editData?.waterZoneId || ''}
-                    onValueChange={(value) => {
+                    onValueChange={(value: string) => {
                       const selectedZone = waterZones?.find(
                         (zone: any) => zone.id.toString() === value
                       )

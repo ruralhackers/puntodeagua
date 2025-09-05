@@ -21,16 +21,6 @@ interface UserData {
   image: string | null
 }
 
-interface UsersResponse {
-  users: UserData[]
-  statistics: {
-    total: number
-    active: number
-    administrators: number
-    operators: number
-  }
-}
-
 export function UsersPage() {
   const router = useRouter()
   const { user, token, isLoading: authLoading } = useAuth()
@@ -94,7 +84,7 @@ export function UsersPage() {
   }
 
   const filteredUsuarios = usersData.users.filter(
-    (usuario) =>
+    (usuario: UserData) =>
       usuario.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       false ||
       usuario.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -126,7 +116,7 @@ export function UsersPage() {
         <Input
           placeholder="Buscar usuarios..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
           className="pl-10"
         />
       </div>
@@ -165,7 +155,7 @@ export function UsersPage() {
 
       {/* Lista de usuarios */}
       <div className="space-y-3">
-        {filteredUsuarios.map((usuario) => (
+        {filteredUsuarios.map((usuario: UserData) => (
           <Card key={usuario.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { MaintenanceSchema, WaterZoneDto } from 'features'
-import { WaterZone } from 'features/entities/water-zone'
+import type { WaterZone } from 'features/entities/water-zone'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
@@ -267,7 +267,7 @@ export const EditMaintenancePage: NextPage<{
                           type="number"
                           placeholder="Ej. 2"
                           value={field.value ?? ''}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(e.target.value ? Number(e.target.value) : undefined)
                           }
                         />

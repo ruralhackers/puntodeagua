@@ -1,5 +1,5 @@
 import { UseCaseService } from 'core'
-import { Pencil, Trash2, Phone, FileText } from 'lucide-react'
+import { FileText, Pencil, Phone, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Page } from '@/src/core/components/page'

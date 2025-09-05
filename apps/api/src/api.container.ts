@@ -40,6 +40,7 @@ import { GetMaintenanceQry } from './features/maintenance/application/get-mainte
 import { GetMaintenancesQry } from './features/maintenance/application/get-maintenances.qry'
 import { SaveMaintenanceCmd } from './features/maintenance/application/save-maintenance.cmd'
 import { MaintenancePrismaRepository } from './features/maintenance/infrastructure/maintenance.prisma-repository'
+import { GetRegistrosStatsQry } from './features/registros/application/get-registros-stats.qry'
 import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { CreateUserCmd } from './features/user/application/create-user.cmd'
 import { DeleteUserCmd } from './features/user/application/delete-user.cmd'
@@ -156,6 +157,10 @@ export class ApiContainer extends CoreContainer {
       maintenanceRepository
     )
     this.register(GetSummaryQry.ID, getSummaryQry)
+
+    // Registros Stats
+    const getRegistrosStatsQry = new GetRegistrosStatsQry(client)
+    this.register(GetRegistrosStatsQry.ID, getRegistrosStatsQry)
 
     // Storage and File Upload Services
     const r2Adapter = new CloudflareR2Adapter({

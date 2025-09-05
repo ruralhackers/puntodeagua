@@ -1,8 +1,12 @@
-'use client'
-
+import { UseCaseService } from 'core'
 import { Link } from '@/components/ui/link'
+import { webAppContainer } from '@/src/core/di/webapp.container'
+import { GetRegistrosStatsQry } from '@/src/features/registros/application/get-registros-stats.qry'
 
-export default function RegistrosPage() {
+export default async function RegistrosPage() {
+  // Execute use case - the repository will handle API authentication automatically
+  const service = webAppContainer.get<UseCaseService>(UseCaseService.ID)
+  const stats = await service.execute(GetRegistrosStatsQry)
   const categorias = [
     {
       id: 'contadores',
@@ -27,7 +31,7 @@ export default function RegistrosPage() {
       ),
       color: 'bg-white border-gray-200 hover:bg-gray-50 shadow-sm',
       iconColor: 'text-purple-600',
-      count: 100
+      count: stats.contadores
     },
     {
       id: 'analiticas',
@@ -52,7 +56,7 @@ export default function RegistrosPage() {
       ),
       color: 'bg-white border-gray-200 hover:bg-gray-50 shadow-sm',
       iconColor: 'text-green-600',
-      count: 28
+      count: stats.analiticas
     },
     {
       id: 'incidencias',
@@ -77,7 +81,7 @@ export default function RegistrosPage() {
       ),
       color: 'bg-white border-gray-200 hover:bg-gray-50 shadow-sm',
       iconColor: 'text-red-600',
-      count: 15
+      count: stats.incidencias
     },
     {
       id: 'mantenimiento',
@@ -108,7 +112,7 @@ export default function RegistrosPage() {
       ),
       color: 'bg-white border-gray-200 hover:bg-gray-50 shadow-sm',
       iconColor: 'text-orange-600',
-      count: 22
+      count: stats.mantenimientos
     }
   ]
 

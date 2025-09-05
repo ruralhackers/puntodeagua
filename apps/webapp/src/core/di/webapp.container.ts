@@ -31,6 +31,8 @@ import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-
 import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
 import { GetMaintenancesQry } from '../../features/maintenance/application/get-maintenances.qry'
 import { MaintenanceApiRestRepository } from '../../features/maintenance/infrastructure/maintenance.api-rest-repository'
+import { GetRegistrosStatsQry } from '../../features/registros/application/get-registros-stats.qry'
+import { RegistrosStatsApiRestRepository } from '../../features/registros/infrastructure/registros-stats.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
 import { UserApiRestRepository } from '../../features/user/infrastructure/user.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
@@ -164,6 +166,11 @@ export class WebappContainer extends CoreContainer {
     this.register(CreateMaintenanceCmd.ID, createMaintenanceCmd)
     const editMaintenanceCmd = new EditMaintenanceCmd(maintenanceRepository)
     this.register(EditMaintenanceCmd.ID, editMaintenanceCmd)
+
+    // registros stats
+    const registrosStatsRepository = new RegistrosStatsApiRestRepository(serverAuthHttpClient)
+    const getRegistrosStatsQry = new GetRegistrosStatsQry(registrosStatsRepository)
+    this.register(GetRegistrosStatsQry.ID, getRegistrosStatsQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

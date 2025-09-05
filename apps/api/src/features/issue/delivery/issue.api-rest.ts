@@ -5,12 +5,11 @@ import { IssueStatusType } from 'features/issues/value-objects/issue-status-type
 import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import { GetIssueByIdQry } from 'webapp/src/features/issue/application/get-issue-by-id.qry'
 import { apiContainer } from '../../../api.container'
-import { authMiddleware } from '../../../middleware/auth.middleware'
 import { GetIssuesQry } from '../application/get-issues.qry'
 import { SaveIssueCmd } from '../application/save-issue.cmd'
 import type { IssueApiRepository } from '../domain/issue.api-repository'
 
-export const issueApiRest = authMiddleware(new Elysia())
+export const issueApiRest = new Elysia()
   .get('/issues/', async ({ query }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
@@ -44,6 +43,7 @@ export const issueApiRest = authMiddleware(new Elysia())
   })
   .post('/issues/', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    console.log({ body })
     const dto = createIssueSchema.parse(body)
     await useCaseService.execute(SaveIssueCmd, dto)
   })

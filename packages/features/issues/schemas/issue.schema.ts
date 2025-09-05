@@ -10,6 +10,17 @@ export const issueSchema = z.object({
   reporterName: z.string(),
   status: z.string(),
   startAt: z.iso.datetime(),
-  endAt: z.iso.datetime().optional(),
+  endAt: z.union([z.iso.datetime(), z.literal('')]).optional(),
   waterZoneId: idSchema
-})
+}).refine(
+  (data) => {
+    if (data.status === 'closed') {
+      return data.endAt !== undefined && data.endAt !== null
+    }
+    return true
+  },
+  {
+    message: 'Fecha de resolución es requerida cuando el estado es cerrado',
+    path: ['endAt']
+  }
+)

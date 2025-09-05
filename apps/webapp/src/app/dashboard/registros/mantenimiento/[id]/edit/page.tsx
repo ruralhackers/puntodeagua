@@ -1,12 +1,11 @@
 import { UseCaseService } from 'core'
 import { WaterZone } from 'features/entities/water-zone'
-import type { NextPage } from 'next'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetMaintenanceQry } from '@/src/features/maintenance/application/get-maintenance.qry'
 import { EditMaintenancePage } from '@/src/features/maintenance/delivery/edit-maintenance.page'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 
-const Page: NextPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params
   const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
 

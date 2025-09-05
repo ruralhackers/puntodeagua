@@ -3,10 +3,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { WaterZoneDto } from 'features'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
-import { WaterZone } from 'features/entities/water-zone'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
-import { useForm, type ControllerRenderProps } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -129,7 +128,7 @@ export const CreateMaintenancePage: NextPage<{
                               ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
                               : ''
                           }
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(
                               e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
                             )
@@ -178,11 +177,13 @@ export const CreateMaintenancePage: NextPage<{
                         <select
                           required
                           value={field.value}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            field.onChange(e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona la zona</option>
-                          {(waterZones ?? []).map((z: WaterZone) => (
+                          {(waterZones ?? []).map((z) => (
                             <option key={z.id.toString()} value={z.id.toString()}>
                               {z.name}
                             </option>

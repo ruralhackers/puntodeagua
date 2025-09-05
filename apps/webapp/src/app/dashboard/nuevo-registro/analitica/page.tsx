@@ -1,12 +1,14 @@
+import { UseCaseService } from 'core'
 import type { NextPage } from 'next'
-import { getUseCase } from '@/src/core/use-cases/get-use-case'
+import { webAppContainer } from '@/src/core/di/webapp.container'
 import { CreateAnalysisPage } from '@/src/features/analysis/delivery/create-analysis.page'
 import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
-import { WaterZone } from 'features/entities/water-zone'
 
 const Page: NextPage = async () => {
-  const getWaterZonesQry = getUseCase(GetWaterZonesQry)
-  const waterZones = await getWaterZonesQry.execute()
-  return <CreateAnalysisPage waterZones={waterZones.map((x: WaterZone) => x.toDto())} />
+  const waterZones = await webAppContainer
+    .get<UseCaseService>(UseCaseService.ID)
+    .execute(GetWaterZonesQry)
+  return <CreateAnalysisPage waterZones={waterZones.map((x) => x.toDto())} />
 }
+
 export default Page

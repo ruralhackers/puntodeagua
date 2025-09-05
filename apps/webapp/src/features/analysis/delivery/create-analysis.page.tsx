@@ -24,12 +24,10 @@ import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
 
 export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ waterZones }) => {
-  console.log('CreateAnalysisPage', waterZones)
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
   const createAnalysisSchema = analysisSchema.omit({ id: true })
 
-  type FormFieldType = ControllerRenderProps<z.infer<typeof createAnalysisSchema>, any>
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -44,6 +42,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
       chlorine: ''
     }
   })
+
   const selectedType = form.watch('analysisType')
   const analysisTypeId = useId()
   const analysisParams = useMemo(() => {
@@ -102,20 +101,20 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Zona de Agua</FormLabel>
                       <FormControl>
                         <select
                           required
                           value={field.value}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona una zona</option>
                           {(waterZones ?? []).map((z) => (
-                            <option key={(z as any).id.toString()} value={(z as any).id.toString()}>
-                              {(z as any).name}
+                            <option key={z.id} value={z.id.toString()}>
+                              {z.name}
                             </option>
                           ))}
                         </select>
@@ -131,7 +130,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="analyst"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Analista</FormLabel>
                       <FormControl>
@@ -149,7 +148,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="analyzedAt"
-                  render={({ field }: { field: FormFieldType }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
@@ -162,7 +161,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                               ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
                               : ''
                           }
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(
                               e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
                             )
@@ -188,7 +187,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                     id={analysisTypeId}
                     name="analysisType"
                     value={form.getValues('analysisType')}
-                    onChange={(e) => onChangeAnalysisType(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChangeAnalysisType(e.target.value)}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
@@ -207,7 +206,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                   <FormField
                     control={form.control}
                     name={param as keyof z.infer<typeof createAnalysisSchema>}
-                    render={({ field }: { field: FormFieldType }) => (
+                    render={({ field }) => (
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>

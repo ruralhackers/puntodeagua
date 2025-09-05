@@ -1,5 +1,5 @@
 import type { HttpClient, Id } from 'core'
-import type { IssueRepositoryFilters, IssueSchema } from 'features'
+import {Analysis, IssueDto, IssueRepositoryFilters, IssueSchema} from 'features'
 import { Issue } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { IssueCreateRepository } from '@/src/features/issue/domain/issue-create.repository'
@@ -17,7 +17,8 @@ export class IssueApiRestRepository implements IssueCreateRepository {
     }
 
     const issueSchemas = await this.httpClient.get<IssueSchema[]>(endpoint)
-    return issueSchemas.data!.map(Issue.fromDto)
+    if (!issueDtos.data) return []
+    return issueSchemas.data.map(Issue.fromDto)
   }
 
   async findById(id: Id): Promise<Issue | undefined> {

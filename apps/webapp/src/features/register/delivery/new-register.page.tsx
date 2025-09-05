@@ -57,7 +57,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
     } else if (values.registerType === 'maintenance') {
       router.push('/dashboard/nuevo-registro/mantenimiento')
     } else if (values.registerType === 'counter') {
-      router.push('/dashboard/contadores')
+      router.push('/dashboard/registros/contadores')
     } else if (values.registerType === 'issue') {
       router.push('/dashboard/nuevo-registro/incidencia')
     }

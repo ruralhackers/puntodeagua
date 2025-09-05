@@ -1,10 +1,13 @@
+import {IssueDto, WaterZone} from "features";
 import { Button } from '@/components/ui/button'
 
 type IssueItemCardProps = {
+  dto: IssueDto,
+  waterZoneName: string,
   variant?: 'simple' | 'detailed'
 }
 
-export default function IssueItemCard({ variant = 'detailed' }: IssueItemCardProps) {
+export default function IssueItemCard({ dto, waterZoneName, variant = 'detailed' }: IssueItemCardProps) {
   const showDetails = variant === 'detailed'
 
   return (
@@ -13,13 +16,13 @@ export default function IssueItemCard({ variant = 'detailed' }: IssueItemCardPro
         <div className="flex items-start gap-3 flex-1">
           <div className="flex-1">
             <div className="mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">Fuga en tubería principal</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{dto.title}</h3>
             </div>
 
             <div className="grid grid-cols-1 gap-2 text-sm text-gray-600 mb-3">
               <div className="flex items-center gap-2">
-                <span className="font-medium">Ubicación:</span>
-                <span>Calle Principal 3</span>
+                <span className="font-medium">Zona:</span>
+                <span>{waterZoneName}</span>
               </div>
 
               {showDetails && (

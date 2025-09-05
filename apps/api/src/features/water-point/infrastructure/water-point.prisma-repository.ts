@@ -1,6 +1,11 @@
 import type { Id } from 'core'
 import type { PrismaClient } from 'database'
-import { BasePrismaRepository, WaterPoint, type WaterPointRepository } from 'features'
+import {
+  BasePrismaRepository,
+  type GetWaterPointsFiltersDto,
+  WaterPoint,
+  type WaterPointRepository
+} from 'features'
 
 export class WaterPointPrismaRepository
   extends BasePrismaRepository
@@ -13,53 +18,69 @@ export class WaterPointPrismaRepository
 
   async findAll(): Promise<WaterPoint[]> {
     const waterPoints = await this.getModel().findMany()
-    return waterPoints.map((waterPoint) =>
-      WaterPoint.create({
-        ...waterPoint,
-        fixedPopulation: waterPoint.fixedPopulation ?? 0,
-        floatingPopulation: waterPoint.floatingPopulation ?? 0
-      })
-    )
+    return waterPoints.map((wp) => WaterPoint.fromDto(wp))
   }
 
   async findById(id: Id): Promise<WaterPoint | undefined> {
     const wp = await this.getModel().findUniqueOrThrow({ where: { id: id.toString() } })
-    return wp
-      ? WaterPoint.create({
-          ...wp,
-          fixedPopulation: wp.fixedPopulation ?? 0,
-          floatingPopulation: wp.floatingPopulation ?? 0
-        })
-      : undefined
+    return wp ? WaterPoint.fromDto(wp) : undefined
   }
 
   async save(waterPoint: WaterPoint): Promise<void> {
-    const data = {
-      id: waterPoint.id.toString(),
-      communityId: waterPoint.communityId.toString(),
+    const update = {
       name: waterPoint.name,
       location: waterPoint.location.toString(),
-      description: waterPoint.description,
       fixedPopulation: waterPoint.fixedPopulation,
-      floatingPopulation: waterPoint.floatingPopulation
+      floatingPopulation: waterPoint.floatingPopulation,
+      description: waterPoint.description
+    }
+    const create = {
+      ...update,
+      id: waterPoint.id.toString(),
+      communityId: waterPoint.communityId.toString()
     }
 
     await this.getModel().upsert({
       where: { id: waterPoint.id.toString() },
-      create: {
-        ...data
-      },
-      update: {
-        name: data.name,
-        location: data.location,
-        description: data.description,
-        fixedPopulation: data.fixedPopulation,
-        floatingPopulation: data.floatingPopulation
-      }
+      create,
+      update
     })
   }
 
   async delete(id: Id): Promise<void> {
     await this.getModel().delete({ where: { id: id.toString() } })
+  }
+
+  async findWithFilters(filters: GetWaterPointsFiltersDto): Promise<WaterPoint[]> {
+    const where: {
+      communityId?: string
+      name?: { contains: string; mode: 'insensitive' }
+    } = {}
+
+    if (filters.communityId) {
+      where.communityId = filters.communityId
+    }
+
+    if (filters.name) {
+      where.name = {
+        contains: filters.name,
+        mode: 'insensitive'
+      }
+    }
+
+    const waterPoints = await this.getModel().findMany({
+      where,
+      include: {
+        community: true,
+        waterMeters: {
+          include: {
+            holder: true,
+            waterZone: true
+          }
+        }
+      }
+    })
+
+    return waterPoints.map((wp) => WaterPoint.fromDto(wp))
   }
 }

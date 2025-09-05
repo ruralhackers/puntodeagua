@@ -1,17 +1,16 @@
 import cors from '@elysiajs/cors'
-import jwt from '@elysiajs/jwt'
 import swagger from '@elysiajs/swagger'
+import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
-// import { UseCaseService } from 'core'
-import type { UserRepository } from 'features'
 import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
-import { loginSchema } from './features/auth/application/auth.schema'
-import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
+import { holderApiRest } from './features/holder/delivery/holder.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
 import { providersApiRest } from './features/providers/delivery/providers.api-rest'
+import { GetRegistrosStatsQry } from './features/registros/application/get-registros-stats.qry'
+import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { userApiRest } from './features/user/delivery/user.api-rest'
 import { waterMeterApiRest } from './features/water-meter/delivery/water-meter.api-rest'
 import { waterMeterReadingApiRest } from './features/water-meter-reading/delivery/water-meter-reading.api-rest'
@@ -32,12 +31,6 @@ export const app = new Elysia({ prefix: '/api' })
       allowedHeaders: ['Content-Type', 'Authorization']
     })
   )
-  .use(
-    jwt({
-      name: 'jwt',
-      secret: JWT_SECRET
-    })
-  )
   .use(waterPointApiRest)
   .use(waterZonesApiRest)
   .use(maintenanceApiRest)
@@ -47,35 +40,28 @@ export const app = new Elysia({ prefix: '/api' })
   .use(issueApiRest)
   .use(waterMeterReadingApiRest)
   .use(userApiRest)
-  .post('/auth/login', async ({ body, jwt, set }) => {
-    try {
-      const loginDto = loginSchema.parse(body)
-      const authenticateCmd = apiContainer.get<AuthenticateUserCmd>(AuthenticateUserCmd.ID)
+  .get('/summary', async ({ query }) => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
-      // Create a JWT sign function and inject it
-      const jwtSign = async (payload: {
-        userId: string
-        email: string
-        roles: string[]
-        communityId: string | null
-      }) => {
-        return await jwt.sign(payload)
-      }
+    // Parse query parameters if provided
+    const params = {
+      month: query.month ? parseInt(query.month as string) : undefined,
+      year: query.year ? parseInt(query.year as string) : undefined
+    }
 
-      // Create new instance with jwt function
-      const cmdWithJwt = new AuthenticateUserCmd(
-        (authenticateCmd as unknown as { userRepository: UserRepository }).userRepository,
-        jwtSign
-      )
-
-      const result = await cmdWithJwt.handle(loginDto)
-      return result
-    } catch (error) {
-      set.status = 401
-      return { error: error instanceof Error ? error.message : 'Authentication failed' }
+    const summary = await useCaseService.execute(GetSummaryQry, params)
+    return {
+      analyses: summary.analyses.map((x) => x.toDto()),
+      issues: summary.issues.map((x) => x.toDto()),
+      maintenance: summary.maintenance.map((x) => x.toDto())
     }
   })
+  .get('/registros/stats', async () => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    return await useCaseService.execute(GetRegistrosStatsQry)
+  })
   .use(authApiRest)
+  .use(holderApiRest)
   .listen(PORT)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

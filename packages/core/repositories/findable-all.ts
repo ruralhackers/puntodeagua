@@ -1,3 +1,3 @@
-export interface FindableAll<In> {
-  findAll(): Promise<In[]>
+export interface FindableAll<In, Filters = void> {
+  findAll(filters?: Filters): Promise<In[]>
 }

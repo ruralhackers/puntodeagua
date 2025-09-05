@@ -1,4 +1,4 @@
-import { gretch, type GretchResponse } from 'gretchen'
+import { type GretchResponse, gretch } from 'gretchen'
 
 /**
  * HTTP client wrapper that uses Gretchen underneath.

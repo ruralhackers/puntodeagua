@@ -2,10 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { MaintenanceSchema, WaterZoneDto } from 'features'
+import type { WaterZone } from 'features/entities/water-zone'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,6 +25,7 @@ import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-wate
 import { EditMaintenanceCmd } from '../application/edit-maintenance.cmd'
 
 type FormValues = z.infer<typeof maintenanceSchema>
+type FormFieldType = ControllerRenderProps<FormValues, any>
 
 export const EditMaintenancePage: NextPage<{
   maintenance: MaintenanceSchema
@@ -90,7 +92,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Objeto del Mantenimiento</FormLabel>
                       <FormControl>
@@ -113,7 +115,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="scheduledDate"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Fecha de Realización</FormLabel>
                       <FormControl>
@@ -144,7 +146,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="responsible"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Persona/Empresa responsable</FormLabel>
                       <FormControl>
@@ -167,7 +169,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Zona del Mantenimiento</FormLabel>
                       <FormControl>
@@ -178,7 +180,7 @@ export const EditMaintenancePage: NextPage<{
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona la zona</option>
-                          {(waterZones ?? []).map((z) => (
+                          {(waterZones ?? []).map((z: WaterZone) => (
                             <option key={z.id.toString()} value={z.id.toString()}>
                               {z.name}
                             </option>
@@ -197,7 +199,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="executionDate"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Fecha de Ejecución</FormLabel>
                       <FormControl>
@@ -227,7 +229,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="nextMaintenanceDate"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Próxima Fecha de Mantenimiento</FormLabel>
                       <FormControl>
@@ -257,7 +259,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="duration"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Duración (horas)</FormLabel>
                       <FormControl>
@@ -265,7 +267,7 @@ export const EditMaintenancePage: NextPage<{
                           type="number"
                           placeholder="Ej. 2"
                           value={field.value ?? ''}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             field.onChange(e.target.value ? Number(e.target.value) : undefined)
                           }
                         />
@@ -282,7 +284,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Descripción del mantenimiento</FormLabel>
                       <FormControl>
@@ -304,7 +306,7 @@ export const EditMaintenancePage: NextPage<{
                 <FormField
                   control={form.control}
                   name="observations"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Observaciones</FormLabel>
                       <FormControl>
@@ -332,4 +334,3 @@ export const EditMaintenancePage: NextPage<{
     </div>
   )
 }
-

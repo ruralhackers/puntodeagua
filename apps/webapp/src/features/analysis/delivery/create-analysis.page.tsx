@@ -7,7 +7,7 @@ import { AnalysisType } from 'features/registers/value-objects/analysis-type'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useId, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,6 +27,8 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
   const createAnalysisSchema = analysisSchema.omit({ id: true })
+
+  type FormFieldType = ControllerRenderProps<z.infer<typeof createAnalysisSchema>, any>
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -50,6 +52,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
   }, [selectedType])
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
+    console.log('onSubmit', values)
     await createAnalysisCommand.execute(values)
     router.push('/')
   }
@@ -99,7 +102,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="waterZoneId"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Zona de Agua</FormLabel>
                       <FormControl>
@@ -128,7 +131,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="analyst"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Analista</FormLabel>
                       <FormControl>
@@ -146,7 +149,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                 <FormField
                   control={form.control}
                   name="analyzedAt"
-                  render={({ field }) => (
+                  render={({ field }: { field: FormFieldType }) => (
                     <FormItem>
                       <FormLabel>Fecha de análisis</FormLabel>
                       <FormControl>
@@ -204,7 +207,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                   <FormField
                     control={form.control}
                     name={param as keyof z.infer<typeof createAnalysisSchema>}
-                    render={({ field }) => (
+                    render={({ field }: { field: FormFieldType }) => (
                       <FormItem>
                         <FormLabel>{param}</FormLabel>
                         <FormControl>

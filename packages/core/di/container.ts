@@ -29,10 +29,10 @@ export abstract class Container {
    * @param key - The key of the instance to get
    * @returns The instance
    */
-  get<T>(key: string): T {
-    if (!this.instances.has(key)) {
-      throw new Error(`Instance with key '${key}' not found.`)
+  get<T>(key: string | symbol): T {
+    if (!this.instances.has(key.toString())) {
+      throw new Error(`Instance with key '${key.toString()}' not found.`)
     }
-    return this.instances.get(key) as T
+    return this.instances.get(key.toString()) as T
   }
 }

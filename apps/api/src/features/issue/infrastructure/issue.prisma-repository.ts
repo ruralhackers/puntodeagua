@@ -1,9 +1,14 @@
-import type { Id } from 'core'
+import { DateTime, type Id } from 'core'
 import type { Prisma, PrismaClient } from 'database'
-import { BasePrismaRepository, Issue } from 'features'
-import type { IssueRepository } from 'features/issues/repositories/issue.repository'
+import {
+  BasePrismaRepository,
+  Issue,
+  type IssueRepositoryFilters,
+  type IssueSchema
+} from 'features'
+import type { IssueApiRepository } from '../domain/issue.api-repository'
 
-export class IssuePrismaRepository extends BasePrismaRepository implements IssueRepository {
+export class IssuePrismaRepository extends BasePrismaRepository implements IssueApiRepository {
   protected readonly model = 'issue'
   protected getModel(): PrismaClient['issue'] {
     return this.db.issue
@@ -16,8 +21,8 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       reporterName: input.reporterName,
       description: input.description,
       status: input.status.toString(),
-      startAt: input.startAt,
-      endAt: input.endAt
+      startAt: input.startAt.toDate(),
+      endAt: input.endAt ? input.endAt.toDate() : undefined
     }
 
     const create = {
@@ -37,8 +42,31 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     return entityDto ? Issue.fromDto(this.fromPrismaPayload(entityDto)) : undefined
   }
 
-  async findAll(): Promise<Issue[]> {
-    const entityDtos = await this.getModel().findMany()
+  async findAll(filters?: IssueRepositoryFilters): Promise<Issue[]> {
+    const entityDtos = await this.getModel().findMany({
+      where: {
+        ...(filters?.status && { status: filters.status.toString() })
+      },
+      orderBy: { startAt: 'asc' }
+    })
+    return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
+  }
+
+  async findAllOrderedByEndAt(startDate?: Date, endDate?: Date): Promise<Issue[]> {
+    const where =
+      startDate && endDate
+        ? {
+            endAt: {
+              gte: startDate,
+              lt: endDate
+            }
+          }
+        : undefined
+
+    const entityDtos = await this.getModel().findMany({
+      where,
+      orderBy: { endAt: 'asc' }
+    })
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }
 
@@ -46,7 +74,7 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     await this.getModel().delete({ where: { id: id.toString() } })
   }
 
-  private fromPrismaPayload(input: Prisma.IssueGetPayload<true>) {
+  private fromPrismaPayload(input: Prisma.IssueGetPayload<true>): IssueSchema {
     return {
       id: input.id.toString(),
       title: input.title,
@@ -54,8 +82,8 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       reporterName: input.reporterName,
       description: input.description ?? undefined,
       status: input.status,
-      startAt: input.startAt,
-      endAt: input.endAt ?? undefined
+      startAt: DateTime.fromDate(input.startAt).toISO(),
+      endAt: input.endAt ? DateTime.fromDate(input.endAt).toISO() : undefined
     }
   }
 }

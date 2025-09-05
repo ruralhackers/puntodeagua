@@ -1,25 +1,25 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Id } from 'core'
+import { DateTime, Id } from 'core'
 import { Issue, type IssueSchema, issueSchema, type WaterZoneDto } from 'features'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
+import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
+import { Link } from "@/components/ui/link";
 
 export const EditIssuePage: NextPage<{
   id: string
   waterZones: WaterZoneDto[]
 }> = ({ waterZones, id }) => {
   const router = useRouter()
-  const saveIssueCommand = useUseCase(SaveIssueCmd)
+  const editIssueCommand = useUseCase(EditIssueCmd)
   const getIssueByIdQry = useUseCase(GetIssueByIdQry)
 
   const form = useForm<IssueSchema>({
@@ -28,7 +28,8 @@ export const EditIssuePage: NextPage<{
       title: '',
       waterZoneId: '',
       description: '',
-      startAt: new Date(),
+      startAt: DateTime.fromNow().toISO(),
+      endAt: '',
       reporterName: '',
       status: 'open'
     }
@@ -45,48 +46,46 @@ export const EditIssuePage: NextPage<{
   }, [])
 
   async function onSubmit(values: IssueSchema) {
-    await saveIssueCommand.execute(
+    await editIssueCommand.execute(
       Issue.fromDto({
-        id,
-        title: values.title,
-        description: values.description,
-        reporterName: values.reporterName,
-        startAt: values.startAt,
-        waterZoneId: values.waterZoneId,
-        status: values.status
+        ...values,
+        id
       })
     )
-    router.push('/')
+    router.push('/dashboard/registros/incidencias')
   }
 
   return (
     <div className="px-3 py-4 pb-20">
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            role="img"
-            aria-label="Volver"
+      <div className="mb-6">
+        <div className="mb-4">
+          <Link
+            to="/dashboard/registros/incidencias"
+            type="invisible"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
-            <title>Volver</title>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Editar Incidencia</h1>
-          <p className="text-gray-600">Modifica los datos de la incidencia</p>
+              <span className="p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </span>
+            <span className="text-sm">Volver</span>
+          </Link>
         </div>
+        <h1 className="text-2xl font-bold text-gray-900">Editar Incidencia</h1>
+        <p className="text-gray-600">Modifica los datos de la incidencia</p>
       </div>
 
       <Form {...form}>

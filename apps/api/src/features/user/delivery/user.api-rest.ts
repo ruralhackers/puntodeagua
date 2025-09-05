@@ -14,14 +14,27 @@ const createUserSchema = t.Object({
   communityId: t.Optional(t.Union([t.String(), t.Null()]))
 })
 
+interface AuthenticatedUser {
+  userId: string
+  email: string
+  roles: string[]
+  communityId: string | null
+}
+
 export const userApiRest = authMiddleware(new Elysia())
-  .get('/users', async ({ user }) => {
+  .get('/users', async ({ user, set }) => {
+    if (!user) {
+      set.status = 401
+      return { error: 'User authentication required' }
+    }
+    
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const authenticatedUser = user as AuthenticatedUser
 
     const filters = {
-      requestingUserId: user.userId,
-      requestingUserRoles: user.roles,
-      requestingUserCommunityId: user.communityId
+      requestingUserId: authenticatedUser.userId,
+      requestingUserRoles: authenticatedUser.roles,
+      requestingUserCommunityId: authenticatedUser.communityId
     }
 
     const result = await useCaseService.execute(GetUsersQry, filters)
@@ -29,13 +42,19 @@ export const userApiRest = authMiddleware(new Elysia())
   })
   .post(
     '/users',
-    async ({ body, user }) => {
+    async ({ body, user, set }) => {
+      if (!user) {
+        set.status = 401
+        return { error: 'User authentication required' }
+      }
+      
       const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+      const authenticatedUser = user as AuthenticatedUser
 
       const createUserDto = {
         ...body,
-        requestingUserRoles: user.roles,
-        requestingUserCommunityId: user.communityId
+        requestingUserRoles: authenticatedUser.roles,
+        requestingUserCommunityId: authenticatedUser.communityId
       }
 
       const newUser = await useCaseService.execute(CreateUserCmd, createUserDto)
@@ -45,13 +64,19 @@ export const userApiRest = authMiddleware(new Elysia())
       body: createUserSchema
     }
   )
-  .delete('/users/:id', async ({ params, user }) => {
+  .delete('/users/:id', async ({ params, user, set }) => {
+    if (!user) {
+      set.status = 401
+      return { error: 'User authentication required' }
+    }
+    
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    const authenticatedUser = user as AuthenticatedUser
 
     const deleteUserDto = {
       userIdToDelete: params.id,
-      requestingUserRoles: user.roles,
-      requestingUserCommunityId: user.communityId
+      requestingUserRoles: authenticatedUser.roles,
+      requestingUserCommunityId: authenticatedUser.communityId
     }
 
     await useCaseService.execute(DeleteUserCmd, deleteUserDto)

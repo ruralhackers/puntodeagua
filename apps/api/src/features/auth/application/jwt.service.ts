@@ -1,9 +1,9 @@
-import type { JWTPayload } from '@elysiajs/jwt'
-
-export interface JwtPayload extends JWTPayload {
+export interface JwtPayload {
   userId: string
   email: string
   roles: string[]
+  iat?: number
+  exp?: number
 }
 
 export class JwtService {

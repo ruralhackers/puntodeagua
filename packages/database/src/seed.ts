@@ -41,6 +41,11 @@ async function deleteAll() {
   await prisma.waterPoint.deleteMany({})
   await prisma.waterZone.deleteMany({})
   await prisma.issue.deleteMany({})
+  await prisma.holder.deleteMany({})
+  await prisma.analysis.deleteMany({})
+  await prisma.maintenance.deleteMany({})
+  await prisma.community.deleteMany({})
+  await prisma.plan.deleteMany({})
 }
 
 async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
@@ -202,7 +207,7 @@ async function seedAnalyses() {
   await prisma.analysis.createMany({
     data: [
       {
-        waterZoneId: waterZone?.id,
+        waterZoneId: waterZone!.id,
         analysisType: 'chlorine_ph',
         analyst: 'Rosa',
         analyzedAt: new Date(),
@@ -210,7 +215,7 @@ async function seedAnalyses() {
         chlorine: '0.5'
       },
       {
-        waterZoneId: waterZone?.id,
+        waterZoneId: waterZone!.id,
         analysisType: 'chlorine_ph',
         analyst: 'Pepe',
         analyzedAt: new Date(),
@@ -287,16 +292,28 @@ async function seedProviders() {
 
 const HOLDERS = [
   {
-    name: 'Juan García'
+    name: 'Juan García',
+    nationalId: '12345678A',
+    cadastralReference: 'C123456789',
+    description: 'Propietario de la vivienda'
   },
   {
-    name: 'María López'
+    name: 'María López',
+    nationalId: '23456789B',
+    cadastralReference: 'C234567890',
+    description: 'Propietaria de la vivienda'
   },
   {
-    name: 'Carlos Rodríguez'
+    name: 'Carlos Rodríguez',
+    nationalId: '34567890C',
+    cadastralReference: 'C345678901',
+    description: 'Vive en Brasil, contacta con su prima Sita'
   },
   {
-    name: 'Ana Martínez'
+    name: 'Ana Martínez',
+    nationalId: '45678901D',
+    cadastralReference: 'C456789012',
+    description: 'Propietaria de la vivienda'
   }
 ]
 
@@ -313,33 +330,33 @@ async function seedWaterMeters(waterPointIds: string[]) {
   const waterMeters = [
     {
       name: 'Meter WP1-001',
-      holderId: holders[0].id,
-      waterPointId: waterPointIds[0],
-      waterZoneId: waterZones[0].id, // Os Casas
+      holderId: holders[0]!.id,
+      waterPointId: waterPointIds[0]!,
+      waterZoneId: waterZones[0]!.id, // Os Casas
       measurementUnit: 'L',
       images: ['https://example.com/meter1.jpg', 'https://example.com/meter1_detail.jpg']
     },
     {
       name: 'Meter WP1-002',
-      holderId: holders[1].id,
-      waterPointId: waterPointIds[0],
-      waterZoneId: waterZones[1].id, // Centro
+      holderId: holders[1]!.id,
+      waterPointId: waterPointIds[0]!,
+      waterZoneId: waterZones[1]!.id, // Centro
       measurementUnit: 'M3',
       images: ['https://example.com/meter2.jpg']
     },
     {
       name: 'Meter WP2-001',
-      holderId: holders[2].id,
-      waterPointId: waterPointIds[1],
-      waterZoneId: waterZones[1].id, // Centro
+      holderId: holders[2]!.id,
+      waterPointId: waterPointIds[1]!,
+      waterZoneId: waterZones[1]!.id, // Centro
       measurementUnit: 'L',
       images: []
     },
     {
       name: 'Meter WP2-002',
-      holderId: holders[3].id,
-      waterPointId: waterPointIds[1],
-      waterZoneId: waterZones[2].id, // Ramis
+      holderId: holders[3]!.id,
+      waterPointId: waterPointIds[1]!,
+      waterZoneId: waterZones[2]!.id, // Ramis
       measurementUnit: 'M3',
       images: [
         'https://example.com/meter4.jpg',
@@ -367,7 +384,7 @@ async function seedIssues() {
       reporterName: 'Olga',
       startAt: '2025-09-03T20:05:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0].id
+      waterZoneId: waterZones[0]!.id
     },
     {
       status: 'open',
@@ -376,7 +393,16 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-09-02T09:24:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0].id
+      waterZoneId: waterZones[0]!.id
+    },
+    {
+      status: 'open',
+      title: 'Contador bloqueado en sector Ramis',
+      description: 'El contador principal del sector Ramis no registra consumo desde hace 3 días',
+      reporterName: 'Miguel',
+      startAt: '2025-09-04T14:30:00.000Z',
+      endAt: null,
+      waterZoneId: waterZones[2]!.id
     },
     {
       status: 'closed',
@@ -385,7 +411,7 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-08-25T18:45:00.000Z',
       endAt: '2025-09-03T10:00:00.000Z',
-      waterZoneId: waterZones[1].id
+      waterZoneId: waterZones[1]!.id
     }
   ]
 

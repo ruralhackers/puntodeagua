@@ -2,10 +2,11 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
-// import { AuthHttpClient } from '@/src/features/auth/infrastructure/auth-http-client'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
-import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
+import { GetIssuesQry } from '@/src/features/issue/application/get-issues.qry'
+import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issues.qry'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-rest-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
 import { CreateWaterMeterReadingCmd } from '@/src/features/water-meter-reading/application/create-water-meter-reading.cmd'
@@ -22,6 +23,9 @@ import { AnalysisApiRestRepository } from '../../features/analysis/infrastructur
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
 import { ServerAuthHttpClient } from '../../features/auth/infrastructure/server-auth-http-client'
+import { GetHolderQry } from '../../features/holder/application/get-holder.qry'
+import { GetHoldersQry } from '../../features/holder/application/get-holders.qry'
+import { HolderApiRestRepository } from '../../features/holder/infrastructure/holder.api-rest-repository'
 import { CreateMaintenanceCmd } from '../../features/maintenance/application/create-maintenance.cmd'
 import { EditMaintenanceCmd } from '../../features/maintenance/application/edit-maintenance.cmd'
 import { GetMaintenanceQry } from '../../features/maintenance/application/get-maintenance.qry'
@@ -32,14 +36,18 @@ import { EditProviderCmd } from '../../features/providers/application/edit-provi
 import { GetProviderQry } from '../../features/providers/application/get-provider.qry'
 import { GetProvidersQry } from '../../features/providers/application/get-providers.qry'
 import { ProvidersApiRestRepository } from '../../features/providers/infrastructure/providers.api-rest-repository'
+import { GetRegistrosStatsQry } from '../../features/registros/application/get-registros-stats.qry'
+import { RegistrosStatsApiRestRepository } from '../../features/registros/infrastructure/registros-stats.api-rest-repository'
 import { GetUsersQry } from '../../features/user/application/get-users.qry'
 import { UserApiRestRepository } from '../../features/user/infrastructure/user.api-rest-repository'
 import { GetWaterMetersQry } from '../../features/water-meter/application/get-water-meters.qry'
 import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastructure/water-meter.api-rest-repository'
+import { GetWaterPointQry } from '../../features/water-point/application/get-water-point.qry'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
 import {
   AUTH_REPOSITORY,
+  HOLDER_REPOSITORY,
   ISSUE_REPOSITORY,
   MAINTENANCE_REPOSITORY,
   PROVIDER_REPOSITORY,
@@ -63,14 +71,20 @@ export class WebappContainer extends CoreContainer {
     )
     this.register('ServerAuthHttpClient', serverAuthHttpClient)
 
-    const waterPointApiRestRepository = new WaterPointApiRestRepository(httpClient)
+    // AuthHttpClient is created via useAuthHttpClient hook on client-side
+    // No need to register it in the container as it requires React context
+
+    const waterPointApiRestRepository = new WaterPointApiRestRepository(serverAuthHttpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)
+
+    const holderApiRestRepository = new HolderApiRestRepository(serverAuthHttpClient)
+    this.register(HOLDER_REPOSITORY, holderApiRestRepository)
 
     const issueApiRestRepository = new IssueApiRestRepository(httpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
-    const saveIssueCmd = new SaveIssueCmd(issueApiRestRepository)
-    this.register(SaveIssueCmd.ID, saveIssueCmd)
+    const saveIssueCmd = new EditIssueCmd(issueApiRestRepository)
+    this.register(EditIssueCmd.ID, saveIssueCmd)
 
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
@@ -86,6 +100,14 @@ export class WebappContainer extends CoreContainer {
     this.register(EditProviderCmd.ID, editProviderCmd)
     const getProviderQry = new GetProviderQry(providersApiRestRepository)
     this.register(GetProviderQry.ID, getProviderQry)
+    const getWaterPointQry = new GetWaterPointQry(waterPointApiRestRepository)
+    this.register(GetWaterPointQry.ID, getWaterPointQry)
+
+    const getHoldersQry = new GetHoldersQry(holderApiRestRepository)
+    this.register(GetHoldersQry.ID, getHoldersQry)
+
+    const getHolderQry = new GetHolderQry(holderApiRestRepository)
+    this.register(GetHolderQry.ID, getHolderQry)
 
     const waterMeterApiRestRepository = new WaterMeterApiRestRepository(serverAuthHttpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)
@@ -123,6 +145,12 @@ export class WebappContainer extends CoreContainer {
     const getIssueByIdQry = new GetIssueByIdQry(issueApiRestRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
 
+    const getOpenIssuesQry = new GetOpenIssuesQry(issueApiRestRepository)
+    this.register(GetOpenIssuesQry.ID, getOpenIssuesQry)
+
+    const getIssuesQry = new GetIssuesQry(issueApiRestRepository)
+    this.register(GetIssuesQry.ID, getIssuesQry)
+
     const createIssueCmd = new CreateIssueCmd(issueApiRestRepository)
     this.register(CreateIssueCmd.ID, createIssueCmd)
 
@@ -155,6 +183,11 @@ export class WebappContainer extends CoreContainer {
     this.register(CreateMaintenanceCmd.ID, createMaintenanceCmd)
     const editMaintenanceCmd = new EditMaintenanceCmd(maintenanceRepository)
     this.register(EditMaintenanceCmd.ID, editMaintenanceCmd)
+
+    // registros stats
+    const registrosStatsRepository = new RegistrosStatsApiRestRepository(serverAuthHttpClient)
+    const getRegistrosStatsQry = new GetRegistrosStatsQry(registrosStatsRepository)
+    this.register(GetRegistrosStatsQry.ID, getRegistrosStatsQry)
 
     const middlewares = [
       this.get<Middleware>(LogMiddleware.ID),

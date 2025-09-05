@@ -1,7 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createIssueSchema, Issue, type WaterZoneDto } from 'features'
+import { DateTime } from 'core'
+import { createIssueSchema, type WaterZoneDto } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
@@ -9,8 +10,8 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { IssueForm } from '@/src/features/issue/delivery/issue-form'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
+import { IssueForm } from '@/src/features/issue/delivery/issue-form'
 
 interface CreateIssuePageProps {
   waterZones: WaterZoneDto[]
@@ -26,9 +27,10 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       title: '',
       waterZoneId: '',
       description: '',
-      startAt: new Date(),
+      startAt: DateTime.fromNow().toISO(),
       reporterName: '',
-      status: 'open'
+      status: 'open',
+      endAt: ''
     }
   })
 
@@ -38,6 +40,7 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       description: values.description,
       reporterName: values.reporterName,
       startAt: values.startAt,
+      endAt: values.endAt,
       waterZoneId: values.waterZoneId,
       status: values.status
     })

@@ -1,8 +1,11 @@
+import { DateTime } from 'core'
 import type { IssueSchema, WaterZoneDto } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
+import { CalendarIcon } from 'lucide-react'
 import type { FC } from 'react'
-import type { UseFormReturn } from 'react-hook-form'
+import type { ControllerRenderProps, UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   FormControl,
   FormDescription,
@@ -12,6 +15,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -20,6 +24,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 export const IssueForm: FC<{
   onCancel: () => void
@@ -27,10 +32,16 @@ export const IssueForm: FC<{
   form: UseFormReturn<IssueSchema | CreateIssueSchema>
   waterZones: WaterZoneDto[]
 }> = ({ form, onSubmit, onCancel, waterZones }) => {
+  type FormFieldType = ControllerRenderProps<IssueSchema | CreateIssueSchema, any>
   const selectedStatus = form.watch('status')
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, (x) => {})} className="space-y-8">
+    <form
+      onSubmit={form.handleSubmit(onSubmit, (x) => {
+        console.log(x)
+      })}
+      className="space-y-8"
+    >
       <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-300 pb-3 mb-4">
           📋 Información Básica
@@ -41,10 +52,10 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="waterZoneId"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Zona *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecciona la zona" />
                     </SelectTrigger>
@@ -65,7 +76,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="reporterName"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Persona que firma *</FormLabel>
                   <FormControl>
@@ -87,7 +98,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="title"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Incidencia *</FormLabel>
                   <FormControl>
@@ -109,7 +120,7 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Descripción de la incidencia</FormLabel>
                   <FormControl>
@@ -139,11 +150,11 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="status"
-              render={({ field }) => (
+              render={({ field }: { field: FormFieldType }) => (
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecciona el estado" />
                       </SelectTrigger>
@@ -201,21 +212,43 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="startAt"
-              render={({ field }) => (
-                <FormItem>
+              render={({ field }: { field: FormFieldType }) => (
+                <FormItem className="flex flex-col">
                   <FormLabel>Fecha de apertura *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      placeholder="dd/mm/aaaa"
-                      defaultValue={
-                        field.value
-                          ? new Date(field.value).toISOString().split('T')[0]
-                          : new Date().toISOString().split('T')[0]
-                      }
-                      required
-                    ></Input>
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            DateTime.fromISO(field.value).format('cccc, dd LLL yyyy')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
+                        onSelect={(x: Date | undefined, ...args: any[]) => {
+                          if (x) {
+                            field.onChange(DateTime.fromDate(x).toISO(), ...args)
+                          } else {
+                            field.onChange('', ...args)
+                          }
+                        }}
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription />
                   <FormMessage />
                 </FormItem>
@@ -227,20 +260,45 @@ export const IssueForm: FC<{
             <FormField
               control={form.control}
               name="endAt"
-              render={({ field }) => (
-                <FormItem>
+              render={({ field }: { field: FormFieldType }) => (
+                <FormItem className="flex flex-col">
                   <FormLabel>Fecha de resolución</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="date"
-                      placeholder="dd/mm/aaaa"
-                      defaultValue={
-                        field.value ? new Date(field.value).toISOString().split('T')[0] : ''
-                      }
-                      disabled={selectedStatus === 'closed' ? '' : 'disabled'}
-                      required={selectedStatus === 'open' ? '' : 'required'}
-                    ></Input>
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          disabled={selectedStatus !== 'closed'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            DateTime.fromISO(field.value).format('cccc, dd LLL yyyy')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        disabled={selectedStatus !== 'closed'}
+                        selected={field.value ? DateTime.fromISO(field.value).toDate() : undefined}
+                        onSelect={(x: Date | undefined, ...args: any[]) => {
+                          if (x) {
+                            field.onChange(DateTime.fromDate(x).toISO(), ...args)
+                          } else {
+                            field.onChange('', ...args)
+                          }
+                        }}
+                        captionLayout="dropdown"
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription />
                   <FormMessage />
                 </FormItem>
@@ -314,7 +372,7 @@ export const IssueForm: FC<{
           Cancelar
         </Button>
         <Button className="flex-1" variant="default" type="submit">
-          Reportar Incidencia
+          Guardar
         </Button>
       </div>
     </form>

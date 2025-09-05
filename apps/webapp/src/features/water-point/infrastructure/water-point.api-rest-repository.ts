@@ -1,7 +1,7 @@
 import type { HttpClient, Id } from 'core'
-import type { WaterPointRepository } from 'features'
+import type { GetWaterPointsFiltersDto, WaterPointRepository } from 'features'
 import { WaterPoint } from 'features/entities/water-point'
-import { WaterPointDto } from 'features/entities/water-point.dto'
+import type { WaterPointDto } from 'features/entities/water-point.dto'
 
 export class WaterPointApiRestRepository implements WaterPointRepository {
   constructor(private readonly httpClient: HttpClient) {}
@@ -28,5 +28,22 @@ export class WaterPointApiRestRepository implements WaterPointRepository {
 
   async delete(id: Id): Promise<void> {
     await this.httpClient.delete(`water-points/${id.toString()}`)
+  }
+
+  async findWithFilters(filters: GetWaterPointsFiltersDto): Promise<WaterPoint[]> {
+    const queryParams = new URLSearchParams()
+
+    if (filters.communityId) {
+      queryParams.append('communityId', filters.communityId)
+    }
+    if (filters.name) {
+      queryParams.append('name', filters.name)
+    }
+
+    const response = await this.httpClient.get<WaterPointDto[]>(
+      `water-points?${queryParams.toString()}`
+    )
+    const data = response.data ?? []
+    return data.map(WaterPoint.fromDto)
   }
 }

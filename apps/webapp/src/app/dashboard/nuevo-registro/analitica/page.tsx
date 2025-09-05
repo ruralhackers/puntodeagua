@@ -10,4 +10,5 @@ const Page: NextPage = async () => {
     .execute(GetWaterZonesQry)
   return <CreateAnalysisPage waterZones={waterZones.map((x) => x.toDto())} />
 }
+
 export default Page

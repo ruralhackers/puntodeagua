@@ -1,6 +1,6 @@
-import { Id } from 'core'
-import { PrismaClient } from 'database'
-import { WaterMeterReading, WaterMeterReadingRepository } from 'features'
+import type { Id } from 'core'
+import type { PrismaClient } from 'database'
+import { WaterMeterReading, type WaterMeterReadingRepository } from 'features'
 
 export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepository {
   constructor(private readonly client: PrismaClient) {}

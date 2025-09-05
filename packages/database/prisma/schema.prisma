@@ -52,14 +52,14 @@ model User {
   image         String?
   password      String?
   roles         Json      @default("[]")
-  
+
   // Community relationship (optional for SUPER_ADMIN)
-  community     Community? @relation(fields: [communityId], references: [id])
-  communityId   String?    @map("community_id")
-  
-  accounts      Account[]
-  sessions      Session[]
-  files         File[]    // Relación con archivos subidos por el usuario
+  community   Community? @relation(fields: [communityId], references: [id])
+  communityId String?    @map("community_id")
+
+  accounts Account[]
+  sessions Session[]
+  files    File[] // Relación con archivos subidos por el usuario
 
   @@index([communityId])
 }
@@ -82,7 +82,7 @@ model Plan {
 model Community {
   id   String @id @default(cuid())
   name String
-  
+
   dailyWaterLimitLitersPerPerson Int @default(200) @map("daily_water_limit_liters_per_person")
 
   plan   Plan   @relation(fields: [planId], references: [id])
@@ -103,9 +103,9 @@ model WaterZone {
   community   Community @relation(fields: [communityId], references: [id])
   communityId String    @map("community_id")
 
-  analysis Analysis[]
-  issue Issue[]
-  waterMeters WaterMeter[]
+  analysis     Analysis[]
+  issue        Issue[]
+  waterMeters  WaterMeter[]
   maintenances Maintenance[]
 
   @@index([communityId])
@@ -117,7 +117,7 @@ model WaterPoint {
   location String
 
   description String @default("") @db.Text
-  
+
   fixedPopulation    Int @default(0) @map("fixed_population")
   floatingPopulation Int @default(0) @map("floating_population")
 
@@ -133,8 +133,12 @@ model WaterPoint {
 }
 
 model Holder {
-  id   String @id @default(cuid())
-  name String
+  id                 String @id @default(cuid())
+  name               String
+  nationalId         String @map("national_id")
+  cadastralReference String @map("cadastral_reference")
+
+  description String @default("") @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -143,7 +147,7 @@ model Holder {
 }
 
 model WaterMeter {
-  id String @id @default(cuid())
+  id   String @id @default(cuid())
   name String
 
   holder   Holder @relation(fields: [holderId], references: [id])
@@ -175,8 +179,8 @@ model WaterMeterReading {
   waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
   waterMeterId String     @map("water_meter_id")
 
-  reading           Decimal @db.Decimal(10,3)
-  normalizedReading Decimal @db.Decimal(10,3)
+  reading           Decimal  @db.Decimal(10, 3)
+  normalizedReading Decimal  @db.Decimal(10, 3)
   readingDate       DateTime
   notes             String?
 
@@ -189,26 +193,26 @@ model WaterMeterReading {
 }
 
 model File {
-  id           String   @id @default(cuid())
-  filename     String   // Nombre único del archivo
-  originalName String   // Nombre original del usuario
+  id           String @id @default(cuid())
+  filename     String // Nombre único del archivo
+  originalName String // Nombre original del usuario
   mimeType     String
   size         Int
-  url          String   // URL pública
+  url          String // URL pública
   bucket       String
-  key          String   // Clave en R2
-  
-  entityType   String   // Tipo de entidad (ej: 'water-meter-reading')
-  entityId     String   // ID de la entidad
-  
-  uploadedBy   String   // ID del usuario que subió
-  user         User     @relation(fields: [uploadedBy], references: [id])
-  
+  key          String // Clave en R2
+
+  entityType String // Tipo de entidad (ej: 'water-meter-reading')
+  entityId   String // ID de la entidad
+
+  uploadedBy String // ID del usuario que subió
+  user       User   @relation(fields: [uploadedBy], references: [id])
+
   // Relaciones con entidades que pueden tener archivos
   waterMeterReadings WaterMeterReading[] @relation("WaterMeterReadingFiles")
-  
-  createdAt    DateTime @default(now())
-  
+
+  createdAt DateTime @default(now())
+
   @@index([entityType, entityId])
   @@index([uploadedBy])
 }
@@ -252,22 +256,20 @@ model Analysis {
   @@index([waterZoneId])
 }
 
-
 model Maintenance {
-  id String @id @default(cuid())
-  name String
+  id            String   @id @default(cuid())
+  name          String
   scheduledDate DateTime @map("scheduled_date")
-  responsible String
+  responsible   String
 
   waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
   waterZoneId String    @map("water_zone_id")
 
-
-  executionDate DateTime? @map("execution_date")
-  duration Int?
+  executionDate       DateTime? @map("execution_date")
+  duration            Int?
   nextMaintenanceDate DateTime? @map("next_maintenance_date")
-  description String?
-  observations String?
+  description         String?
+  observations        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -42,18 +42,10 @@ export function Header() {
           <div className="hidden md:flex items-center gap-2">
             <Button variant="outline" size="sm" asChild>
               <Link
-                to="/dashboard/usuarios"
+                to="/dashboard/contadores"
                 className="text-xs font-bold no-underline hover:no-underline"
               >
-                Usuarios
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link
-                to="/dashboard/puntos-agua"
-                className="text-xs font-bold no-underline hover:no-underline"
-              >
-                Puntos de Agua
+                Contadores
               </Link>
             </Button>
             {canSeeMore() && (

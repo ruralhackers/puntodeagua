@@ -1,14 +1,20 @@
-import type { Query } from 'core'
+import { Id, type Query } from 'core'
 import type { WaterMeterRepository } from 'features'
 import type { WaterMeter } from 'features/entities/water-meter'
 
-export class GetWaterMeterQry implements Query<WaterMeter | null, string> {
+interface GetWaterMeterParams {
+  id: string
+  communityId?: string
+}
+
+export class GetWaterMeterQry implements Query<WaterMeter | null, GetWaterMeterParams> {
   static readonly ID = 'GetWaterMeterQry'
 
   constructor(private readonly waterMeterRepository: WaterMeterRepository) {}
 
-  async handle(id: any): Promise<WaterMeter | null> {
-    const result = await this.waterMeterRepository.findById(id)
+  async handle(params: GetWaterMeterParams): Promise<WaterMeter | null> {
+    const id = Id.create(params.id)
+    const result = await this.waterMeterRepository.findById(id, params.communityId)
     return result ?? null
   }
 }

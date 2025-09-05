@@ -36,6 +36,8 @@ export type { WaterZoneRepository } from './repositories/water-zone.repository.t
 export { fileSchema } from './schemas/file.schema.ts'
 export type { GetWaterMetersFiltersDto } from './schemas/get-water-meters-filters.schema'
 export { getWaterMetersFiltersSchema } from './schemas/get-water-meters-filters.schema'
+export type { GetWaterZonesFiltersDto } from './schemas/get-water-zones-filters.schema'
+export { getWaterZonesFiltersSchema } from './schemas/get-water-zones-filters.schema'
 export type { UserRoleSchema, UserSchema } from './schemas/user.schema'
 export { waterMeterReadingSchema } from './schemas/water-meter-reading.schema.ts'
 export { waterZoneSchema } from './schemas/water-zone.schema.ts'

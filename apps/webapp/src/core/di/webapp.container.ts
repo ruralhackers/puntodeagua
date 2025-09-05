@@ -98,7 +98,7 @@ export class WebappContainer extends CoreContainer {
     this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
 
     // water zones
-    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(serverAuthHttpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 

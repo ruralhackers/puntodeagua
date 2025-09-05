@@ -4,5 +4,6 @@ export type GetWaterMetersFiltersDto = z.infer<typeof getWaterMetersFiltersSchem
 
 export const getWaterMetersFiltersSchema = z.object({
   zoneId: z.string().optional(),
-  name: z.string().optional()
+  name: z.string().optional(),
+  communityId: z.string().optional()
 })

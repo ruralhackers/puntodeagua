@@ -1,4 +1,4 @@
-import type { Deletable, FindableAll, FindableById, Savable } from 'core'
+import type { Deletable, FindableAll, FindableById, Id, Savable } from 'core'
 import type { WaterMeter } from '../entities/water-meter'
 import type { GetWaterMetersFiltersDto } from '../schemas/get-water-meters-filters.schema'
 
@@ -8,4 +8,5 @@ export interface WaterMeterRepository
     FindableById<WaterMeter>,
     FindableAll<WaterMeter> {
   findWithFilters(filters: GetWaterMetersFiltersDto): Promise<WaterMeter[]>
+  findById(id: Id, communityId?: string): Promise<WaterMeter | undefined>
 }

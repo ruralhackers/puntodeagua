@@ -1,6 +1,7 @@
 import type { Id } from 'core'
 import type { PrismaClient } from 'database'
 import { BasePrismaRepository, WaterZone, type WaterZoneRepository } from 'features'
+import type { GetWaterZonesFiltersDto } from 'features/schemas/get-water-zones-filters.schema'
 
 export class WaterZonePrismaRepository extends BasePrismaRepository implements WaterZoneRepository {
   protected readonly model = 'waterZone'
@@ -33,6 +34,17 @@ export class WaterZonePrismaRepository extends BasePrismaRepository implements W
 
   async findAll(): Promise<WaterZone[]> {
     const entityDtos = await this.getModel().findMany()
+    return entityDtos.map((e) => WaterZone.fromDto(e))
+  }
+
+  async findWithFilters(filters: GetWaterZonesFiltersDto): Promise<WaterZone[]> {
+    const where: { communityId?: string } = {}
+
+    if (filters.communityId) {
+      where.communityId = filters.communityId
+    }
+
+    const entityDtos = await this.getModel().findMany({ where })
     return entityDtos.map((e) => WaterZone.fromDto(e))
   }
 

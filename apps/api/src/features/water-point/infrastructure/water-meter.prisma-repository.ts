@@ -37,9 +37,18 @@ export class WaterMeterPrismaRepository
     })
   }
 
-  async findById(id: Id): Promise<WaterMeter | undefined> {
+  async findById(id: Id, communityId?: string): Promise<WaterMeter | undefined> {
+    const where: { id: string; waterZone?: { communityId: string } } = { id: id.toString() }
+
+    // Add community filter if provided
+    if (communityId) {
+      where.waterZone = {
+        communityId: communityId
+      }
+    }
+
     const wm = await this.getModel().findUnique({
-      where: { id: id.toString() },
+      where,
       include: {
         waterZone: true,
         waterMeterReadings: {
@@ -61,7 +70,7 @@ export class WaterMeterPrismaRepository
               const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
               consumption = currentValue - previousValue
             }
-            
+
             // Calculate excess-consumption flag
             // Compare current consumption with previous consumption (if exists)
             let excessConsumption = false
@@ -76,7 +85,7 @@ export class WaterMeterPrismaRepository
               }
               excessConsumption = consumption - previousConsumption > 0.1
             }
-            
+
             return {
               id: reading.id,
               readingDate: reading.readingDate,
@@ -91,7 +100,11 @@ export class WaterMeterPrismaRepository
   }
 
   async findWithFilters(filters: GetWaterMetersFiltersDto): Promise<WaterMeter[]> {
-    const where: any = {}
+    const where: {
+      waterZoneId?: string
+      name?: { contains: string; mode: 'insensitive' }
+      waterZone?: { communityId: string }
+    } = {}
 
     if (filters.zoneId) {
       where.waterZoneId = filters.zoneId
@@ -101,6 +114,12 @@ export class WaterMeterPrismaRepository
       where.name = {
         contains: filters.name,
         mode: 'insensitive'
+      }
+    }
+
+    if (filters.communityId) {
+      where.waterZone = {
+        communityId: filters.communityId
       }
     }
 
@@ -130,7 +149,7 @@ export class WaterMeterPrismaRepository
             const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
             consumption = currentValue - previousValue
           }
-          
+
           // Calculate excess-consumption flag
           // Compare current consumption with previous consumption (if exists)
           let excessConsumption = false
@@ -145,7 +164,7 @@ export class WaterMeterPrismaRepository
             }
             excessConsumption = consumption - previousConsumption > 0.1
           }
-          
+
           return {
             id: reading.id,
             readingDate: reading.readingDate,

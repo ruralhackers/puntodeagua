@@ -1,17 +1,14 @@
 import cors from '@elysiajs/cors'
-import jwt from '@elysiajs/jwt'
 import swagger from '@elysiajs/swagger'
 import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
-import type { UserRepository } from 'features'
 import { apiContainer } from './api.container'
 import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
-import { loginSchema } from './features/auth/application/auth.schema'
-import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
 import { holderApiRest } from './features/holder/delivery/holder.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
+import { providersApiRest } from './features/providers/delivery/providers.api-rest'
 import { GetRegistrosStatsQry } from './features/registros/application/get-registros-stats.qry'
 import { GetSummaryQry } from './features/summary/application/get-summary.qry'
 import { userApiRest } from './features/user/delivery/user.api-rest'
@@ -37,6 +34,7 @@ export const app = new Elysia({ prefix: '/api' })
   .use(waterPointApiRest)
   .use(waterZonesApiRest)
   .use(maintenanceApiRest)
+  .use(providersApiRest)
   .use(analysisApiRest)
   .use(waterMeterApiRest)
   .use(issueApiRest)

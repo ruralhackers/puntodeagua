@@ -1,5 +1,5 @@
 'use client'
-import type { Analysis, AnalysisDto, WaterZone, WaterZoneDto } from 'features'
+import type { AnalysisDto, WaterZoneDto } from 'features'
 import {
   AlertTriangle,
   Calendar,

@@ -6,6 +6,7 @@ export interface AuthRepository {
       email: string
       name: string | null
       roles: string[]
+      communityId: string | null
     }
   }>
 }

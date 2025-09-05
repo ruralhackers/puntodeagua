@@ -18,9 +18,11 @@ export default function WaterMeterCard({ meter }: WaterMeterCardProps) {
           </Button>
         </CardTitle>
         {/* Show anomalous consumption warning if needed */}
-        {/* <div className="text-red-600 text-sm">
-          Consumo anómalo (aviso que solo aparece si se sobrepasa el consumo)
-        </div> */}
+        <p>{JSON.stringify(meter.readings[0])}</p>
+        <p>{JSON.stringify(meter.readings[1])}</p>
+        {meter.readings && meter.readings.length > 0 && meter.readings[0]['excess-consumption'] && (
+          <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

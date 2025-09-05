@@ -61,40 +61,29 @@ export class WaterMeterPrismaRepository
       ? WaterMeter.create({
           ...wm,
           waterZoneName: wm.waterZone.name,
-          readings: wm.waterMeterReadings.map((reading, index, arr) => {
-            // Calculate consumption: current reading - previous reading
-            // For the oldest reading (last in desc order), consumption is 0
-            let consumption = 0
-            if (index < arr.length - 1) {
-              const currentValue = parseFloat(reading.normalizedReading.toString())
-              const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
-              consumption = currentValue - previousValue
-            }
+          readings: wm.waterMeterReadings
+            .reverse()
+            .map((reading, index, arr) => {
+              let consumption = 0
+              let excessConsumption = false
 
-            // Calculate excess-consumption flag
-            // Compare current consumption with previous consumption (if exists)
-            let excessConsumption = false
-            if (index > 0 && index < arr.length - 1) {
-              // Get previous reading's consumption (reading at index - 1)
-              const previousReading = arr[index - 1]
-              let previousConsumption = 0
-              if (index - 1 < arr.length - 1) {
-                const prevCurrentValue = parseFloat(previousReading.normalizedReading.toString())
-                const prevPreviousValue = parseFloat(arr[index].normalizedReading.toString())
-                previousConsumption = prevCurrentValue - prevPreviousValue
+              if (index > 0) {
+                const currentValue = parseFloat(reading.normalizedReading.toString())
+                const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
+                consumption = currentValue - previousValue
+                excessConsumption = currentValue > 0
               }
-              excessConsumption = consumption - previousConsumption > 0.1
-            }
 
-            return {
-              id: reading.id,
-              readingDate: reading.readingDate,
-              reading: reading.reading.toString(),
-              normalizedReading: reading.normalizedReading.toString(),
-              consumption,
-              'excess-consumption': excessConsumption
-            }
-          })
+              return {
+                id: reading.id,
+                readingDate: reading.readingDate,
+                reading: reading.reading.toString(),
+                normalizedReading: reading.normalizedReading.toString(),
+                consumption,
+                'excess-consumption': excessConsumption
+              }
+            })
+            .reverse()
         })
       : undefined
   }
@@ -140,40 +129,29 @@ export class WaterMeterPrismaRepository
         waterZoneName: wm.waterZone.name,
         lastReadingValue: wm.waterMeterReadings[0]?.reading?.toString(),
         lastReadingDate: wm.waterMeterReadings[0]?.readingDate,
-        readings: wm.waterMeterReadings.map((reading, index, arr) => {
-          // Calculate consumption: current reading - previous reading
-          // For the oldest reading (last in desc order), consumption is 0
-          let consumption = 0
-          if (index < arr.length - 1) {
-            const currentValue = parseFloat(reading.normalizedReading.toString())
-            const previousValue = parseFloat(arr[index + 1].normalizedReading.toString())
-            consumption = currentValue - previousValue
-          }
+        readings: wm.waterMeterReadings
+          .reverse()
+          .map((reading, index, arr) => {
+            let consumption = 0
+            let excessConsumption = false
 
-          // Calculate excess-consumption flag
-          // Compare current consumption with previous consumption (if exists)
-          let excessConsumption = false
-          if (index > 0 && index < arr.length - 1) {
-            // Get previous reading's consumption (reading at index - 1)
-            const previousReading = arr[index - 1]
-            let previousConsumption = 0
-            if (index - 1 < arr.length - 1) {
-              const prevCurrentValue = parseFloat(previousReading.normalizedReading.toString())
-              const prevPreviousValue = parseFloat(arr[index].normalizedReading.toString())
-              previousConsumption = prevCurrentValue - prevPreviousValue
+            if (index > 0) {
+              const currentValue = parseFloat(reading.normalizedReading.toString())
+              const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
+              consumption = currentValue - previousValue
+              excessConsumption = currentValue > 0
             }
-            excessConsumption = consumption - previousConsumption > 0.1
-          }
 
-          return {
-            id: reading.id,
-            readingDate: reading.readingDate,
-            reading: reading.reading.toString(),
-            normalizedReading: reading.normalizedReading.toString(),
-            consumption,
-            'excess-consumption': excessConsumption
-          }
-        })
+            return {
+              id: reading.id,
+              readingDate: reading.readingDate,
+              reading: reading.reading.toString(),
+              normalizedReading: reading.normalizedReading.toString(),
+              consumption,
+              'excess-consumption': excessConsumption
+            }
+          })
+          .reverse()
       })
     )
   }

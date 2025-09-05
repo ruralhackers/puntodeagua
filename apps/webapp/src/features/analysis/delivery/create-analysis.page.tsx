@@ -111,8 +111,8 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                         >
                           <option value="">Selecciona una zona</option>
                           {(waterZones ?? []).map((z) => (
-                            <option key={(z as any).id.toString()} value={(z as any).id.toString()}>
-                              {(z as any).name}
+                            <option key={z.id} value={z.id.toString()}>
+                              {z.name}
                             </option>
                           ))}
                         </select>

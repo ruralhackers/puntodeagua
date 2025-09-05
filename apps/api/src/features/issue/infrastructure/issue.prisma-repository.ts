@@ -43,8 +43,11 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
   }
 
   async findAll(filters?: IssueRepositoryFilters): Promise<Issue[]> {
-    const where = filters?.status ? { status: filters.status.toString() } : undefined
-    const entityDtos = await this.getModel().findMany({ where })
+    const entityDtos = await this.getModel().findMany({
+      where: {
+        ...(filters?.status && { status: filters.status.toString() })
+      }
+    })
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }
 

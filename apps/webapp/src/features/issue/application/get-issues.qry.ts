@@ -1,5 +1,5 @@
 import type { Query } from 'core'
-import type { Issue, IssueRepositoryFilters } from 'features'
+import type { Issue } from 'features'
 import type { IssueRepository } from 'features/issues/repositories/issue.repository'
 
 export class GetIssuesQry implements Query<Issue[]> {

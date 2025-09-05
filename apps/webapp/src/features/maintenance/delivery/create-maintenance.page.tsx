@@ -55,7 +55,7 @@ export const CreateMaintenancePage: NextPage<{
 
   return (
     <div className="px-3 py-4 pb-20">
-      <PageHeader title="Nuevmo mantenimiento" subtitle="Registra una actividad de mantenimiento" />
+      <PageHeader title="Nuevo mantenimiento" subtitle="Registra una actividad de mantenimiento" />
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

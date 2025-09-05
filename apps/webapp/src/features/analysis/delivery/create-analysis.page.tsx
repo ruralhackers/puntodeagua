@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ waterZones }) => {
   const router = useRouter()
@@ -62,33 +63,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
 
   return (
     <div className="px-3 py-4 pb-20">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          aria-label="Volver"
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg
-            aria-hidden="true"
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Análisis</h1>
-          <p className="text-gray-600">Reporta una nueva análisis o problema</p>
-        </div>
-      </div>
+      <PageHeader title="Nueva analítica" subtitle="Reporta una nueva análisis o problema" />
 
       {/* Formulario */}
       <Form {...form}>

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import WaterMeterCardForReadings from './components/WaterMeterCardForReadings'
 import { getDaysSinceLastReading } from './utils/reading-utils'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 type Props = {
   waterMeters: WaterMeterDto[]
@@ -61,22 +62,7 @@ export default function WaterMeterForReadingsPage({ waterMeters, waterZones, hol
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="mb-4">
-        <Button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <Link href={'/dashboard'}>
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight truncate">Contadores - Lecturas</h1>
-          <p className="text-muted-foreground">
-            Selecciona un contador para registrar una nueva lectura
-          </p>
-        </div>
-      </div>
+      <PageHeader title="Contadores - Lecturas" subtitle="Selecciona un contador para registrar una nueva lectura" />
 
       {/* Barra de búsqueda y filtro */}
       <div className="flex gap-3 items-center">

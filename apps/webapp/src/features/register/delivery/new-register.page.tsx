@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {PageHeader} from "@/src/components/shared-data/page-header";
 
 const registerFormSchema = z.object({
   registerType: z.string().min(1, 'Por favor selecciona un tipo de registro'),
@@ -67,13 +68,7 @@ export const NewRegisterPage: FC<NewRegisterPageProps> = ({ waterZones }) => {
   return (
     <div className="p-4 pb-20">
       <div className="flex items-center gap-3 mb-6">
-        <Button
-          onClick={() => router.back()}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-xl font-semibold">Nuevo Registro</h1>
+        <PageHeader title="Nuevo registro" subtitle="" />
       </div>
 
       <Form {...form}>

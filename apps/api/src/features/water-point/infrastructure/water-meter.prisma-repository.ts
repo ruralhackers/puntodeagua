@@ -50,7 +50,12 @@ export class WaterMeterPrismaRepository
     const wm = await this.getModel().findUnique({
       where,
       include: {
-        waterZone: true,
+        waterZone: {
+          include: {
+            community: true
+          }
+        },
+        waterPoint: true,
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
           take: 8
@@ -71,7 +76,15 @@ export class WaterMeterPrismaRepository
                 const currentValue = parseFloat(reading.normalizedReading.toString())
                 const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
                 consumption = currentValue - previousValue
-                excessConsumption = currentValue > 0
+                
+                const daysBetween = Math.ceil(
+                  (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
+                  (1000 * 60 * 60 * 24)
+                )
+                const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
+                const totalPopulation = wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
+                const totalDailyLimit = dailyLimitPerPerson * totalPopulation
+                excessConsumption = daysBetween > 0 && totalPopulation > 0 && (consumption / daysBetween) > totalDailyLimit
               }
 
               return {
@@ -115,7 +128,12 @@ export class WaterMeterPrismaRepository
     const waterMeters = await this.getModel().findMany({
       where,
       include: {
-        waterZone: true,
+        waterZone: {
+          include: {
+            community: true
+          }
+        },
+        waterPoint: true,
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
           take: 2
@@ -139,7 +157,15 @@ export class WaterMeterPrismaRepository
               const currentValue = parseFloat(reading.normalizedReading.toString())
               const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
               consumption = currentValue - previousValue
-              excessConsumption = currentValue > 0
+              
+              const daysBetween = Math.ceil(
+                (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
+                (1000 * 60 * 60 * 24)
+              )
+              const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
+              const totalPopulation = wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
+              const totalDailyLimit = dailyLimitPerPerson * totalPopulation
+              excessConsumption = daysBetween > 0 && totalPopulation > 0 && (consumption / daysBetween) > totalDailyLimit
             }
 
             return {

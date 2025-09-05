@@ -6,8 +6,8 @@ import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issu
 import { AttentionItem } from './AttentionItem'
 
 export default async function Home() {
-  const service = webAppContainer.get<UseCaseService>(UseCaseService.ID)
-  const openIssues = await service.execute(GetOpenIssuesQry)
+  // const service = webAppContainer.get<UseCaseService>(UseCaseService.ID)
+  // const openIssues = await service.execute(GetOpenIssuesQry)
 
   // const incidenciasAbiertas = openIssues?.map((issue) => ({
   //   id: issue.id.toString(),

@@ -20,26 +20,26 @@ export const authPluginMiddleware = new Elysia({ name: 'auth/jwt' })
       const authHeader = headers.authorization
       if (!authHeader) {
         set.status = 401
-        return { error: 'Authorization header required' }
+        throw new Error('Authorization header required')
       }
 
       const token = authHeader.replace('Bearer ', '')
       if (!token) {
         set.status = 401
-        return { error: 'Bearer token required' }
+        throw new Error('Bearer token required')
       }
 
       try {
         const payload = await jwt.verify(token)
         if (!payload) {
           set.status = 401
-          return { error: 'Invalid token' }
+          throw new Error('Invalid token')
         }
 
         const jwtPayload = payload as unknown as JwtPayload
         if (!jwtPayload.userId || !jwtPayload.email) {
           set.status = 401
-          return { error: 'Invalid token payload' }
+          throw new Error('Invalid token payload')
         }
 
         return {
@@ -47,7 +47,7 @@ export const authPluginMiddleware = new Elysia({ name: 'auth/jwt' })
         }
       } catch (error) {
         set.status = 401
-        return { error: 'Invalid or expired token' }
+        throw new Error('Invalid or expired token')
       }
     }
   )

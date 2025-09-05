@@ -72,7 +72,7 @@ export class WebappContainer extends CoreContainer {
     const holderApiRestRepository = new HolderApiRestRepository(authenticatedHttpClient)
     this.register(HOLDER_REPOSITORY, holderApiRestRepository)
 
-    const issueApiRestRepository = new IssueApiRestRepository(httpClient)
+    const issueApiRestRepository = new IssueApiRestRepository(authenticatedHttpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
     const saveIssueCmd = new EditIssueCmd(issueApiRestRepository)

@@ -2,7 +2,6 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
-// import { AuthHttpClient } from '@/src/features/auth/infrastructure/auth-http-client'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
@@ -56,6 +55,9 @@ export class WebappContainer extends CoreContainer {
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
     )
     this.register('ServerAuthHttpClient', serverAuthHttpClient)
+
+    // AuthHttpClient is created via useAuthHttpClient hook on client-side
+    // No need to register it in the container as it requires React context
 
     const waterPointApiRestRepository = new WaterPointApiRestRepository(httpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)

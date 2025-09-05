@@ -1,4 +1,5 @@
 import type { Command } from 'core'
+import { Id } from 'core'
 import type { WaterMeterReadingApiRestRepository } from '../infrastructure/water-meter-reading.api-rest-repository'
 
 export interface DeleteWaterMeterReadingCommand {
@@ -11,7 +12,6 @@ export class DeleteWaterMeterReadingCmd implements Command<DeleteWaterMeterReadi
   constructor(private readonly waterMeterReadingRepository: WaterMeterReadingApiRestRepository) {}
 
   async handle(command: DeleteWaterMeterReadingCommand): Promise<void> {
-    const { Id } = await import('core')
     const id = Id.create(command.id)
     return await this.waterMeterReadingRepository.delete(id)
   }

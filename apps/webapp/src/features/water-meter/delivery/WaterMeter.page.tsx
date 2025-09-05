@@ -2,7 +2,6 @@
 import type { WaterMeterDto, WaterZoneDto } from 'features'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

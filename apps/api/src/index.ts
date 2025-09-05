@@ -12,7 +12,7 @@ import { waterPointApiRest } from './features/(private)/water-point/delivery/wat
 import { waterZonesApiRest } from './features/(private)/water-zone/delivery/water-zone.api-rest'
 import { authApiRest } from './features/(public)/auth/delivery/auth.api-rest'
 import { summaryApiRest } from './features/(public)/summary/delivery/summary.api-rest'
-import { authMiddleware } from './middleware/auth-middleware'
+import { authPluginMiddleware } from './middleware/auth-middleware'
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000
 const WEBAPP_ORIGIN = process.env.WEBAPP_ORIGIN || 'http://localhost:3000'
@@ -30,7 +30,7 @@ export const app = new Elysia({ prefix: '/api' })
   //  Public API
   .use(authApiRest)
   .use(summaryApiRest)
-  .use(authMiddleware)
+  .use(authPluginMiddleware)
   //  Private API
   .use(waterPointApiRest)
   .use(waterZonesApiRest)

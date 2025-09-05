@@ -9,24 +9,23 @@ import { GetHolderQry } from '../application/get-holder.qry'
 import { GetHoldersQry } from '../application/get-holders.qry'
 
 export const holdersApiRest = new Elysia()
-  .get('/holders', async ({ set }) => {
+  .get('/holders', async () => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const holders = await useCaseService.execute(GetHoldersQry)
     return holders.map((x) => x.toDto())
   })
-  .get('/holders/:id', async ({ params, set }) => {
-    console.log('entra ids', { params })
+  .get('/holders/:id', async ({ params }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const holder = await useCaseService.execute(GetHolderQry, { id: params.id })
     return holder ? holder.toDto() : { error: 'Holder not found' }
   })
-  .post('/holders', async ({ body, set }) => {
+  .post('/holders', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const dto = holderSchema.omit({ id: true }).parse(body)
     await useCaseService.execute(CreateHolderCmd, dto)
     return
   })
-  .post('/holders/:id', async ({ body, params }) => {
+  .post('/holders/:id', async ({ body }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const dto = holderSchema.parse(body)
     await useCaseService.execute(EditHolderCmd, dto)

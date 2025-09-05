@@ -17,7 +17,7 @@ export const userApiRest = new Elysia({ prefix: '/users' })
   .get('/', async ({ user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
-    console.log('hit')
+    console.log({ user })
 
     const filters = {
       requestingUserId: user.userId,

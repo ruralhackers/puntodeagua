@@ -7,14 +7,14 @@ import { AuthenticateUserCmd } from '../application/authenticate-user.cmd'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-export const authApiRest = new Elysia({ prefix: '/auth/login' })
+export const authApiRest = new Elysia({ prefix: '/auth' })
   .use(
     jwt({
       name: 'jwt',
       secret: JWT_SECRET
     })
   )
-  .post('/', async ({ body, jwt, set }) => {
+  .post('/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)
 

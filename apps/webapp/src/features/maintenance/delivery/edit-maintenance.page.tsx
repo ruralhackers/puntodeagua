@@ -20,16 +20,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { EditMaintenanceCmd } from '../application/edit-maintenance.cmd'
 
 type FormValues = z.infer<typeof maintenanceSchema>
 
 export const EditMaintenancePage: NextPage<{
   maintenance: MaintenanceSchema
-  waterZone: WaterZoneDto
   waterZones: WaterZoneDto[]
-}> = ({ maintenance, waterZone, waterZones }) => {
+}> = ({ maintenance, waterZones }) => {
   const router = useRouter()
   const editMaintenanceCommand = useUseCase(EditMaintenanceCmd)
 

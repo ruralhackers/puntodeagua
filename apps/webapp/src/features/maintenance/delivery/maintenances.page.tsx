@@ -64,7 +64,7 @@ export const MaintenancesPage: FC<{ maintenances: Maintenance[] }> = ({ maintena
           {maintenances.map((m) => {
             const dto = m.toDto()
             const status = getStatus(dto.executionDate, dto.scheduledDate)
-            const type = getTypePlaceholder()
+            const type = getTypePlaceholder().label
 
             return <MaintenanceItemCard key={dto.id} dto={dto} status={status} type={type} />
           })}

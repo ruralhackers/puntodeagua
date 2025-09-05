@@ -54,7 +54,7 @@ export const IssueForm: FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Zona *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecciona la zona" />
                     </SelectTrigger>
@@ -153,7 +153,7 @@ export const IssueForm: FC<{
                 <FormItem>
                   <FormLabel>Estado *</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecciona el estado" />
                       </SelectTrigger>

@@ -46,7 +46,8 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     const entityDtos = await this.getModel().findMany({
       where: {
         ...(filters?.status && { status: filters.status.toString() })
-      }
+      },
+      orderBy: { startAt: 'asc' }
     })
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }

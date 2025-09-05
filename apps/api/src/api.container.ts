@@ -8,13 +8,14 @@ import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
   FILE_UPLOAD_SERVICE,
+  HOLDER_REPOSITORY,
+  MAINTENANCE_REPOSITORY,
   STORAGE_SERVICE,
   USER_REPOSITORY,
   WATER_METER_READING_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY,
-  WATER_ZONE_REPOSITORY,
-  MAINTENANCE_REPOSITORY
+  WATER_ZONE_REPOSITORY
 } from './core/di/injection-tokens'
 import { CreateAnalysisCmd } from './features/analysis/application/create-analysis.cmd'
 import { DeleteAnalysisCmd } from './features/analysis/application/delete-analysis.cmd'
@@ -24,6 +25,12 @@ import { GetAnalysisQry } from './features/analysis/application/get-analysis.qry
 import { AnalysisPrismaRepository } from './features/analysis/infrastructure/analysis.prisma-repository'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { UserPrismaRepository } from './features/auth/infrastructure/user.prisma-repository'
+import { CreateHolderCmd } from './features/holder/application/create-holder.cmd'
+import { DeleteHolderCmd } from './features/holder/application/delete-holder.cmd'
+import { EditHolderCmd } from './features/holder/application/edit-holder.cmd'
+import { GetHolderQry } from './features/holder/application/get-holder.qry'
+import { GetHoldersQry } from './features/holder/application/get-holders.qry'
+import { HolderPrismaRepository } from './features/holder/infrastructure/holder.prisma-repository'
 import { GetIssueByIdQry } from './features/issue/application/get-issue-by-id.qry'
 import { SaveIssueCmd } from './features/issue/application/save-issue.cmd'
 import { IssuePrismaRepository } from './features/issue/infrastructure/issue.prisma-repository'
@@ -96,6 +103,20 @@ export class ApiContainer extends CoreContainer {
     this.register(EditAnalysisCmd.ID, editAnalysisCmd)
     const deleteAnalysisCmd = new DeleteAnalysisCmd(analysisRepository)
     this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
+
+    // Holders
+    const holderRepository = new HolderPrismaRepository(client)
+    this.register(HOLDER_REPOSITORY, holderRepository)
+    const getHoldersQry = new GetHoldersQry(holderRepository)
+    this.register(GetHoldersQry.ID, getHoldersQry)
+    const getHolderQry = new GetHolderQry(holderRepository)
+    this.register(GetHolderQry.ID, getHolderQry)
+    const createHolderCmd = new CreateHolderCmd(holderRepository)
+    this.register(CreateHolderCmd.ID, createHolderCmd)
+    const editHolderCmd = new EditHolderCmd(holderRepository)
+    this.register(EditHolderCmd.ID, editHolderCmd)
+    const deleteHolderCmd = new DeleteHolderCmd(holderRepository)
+    this.register(DeleteHolderCmd.ID, deleteHolderCmd)
 
     // WaterZones
     const waterZonePrismaRepository = new WaterZonePrismaRepository(client)

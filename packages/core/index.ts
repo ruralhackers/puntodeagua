@@ -10,6 +10,7 @@ export type { Updatable } from './repositories/updatable.ts'
 // Storage exports
 export * from './storage'
 export { decimalSchema } from './types/decimal.schema.ts'
+export type { Entity } from './types/entity.ts'
 export { idSchema } from './types/id.schema.ts'
 export { locationSchema } from './types/location.schema.ts'
 export { measurementUnitSchema } from './types/measurement-unit.schema.ts'

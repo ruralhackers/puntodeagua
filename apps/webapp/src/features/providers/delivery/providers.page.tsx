@@ -56,7 +56,7 @@ export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
 
                   <div className="flex items-center gap-2 ml-4">
                     <Link
-                      href={`#`}
+                      href={`/dashboard/proveedores/${dto.id}/editar`}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Editar"
                     >

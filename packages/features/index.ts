@@ -21,6 +21,7 @@ export type { MaintenanceRepository } from './maintenance/repositories/maintenan
 export type { MaintenanceSchema } from './maintenance/schemas/maintenance.schema.ts'
 export { Provider } from './providers/entities/provider.ts'
 export type { ProviderRepository } from './providers/repositories/provider.repository.ts'
+export type { ProviderSchema } from './providers/schemas/provider.schema.ts'
 export type { AnalysisDto } from './registers/entities/analysis.dto.ts'
 export { Analysis } from './registers/entities/analysis.ts'
 export type { AnalysisRepository } from './registers/repositories/analysis.repository.ts'

@@ -372,7 +372,7 @@ export const IssueForm: FC<{
           Cancelar
         </Button>
         <Button className="flex-1" variant="default" type="submit">
-          Reportar Incidencia
+          Guardar
         </Button>
       </div>
     </form>

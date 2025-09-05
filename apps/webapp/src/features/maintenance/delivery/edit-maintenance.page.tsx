@@ -2,11 +2,10 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { MaintenanceSchema, WaterZoneDto } from 'features'
-import type { WaterZone } from 'features/entities/water-zone'
 import { maintenanceSchema } from 'features/maintenance/schemas/maintenance.schema'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
-import { type ControllerRenderProps, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,15 +20,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
-import { GetWaterZonesQry } from '@/src/features/water-zone/application/get-water-zones.qry'
 import { EditMaintenanceCmd } from '../application/edit-maintenance.cmd'
 
 type FormValues = z.infer<typeof maintenanceSchema>
 
 export const EditMaintenancePage: NextPage<{
   maintenance: MaintenanceSchema
-  waterZone: WaterZoneDto
-}> = ({ maintenance }) => {
+  waterZones: WaterZoneDto[]
+}> = ({ maintenance, waterZones }) => {
   const router = useRouter()
   const editMaintenanceCommand = useUseCase(EditMaintenanceCmd)
 
@@ -37,15 +35,9 @@ export const EditMaintenancePage: NextPage<{
     resolver: zodResolver(maintenanceSchema),
     defaultValues: {
       ...maintenance,
-      scheduledDate: maintenance.scheduledDate ? new Date(maintenance.scheduledDate) : undefined,
-      executionDate: maintenance.executionDate ? new Date(maintenance.executionDate) : undefined,
-      nextMaintenanceDate: maintenance.nextMaintenanceDate
-        ? new Date(maintenance.nextMaintenanceDate)
-        : undefined
+      scheduledDate: maintenance.scheduledDate ? new Date(maintenance.scheduledDate) : undefined
     }
   })
-
-  const { data: waterZones } = useUseCase(GetWaterZonesQry, { immediate: true })
 
   async function onSubmit(values: FormValues) {
     await editMaintenanceCommand.execute(values)
@@ -175,7 +167,9 @@ export const EditMaintenancePage: NextPage<{
                         <select
                           required
                           value={field.value}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            field.onChange(e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona la zona</option>
@@ -185,91 +179,6 @@ export const EditMaintenancePage: NextPage<{
                             </option>
                           ))}
                         </select>
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* executionDate */}
-              <div>
-                <FormField
-                  control={form.control}
-                  name="executionDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de Ejecución</FormLabel>
-                      <FormControl>
-                        <input
-                          type="date"
-                          value={
-                            field.value
-                              ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
-                              : ''
-                          }
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* nextMaintenanceDate */}
-              <div>
-                <FormField
-                  control={form.control}
-                  name="nextMaintenanceDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Próxima Fecha de Mantenimiento</FormLabel>
-                      <FormControl>
-                        <input
-                          type="date"
-                          value={
-                            field.value
-                              ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
-                              : ''
-                          }
-                          onChange={(e) =>
-                            field.onChange(
-                              e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
-                            )
-                          }
-                        />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* duration */}
-              <div>
-                <FormField
-                  control={form.control}
-                  name="duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Duración (horas)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Ej. 2"
-                          value={field.value ?? ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                          }
-                        />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -292,24 +201,6 @@ export const EditMaintenancePage: NextPage<{
                           placeholder="Describe las actividades realizadas"
                           {...field}
                         />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* observations */}
-              <div>
-                <FormField
-                  control={form.control}
-                  name="observations"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Observaciones</FormLabel>
-                      <FormControl>
-                        <Textarea rows={4} placeholder="Observaciones adicionales" {...field} />
                       </FormControl>
                       <FormDescription />
                       <FormMessage />

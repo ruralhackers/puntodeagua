@@ -21,7 +21,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     return <div>Water zone not found</div>
   }
 
-  return <EditMaintenancePage maintenance={maintenance.toDto()} waterZone={waterZone.toDto()} />
+  return (
+    <EditMaintenancePage
+      maintenance={maintenance.toDto()}
+      waterZones={waterZones.map((wz: WaterZone) => wz.toDto())}
+    />
+  )
 }
 
 export default Page

@@ -1,10 +1,10 @@
 import { UseCaseService } from 'core'
-import { FileText, Pencil, Phone, Trash2 } from 'lucide-react'
+import { FileText, Pencil, Phone } from 'lucide-react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Page } from '@/src/core/components/page'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetProviderQry } from '@/src/features/providers/application/get-provider.qry'
+import { DeleteButton } from '@/src/features/providers/components/delete-button'
 
 const PageComponent = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params
@@ -34,10 +34,7 @@ const PageComponent = async ({ params }: { params: Promise<{ id: string }> }) =>
               <Pencil className="size-4" aria-hidden="true" />
               Editar
             </Link>
-            <Button type="button" variant="ghost" size="sm" disabled>
-              <Trash2 className="size-4 text-red-600" aria-hidden="true" />
-              <span className="sr-only">Eliminar</span>
-            </Button>
+            <DeleteButton id={dto.id} />
           </div>
         </div>
 

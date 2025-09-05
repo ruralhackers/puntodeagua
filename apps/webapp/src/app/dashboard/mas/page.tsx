@@ -1,6 +1,6 @@
 'use client'
 
-import { Calendar, Droplets, Store, Users } from 'lucide-react'
+import { Store } from 'lucide-react'
 import Link from 'next/link'
 
 export default function MasPage() {

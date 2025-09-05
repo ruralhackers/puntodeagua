@@ -3,6 +3,7 @@ import { Elysia } from 'elysia'
 import { providerSchema } from 'features/providers/schemas/provider.schema'
 import { apiContainer } from '../../../api.container'
 import { CreateProviderCmd } from '../application/create-provider.cmd'
+import { DeleteProviderCmd } from '../application/delete-provider.cmd'
 import { GetProviderQry } from '../application/get-provider.qry'
 import { GetProvidersQry } from '../application/get-providers.qry'
 import { SaveProviderCmd } from '../application/save-provider.cmd'
@@ -34,5 +35,10 @@ export const providersApiRest = new Elysia()
     const schema = providerSchema
     const dto = schema.parse(body)
     await useCaseService.execute(SaveProviderCmd, dto)
+    return
+  })
+  .delete('/providers/:id', async ({ params }) => {
+    const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+    await useCaseService.execute(DeleteProviderCmd, Id.create(params.id))
     return
   })

@@ -6,5 +6,5 @@ export interface IssueRepository
   extends Savable<Issue>,
     FindableAll<Issue, IssueRepositoryFilters>,
     FindableById<Issue> {
-  findAllOrderedByEndAt(): Promise<Issue[]>
+  findAllOrderedByEndAt(startDate?: Date, endDate?: Date): Promise<Issue[]>
 }

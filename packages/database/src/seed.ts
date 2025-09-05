@@ -249,16 +249,28 @@ async function seedMaintenances() {
 
 const HOLDERS = [
   {
-    name: 'Juan García'
+    name: 'Juan García',
+    nationalId: '12345678A',
+    cadastralReference: 'C123456789',
+    description: 'Propietario de la vivienda'
   },
   {
-    name: 'María López'
+    name: 'María López',
+    nationalId: '23456789B',
+    cadastralReference: 'C234567890',
+    description: 'Propietaria de la vivienda'
   },
   {
-    name: 'Carlos Rodríguez'
+    name: 'Carlos Rodríguez',
+    nationalId: '34567890C',
+    cadastralReference: 'C345678901',
+    description: 'Vive en Brasil, contacta con su prima Sita'
   },
   {
-    name: 'Ana Martínez'
+    name: 'Ana Martínez',
+    nationalId: '45678901D',
+    cadastralReference: 'C456789012',
+    description: 'Propietaria de la vivienda'
   }
 ]
 

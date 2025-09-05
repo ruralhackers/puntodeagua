@@ -46,9 +46,16 @@ export const app = new Elysia({ prefix: '/api' })
   .use(issueApiRest)
   .use(waterMeterReadingApiRest)
   .use(userApiRest)
-  .get('/summary', async () => {
+  .get('/summary', async ({ query }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    const summary = await useCaseService.execute(GetSummaryQry)
+    
+    // Parse query parameters if provided
+    const params = {
+      month: query.month ? parseInt(query.month as string) : undefined,
+      year: query.year ? parseInt(query.year as string) : undefined
+    }
+    
+    const summary = await useCaseService.execute(GetSummaryQry, params)
     return {
       analyses: summary.analyses.map((x) => x.toDto()),
       issues: summary.issues.map((x) => x.toDto()),

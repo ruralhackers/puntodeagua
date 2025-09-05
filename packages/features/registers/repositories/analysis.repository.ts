@@ -6,5 +6,5 @@ export interface AnalysisRepository
     Deletable<Analysis>,
     FindableById<Analysis>,
     FindableAll<Analysis> {
-  findAllOrderedByAnalyzedAt(): Promise<Analysis[]>
+  findAllOrderedByAnalyzedAt(startDate?: Date, endDate?: Date): Promise<Analysis[]>
 }

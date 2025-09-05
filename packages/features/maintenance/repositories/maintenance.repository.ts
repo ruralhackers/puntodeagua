@@ -9,5 +9,5 @@ export interface MaintenanceRepository
     Deletable<Maintenance>,
     FindableById<Maintenance>,
     FindableAll<Maintenance> {
-  findAllOrderedByExecutionDate(): Promise<Maintenance[]>
+  findAllOrderedByExecutionDate(startDate?: Date, endDate?: Date): Promise<Maintenance[]>
 }

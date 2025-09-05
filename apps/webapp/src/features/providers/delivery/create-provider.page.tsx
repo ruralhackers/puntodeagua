@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { idSchema } from 'core'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
@@ -31,6 +32,7 @@ const createProviderSchema = z.object({
 export const CreateProviderPage: NextPage = () => {
   const router = useRouter()
   const { user } = useAuth()
+  console.log('user', user)
   const createProvider = useUseCase(CreateProviderCmd)
 
   const defaultCommunityId = user?.communityId ?? ''
@@ -45,7 +47,15 @@ export const CreateProviderPage: NextPage = () => {
     }
   })
 
+  // Ensure communityId is set from authenticated user once available
+  useEffect(() => {
+    if (user?.communityId) {
+      form.setValue('communityId', user.communityId, { shouldValidate: true })
+    }
+  }, [user?.communityId, form])
+
   async function onSubmit(values: z.infer<typeof createProviderSchema>) {
+    console.log('values', values)
     await createProvider.execute(values)
     router.push('/dashboard/proveedores')
   }
@@ -84,6 +94,12 @@ export const CreateProviderPage: NextPage = () => {
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
             <div className="grid grid-cols-1 gap-4">
+              {/* Hidden field to keep communityId registered in the form */}
+              <FormField
+                control={form.control}
+                name="communityId"
+                render={({ field }) => <input type="hidden" value={field.value} readOnly />}
+              />
               <FormField
                 control={form.control}
                 name="name"
@@ -135,7 +151,12 @@ export const CreateProviderPage: NextPage = () => {
             <Button className="flex-1" type="button" onClick={() => router.back()}>
               Cancelar
             </Button>
-            <Button className="flex-1" variant="destructive" type="submit">
+            <Button
+              className="flex-1"
+              variant="destructive"
+              type="submit"
+              disabled={!form.getValues('communityId')}
+            >
               Crear Proveedor
             </Button>
           </div>

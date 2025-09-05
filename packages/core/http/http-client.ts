@@ -41,6 +41,7 @@ export class HttpClient {
     const response = await gretch<T>(url, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         ...options?.headers
       },
       ...(data !== undefined && { body: JSON.stringify(data) }),

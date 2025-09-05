@@ -358,6 +358,15 @@ async function seedIssues() {
       waterZoneId: waterZones[0].id
     },
     {
+      status: 'open',
+      title: 'Contador bloqueado en sector Ramis',
+      description: 'El contador principal del sector Ramis no registra consumo desde hace 3 días',
+      reporterName: 'Miguel',
+      startAt: '2025-09-04T14:30:00.000Z',
+      endAt: null,
+      waterZoneId: waterZones[2].id
+    },
+    {
       status: 'closed',
       title: 'Avería en bomba de agua',
       description: 'La bomba principal presenta ruidos anómalos y baja presión',

@@ -1,4 +1,3 @@
-import { DesktopNavbar } from '@/components/navigation/desktop-navbar'
 import { TabBar } from '@/components/navigation/tab-bar'
 import { TabBarProvider } from '@/components/navigation/tab-bar-context'
 import ProtectedRoute from '@/src/features/auth/components/protected-route'

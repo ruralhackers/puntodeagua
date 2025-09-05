@@ -76,15 +76,19 @@ export class WaterMeterPrismaRepository
                 const currentValue = parseFloat(reading.normalizedReading.toString())
                 const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
                 consumption = currentValue - previousValue
-                
+
                 const daysBetween = Math.ceil(
                   (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24)
                 )
                 const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
-                const totalPopulation = wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
+                const totalPopulation =
+                  wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
                 const totalDailyLimit = dailyLimitPerPerson * totalPopulation
-                excessConsumption = daysBetween > 0 && totalPopulation > 0 && (consumption / daysBetween) > totalDailyLimit
+                excessConsumption =
+                  daysBetween > 0 &&
+                  totalPopulation > 0 &&
+                  consumption / daysBetween > totalDailyLimit
               }
 
               return {
@@ -157,15 +161,19 @@ export class WaterMeterPrismaRepository
               const currentValue = parseFloat(reading.normalizedReading.toString())
               const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
               consumption = currentValue - previousValue
-              
+
               const daysBetween = Math.ceil(
                 (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
-                (1000 * 60 * 60 * 24)
+                  (1000 * 60 * 60 * 24)
               )
               const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
-              const totalPopulation = wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
+              const totalPopulation =
+                wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
               const totalDailyLimit = dailyLimitPerPerson * totalPopulation
-              excessConsumption = daysBetween > 0 && totalPopulation > 0 && (consumption / daysBetween) > totalDailyLimit
+              excessConsumption =
+                daysBetween > 0 &&
+                totalPopulation > 0 &&
+                consumption / daysBetween > totalDailyLimit
             }
 
             return {

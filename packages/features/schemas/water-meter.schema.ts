@@ -16,9 +16,13 @@ export const waterMeterSchema = z.object({
   waterZoneName: z.string().optional(),
   lastReadingValue: z.string().optional(),
   lastReadingDate: z.date().optional(),
-  readings: z.array(z.object({
-    readingDate: z.date(),
-    reading: z.string(),
-    normalizedReading: z.string()
-  })).optional()
+  readings: z
+    .array(
+      z.object({
+        readingDate: z.date(),
+        reading: z.string(),
+        normalizedReading: z.string()
+      })
+    )
+    .optional()
 })

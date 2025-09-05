@@ -1,3 +1,4 @@
+import type { AnalysisDto, IssueDto } from 'features'
 import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
 import IssueItemCard from '../../issue/delivery/IssueItemCard'
 import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
@@ -14,7 +15,7 @@ interface ShareDataPageProps {
 
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
   const { analyses, issues, maintenance } = summaryData
-
+  console.log(summaryData)
   return (
     <div>
       <p>Resumen de analíticas, incidencias y mantenimiento</p>
@@ -24,15 +25,17 @@ export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
         <div>
           <p>Analítica</p>
           {/* {iterar por cada una} */}
-          {/* <AnalysisItemCard /> */}
+          {/* <AnalysisItemCard variant="detailed" /> */}
         </div>
         <div>
           <p>Mantenimiento</p>
-          {/* <MaintenanceItemCard /> */}
+          {/* <MaintenanceItemCard variant="simple" /> */}
         </div>
         <div>
           <p>Incidencias</p>
-          <IssueItemCard variant="simple" />
+          {issues.map((issue) => (
+            <IssueItemCard key={issue.id} variant="simple" />
+          ))}
         </div>
       </div>
     </div>

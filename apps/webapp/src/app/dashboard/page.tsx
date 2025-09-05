@@ -13,10 +13,7 @@ export default async function Home() {
     id: issue.id.toString(),
     titulo: issue.title,
     ubicacion: issue.reporterName || 'Sin especificar',
-    fecha:
-      issue.startAt instanceof Date
-        ? issue.startAt.toISOString().split('T')[0]
-        : new Date(issue.startAt).toISOString().split('T')[0]
+    fecha: issue.startAt.format('DD/MM/YYYY')
   }))
 
   const elementosAtencion = incidenciasAbiertas

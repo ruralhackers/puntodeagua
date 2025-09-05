@@ -9,6 +9,7 @@ import { analysisApiRest } from './features/analysis/delivery/analysis.api-rest'
 import { loginSchema } from './features/auth/application/auth.schema'
 import { AuthenticateUserCmd } from './features/auth/application/authenticate-user.cmd'
 import { authApiRest } from './features/auth/delivery/auth.api-rest'
+import { holderApiRest } from './features/holder/delivery/holder.api-rest'
 import { issueApiRest } from './features/issue/delivery/issue.api-rest'
 import { maintenanceApiRest } from './features/maintenance/delivery/maintenance.api-rest'
 import { GetSummaryQry } from './features/summary/application/get-summary.qry'
@@ -57,6 +58,7 @@ export const app = new Elysia({ prefix: '/api' })
     }
   })
   .use(authApiRest)
+  .use(holderApiRest)
   .listen(PORT)
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`)

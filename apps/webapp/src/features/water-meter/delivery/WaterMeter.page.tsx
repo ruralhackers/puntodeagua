@@ -27,7 +27,13 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
   const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
 
-  console.log({ holders, waterPoints })
+  const getHolderById = (holderId: string) => {
+    return holders.find((holder) => holder.id === holderId)
+  }
+
+  const getWaterPointById = (waterPointId: string) => {
+    return waterPoints.find((point) => point.id === waterPointId)
+  }
 
   // Filter water meters based on selected zone and name
   const filteredWaterMeters = waterMeters.filter((meter) => {
@@ -94,7 +100,14 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
             No se encontraron contadores con los filtros aplicados
           </div>
         ) : (
-          filteredWaterMeters.map((meter) => <WaterMeterCard key={meter.id} meter={meter} />)
+          filteredWaterMeters.map((meter) => (
+            <WaterMeterCard
+              key={meter.id}
+              meter={meter}
+              holder={getHolderById(meter.holderId)}
+              waterPoint={getWaterPointById(meter.waterPointId)}
+            />
+          ))
         )}
       </div>
     </div>

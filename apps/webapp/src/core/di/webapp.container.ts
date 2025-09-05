@@ -64,7 +64,7 @@ export class WebappContainer extends CoreContainer {
     // AuthHttpClient is created via useAuthHttpClient hook on client-side
     // No need to register it in the container as it requires React context
 
-    const waterPointApiRestRepository = new WaterPointApiRestRepository(httpClient)
+    const waterPointApiRestRepository = new WaterPointApiRestRepository(serverAuthHttpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)
 
     const holderApiRestRepository = new HolderApiRestRepository(serverAuthHttpClient)

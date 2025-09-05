@@ -17,8 +17,6 @@ const Page = async () => {
     service.execute(GetWaterPointsQry)
   ])
 
-  console.log({ holders, waterPoints, waterMeters, waterZones })
-
   return (
     <WaterMeterPage
       waterMeters={waterMeters.map((meter) => meter.toDto())}

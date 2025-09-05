@@ -1,5 +1,5 @@
 import type { HttpClient, Id } from 'core'
-import { Analysis, Issue, IssueDto, type IssueRepositoryFilters, type IssueSchema } from 'features'
+import { Issue, type IssueRepositoryFilters, type IssueSchema } from 'features'
 import type { CreateIssueSchema } from 'features/issues/schemas/create-issue.schema'
 import type { IssueCreateRepository } from '@/src/features/issue/domain/issue-create.repository'
 

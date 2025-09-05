@@ -1,8 +1,7 @@
 import type { HolderDto, WaterMeterDto, WaterPointDto } from 'features'
-import Link from 'next/link'
+import { Droplets, MapPin, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface WaterMeterCardProps {
   meter: WaterMeterDto
@@ -25,77 +24,59 @@ export default function WaterMeterCard({ meter, holder, waterPoint }: WaterMeter
       ? Number(lastReading.normalizedReading) - Number(secondLastReading.normalizedReading)
       : 0
 
-  // date difference in days
-  const dateDifference =
-    lastReading?.readingDate && secondLastReading?.readingDate
-      ? Math.abs(
-          new Date(lastReading.readingDate).getTime() -
-            new Date(secondLastReading.readingDate).getTime()
-        )
-      : 0
-  const daysDifference = dateDifference / (1000 * 60 * 60 * 24)
-
   const handleCardClick = () => {
-    router.push(`/dashboard/nuevo-registro/contador/${meter.id}`)
+    router.push(`/dashboard/contadores/${meter.id}`)
   }
 
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleCardClick}>
-      <CardHeader className="gap-1">
-        <CardTitle className="flex justify-between items-start">
-          <span>
-            {meter.name} ({meter.waterZoneName})
-          </span>
-          <div className="flex items-center">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="mb-3">
+              <h3 className="font-semibold text-lg truncate">{holder?.name || meter.name}</h3>
+              <p className="text-sm text-muted-foreground">
+                {holder?.nationalId && `DNI: ${holder.nationalId}`}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              {waterPoint?.location && (
+                <div className="flex items-center gap-1 min-w-0">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{waterPoint.location}</span>
+                </div>
+              )}
+              {waterPoint && (
+                <div className="flex items-center gap-1">
+                  <User className="h-4 w-4 flex-shrink-0" />
+                  <span>{waterPoint.fixedPopulation + waterPoint.floatingPopulation} personas</span>
+                </div>
+              )}
+              {meter.readings && meter.readings.length > 0 && (
+                <div className="flex items-center gap-1">
+                  <Droplets className="h-4 w-4 flex-shrink-0" />
+                  <span>{Number(consumption).toFixed(2)} litros</span>
+                </div>
+              )}
+            </div>
+            {meter.readings &&
+              meter.readings.length > 0 &&
+              meter.readings[0]?.['excess-consumption'] && (
+                <div className="text-red-600 text-sm font-medium mt-2">
+                  ⚠️ Consumo anómalo detectado
+                </div>
+              )}
+          </div>
+          <div className="flex items-center flex-shrink-0">
             <svg
               className="w-4 h-4 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
+              <title>Ver detalles</title>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </div>
-        </CardTitle>
-        {meter.readings &&
-          meter.readings.length > 0 &&
-          meter.readings[0]?.['excess-consumption'] && (
-            <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>
-          )}
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {/* Holder Information */}
-          {holder && (
-            <div className="border-b pb-2">
-              <p className="text-sm font-medium text-gray-900">Titular</p>
-              <p className="text-sm text-gray-600">{holder.name}</p>
-            </div>
-          )}
-
-          {/* Water Point Information */}
-          {waterPoint && (
-            <div className="border-b pb-2">
-              <p className="text-sm text-gray-600">{waterPoint.name}</p>
-              <p className="text-xs text-gray-500">{waterPoint.location}</p>
-              <p className="text-xs text-gray-500">
-                Población: {waterPoint.fixedPopulation + waterPoint.floatingPopulation} personas
-              </p>
-            </div>
-          )}
-
-          {/* Reading Information */}
-          <div>
-            <p className="text-sm text-gray-600">
-              {meter.readings && meter.readings.length > 0
-                ? `Último consumo: ${Number(consumption).toFixed(2)} litros en ${Number(daysDifference).toFixed(0)} días`
-                : 'Sin lecturas registradas'}
-            </p>
-            {meter.lastReadingDate && (
-              <p className="text-xs text-gray-500">
-                {new Date(meter.lastReadingDate).toLocaleDateString('es-ES')}
-              </p>
-            )}
           </div>
         </div>
       </CardContent>

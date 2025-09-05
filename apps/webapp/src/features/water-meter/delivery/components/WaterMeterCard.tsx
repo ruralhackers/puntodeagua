@@ -17,9 +17,6 @@ export default function WaterMeterCard({ meter }: WaterMeterCardProps) {
             <Link href={`/dashboard/nuevo-registro/contador/${meter.id}`}>Nueva Lectura</Link>
           </Button>
         </CardTitle>
-        {/* Show anomalous consumption warning if needed */}
-        <p>{JSON.stringify(meter.readings[0])}</p>
-        <p>{JSON.stringify(meter.readings[1])}</p>
         {meter.readings && meter.readings.length > 0 && meter.readings[0]['excess-consumption'] && (
           <div className="text-red-600 text-sm font-medium">⚠️ Consumo anómalo detectado</div>
         )}
@@ -42,7 +39,7 @@ export default function WaterMeterCard({ meter }: WaterMeterCardProps) {
         <div className="flex justify-between items-center w-full">
           <p className="text-sm text-gray-600">{meter.waterZoneName}</p>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/dashboard/contadores/${meter.id}`}>Ver Detalles</Link>
+            <Link href={`/dashboard/registros/contadores/${meter.id}`}>Ver Detalles</Link>
           </Button>
         </div>
       </CardFooter>

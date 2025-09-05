@@ -12,7 +12,15 @@ export class IssueApiRestRepository implements IssueCreateRepository {
   }
 
   async findAll(filters?: IssueRepositoryFilters): Promise<Issue[]> {
-    const issueDtos = await this.httpClient.get<IssueDto[]>('issues')
+    let endpoint = 'issues'
+
+    if (filters?.status) {
+      const searchParams = new URLSearchParams()
+      searchParams.append('status', filters.status.toString())
+      endpoint = `${endpoint}?${searchParams.toString()}`
+    }
+
+    const issueDtos = await this.httpClient.get<IssueDto[]>(endpoint)
     return issueDtos.data!.map(Issue.create)
   }
 

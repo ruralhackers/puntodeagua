@@ -1,4 +1,4 @@
-import { Query } from 'core'
+import type { Query } from 'core'
 import { WaterMeterReading, WaterMeterReadingDto } from 'features'
 
 export class GetWaterMeterReadingsQry implements Query<WaterMeterReadingDto[], void> {

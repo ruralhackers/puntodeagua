@@ -15,9 +15,10 @@ const createUserSchema = t.Object({
 })
 
 export const userApiRest = authMiddleware(new Elysia())
-  .get('/users', async ({ user }) => {
+  .get('/users', async ({ user, set }) => {
     if (!user) {
-      throw new Error('User authentication required')
+      set.status = 401
+      return { error: 'User authentication required' }
     }
     
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
@@ -33,9 +34,10 @@ export const userApiRest = authMiddleware(new Elysia())
   })
   .post(
     '/users',
-    async ({ body, user }) => {
+    async ({ body, user, set }) => {
       if (!user) {
-        throw new Error('User authentication required')
+        set.status = 401
+        return { error: 'User authentication required' }
       }
       
       const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
@@ -53,9 +55,10 @@ export const userApiRest = authMiddleware(new Elysia())
       body: createUserSchema
     }
   )
-  .delete('/users/:id', async ({ params, user }) => {
+  .delete('/users/:id', async ({ params, user, set }) => {
     if (!user) {
-      throw new Error('User authentication required')
+      set.status = 401
+      return { error: 'User authentication required' }
     }
     
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)

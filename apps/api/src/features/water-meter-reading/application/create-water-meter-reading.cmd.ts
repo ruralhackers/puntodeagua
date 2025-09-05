@@ -1,4 +1,5 @@
-import { Command, Id, MeasurementUnit } from 'core'
+import type { Command } from 'core'
+import { Id, MeasurementUnit } from 'core'
 import type { WaterMeterRepository } from 'features'
 import { WaterMeterReading, WaterMeterReadingDto } from 'features'
 import type { FileUploadService } from '../../../infrastructure/file-upload/file-upload.service'

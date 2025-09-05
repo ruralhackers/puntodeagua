@@ -1,4 +1,5 @@
-import { Command, Id } from 'core'
+import type { Command } from 'core'
+import { Id } from 'core'
 import type { WaterMeterReadingRepository } from 'features'
 
 export interface DeleteWaterMeterReadingCommand {

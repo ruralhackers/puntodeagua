@@ -74,10 +74,8 @@ export default function WaterMeterDetailPage({
       await refreshWaterMeter()
 
       setIsEditing(false)
-      alert('Contador actualizado exitosamente')
     } catch (error) {
       console.error('Error updating water meter:', error)
-      alert('Error al actualizar el contador. Por favor, inténtalo de nuevo.')
     }
   }
 

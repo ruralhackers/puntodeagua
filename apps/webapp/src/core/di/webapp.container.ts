@@ -6,6 +6,7 @@ import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
 import { GetIssuesQry } from '@/src/features/issue/application/get-issues.qry'
+import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issues.qry'
 import { SaveIssueCmd } from '@/src/features/issue/application/save-issue.cmd'
 import { IssueApiRestRepository } from '@/src/features/issue/infrastructure/issue.api-rest-repository'
 import { GetWaterMeterQry } from '@/src/features/water-meter/application/get-water-meter.qry'
@@ -105,6 +106,9 @@ export class WebappContainer extends CoreContainer {
 
     const getIssueByIdQry = new GetIssueByIdQry(issueApiRestRepository)
     this.register(GetIssueByIdQry.ID, getIssueByIdQry)
+
+    const getOpenIssuesQry = new GetOpenIssuesQry(issueApiRestRepository)
+    this.register(GetOpenIssuesQry.ID, getOpenIssuesQry)
 
     const getIssuesQry = new GetIssuesQry(issueApiRestRepository)
     this.register(GetIssuesQry.ID, getIssuesQry)

@@ -1,4 +1,4 @@
-import { gretch, type GretchResponse } from 'gretchen'
+import { type GretchResponse, gretch } from 'gretchen'
 
 /**
  * HTTP client wrapper that uses Gretchen underneath.
@@ -41,7 +41,6 @@ export class HttpClient {
     const response = await gretch<T>(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         ...options?.headers
       },
       ...(data !== undefined && { body: JSON.stringify(data) }),

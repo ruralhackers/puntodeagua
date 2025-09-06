@@ -16,6 +16,7 @@ export class IssueApiRestRepository implements IssueCreateRepository {
     }
 
     const issueDtos = await this.httpClient.get<IssueSchema[]>(endpoint)
+    if (!issueDtos.data) return []
     return issueDtos.data!.map(Issue.fromDto)
   }
 

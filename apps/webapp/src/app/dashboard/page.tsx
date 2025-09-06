@@ -1,5 +1,5 @@
 import { UseCaseService } from 'core'
-import { Issue } from 'features/issues/entities/issue'
+import type { Issue } from 'features/issues/entities/issue'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { DashboardPage } from '@/src/features/dashboard/delivery/dashboard.page'
 import { GetOpenIssuesQry } from '@/src/features/issue/application/get-open-issues.qry'
@@ -13,9 +13,9 @@ export default async function Page() {
 
   const incidenciasAbiertas = openIssues?.map((issue: Issue) => ({
     id: issue.id.toString(),
-    titulo: issue.title,
-    ubicacion: zoneById.get(issue.waterZoneId.toString()),
-    fecha: issue.startAt.toDate()
+    titulo: issue.title.toString(),
+    ubicacion: zoneById.get(issue.waterZoneId.toString()) ?? '',
+    fecha: issue.startAt.toDate().toISOString()
   }))
 
   return <DashboardPage incidenciasAbiertas={incidenciasAbiertas} />

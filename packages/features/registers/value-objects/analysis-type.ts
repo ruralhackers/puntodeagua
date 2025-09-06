@@ -31,6 +31,26 @@ export class AnalysisType {
     return this.value
   }
 
+  getLabel(): string {
+    const labels: Record<string, string> = {
+      chlorine_ph: 'Cloro y pH',
+      turbidity: 'Turbidez',
+      hardness: 'Dureza',
+      complete: 'Análisis Completo'
+    }
+    return labels[this.value] || this.value
+  }
+
+  getFieldLabel(fieldName: string): string {
+    const fieldLabels: Record<string, string> = {
+      ph: 'pH',
+      chlorine: 'Cloro',
+      turbidity: 'Turbidez',
+      description: 'Descripción'
+    }
+    return fieldLabels[fieldName] || fieldName
+  }
+
   getFieldsByType() {
     const mandatoryFields = ['description']
     if (this.value === 'chlorine_ph') {

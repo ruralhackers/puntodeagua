@@ -76,20 +76,20 @@ export const DetailMaintenancePage: NextPage<DetailMaintenancePageProps> = ({
           <h1 className="text-2xl font-bold text-gray-900">{maintenance.name}</h1>
           <p className="text-gray-600">Detalles del mantenimiento</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${status.classes}`}>
-            {status.label}
-          </span>
-        </div>
       </div>
 
       <div className="space-y-6">
         {/* Información Básica */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" />
-            Información Básica
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-blue-600" />
+              Información Básica
+            </h2>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${status.classes}`}>
+              {status.label}
+            </span>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <div>

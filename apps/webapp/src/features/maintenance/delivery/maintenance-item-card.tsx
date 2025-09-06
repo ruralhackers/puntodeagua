@@ -1,43 +1,47 @@
-import { Calendar, FlaskConical } from 'lucide-react'
+import { Calendar, Settings, User } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
-import { formatDate, toTitle } from './analysis.utils'
+import { formatDate } from '../../analysis/delivery/analysis.utils'
 
-type AnalysisItemCardProps = {
+type MaintenanceItemCardProps = {
   dto: {
     id: string
-    analysisType: 'chlorine' | 'turbidity' | 'hardness' | 'complete'
-    analyzedAt: Date
-    waterZoneId: number
-    chlorine?: number
-    ph?: number
-    turbidity?: number
-    hardnessDocAttached?: boolean
+    name: string
+    scheduledDate?: Date
+    executionDate?: Date
+    responsible?: string
+    duration?: number
+    description?: string
+    observations?: string
+    nextMaintenanceDate?: Date
   }
-  alert?: boolean
-  zoneById: Map<number, string>
+  status?: { label: string; classes: string }
+  type?: { label: string; classes: string }
   variant?: 'simple' | 'detailed'
 }
 
-export default function AnalysisItemCard({
+export default function MaintenanceItemCard({
   dto,
-  alert,
+  status,
+  type,
   variant = 'detailed'
-}: AnalysisItemCardProps) {
+}: MaintenanceItemCardProps) {
   const showDetails = variant === 'detailed'
 
   return (
-    <Link href={`/dashboard/registros/analiticas/${dto.id}`} className="block">
+    <Link href={`/dashboard/registros/mantenimiento/${dto.id}`} className="block">
       <Card key={dto.id} className="hover:shadow-md transition-shadow cursor-pointer">
         <CardContent>
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="mb-3">
                 <h3 className="font-semibold text-lg truncate">
-                  {toTitle(dto.analysisType)}
-                  {alert && (
-                    <span aria-hidden="true" className="inline-flex align-middle ml-1 text-red-600">
-                      ⚠️
+                  {dto.name}
+                  {status && (
+                    <span
+                      className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${status.classes}`}
+                    >
+                      {status.label}
                     </span>
                   )}
                 </h3>
@@ -45,33 +49,34 @@ export default function AnalysisItemCard({
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4 flex-shrink-0" />
-                  <span>Fecha reporte: {formatDate(dto.analyzedAt)}</span>
+                  <span>Programado: {dto.scheduledDate ? formatDate(dto.scheduledDate) : '—'}</span>
                 </div>
-                {showDetails && dto.chlorine && (
+                {showDetails && dto.executionDate && (
                   <div className="flex items-center gap-1">
-                    <FlaskConical className="h-4 w-4 flex-shrink-0" />
-                    <span>Cloro: {dto.chlorine}</span>
+                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                    <span>Ejecutado: {formatDate(dto.executionDate)}</span>
                   </div>
                 )}
-                {showDetails && dto.ph && (
+                {showDetails && dto.responsible && (
                   <div className="flex items-center gap-1">
-                    <FlaskConical className="h-4 w-4 flex-shrink-0" />
-                    <span>pH: {dto.ph}</span>
+                    <User className="h-4 w-4 flex-shrink-0" />
+                    <span>Responsable: {dto.responsible}</span>
                   </div>
                 )}
-                {showDetails && dto.turbidity && (
+                {showDetails && dto.duration && (
                   <div className="flex items-center gap-1">
-                    <FlaskConical className="h-4 w-4 flex-shrink-0" />
-                    <span>Turbidez: {dto.turbidity}</span>
+                    <Settings className="h-4 w-4 flex-shrink-0" />
+                    <span>Duración: {dto.duration}h</span>
                   </div>
                 )}
               </div>
-              {showDetails &&
-                (dto.analysisType === 'complete' || dto.analysisType === 'hardness') && (
-                  <div className="text-sm text-muted-foreground mt-2">
-                    Consultar los resultados de este análisis en el documento correspondiente
-                  </div>
-                )}
+              {showDetails && type && (
+                <div className="text-sm text-muted-foreground mt-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${type.classes}`}>
+                    {type.label}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex items-center flex-shrink-0">
               <svg

@@ -1,6 +1,6 @@
 import { IssueItemCard } from '@/src/features/issue/delivery/issue-item-card'
 import AnalysisItemCard from '../../analysis/delivery/AnalysisItemCard'
-import MaintenanceItemCard from '../../maintenance/delivery/MaintenanceItemCard'
+import MaintenanceItemCard from '../../maintenance/delivery/maintenance-item-card'
 import type { SummaryResponse } from '../../summary/infrastructure/summary.api-rest-repository'
 
 interface ShareDataPageProps {

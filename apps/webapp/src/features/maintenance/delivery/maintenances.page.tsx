@@ -2,7 +2,7 @@ import type { Maintenance } from 'features'
 import type { FC } from 'react'
 import { PageHeader } from '@/src/components/shared-data/page-header'
 import { Page } from '../../../core/components/page'
-import MaintenanceItemCard from './MaintenanceItemCard'
+import MaintenanceItemCard from './maintenance-item-card'
 
 function getStatus(
   executionDate?: Date,

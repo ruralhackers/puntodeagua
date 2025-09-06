@@ -23,7 +23,8 @@ export class MaintenancePrismaRepository
       description: input.description,
       nextMaintenanceDate: input.nextMaintenanceDate,
       observations: input.observations,
-      duration: input.duration
+      duration: input.duration,
+      communityId: input.communityId.toString()
     }
 
     const create = {

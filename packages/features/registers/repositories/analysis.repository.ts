@@ -1,4 +1,4 @@
-import type { Deletable, FindableAll, FindableById, Savable } from 'core'
+import type { Deletable, FindableAll, FindableById, Id, Savable } from 'core'
 import type { Analysis } from '../entities/analysis'
 
 export interface AnalysisRepository
@@ -6,5 +6,5 @@ export interface AnalysisRepository
     Deletable<Analysis>,
     FindableById<Analysis>,
     FindableAll<Analysis> {
-  findAllOrderedByAnalyzedAt(startDate?: Date, endDate?: Date): Promise<Analysis[]>
+  findAllOrderedByAnalyzedAt(communityId: Id): Promise<Analysis[]>
 }

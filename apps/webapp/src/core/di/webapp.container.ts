@@ -2,7 +2,7 @@ import { CoreContainer, HttpClient, UseCaseService } from 'core'
 import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
-import { ServerTokenProvider } from '../http/server-token-provider'
+import { ClientTokenProvider } from '@/src/core/http/client-token-provider'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { EditIssueCmd } from '@/src/features/issue/application/edit-issue.cmd'
 import { GetIssueByIdQry } from '@/src/features/issue/application/get-issue-by-id.qry'
@@ -38,6 +38,7 @@ import { WaterMeterApiRestRepository } from '../../features/water-meter/infrastr
 import { GetWaterPointQry } from '../../features/water-point/application/get-water-point.qry'
 import { GetWaterPointsQry } from '../../features/water-point/application/get-water-points.qry'
 import { WaterPointApiRestRepository } from '../../features/water-point/infrastructure/water-point.api-rest-repository'
+import { ServerTokenProvider } from '../http/server-token-provider'
 import {
   AUTH_REPOSITORY,
   HOLDER_REPOSITORY,
@@ -54,25 +55,25 @@ export class WebappContainer extends CoreContainer {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
 
-    // Regular HTTP client (for public endpoints)
-    const httpClient = new HttpClient(baseUrl)
-    this.register(HttpClient.ID, httpClient)
+    if (globalThis.window) {
+      const httpClient = new HttpClient(baseUrl, new ClientTokenProvider())
+      this.register(HttpClient.ID, httpClient)
+    } else {
+      const httpClient = new HttpClient(baseUrl, new ServerTokenProvider())
+      this.register(HttpClient.ID, httpClient)
+    }
 
-    // Authenticated HTTP client for server-side usage
-    const serverTokenProvider = new ServerTokenProvider()
-    const authenticatedHttpClient = new HttpClient(baseUrl, serverTokenProvider)
-    this.register('AuthenticatedHttpClient', authenticatedHttpClient)
+    const httpClient = this.get<HttpClient>(HttpClient.ID)
 
-    // AuthHttpClient is created via useAuthHttpClient hook on client-side
-    // No need to register it in the container as it requires React context
+    this.register('AuthenticatedHttpClient', httpClient)
 
-    const waterPointApiRestRepository = new WaterPointApiRestRepository(authenticatedHttpClient)
+    const waterPointApiRestRepository = new WaterPointApiRestRepository(httpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)
 
-    const holderApiRestRepository = new HolderApiRestRepository(authenticatedHttpClient)
+    const holderApiRestRepository = new HolderApiRestRepository(httpClient)
     this.register(HOLDER_REPOSITORY, holderApiRestRepository)
 
-    const issueApiRestRepository = new IssueApiRestRepository(authenticatedHttpClient)
+    const issueApiRestRepository = new IssueApiRestRepository(httpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
     const saveIssueCmd = new EditIssueCmd(issueApiRestRepository)
@@ -90,7 +91,7 @@ export class WebappContainer extends CoreContainer {
     const getHolderQry = new GetHolderQry(holderApiRestRepository)
     this.register(GetHolderQry.ID, getHolderQry)
 
-    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(authenticatedHttpClient)
+    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(httpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)
 
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)
@@ -119,7 +120,7 @@ export class WebappContainer extends CoreContainer {
     this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
 
     // water zones
-    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(authenticatedHttpClient)
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(httpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 

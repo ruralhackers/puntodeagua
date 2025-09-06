@@ -1,5 +1,5 @@
 import { DateTime, Decimal, Id } from 'core'
-import { type AnalysisSchema, analysisSchema } from '../schemas/analysis.schema'
+import type { AnalysisSchema } from '../schemas/analysis.schema'
 import { AnalysisType } from '../value-objects/analysis-type'
 
 export class Analysis {

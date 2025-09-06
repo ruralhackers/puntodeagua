@@ -10,9 +10,10 @@ interface PageProps {
 }
 
 const Page: NextPage<PageProps> = async ({ params }) => {
+  const id = await params.id
   const getWaterMeterQry = getUseCase(GetWaterMeterQry)
 
-  const waterMeter = await getWaterMeterQry.execute(params.id)
+  const waterMeter = await getWaterMeterQry.execute(id)
 
   if (!waterMeter) {
     return (

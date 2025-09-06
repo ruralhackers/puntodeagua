@@ -1,9 +1,9 @@
 import type { IssueSchema } from 'features'
-import { Edit } from 'lucide-react'
+import {Calendar, Edit, MapPin} from 'lucide-react'
 import Link from 'next/link'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { formatDate, toTitle } from '@/src/features/analysis/delivery/analysis.utils'
 
 type IssueItemCardProps = {
@@ -14,33 +14,27 @@ type IssueItemCardProps = {
 
 export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName, variant }) => {
   const showDetails = variant === 'detailed'
+
+  const now = new Date()
+  const diffInMs = now.getTime() - new Date(dto.startAt).getTime()
+  const daysSinceIssueOpened = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+
   return (
     <div>
       <Card key={dto.id} className="bg-white gap-3 py-4">
         <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex flex-col gap-2">
-              <CardTitle className="text-base">{toTitle(dto?.title ?? '')}</CardTitle>
+          {showDetails && (
+            <div className="flex justify-between items-center gap-2">
+              {dto?.status === 'closed' ? (
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Resuelta
+                  </span>
+              ) : (
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    En Proceso
+                  </span>
+              )}
 
-              <CardDescription>
-                {showDetails && (
-                  <div className="flex items-center gap-2">
-                    {dto?.status === 'closed' ? (
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Resuelta
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        En Proceso
-                      </span>
-                    )}
-                    {waterZoneName}
-                  </div>
-                )}
-                <div className="block mt-3">{dto.description ?? '-'}</div>
-              </CardDescription>
-            </div>
-            {showDetails && (
               <Link href={`/dashboard/registros/incidencias/${dto.id}/editar`}>
                 <Button
                   variant="outline"
@@ -51,28 +45,37 @@ export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName, vari
                   Editar
                 </Button>
               </Link>
-            )}
-          </div>
+            </div>
+          )}
+
+          <h3 className="font-semibold text-lg truncate">
+            {toTitle(dto?.title ?? '')}
+          </h3>
         </CardHeader>
 
         <CardContent className="pt-0 pb-2 space-y-1">
-          {showDetails && (
-            <>
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Persona que firma:</span>
-                <span>{dto.reporterName}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Fecha reporte:</span>
-                <span>{formatDate(dto.startAt)}</span>
-              </div>
-            </>
+          {!dto.endAt && (
+            <div className="flex items-center gap-2 text-sm">
+              <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-muted-foreground">Fecha reporte:</span>
+              <span>{formatDate(dto.startAt)}</span>
+              <span>&middot;</span>
+              <span className="font-medium text-red-600">{daysSinceIssueOpened} días</span>
+            </div>
           )}
 
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Fecha resolución:</span>
-            <span>{dto.endAt ? formatDate(dto.endAt) : '-'}</span>
+          {(showDetails || dto.endAt) && (
+            <div className="flex items-center gap-2 text-sm">
+              <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-muted-foreground">Fecha resolución:</span>
+              <span>{dto.endAt ? formatDate(dto.endAt) : '-'}</span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 text-sm">
+            <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Zona:</span>
+            <span className="font-medium">{waterZoneName}</span>
           </div>
         </CardContent>
       </Card>

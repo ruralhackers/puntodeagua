@@ -1,25 +1,18 @@
 'use client'
 
-import { FileText, Home, LogOut, Menu } from 'lucide-react'
+import { FileText, Home, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { FC } from 'react'
 import { useTabBar } from '@/components/navigation/tab-bar-context'
 import { cn } from '@/lib/utils'
-import { useAuth } from '@/src/features/auth/context/auth-context'
 
 export const TabBar: FC = () => {
   const pathname = usePathname()
   const { isTabBarVisible } = useTabBar()
-  const { logout, user } = useAuth()
 
   if (!isTabBarVisible) {
     return null
-  }
-
-  // Helper function to check if user can see "Más" section
-  const canSeeMore = () => {
-    return user?.roles.includes('COMMUNITY_ADMIN') || user?.roles.includes('SUPER_ADMIN') || false
   }
 
   const tabs = [
@@ -35,46 +28,18 @@ export const TabBar: FC = () => {
       icon: FileText,
       active: pathname.includes('/dashboard/registros')
     },
-    // Only show "Más" if user is community_admin
-    ...(canSeeMore()
-      ? [
-          {
-            href: '/dashboard/mas',
-            label: 'Más',
-            icon: Menu,
-            active: pathname.includes('/dashboard/mas')
-          }
-        ]
-      : []),
     {
-      href: '#',
-      label: 'Salir',
-      icon: LogOut,
-      onClick: () => logout()
+      href: '/dashboard/mas',
+      label: 'Más',
+      icon: Menu,
+      active: pathname.includes('/dashboard/mas')
     }
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden pb-2">
       <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
-          if (tab.onClick) {
-            return (
-              <button
-                key={tab.label}
-                type="button"
-                onClick={tab.onClick}
-                className={cn(
-                  'flex flex-col items-center justify-center w-full h-full text-xs',
-                  tab.active ? 'text-blue-600' : 'text-gray-500'
-                )}
-              >
-                {tab.icon && <tab.icon className="h-6 w-6 mb-1 stroke-[1.5px]" />}
-                <span>{tab.label}</span>
-              </button>
-            )
-          }
-
           return (
             <Link
               key={tab.href}

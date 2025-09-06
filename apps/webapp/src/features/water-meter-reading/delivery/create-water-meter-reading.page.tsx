@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { WaterMeterDto, WaterPointDto } from 'features'
 import { useRouter } from 'next/navigation'
-import { useId, useMemo, useState } from 'react'
+import { useId, useState } from 'react'
 import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -23,6 +23,12 @@ import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { useAuth } from '@/src/features/auth/context/auth-context'
 import { CreateWaterMeterReadingCmd } from '../application/create-water-meter-reading.cmd'
+import {
+  getConsumptionStatusClasses,
+  getConsumptionStatusMessage,
+  getConsumptionTextClasses,
+  useWaterMeterConsumption
+} from '../hooks/use-water-meter-consumption'
 
 const createWaterMeterReadingSchema = z.object({
   reading: z
@@ -80,81 +86,13 @@ export const CreateWaterMeterReadingPage = ({
 
   const lastReading = getLastReading()
 
-  // Calculate consumption
-  const consumptionData = useMemo(() => {
-    if (!currentReading) {
-      return null
-    }
-
-    const current = parseFloat(currentReading)
-
-    if (Number.isNaN(current)) {
-      return null
-    }
-
-    // If we have a previous reading, calculate the difference
-    if (lastReading) {
-      const previous = parseFloat(lastReading.reading)
-
-      if (Number.isNaN(previous)) {
-        return null
-      }
-
-      const difference = current - previous
-      // Convert to liters only if the measurement unit is M3 (cubic meters)
-      const differenceInLiters =
-        waterMeter.measurementUnit === 'M3' ? difference * 1000 : difference
-
-      // Check if consumption is negative
-      const isNegativeConsumption = difference < 0
-
-      // Calculate days between readings
-      const lastReadingDate = new Date(lastReading.readingDate)
-      const currentReadingDate = readingDate ? new Date(readingDate) : new Date()
-
-      const daysBetween = Math.ceil(
-        (currentReadingDate.getTime() - lastReadingDate.getTime()) / (1000 * 60 * 60 * 24)
-      )
-
-      const consumptionPerDayTotal = daysBetween > 0 ? differenceInLiters / daysBetween : 0
-      const peopleInWaterPoint = waterPoint.fixedPopulation + waterPoint.floatingPopulation
-      const consumptionPerDayPerPerson = consumptionPerDayTotal / peopleInWaterPoint
-
-      // Simple validation: consider high consumption if > 200L per day
-      const isHighConsumption = consumptionPerDayPerPerson > 180
-
-      return {
-        difference,
-        differenceInLiters,
-        daysBetween,
-        consumptionPerDayPerPerson,
-        consumptionPerDayTotal,
-        isHighConsumption,
-        isNegativeConsumption,
-        hasPreviousReading: true,
-        peopleInWaterPoint
-      }
-    }
-
-    // If no previous reading, just show the current reading
-    return {
-      difference: 0,
-      differenceInLiters: 0,
-      daysBetween: 0,
-      consumptionPerDay: 0,
-      isHighConsumption: false,
-      isNegativeConsumption: false,
-      hasPreviousReading: false,
-      currentReading: current
-    }
-  }, [
+  // Calculate consumption using the custom hook
+  const consumptionData = useWaterMeterConsumption({
     currentReading,
-    lastReading,
     readingDate,
-    waterPoint.fixedPopulation,
-    waterPoint.floatingPopulation,
-    waterMeter.measurementUnit
-  ])
+    waterMeter,
+    waterPoint
+  })
 
   async function onSubmit(values: CreateWaterMeterReadingFormValues) {
     setIsLoading(true)
@@ -303,15 +241,7 @@ export const CreateWaterMeterReadingPage = ({
           {/* Consumo Calculado */}
           {consumptionData && (
             <div
-              className={`border rounded-lg p-6 ${
-                consumptionData.hasPreviousReading
-                  ? consumptionData.isNegativeConsumption
-                    ? 'bg-red-50 border-red-200'
-                    : consumptionData.isHighConsumption
-                      ? 'bg-red-50 border-red-200'
-                      : 'bg-green-50 border-green-200'
-                  : 'bg-blue-50 border-blue-200'
-              }`}
+              className={`border rounded-lg p-6 ${getConsumptionStatusClasses(consumptionData)}`}
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Consumo Calculado</h3>
               <div className="space-y-2">
@@ -339,20 +269,8 @@ export const CreateWaterMeterReadingPage = ({
                       L/día • {consumptionData.daysBetween} días •{' '}
                       {consumptionData.peopleInWaterPoint} personas
                     </div> */}
-                    <div
-                      className={`font-medium ${
-                        consumptionData.isNegativeConsumption
-                          ? 'text-red-700'
-                          : consumptionData.isHighConsumption
-                            ? 'text-red-700'
-                            : 'text-green-700'
-                      }`}
-                    >
-                      {consumptionData.isNegativeConsumption
-                        ? '⚠ Lectura menor a la anterior'
-                        : consumptionData.isHighConsumption
-                          ? '⚠ Consumo elevado'
-                          : '✓ Consumo normal'}
+                    <div className={`font-medium ${getConsumptionTextClasses(consumptionData)}`}>
+                      {getConsumptionStatusMessage(consumptionData)}
                     </div>
                   </>
                 ) : (
@@ -365,7 +283,9 @@ export const CreateWaterMeterReadingPage = ({
                       {waterMeter.measurementUnit}
                     </div>
                     <div className="text-gray-600">Primera lectura registrada</div>
-                    <div className="font-medium text-blue-700">ℹ Lectura inicial</div>
+                    <div className={`font-medium ${getConsumptionTextClasses(consumptionData)}`}>
+                      {getConsumptionStatusMessage(consumptionData)}
+                    </div>
                   </>
                 )}
               </div>

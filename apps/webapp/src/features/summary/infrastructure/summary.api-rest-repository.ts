@@ -1,10 +1,11 @@
 import type { HttpClient } from 'core'
-import type { Analysis, Issue, Maintenance } from 'features'
+import type {Analysis, Issue, Maintenance, WaterZone} from 'features'
 
 export interface SummaryResponse {
   analyses: Analysis[]
   issues: Issue[]
   maintenance: Maintenance[]
+  waterZones: WaterZone[]
 }
 
 export interface SummaryParams {

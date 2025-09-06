@@ -1,7 +1,12 @@
 import type { HolderDto, WaterMeterDto, WaterPointDto } from 'features'
-import { Droplets, MapPin, User } from 'lucide-react'
+import { Droplets, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  calculateExistingReadingsConsumption,
+  getConsumptionStatusMessage,
+  getConsumptionTextClasses
+} from '@/src/features/water-meter-reading/hooks/use-water-meter-consumption'
 
 interface WaterMeterCardProps {
   meter: WaterMeterDto
@@ -18,17 +23,22 @@ export default function WaterMeterCard({
 }: WaterMeterCardProps) {
   const router = useRouter()
 
-  // we calculate the consumption of the 2 last readings.
-  const lastReadings = meter.readings?.sort(
-    (a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime()
-  )
-  const lastReading = lastReadings?.[0]
-  const secondLastReading = lastReadings?.[1]
+  // Create a default water point if not provided
+  const defaultWaterPoint: WaterPointDto = {
+    id: '',
+    communityId: '',
+    name: '',
+    location: '',
+    fixedPopulation: 0,
+    floatingPopulation: 0
+  }
 
-  const consumption =
-    lastReading?.normalizedReading && secondLastReading?.normalizedReading
-      ? Number(lastReading.normalizedReading) - Number(secondLastReading.normalizedReading)
-      : 0
+  // Calculate consumption between the two last readings
+  const consumptionData = calculateExistingReadingsConsumption(
+    meter.readings || [],
+    meter,
+    waterPoint || defaultWaterPoint
+  )
 
   const handleCardClick = () => {
     router.push(onClickLink || `/dashboard/registros/contadores/${meter.id}`)
@@ -57,21 +67,24 @@ export default function WaterMeterCard({
               {waterPoint && (
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4 flex-shrink-0" />
-                  <span>{waterPoint.fixedPopulation + waterPoint.floatingPopulation} personas</span>
+                  <span>
+                    {waterPoint?.fixedPopulation + waterPoint?.floatingPopulation} personas
+                  </span>
                 </div>
               )}
-              {meter.readings && meter.readings.length > 0 && (
+              {consumptionData && (
                 <div className="flex items-center gap-1">
                   <Droplets className="h-4 w-4 flex-shrink-0" />
-                  <span>{Number(consumption).toFixed(2)} litros</span>
+                  <span>{consumptionData.differenceInLiters.toFixed(1)} litros</span>
                 </div>
               )}
             </div>
-            {meter.readings &&
-              meter.readings.length > 0 &&
-              meter.readings[0]?.['excess-consumption'] && (
-                <div className="text-red-600 text-sm font-medium mt-2">
-                  ⚠️ Consumo anómalo detectado
+            {consumptionData &&
+              (consumptionData.isHighConsumption || consumptionData.isNegativeConsumption) && (
+                <div
+                  className={`text-sm font-medium mt-2 ${getConsumptionTextClasses(consumptionData)}`}
+                >
+                  {getConsumptionStatusMessage(consumptionData)}
                 </div>
               )}
           </div>

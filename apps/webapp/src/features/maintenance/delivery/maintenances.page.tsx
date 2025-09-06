@@ -1,22 +1,8 @@
 import type { Maintenance } from 'features'
 import type { FC } from 'react'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { Page } from '../../../core/components/page'
 import MaintenanceItemCard from './MaintenanceItemCard'
-import {PageHeader} from "@/src/components/shared-data/page-header";
-
-function formatDate(date?: Date) {
-  try {
-    if (!date) return '—'
-    // Format example: 5 de junio de 2023 (es-ES)
-    return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: '2-digit'
-    })
-  } catch {
-    return '—'
-  }
-}
 
 function getStatus(
   executionDate?: Date,
@@ -44,7 +30,10 @@ export const MaintenancesPage: FC<{ maintenances: Maintenance[] }> = ({ maintena
   return (
     <Page>
       <div className="px-3 py-4 pb-20">
-        <PageHeader title="Mantenimiento" subtitle="Registros de mantenimiento preventivo y correctivo" />
+        <PageHeader
+          title="Mantenimiento"
+          subtitle="Registros de mantenimiento preventivo y correctivo"
+        />
 
         {/* Maintenances list */}
         <div className="space-y-4">

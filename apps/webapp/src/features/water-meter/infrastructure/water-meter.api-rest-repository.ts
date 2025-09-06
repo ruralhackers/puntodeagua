@@ -21,7 +21,7 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
     // The httpClient will automatically handle authentication if it's ServerAuthHttpClient
     const response = await this.httpClient.get<WaterMeterDto[]>(url)
     const data = response.data ?? []
-    return data.map(WaterMeter.create)
+    return data.map(WaterMeter.fromDto)
   }
 
   async findAll(): Promise<WaterMeter[]> {
@@ -31,7 +31,7 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
   async findById(id: Id): Promise<WaterMeter | undefined> {
     try {
       const json = await this.httpClient.get<any>(`water-meter/${id.toString()}`)
-      return WaterMeter.create(json.data!)
+      return WaterMeter.fromDto(json.data!)
     } catch (error) {
       return undefined
     }

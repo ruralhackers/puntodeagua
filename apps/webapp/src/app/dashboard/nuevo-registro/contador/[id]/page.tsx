@@ -25,9 +25,7 @@ const Page: NextPage<PageProps> = async ({ params }) => {
     )
   }
 
-  const waterPoint = await getUseCase(GetWaterPointQry).execute({
-    id: waterMeter.waterPointId.toString()
-  })
+  const waterPoint = waterMeter.waterPoint
 
   return (
     <CreateWaterMeterReadingPage waterMeter={waterMeter.toDto()} waterPoint={waterPoint?.toDto()} />

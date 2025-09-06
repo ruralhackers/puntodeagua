@@ -11,5 +11,7 @@ export const waterMeterReadingSchema = z.object({
   normalizedReading: decimalSchema,
   readingDate: z.date(),
   notes: z.string().optional(),
-  files: z.array(fileSchema).optional().default([])
+  files: z.array(fileSchema).optional().default([]),
+  consumption: z.number().optional(),
+  excessConsumption: z.boolean().optional()
 })

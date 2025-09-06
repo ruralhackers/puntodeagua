@@ -12,26 +12,41 @@ export class WaterMeterReading {
     public readonly normalizedReading: Decimal,
     public readonly readingDate: Date,
     public readonly notes?: string,
-    public readonly files: File[] = []
+    public readonly files: File[] = [],
+    public readonly consumption?: number,
+    public readonly excessConsumption?: boolean
   ) {}
 
   static create({
-    id,
     waterMeterId,
     reading,
     normalizedReading,
     readingDate,
     notes,
     files
-  }: WaterMeterReadingSchema) {
+  }: Omit<WaterMeterReadingSchema, 'id'>) {
     return new WaterMeterReading(
-      Id.create(id),
+      Id.generateUniqueId(),
       Id.create(waterMeterId),
       Decimal.create(reading),
       Decimal.create(normalizedReading),
       readingDate,
       notes,
-      files ? files.map(file => File.create(file)) : []
+      files ? files.map((file) => File.create(file)) : []
+    )
+  }
+
+  static fromDto(dto: WaterMeterReadingSchema): WaterMeterReading {
+    return new WaterMeterReading(
+      Id.create(dto.id),
+      Id.create(dto.waterMeterId),
+      Decimal.create(dto.reading),
+      Decimal.create(dto.normalizedReading),
+      dto.readingDate,
+      dto.notes,
+      dto.files ? dto.files.map((file) => File.create(file)) : [],
+      dto.consumption,
+      dto.excessConsumption
     )
   }
 
@@ -43,7 +58,9 @@ export class WaterMeterReading {
       normalizedReading: this.normalizedReading.toString(),
       readingDate: this.readingDate,
       notes: this.notes,
-      files: this.files.map((file) => file.toDto())
+      files: this.files.map((file) => file.toDto()),
+      consumption: this.consumption,
+      excessConsumption: this.excessConsumption
     }
   }
 }

@@ -32,7 +32,7 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
           createdAt: file.createdAt
         })) || []
 
-      return WaterMeterReading.create({
+      return WaterMeterReading.fromDto({
         id: reading.id,
         waterMeterId: reading.waterMeterId,
         reading: reading.reading.toString(),
@@ -70,7 +70,7 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
         createdAt: file.createdAt
       })) || []
 
-    return WaterMeterReading.create({
+    return WaterMeterReading.fromDto({
       id: reading.id,
       waterMeterId: reading.waterMeterId,
       reading: reading.reading.toString(),
@@ -136,7 +136,7 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
         createdAt: file.createdAt
       })) || []
 
-    return WaterMeterReading.create({
+    return WaterMeterReading.fromDto({
       id: reading.id,
       waterMeterId: reading.waterMeterId,
       reading: reading.reading.toString(),

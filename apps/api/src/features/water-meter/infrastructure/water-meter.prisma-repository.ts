@@ -13,27 +13,24 @@ export class WaterMeterPrismaRepository
   }
 
   async save(input: WaterMeter): Promise<void> {
-    const data = {
-      id: input.id.toString(),
+    const update = {
       name: input.name,
-      holderId: input.holderId.toString(),
-      waterPointId: input.waterPointId.toString(),
-      waterZoneId: input.waterZoneId.toString(),
       measurementUnit: input.measurementUnit.toString(),
-      images: input.images
+      images: input.images,
+      waterZoneId: input.waterZoneId.toString()
+    }
+
+    const create = {
+      ...update,
+      id: input.id.toString(),
+      holderId: input.holderId.toString(),
+      waterPointId: input.waterPoint.id.toString()
     }
 
     await this.getModel().upsert({
       where: { id: input.id.toString() },
-      create: {
-        ...data
-      },
-      update: {
-        name: data.name,
-        waterZoneId: data.waterZoneId,
-        measurementUnit: data.measurementUnit,
-        images: data.images
-      }
+      create,
+      update
     })
   }
 
@@ -50,11 +47,6 @@ export class WaterMeterPrismaRepository
     const wm = await this.getModel().findUnique({
       where,
       include: {
-        waterZone: {
-          include: {
-            community: true
-          }
-        },
         waterPoint: true,
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
@@ -62,47 +54,7 @@ export class WaterMeterPrismaRepository
         }
       }
     })
-    return wm
-      ? WaterMeter.create({
-          ...wm,
-          waterZoneName: wm.waterZone.name,
-          readings: wm.waterMeterReadings
-            .reverse()
-            .map((reading, index, arr) => {
-              let consumption = 0
-              let excessConsumption = false
-
-              if (index > 0 && arr[index - 1]) {
-                const currentValue = parseFloat(reading.normalizedReading.toString())
-                const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
-                consumption = currentValue - previousValue
-
-                const daysBetween = Math.ceil(
-                  (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )
-                const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
-                const totalPopulation =
-                  wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
-                const totalDailyLimit = dailyLimitPerPerson * totalPopulation
-                excessConsumption =
-                  daysBetween > 0 &&
-                  totalPopulation > 0 &&
-                  consumption / daysBetween > totalDailyLimit
-              }
-
-              return {
-                id: reading.id,
-                readingDate: reading.readingDate,
-                reading: reading.reading.toString(),
-                normalizedReading: reading.normalizedReading.toString(),
-                consumption,
-                'excess-consumption': excessConsumption
-              }
-            })
-            .reverse()
-        })
-      : undefined
+    return wm ? WaterMeter.fromDto(wm) : undefined
   }
 
   async findWithFilters(filters: GetWaterMetersFiltersDto): Promise<WaterMeter[]> {
@@ -132,11 +84,6 @@ export class WaterMeterPrismaRepository
     const waterMeters = await this.getModel().findMany({
       where,
       include: {
-        waterZone: {
-          include: {
-            community: true
-          }
-        },
         waterPoint: true,
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
@@ -145,49 +92,7 @@ export class WaterMeterPrismaRepository
       }
     })
 
-    return waterMeters.map((wm) =>
-      WaterMeter.create({
-        ...wm,
-        waterZoneName: wm.waterZone.name,
-        lastReadingValue: wm.waterMeterReadings[0]?.reading?.toString(),
-        lastReadingDate: wm.waterMeterReadings[0]?.readingDate,
-        readings: wm.waterMeterReadings
-          .reverse()
-          .map((reading, index, arr) => {
-            let consumption = 0
-            let excessConsumption = false
-
-            if (index > 0 && arr[index - 1]) {
-              const currentValue = parseFloat(reading.normalizedReading.toString())
-              const previousValue = parseFloat(arr[index - 1].normalizedReading.toString())
-              consumption = currentValue - previousValue
-
-              const daysBetween = Math.ceil(
-                (reading.readingDate.getTime() - arr[index - 1].readingDate.getTime()) /
-                  (1000 * 60 * 60 * 24)
-              )
-              const dailyLimitPerPerson = wm.waterZone.community.dailyWaterLimitLitersPerPerson
-              const totalPopulation =
-                wm.waterPoint.fixedPopulation + wm.waterPoint.floatingPopulation
-              const totalDailyLimit = dailyLimitPerPerson * totalPopulation
-              excessConsumption =
-                daysBetween > 0 &&
-                totalPopulation > 0 &&
-                consumption / daysBetween > totalDailyLimit
-            }
-
-            return {
-              id: reading.id,
-              readingDate: reading.readingDate,
-              reading: reading.reading.toString(),
-              normalizedReading: reading.normalizedReading.toString(),
-              consumption,
-              'excess-consumption': excessConsumption
-            }
-          })
-          .reverse()
-      })
-    )
+    return waterMeters.map((wm) => WaterMeter.fromDto(wm))
   }
 
   async findAll(): Promise<WaterMeter[]> {

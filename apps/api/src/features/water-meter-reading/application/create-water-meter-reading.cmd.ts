@@ -52,6 +52,7 @@ export class CreateWaterMeterReadingCmd
     const lastReading = await this.waterMeterReadingRepository.findLastReadingFromWaterMeterId(
       Id.create(command.waterMeterId)
     )
+
     if (lastReading && parseFloat(command.reading) <= parseFloat(lastReading.reading.toString())) {
       throw new Error(`La lectura no puede ser menor o igual a la última lectura`)
     }
@@ -63,7 +64,6 @@ export class CreateWaterMeterReadingCmd
 
     // 3. Crear la entidad WaterMeterReading
     const waterMeterReading = WaterMeterReading.create({
-      id: Id.generateUniqueId().toString(),
       waterMeterId: command.waterMeterId,
       reading: command.reading,
       normalizedReading,
@@ -71,6 +71,8 @@ export class CreateWaterMeterReadingCmd
       notes: command.notes,
       files: [] // Inicialmente sin archivos
     })
+
+    console.log(waterMeterReading.toDto())
 
     // 2. Si hay archivos, subirlos y asociarlos
     if (command.files && command.files.length > 0) {
@@ -99,7 +101,6 @@ export class CreateWaterMeterReadingCmd
       if (uploadedFiles.length > 0) {
         // Crear nueva instancia con archivos
         const readingWithFiles = WaterMeterReading.create({
-          id: waterMeterReading.id.toString(),
           waterMeterId: command.waterMeterId,
           reading: command.reading,
           normalizedReading,

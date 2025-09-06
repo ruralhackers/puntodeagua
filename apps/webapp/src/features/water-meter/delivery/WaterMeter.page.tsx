@@ -42,11 +42,11 @@ export default function WaterMeterPage({ waterMeters, waterZones, holders, water
 
   // Función para obtener el estado de consumo de un contador
   const getConsumptionStatus = (meter: WaterMeterDto) => {
-    const waterPoint = getWaterPointById(meter.waterPointId)
+    const waterPoint = getWaterPointById(meter.waterPoint.id)
     if (!waterPoint) return 'no-data'
 
     const consumptionData = calculateExistingReadingsConsumption(
-      meter.readings || [],
+      meter.waterMeterReadings || [],
       meter,
       waterPoint
     )

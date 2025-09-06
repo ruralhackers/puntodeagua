@@ -8,4 +8,6 @@ export interface WaterMeterReadingDto {
   readingDate: Date
   notes?: string
   files: FileDto[]
+  consumption?: number
+  excessConsumption?: boolean
 }

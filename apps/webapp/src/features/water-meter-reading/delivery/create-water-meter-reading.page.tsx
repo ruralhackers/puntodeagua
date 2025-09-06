@@ -57,6 +57,8 @@ export const CreateWaterMeterReadingPage = ({
   const createWaterMeterReadingCommand = useUseCase(CreateWaterMeterReadingCmd)
   const counterLabelId = useId()
 
+  console.log({ waterMeter, waterPoint })
+
   // Estados para manejo de loading
   const [isLoading, setIsLoading] = useState(false)
 
@@ -75,11 +77,11 @@ export const CreateWaterMeterReadingPage = ({
 
   // Get the last reading from the readings array
   const getLastReading = () => {
-    if (!waterMeter.readings || waterMeter.readings.length === 0) {
+    if (!waterMeter.waterMeterReadings || waterMeter.waterMeterReadings.length === 0) {
       return null
     }
     // Sort by date descending and take the first one
-    return waterMeter.readings.sort(
+    return waterMeter.waterMeterReadings.sort(
       (a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime()
     )[0]
   }
@@ -134,7 +136,6 @@ export const CreateWaterMeterReadingPage = ({
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Nueva Lectura</h3>
             <div className="space-y-3">
-              {/* Contador (readonly) */}
               <div>
                 <label
                   htmlFor={counterLabelId}
@@ -150,7 +151,6 @@ export const CreateWaterMeterReadingPage = ({
                 </div>
               </div>
 
-              {/* Lectura */}
               <div>
                 <FormField
                   control={form.control}

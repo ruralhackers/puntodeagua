@@ -11,6 +11,7 @@ export class GetWaterMeterQry implements Query<WaterMeter | null, string> {
   async handle(id: string): Promise<WaterMeter | null> {
     const test = Id.create(id)
     const result = await this.waterMeterRepository.findById(test)
+    console.log(result?.toDto())
     return result ?? null
   }
 }

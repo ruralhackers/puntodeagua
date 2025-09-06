@@ -194,10 +194,10 @@ export const EditAnalysisPage: FC<{ analysis: AnalysisDto; waterZone: WaterZoneD
           </div>
 
           <div className="flex gap-3 w-full">
-            <Button className="flex-1" type="button" onClick={() => router.back()}>
+            <Button className="flex-1" type="button" variant="outline" onClick={() => router.back()}>
               Cancelar
             </Button>
-            <Button className="flex-1" variant="destructive" type="submit">
+            <Button className="flex-1" variant="default" type="submit">
               Actualizar Análisis
             </Button>
           </div>

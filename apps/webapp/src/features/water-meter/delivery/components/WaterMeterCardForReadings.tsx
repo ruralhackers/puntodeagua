@@ -70,9 +70,9 @@ export default function WaterMeterCardForReadings({
               {lastNormalizedReading && (
                 <div className="flex items-center gap-2 text-sm">
                   <Droplets className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <span className="text-muted-foreground">Lectura normalizada:</span>
+                  <span className="text-muted-foreground">Última lectura normalizada:</span>
                   <span className="font-medium text-blue-600">
-                    {Number(lastNormalizedReading).toFixed(2)} {meter.measurementUnit}
+                    {Number(lastNormalizedReading).toFixed(0)} Litros
                   </span>
                 </div>
               )}

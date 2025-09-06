@@ -45,10 +45,9 @@ export class CreateWaterMeterReadingCmd
     }
 
     // 2. Normalizar la lectura: si está en M3, convertir a litros
-    const normalizedReading =
-      waterMeter.measurementUnit === MeasurementUnit.M3
-        ? (parseFloat(command.reading) * 1000).toString()
-        : command.reading
+    const normalizedReading = waterMeter.measurementUnit.equals(MeasurementUnit.M3)
+      ? (parseFloat(command.reading) * 1000).toString()
+      : command.reading
 
     // 3. Crear la entidad WaterMeterReading
     const waterMeterReading = WaterMeterReading.create({

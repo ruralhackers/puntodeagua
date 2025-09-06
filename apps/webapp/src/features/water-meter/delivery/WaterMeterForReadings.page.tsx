@@ -1,7 +1,6 @@
 'use client'
 import type { HolderDto, WaterMeterDto, WaterZoneDto } from 'features'
-import { ArrowLeft, Calendar, Filter, Search } from 'lucide-react'
-import Link from 'next/link'
+import { Filter, Search } from 'lucide-react'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +13,6 @@ import {
 } from '@/components/ui/select'
 import { PageHeader } from '@/src/components/shared-data/page-header'
 import WaterMeterCardForReadings from './components/WaterMeterCardForReadings'
-import { getDaysSinceLastReading } from './utils/reading-utils'
 
 type Props = {
   waterMeters: WaterMeterDto[]
@@ -59,17 +57,6 @@ export default function WaterMeterForReadingsPage({ waterMeters, waterZones, hol
 
     return matchesZone && (matchesName || matchesHolderName || matchesHolderDni || matchesMeterId)
   })
-
-  // Calcular estadísticas específicas para lecturas
-  const metersWithoutReadings = waterMeters.filter(
-    (meter) => !meter.readings || meter.readings.length === 0
-  ).length
-  const metersWithOldReadings = waterMeters.filter((meter) => {
-    const days = getDaysSinceLastReading(meter.lastReadingDate)
-    return days !== null && days > 90
-  }).length
-  const totalMeters = waterMeters.length
-  const metersWithReadings = totalMeters - metersWithoutReadings
 
   return (
     <div className="container mx-auto p-6 space-y-6">

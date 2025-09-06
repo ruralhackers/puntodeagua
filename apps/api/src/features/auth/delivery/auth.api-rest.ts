@@ -17,7 +17,6 @@ export const authApiRest = new Elysia()
   .post('/auth/login', async ({ body, jwt, set }) => {
     try {
       const loginDto = loginSchema.parse(body)
-
       // Create a JWT sign function and inject it
       const jwtSign = async (payload: { userId: string; email: string; roles: string[] }) => {
         return await jwt.sign(payload)
@@ -32,7 +31,6 @@ export const authApiRest = new Elysia()
       return result
     } catch (error) {
       set.status = 401
-      console.log(error)
       return { error: error instanceof Error ? error.message : 'Authentication failed' }
     }
   })

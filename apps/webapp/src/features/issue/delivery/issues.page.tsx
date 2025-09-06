@@ -1,6 +1,6 @@
 import type { Issue, WaterZone } from 'features'
 import type { FC } from 'react'
-import {PageHeader} from "@/src/components/shared-data/page-header";
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { Page } from '@/src/core/components/page'
 import { IssueItemCard } from '@/src/features/issue/delivery/issue-item-card'
 
@@ -10,9 +10,12 @@ export const IssuesPage: FC<{ issues: Issue[]; zones?: WaterZone[] }> = ({ issue
   return (
     <Page>
       <div className="px-3 py-4">
-        <PageHeader title="Incidencias" subtitle="Historial de incidencias reportadas y su resolución" />
+        <PageHeader
+          title="Incidencias"
+          subtitle="Historial de incidencias reportadas y su resolución"
+        />
         <div className="flex flex-col gap-3">
-          {issues.map((i) => {
+          {issues?.map((i) => {
             const dto = i.toDto()
             return (
               <IssueItemCard

@@ -248,7 +248,7 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
     {
       waterZoneId: anceuWaterZones[2]?.id || '',
       communityId: anceuCommunityId,
-      analysisType: 'bacteriological',
+      analysisType: 'turbidity',
       analyst: 'María',
       analyzedAt: new Date(),
       ph: '7.0',
@@ -267,7 +267,7 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
     {
       waterZoneId: ponteCaldelasWaterZones[1]?.id || '',
       communityId: ponteCaldelasCommunityId,
-      analysisType: 'bacteriological',
+      analysisType: 'turbidity',
       analyst: 'Ana',
       analyzedAt: new Date(),
       ph: '7.4',

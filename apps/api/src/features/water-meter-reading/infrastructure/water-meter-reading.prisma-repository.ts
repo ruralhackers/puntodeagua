@@ -109,4 +109,41 @@ export class WaterMeterReadingPrismaRepository implements WaterMeterReadingRepos
       where: { id: id.toString() }
     })
   }
+
+  async findLastReadingFromWaterMeterId(waterMeterId: Id): Promise<WaterMeterReading | undefined> {
+    const reading = await this.client.waterMeterReading.findFirst({
+      where: { waterMeterId: waterMeterId.toString() },
+      orderBy: { readingDate: 'desc' },
+      include: {
+        files: true
+      }
+    })
+    if (!reading) return undefined
+
+    const files =
+      reading.files?.map((file) => ({
+        id: file.id,
+        filename: file.filename,
+        originalName: file.originalName,
+        mimeType: file.mimeType,
+        size: file.size,
+        url: file.url,
+        bucket: file.bucket,
+        key: file.key,
+        entityType: file.entityType,
+        entityId: file.entityId,
+        uploadedBy: file.uploadedBy,
+        createdAt: file.createdAt
+      })) || []
+
+    return WaterMeterReading.create({
+      id: reading.id,
+      waterMeterId: reading.waterMeterId,
+      reading: reading.reading.toString(),
+      normalizedReading: reading.normalizedReading.toString(),
+      readingDate: reading.readingDate,
+      notes: reading.notes || undefined,
+      files
+    })
+  }
 }

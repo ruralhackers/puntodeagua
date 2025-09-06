@@ -1,6 +1,10 @@
 import type { Command } from 'core'
 import { Id, MeasurementUnit } from 'core'
-import type { WaterMeterReadingDto, WaterMeterRepository } from 'features'
+import type {
+  WaterMeterReadingDto,
+  WaterMeterReadingRepository,
+  WaterMeterRepository
+} from 'features'
 import { WaterMeterReading } from 'features'
 import type { FileUploadService } from '../../../infrastructure/file-upload/file-upload.service'
 
@@ -30,7 +34,7 @@ export class CreateWaterMeterReadingCmd
   static readonly ID = Symbol('CreateWaterMeterReadingCmd')
 
   constructor(
-    private readonly waterMeterReadingRepository: any,
+    private readonly waterMeterReadingRepository: WaterMeterReadingRepository,
     private readonly fileUploadService: FileUploadService,
     private readonly waterMeterRepository: WaterMeterRepository
   ) {}
@@ -42,6 +46,14 @@ export class CreateWaterMeterReadingCmd
     const waterMeter = await this.waterMeterRepository.findById(Id.create(command.waterMeterId))
     if (!waterMeter) {
       throw new Error(`Water meter with id ${command.waterMeterId} not found`)
+    }
+
+    // we need to check the last reading of the water meter, and validate if the reading is greater than the last reading
+    const lastReading = await this.waterMeterReadingRepository.findLastReadingFromWaterMeterId(
+      Id.create(command.waterMeterId)
+    )
+    if (lastReading && parseFloat(command.reading) <= parseFloat(lastReading.reading.toString())) {
+      throw new Error(`Reading must be greater than the last reading`)
     }
 
     // 2. Normalizar la lectura: si está en M3, convertir a litros

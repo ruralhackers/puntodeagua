@@ -101,7 +101,9 @@ export const CreateWaterMeterReadingPage = ({
       }
 
       const difference = current - previous
-      const differenceInLiters = difference * 1000 // Convert m³ to L
+      // Convert to liters only if the measurement unit is M3 (cubic meters)
+      const differenceInLiters =
+        waterMeter.measurementUnit === 'M3' ? difference * 1000 : difference
 
       // Check if consumption is negative
       const isNegativeConsumption = difference < 0
@@ -150,7 +152,8 @@ export const CreateWaterMeterReadingPage = ({
     lastReading,
     readingDate,
     waterPoint.fixedPopulation,
-    waterPoint.floatingPopulation
+    waterPoint.floatingPopulation,
+    waterMeter.measurementUnit
   ])
 
   async function onSubmit(values: CreateWaterMeterReadingFormValues) {

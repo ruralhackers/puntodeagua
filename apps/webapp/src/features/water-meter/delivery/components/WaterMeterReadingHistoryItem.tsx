@@ -70,9 +70,7 @@ export default function WaterMeterReadingHistoryItem({
     return new Intl.DateTimeFormat('es-ES', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      year: 'numeric'
     }).format(new Date(date))
   }
 
@@ -81,7 +79,7 @@ export default function WaterMeterReadingHistoryItem({
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow p-0">
       <CardContent className="p-0">
         {/* Vista compacta - clickeable para expandir */}
         <button
@@ -96,13 +94,12 @@ export default function WaterMeterReadingHistoryItem({
           }}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-2">
               {/* Fecha */}
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-blue-600" />
                 <span className="font-medium">{formatDateCompact(item.readingDate)}</span>
               </div>
-
               {/* Consumo */}
               <div className="flex items-center gap-2">
                 <Activity className="h-4 w-4 text-purple-600" />

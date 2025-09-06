@@ -1,3 +1,4 @@
+import { ReadingAgeThreshold } from 'core'
 import type { HolderDto, WaterMeterDto } from 'features'
 import { Calendar, Droplets, MapPin } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -57,7 +58,7 @@ export default function WaterMeterCardForReadings({
                   className={`font-medium ${
                     daysSinceLastReading === null
                       ? 'text-red-600'
-                      : daysSinceLastReading > 30
+                      : ReadingAgeThreshold.isOldReading(daysSinceLastReading)
                         ? 'text-orange-600'
                         : 'text-green-600'
                   }`}
@@ -93,7 +94,7 @@ export default function WaterMeterCardForReadings({
                 ⚠️ Sin lecturas registradas
               </div>
             )}
-            {daysSinceLastReading !== null && daysSinceLastReading > 30 && (
+            {ReadingAgeThreshold.isOldReading(daysSinceLastReading) && (
               <div className="text-orange-600 text-xs font-medium mt-1.5">⚠️ Lectura antigua</div>
             )}
           </div>

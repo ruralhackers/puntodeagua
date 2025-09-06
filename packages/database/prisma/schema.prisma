@@ -91,7 +91,10 @@ model Community {
   users       User[]
   waterPoints WaterPoint[]
   waterZones  WaterZone[]
-  providers Provider[]
+  providers   Provider[]
+  issues      Issue[]
+  analyses    Analysis[]
+  maintenances Maintenance[]
 
   @@index([planId])
 }
@@ -223,6 +226,9 @@ model Issue {
   waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
   waterZoneId String    @map("water_zone_id")
 
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
+
   title        String
   description  String?
   reporterName String
@@ -233,6 +239,8 @@ model Issue {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([communityId])
 }
 
 model Analysis {
@@ -240,6 +248,9 @@ model Analysis {
 
   waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
   waterZoneId String    @map("water_zone_id")
+
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
 
   analysisType String
   analyst      String
@@ -254,6 +265,7 @@ model Analysis {
   updatedAt DateTime @updatedAt
 
   @@index([waterZoneId])
+  @@index([communityId])
 }
 
 model Maintenance {
@@ -265,6 +277,9 @@ model Maintenance {
   waterZone   WaterZone @relation(fields: [waterZoneId], references: [id], onDelete: Cascade)
   waterZoneId String    @map("water_zone_id")
 
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
+
   executionDate       DateTime? @map("execution_date")
   duration            Int?
   nextMaintenanceDate DateTime? @map("next_maintenance_date")
@@ -275,6 +290,7 @@ model Maintenance {
   updatedAt DateTime @updatedAt
 
   @@index([waterZoneId])
+  @@index([communityId])
 }
 
 model Provider {

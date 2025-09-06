@@ -19,8 +19,6 @@ const Page: NextPage = async () => {
     getHoldersQry.execute()
   ])
 
-  console.log({ waterZones })
-
   return (
     <WaterMeterForReadingsPage
       waterMeters={waterMeters.map((meter: WaterMeter) => meter.toDto())}

@@ -1,3 +1,4 @@
+import type { Id } from 'core'
 import type { Deletable } from 'core/repositories/deletable'
 import type { FindableAll } from 'core/repositories/findable-all'
 import type { FindableById } from 'core/repositories/findable-by-id'
@@ -9,5 +10,5 @@ export interface MaintenanceRepository
     Deletable<Maintenance>,
     FindableById<Maintenance>,
     FindableAll<Maintenance> {
-  findAllOrderedByExecutionDate(startDate?: Date, endDate?: Date): Promise<Maintenance[]>
+  findAllOrderedByExecutionDate(communityId: Id): Promise<Maintenance[]>
 }

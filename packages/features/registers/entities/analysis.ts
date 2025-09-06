@@ -1,11 +1,11 @@
 import { DateTime, Decimal, Id } from 'core'
-import type { AnalysisSchema } from '../schemas/analysis.schema'
+import { type AnalysisSchema, analysisSchema } from '../schemas/analysis.schema'
 import { AnalysisType } from '../value-objects/analysis-type'
-import type { AnalysisDto } from './analysis.dto'
 
 export class Analysis {
   private constructor(
     public readonly id: Id,
+    public readonly communityId: Id,
     public readonly waterZoneId: Id,
     public readonly analysisType: AnalysisType,
     public analyst: string,
@@ -19,6 +19,7 @@ export class Analysis {
   static create(schema: Omit<AnalysisSchema, 'id'>) {
     return new Analysis(
       Id.generateUniqueId(),
+      Id.create(schema.communityId),
       Id.create(schema.waterZoneId),
       AnalysisType.create(schema.analysisType),
       schema.analyst,
@@ -34,6 +35,7 @@ export class Analysis {
     return new Analysis(
       Id.create(dto.id),
       Id.create(dto.waterZoneId),
+      Id.create(dto.communityId),
       AnalysisType.create(dto.analysisType),
       dto.analyst,
       DateTime.fromISO(dto.analyzedAt),
@@ -47,6 +49,7 @@ export class Analysis {
   toDto() {
     return {
       id: this.id.toString(),
+      communityId: this.communityId.toString(),
       waterZoneId: this.waterZoneId.toString(),
       analysisType: this.analysisType.toString(),
       analyst: this.analyst,

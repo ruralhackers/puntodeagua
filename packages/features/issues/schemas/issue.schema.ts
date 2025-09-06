@@ -12,11 +12,11 @@ export const issueSchema = z
     status: z.string(),
     startAt: z.iso.datetime(),
     endAt: z.union([z.iso.datetime(), z.literal('')]).optional(),
+    communityId: idSchema,
     waterZoneId: idSchema
   })
   .refine(
     (data) => {
-      console.log({ data })
       if (data.status === 'closed') {
         return data.endAt !== ''
       }

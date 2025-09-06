@@ -11,7 +11,7 @@ import { SaveIssueCmd } from '../application/save-issue.cmd'
 import type { IssueApiRepository } from '../domain/issue.api-repository'
 
 export const issueApiRest = new Elysia()
-  .get('/issues/', async ({ query }) => {
+  .get('/issues/', async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     // Handle optional status query parameter
@@ -30,7 +30,14 @@ export const issueApiRest = new Elysia()
 
     // If no status filter is provided, get all issues ordered by end date
     const issueRepository = apiContainer.get<IssueApiRepository>(ISSUE_REPOSITORY)
-    const issues = await issueRepository.findAllOrderedByEndAt()
+    const communityId = user.communityId ? Id.create(user.communityId) : undefined
+    if (!communityId) {
+      return {
+        status: 400,
+        body: { message: 'Community ID is required' }
+      }
+    }
+    const issues = await issueRepository.findAllOrderedByEndAt(communityId)
     return issues.map((x) => x.toDto())
   })
   .get('/issues/:id', async ({ params }) => {

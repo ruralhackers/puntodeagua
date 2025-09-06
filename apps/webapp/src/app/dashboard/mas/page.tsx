@@ -38,7 +38,7 @@ export default function MasPage() {
       title: 'Comparte tus registros',
       description: 'Comparte analíticas, incidencias y mantenimientos',
       icon: '📖',
-      href: '/share-data',
+      href: '/compartir-datos',
       color: 'text-emerald-600',
       role: UserRole.COMMUNITY_ADMIN
     },

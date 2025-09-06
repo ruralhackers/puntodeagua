@@ -1,18 +1,16 @@
-import type { NextPage } from 'next'
-import { SUMMARY_REPOSITORY } from '@/src/core/di/injection-tokens'
+import { Id, UseCaseService } from 'core'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import ShareDataPage from '@/src/features/share-data/delivery/ShareData.page'
 import { GetSummaryQry } from '@/src/features/summary/application/get-summary.qry'
-import type {
-  SummaryRepository,
-  SummaryResponse
-} from '@/src/features/summary/infrastructure/summary.api-rest-repository'
+import type { SummaryResponse } from '@/src/features/summary/infrastructure/summary.api-rest-repository'
 
-const Page: NextPage = async () => {
+const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   try {
-    const summaryRepository = webAppContainer.get<SummaryRepository>(SUMMARY_REPOSITORY)
-    const getSummaryQry = new GetSummaryQry(summaryRepository)
-    const summaryData: SummaryResponse = await getSummaryQry.handle()
+    const { id } = await params
+    const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
+    const summaryData: SummaryResponse = await useCaseService.execute(GetSummaryQry, {
+      communityId: Id.create(id)
+    })
 
     return <ShareDataPage summaryData={summaryData} />
   } catch (error) {

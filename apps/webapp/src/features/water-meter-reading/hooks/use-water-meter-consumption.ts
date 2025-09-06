@@ -41,7 +41,6 @@ export const useWaterMeterConsumption = ({
   waterMeter,
   waterPoint
 }: UseWaterMeterConsumptionParams): ConsumptionData | null => {
-  console.log({ currentReading, readingDate, waterMeter, waterPoint })
   return useMemo(() => {
     if (!currentReading) {
       return null

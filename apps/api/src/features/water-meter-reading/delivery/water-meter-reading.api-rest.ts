@@ -59,7 +59,7 @@ export const waterMeterReadingApiRest = new Elysia()
       set.status = 201
       return result
     } catch (error) {
-      console.error('Error creating water meter reading:', error)
+      console.error('Error creating water meter reading en api rest:', error)
       set.status = 500
       return {
         error: 'Internal server error',
@@ -81,7 +81,7 @@ export const waterMeterReadingApiRest = new Elysia()
       return
     } catch (error) {
       console.error('Error deleting water meter reading:', error)
-      
+
       if (error instanceof Error && error.message.includes('not found')) {
         set.status = 404
         return {
@@ -89,7 +89,7 @@ export const waterMeterReadingApiRest = new Elysia()
           message: error.message
         }
       }
-      
+
       set.status = 500
       return {
         error: 'Internal server error',

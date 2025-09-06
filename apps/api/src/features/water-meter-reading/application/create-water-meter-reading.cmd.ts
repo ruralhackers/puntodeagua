@@ -53,7 +53,7 @@ export class CreateWaterMeterReadingCmd
       Id.create(command.waterMeterId)
     )
     if (lastReading && parseFloat(command.reading) <= parseFloat(lastReading.reading.toString())) {
-      throw new Error(`Reading must be greater than the last reading`)
+      throw new Error(`La lectura no puede ser menor o igual a la última lectura`)
     }
 
     // 2. Normalizar la lectura: si está en M3, convertir a litros

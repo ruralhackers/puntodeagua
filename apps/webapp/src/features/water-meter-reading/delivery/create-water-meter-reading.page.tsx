@@ -3,8 +3,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { WaterMeterDto, WaterPointDto } from 'features'
 import { useRouter } from 'next/navigation'
-import { useId, useMemo } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { type ControllerRenderProps, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -17,6 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { getErrorMessage } from '@/lib/utils'
 import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { useAuth } from '@/src/features/auth/context/auth-context'
@@ -48,6 +50,9 @@ export const CreateWaterMeterReadingPage = ({
   const { user } = useAuth()
   const createWaterMeterReadingCommand = useUseCase(CreateWaterMeterReadingCmd)
   const counterLabelId = useId()
+
+  // Estados para manejo de loading
+  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<CreateWaterMeterReadingFormValues>({
     resolver: zodResolver(createWaterMeterReadingSchema),
@@ -98,6 +103,9 @@ export const CreateWaterMeterReadingPage = ({
       const difference = current - previous
       const differenceInLiters = difference * 1000 // Convert m³ to L
 
+      // Check if consumption is negative
+      const isNegativeConsumption = difference < 0
+
       // Calculate days between readings
       const lastReadingDate = new Date(lastReading.readingDate)
       const currentReadingDate = readingDate ? new Date(readingDate) : new Date()
@@ -120,6 +128,7 @@ export const CreateWaterMeterReadingPage = ({
         consumptionPerDayPerPerson,
         consumptionPerDayTotal,
         isHighConsumption,
+        isNegativeConsumption,
         hasPreviousReading: true,
         peopleInWaterPoint
       }
@@ -132,12 +141,21 @@ export const CreateWaterMeterReadingPage = ({
       daysBetween: 0,
       consumptionPerDay: 0,
       isHighConsumption: false,
+      isNegativeConsumption: false,
       hasPreviousReading: false,
       currentReading: current
     }
-  }, [currentReading, lastReading, readingDate])
+  }, [
+    currentReading,
+    lastReading,
+    readingDate,
+    waterPoint.fixedPopulation,
+    waterPoint.floatingPopulation
+  ])
 
   async function onSubmit(values: CreateWaterMeterReadingFormValues) {
+    setIsLoading(true)
+
     try {
       await createWaterMeterReadingCommand.execute({
         waterMeterId: waterMeter.id,
@@ -147,9 +165,14 @@ export const CreateWaterMeterReadingPage = ({
         uploadedBy: user?.id || 'anonymous'
       })
 
+      // Mostrar toast de éxito
+      toast.success('Lectura guardada correctamente')
       router.push(`/dashboard/nuevo-registro/contador`)
     } catch (error) {
-      console.error('Error creating water meter reading:', error)
+      const errorMessage = getErrorMessage(error)
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -279,9 +302,11 @@ export const CreateWaterMeterReadingPage = ({
             <div
               className={`border rounded-lg p-6 ${
                 consumptionData.hasPreviousReading
-                  ? consumptionData.isHighConsumption
+                  ? consumptionData.isNegativeConsumption
                     ? 'bg-red-50 border-red-200'
-                    : 'bg-green-50 border-green-200'
+                    : consumptionData.isHighConsumption
+                      ? 'bg-red-50 border-red-200'
+                      : 'bg-green-50 border-green-200'
                   : 'bg-blue-50 border-blue-200'
               }`}
             >
@@ -312,9 +337,19 @@ export const CreateWaterMeterReadingPage = ({
                       {consumptionData.peopleInWaterPoint} personas
                     </div> */}
                     <div
-                      className={`font-medium ${consumptionData.isHighConsumption ? 'text-red-700' : 'text-green-700'}`}
+                      className={`font-medium ${
+                        consumptionData.isNegativeConsumption
+                          ? 'text-red-700'
+                          : consumptionData.isHighConsumption
+                            ? 'text-red-700'
+                            : 'text-green-700'
+                      }`}
                     >
-                      {consumptionData.isHighConsumption ? '⚠ Consumo elevado' : '✓ Consumo normal'}
+                      {consumptionData.isNegativeConsumption
+                        ? '⚠ Lectura menor a la anterior'
+                        : consumptionData.isHighConsumption
+                          ? '⚠ Consumo elevado'
+                          : '✓ Consumo normal'}
                     </div>
                   </>
                 ) : (
@@ -365,11 +400,17 @@ export const CreateWaterMeterReadingPage = ({
               className="flex-1 hover:cursor-pointer"
               type="button"
               onClick={() => router.back()}
+              disabled={isLoading}
             >
               Cancelar
             </Button>
-            <Button className="flex-1 hover:cursor-pointer" variant="destructive" type="submit">
-              Guardar Lectura
+            <Button
+              className="flex-1 hover:cursor-pointer"
+              variant="destructive"
+              type="submit"
+              disabled={isLoading || (consumptionData?.isNegativeConsumption ?? false)}
+            >
+              {isLoading ? 'Guardando...' : 'Guardar Lectura'}
             </Button>
           </div>
         </form>

@@ -10,6 +10,7 @@ export class WaterMeterReadingApiRestRepository {
       WaterMeterReadingDto,
       CreateWaterMeterReadingCommand
     >('water-meter-readings', command)
+
     return response.data!
   }
 

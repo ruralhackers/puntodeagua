@@ -48,6 +48,11 @@ export class HttpClient {
       ...options
     }).json()
 
+    // TODO - revisar si es necesario esto aqui, si no, eliminar
+    if (response.error) {
+      throw new Error(response.error.message)
+    }
+
     return response
   }
 

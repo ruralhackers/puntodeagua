@@ -1,15 +1,23 @@
-'use client'
-
-import type { Maintenance } from 'features'
-import { Edit3, Trash2 } from 'lucide-react'
+import { Calendar, Settings, User } from 'lucide-react'
 import Link from 'next/link'
+import { Card, CardContent } from '@/components/ui/card'
 import { formatDate } from '../../analysis/delivery/analysis.utils'
 
-interface MaintenanceItemCardProps {
-  dto: Maintenance
+type MaintenanceItemCardProps = {
+  dto: {
+    id: string
+    name: string
+    scheduledDate?: Date
+    executionDate?: Date
+    responsible?: string
+    duration?: number
+    description?: string
+    observations?: string
+    nextMaintenanceDate?: Date
+  }
   status?: { label: string; classes: string }
-  type?: string
-  variant?: 'detailed' | 'simple'
+  type?: { label: string; classes: string }
+  variant?: 'simple' | 'detailed'
 }
 
 export default function MaintenanceItemCard({
@@ -22,107 +30,73 @@ export default function MaintenanceItemCard({
 
   return (
     <Link href={`/dashboard/registros/mantenimiento/${dto.id}`} className="block">
-      <div
-        key={dto.id}
-        className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex items-start gap-3 flex-1">
-            {/* Icon placeholder */}
-            {showDetails && (
-              <div className="text-orange-600 mt-1">
-                <svg
-                  aria-hidden="true"
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-            )}
-
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">{dto.name}</h3>
-
-              {showDetails ? (
-                <div className="space-y-2 text-sm text-gray-600">
-                  <div className="flex gap-2 mb-2">
+      <Card key={dto.id} className="hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="mb-3">
+                <h3 className="font-semibold text-lg truncate">
+                  {dto.name}
+                  {status && (
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${status.classes}`}
+                      className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${status.classes}`}
                     >
                       {status.label}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${type.classes}`}>
-                      {type.label}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Fecha programada:</span>
-                      <span>{formatDate(dto.scheduledDate)}</span>
-                    </div>
-                    {dto.executionDate && (
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">Fecha ejecución:</span>
-                        <span>{formatDate(dto.executionDate)}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Responsable:</span>
-                      <span>{dto.responsible || '—'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Duración:</span>
-                      <span>
-                        {typeof dto.duration === 'number' ? `${dto.duration} horas` : '—'}
-                      </span>
-                    </div>
-                    {dto.nextMaintenanceDate && (
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">Próximo mantenimiento:</span>
-                        <span>{formatDate(dto.nextMaintenanceDate)}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {dto.description && (
-                    <div>
-                      <span className="font-medium">Descripción:</span> {dto.description}
-                    </div>
                   )}
-                  {dto.observations && (
-                    <div>
-                      <span className="font-medium">Observaciones:</span> {dto.observations}
-                    </div>
-                  )}
+                </h3>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4 flex-shrink-0" />
+                  <span>Programado: {dto.scheduledDate ? formatDate(dto.scheduledDate) : '—'}</span>
                 </div>
-              ) : (
-                <div className="space-y-1 text-sm text-gray-600">
-                  {dto.executionDate && (
-                    <div>
-                      <span className="font-medium">Fecha ejecución:</span>{' '}
-                      {formatDate(dto.executionDate)}
-                    </div>
-                  )}
-                  {dto.description && (
-                    <div>
-                      <span className="font-medium">Descripción:</span> {dto.description}
-                    </div>
-                  )}
+                {showDetails && dto.executionDate && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                    <span>Ejecutado: {formatDate(dto.executionDate)}</span>
+                  </div>
+                )}
+                {showDetails && dto.responsible && (
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4 flex-shrink-0" />
+                    <span>Responsable: {dto.responsible}</span>
+                  </div>
+                )}
+                {showDetails && dto.duration && (
+                  <div className="flex items-center gap-1">
+                    <Settings className="h-4 w-4 flex-shrink-0" />
+                    <span>Duración: {dto.duration}h</span>
+                  </div>
+                )}
+              </div>
+              {showDetails && type && (
+                <div className="text-sm text-muted-foreground mt-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${type.classes}`}>
+                    {type.label}
+                  </span>
                 </div>
               )}
             </div>
+            <div className="flex items-center flex-shrink-0">
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <title>Ver detalles</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </Link>
   )
 }

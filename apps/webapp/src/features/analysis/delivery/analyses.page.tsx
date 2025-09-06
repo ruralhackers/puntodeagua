@@ -11,7 +11,9 @@ export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
   analysis,
   zones
 }) => {
-  const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
+  const zoneById = new Map<number, string>(
+    (zones ?? []).map((z) => [Number(z.toDto().id), z.toDto().name])
+  )
   // sort by analyzedAt descending
   analysis.sort(
     (a, b) => new Date(b.toDto().analyzedAt).getTime() - new Date(a.toDto().analyzedAt).getTime()

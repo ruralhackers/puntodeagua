@@ -1,5 +1,5 @@
 import type { IssueSchema } from 'features'
-import {Calendar, Edit, MapPin} from 'lucide-react'
+import { Calendar, Edit, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
@@ -27,12 +27,12 @@ export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName, vari
             <div className="flex justify-between items-center gap-2">
               {dto?.status === 'closed' ? (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Resuelta
-                  </span>
+                  Resuelta
+                </span>
               ) : (
                 <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    En Proceso
-                  </span>
+                  En Proceso
+                </span>
               )}
 
               <Link href={`/dashboard/registros/incidencias/${dto.id}/editar`}>
@@ -48,9 +48,7 @@ export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName, vari
             </div>
           )}
 
-          <h3 className="font-semibold text-lg truncate">
-            {toTitle(dto?.title ?? '')}
-          </h3>
+          <h3 className="font-semibold text-lg truncate">{toTitle(dto?.title ?? '')}</h3>
         </CardHeader>
 
         <CardContent className="pt-0 pb-2 space-y-1">

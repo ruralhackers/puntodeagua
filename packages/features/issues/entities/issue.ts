@@ -9,6 +9,7 @@ export class Issue {
     public readonly reporterName: string,
     public readonly startAt: DateTime,
     public readonly waterZoneId: Id,
+    public readonly communityId: Id,
     public readonly status: IssueStatusType,
     public readonly description?: string,
     public readonly endAt?: DateTime
@@ -21,6 +22,7 @@ export class Issue {
       issueSchema.reporterName,
       DateTime.fromISO(issueSchema.startAt),
       Id.create(issueSchema.waterZoneId),
+      Id.create(issueSchema.communityId),
       IssueStatusType.create(issueSchema.status),
       issueSchema.description,
       issueSchema.endAt ? DateTime.fromISO(issueSchema.endAt) : undefined
@@ -34,6 +36,7 @@ export class Issue {
       dto.reporterName,
       DateTime.fromISO(dto.startAt),
       Id.create(dto.waterZoneId),
+      Id.create(dto.communityId),
       IssueStatusType.create(dto.status),
       dto.description,
       dto.endAt ? DateTime.fromISO(dto.endAt) : undefined
@@ -44,6 +47,7 @@ export class Issue {
     return {
       id: this.id.toString(),
       waterZoneId: this.waterZoneId.toString(),
+      communityId: this.communityId.toString(),
       title: this.title,
       reporterName: this.reporterName,
       description: this.description,

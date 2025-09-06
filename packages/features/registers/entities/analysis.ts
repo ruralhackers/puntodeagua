@@ -5,6 +5,7 @@ import { AnalysisType } from '../value-objects/analysis-type'
 export class Analysis {
   private constructor(
     public readonly id: Id,
+    public readonly communityId: Id,
     public readonly waterZoneId: Id,
     public readonly analysisType: AnalysisType,
     public analyst: string,
@@ -19,6 +20,7 @@ export class Analysis {
     return new Analysis(
       Id.generateUniqueId(),
       Id.create(analysisSchema.waterZoneId),
+      Id.create(analysisSchema.communityId),
       AnalysisType.create(analysisSchema.analysisType),
       analysisSchema.analyst,
       analysisSchema.analyzedAt,
@@ -33,6 +35,7 @@ export class Analysis {
     return new Analysis(
       Id.create(dto.id),
       Id.create(dto.waterZoneId),
+      Id.create(dto.communityId),
       AnalysisType.create(dto.analysisType),
       dto.analyst,
       dto.analyzedAt,
@@ -46,6 +49,7 @@ export class Analysis {
   toDto() {
     return {
       id: this.id.toString(),
+      communityId: this.communityId.toString(),
       waterZoneId: this.waterZoneId.toString(),
       analysisType: this.analysisType.toString(),
       analyst: this.analyst,

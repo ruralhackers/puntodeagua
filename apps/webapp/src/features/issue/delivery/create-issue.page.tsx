@@ -8,10 +8,11 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateIssueCmd } from '@/src/features/issue/application/create-issue.cmd'
 import { IssueForm } from '@/src/features/issue/delivery/issue-form'
-import {PageHeader} from "@/src/components/shared-data/page-header";
+import { useAuth } from '../../auth/context/auth-context'
 
 interface CreateIssuePageProps {
   waterZones: WaterZoneDto[]
@@ -20,6 +21,7 @@ interface CreateIssuePageProps {
 export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) => {
   const router = useRouter()
   const createIssueCommand = useUseCase(CreateIssueCmd)
+  const { user } = useAuth()
 
   const form = useForm<CreateIssueSchema>({
     resolver: zodResolver(createIssueSchema),
@@ -30,7 +32,8 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       startAt: DateTime.fromNow().toISO(),
       reporterName: '',
       status: 'open',
-      endAt: ''
+      endAt: '',
+      communityId: user?.communityId ?? ''
     }
   })
 
@@ -42,10 +45,12 @@ export const CreateIssuePage: NextPage<CreateIssuePageProps> = ({ waterZones }) 
       startAt: values.startAt,
       endAt: values.endAt,
       waterZoneId: values.waterZoneId,
-      status: values.status
+      status: values.status,
+      communityId: user?.communityId ?? ''
     })
     router.push('/')
   }
+  console.log('form', form.getValues())
 
   return (
     <div className="px-3 py-4 pb-20">

@@ -43,7 +43,6 @@ export class WaterZonePrismaRepository extends BasePrismaRepository implements W
     if (filters.communityId) {
       where.communityId = filters.communityId
     }
-
     const entityDtos = await this.getModel().findMany({ where })
     return entityDtos.map((e) => WaterZone.fromDto(e))
   }

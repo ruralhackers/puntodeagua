@@ -19,6 +19,7 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       waterZoneId: input.waterZoneId.toString(),
       title: input.title,
       reporterName: input.reporterName,
+      communityId: input.communityId.toString(),
       description: input.description,
       status: input.status.toString(),
       startAt: input.startAt.toDate(),

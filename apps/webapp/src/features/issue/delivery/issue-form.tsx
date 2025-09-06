@@ -38,7 +38,7 @@ export const IssueForm: FC<{
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (x) => {
-        console.log(x)
+        console.log({ x })
       })}
       className="space-y-8"
     >

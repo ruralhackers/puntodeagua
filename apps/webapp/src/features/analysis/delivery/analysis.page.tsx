@@ -4,19 +4,16 @@ import {
   AlertTriangle,
   Calendar,
   CheckCircle2,
-  EllipsisVertical,
+  FlaskConical,
   MapPin,
   Pencil,
   Trash,
   User
 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
-import { Link } from '@/components/ui/link'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { PageHeader } from '@/src/components/shared-data/page-header'
-import { Page } from '../../../core/components/page'
 import { useUseCase } from '../../../core/use-cases/use-use-case'
 import { DeleteAnalysisCmd } from '../application/delete-analysis.cmd'
 import { formatDate, toTitle } from './analysis.utils'
@@ -41,179 +38,193 @@ export const AnalysisDetailPage: FC<{ analysis: AnalysisDto; zones?: WaterZoneDt
   }
 
   return (
-    <Page>
-      <div className="px-3 py-4">
-        {/* Header */}
-        <PageHeader title="Análisis" subtitle="Registros de análisis de calidad del agua" />
-
-        <div className="flex items-start justify-between mb-4">
+    <div className="px-3 py-4 pb-20">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          aria-label="Volver"
+          onClick={() => router.back()}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg
+            aria-hidden="true"
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </Button>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">{toTitle(dto.analysisType)}</h1>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="ghost" size="sm" aria-label="Acciones">
-                <EllipsisVertical className="size-4" aria-hidden="true" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-44 p-1">
-              <div className="flex flex-col">
-                <Link
-                  to={`/dashboard/registros/analiticas/${dto.id}/edit`}
-                  type="invisible"
-                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent hover:text-accent-foreground"
-                >
-                  <Pencil className="size-4" aria-hidden="true" />
-                  <span>Editar</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent text-red-600 disabled:opacity-60 text-left"
-                >
-                  <Trash className="size-4" aria-hidden="true" />
-                  <span>Eliminar</span>
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <p className="text-gray-600">Detalles del análisis</p>
         </div>
+      </div>
 
-        <div className="space-y-6">
-          {/* Información principal */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <div className="space-y-3">
+      <div className="space-y-6">
+        {/* Información Básica */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-600" />
+            Información Básica
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <Calendar className="size-4 text-gray-400" aria-hidden="true" />
-                  Fecha
+                <div className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  Fecha del Análisis
                 </div>
-                <div className="text-base text-gray-900">{formatDate(dto.analyzedAt)}</div>
+                <p className="text-gray-900 mt-1">{formatDate(new Date(dto.analyzedAt))}</p>
               </div>
               <div>
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <MapPin className="size-4 text-gray-400" aria-hidden="true" />
-                  Zona de medición
-                </div>
-                <div className="text-base text-gray-900">{zoneName}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  <User className="size-4 text-gray-400" aria-hidden="true" />
+                <div className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                  <User className="w-4 h-4" />
                   Realizada por
                 </div>
-                <div className="text-base text-gray-900">{dto.analyst || '—'}</div>
+                <p className="text-gray-900 mt-1">{dto.analyst || '—'}</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm font-medium text-gray-500 flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  Zona de medición
+                </div>
+                <p className="text-gray-900 mt-1">{zoneName}</p>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Parámetros */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="mb-3">
-              <h2 className="text-sm font-medium text-gray-900">Parámetros</h2>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              {dto.chlorine !== undefined && dto.chlorine !== '' && (
-                <div className="bg-white border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-gray-500">Cloro</div>
-                      <div className="text-lg font-semibold text-gray-900">{dto.chlorine} mg/L</div>
-                    </div>
-                    <div
-                      className={`text-sm flex items-center gap-1 ${Number(dto.chlorine) >= 0.3 && Number(dto.chlorine) <= 2 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      {Number(dto.chlorine) >= 0.3 && Number(dto.chlorine) <= 2 ? (
-                        <>
-                          <CheckCircle2 className="size-4" aria-hidden="true" />
-                          <span>Dentro de parámetros</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle className="size-4" aria-hidden="true" />
-                          <span>Fuera de parámetros</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {dto.ph !== undefined && dto.ph !== '' && (
-                <div className="bg-white border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-gray-500">pH</div>
-                      <div className="text-lg font-semibold text-gray-900">{dto.ph}</div>
-                    </div>
-                    <div
-                      className={`text-sm flex items-center gap-1 ${Number(dto.ph) >= 6.5 && Number(dto.ph) <= 8.5 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      {Number(dto.ph) >= 6.5 && Number(dto.ph) <= 8.5 ? (
-                        <>
-                          <CheckCircle2 className="size-4" aria-hidden="true" />
-                          <span>Dentro de parámetros</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle className="size-4" aria-hidden="true" />
-                          <span>Fuera de parámetros</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {dto.turbidity !== undefined && dto.turbidity !== '' && (
-                <div className="bg-white border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-gray-500">Turbidez</div>
-                      <div className="text-lg font-semibold text-gray-900">{dto.turbidity} NTU</div>
-                    </div>
-                    <div
-                      className={`text-sm flex items-center gap-1 ${Number(dto.turbidity) <= 4 ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                      {Number(dto.turbidity) <= 4 ? (
-                        <>
-                          <CheckCircle2 className="size-4" aria-hidden="true" />
-                          <span>Dentro de parámetros</span>
-                        </>
-                      ) : (
-                        <>
-                          <AlertTriangle className="size-4" aria-hidden="true" />
-                          <span>Fuera de parámetros</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Observaciones */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="mb-2">
-              <h2 className="text-sm font-medium text-gray-900">Observaciones</h2>
-            </div>
-            {dto.description && dto.description.trim().length > 0 ? (
+        {/* Parámetros */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <FlaskConical className="w-5 h-5 text-blue-600" />
+            Parámetros
+          </h2>
+          <div className="grid grid-cols-1 gap-3">
+            {dto.chlorine !== undefined && dto.chlorine !== '' && (
               <div className="bg-white border border-gray-200 rounded-lg p-3">
-                <div className="text-sm text-gray-700 whitespace-pre-line">{dto.description}</div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">Cloro</div>
+                    <div className="text-lg font-semibold text-gray-900">{dto.chlorine} mg/L</div>
+                  </div>
+                  <div
+                    className={`text-sm flex items-center gap-1 ${Number(dto.chlorine) >= 0.3 && Number(dto.chlorine) <= 2 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {Number(dto.chlorine) >= 0.3 && Number(dto.chlorine) <= 2 ? (
+                      <>
+                        <CheckCircle2 className="size-4" aria-hidden="true" />
+                        <span>Dentro de parámetros</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="size-4" aria-hidden="true" />
+                        <span>Fuera de parámetros</span>
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="text-sm text-gray-500 italic">Sin observaciones</div>
+            )}
+
+            {dto.ph !== undefined && dto.ph !== '' && (
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">pH</div>
+                    <div className="text-lg font-semibold text-gray-900">{dto.ph}</div>
+                  </div>
+                  <div
+                    className={`text-sm flex items-center gap-1 ${Number(dto.ph) >= 6.5 && Number(dto.ph) <= 8.5 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {Number(dto.ph) >= 6.5 && Number(dto.ph) <= 8.5 ? (
+                      <>
+                        <CheckCircle2 className="size-4" aria-hidden="true" />
+                        <span>Dentro de parámetros</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="size-4" aria-hidden="true" />
+                        <span>Fuera de parámetros</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {dto.turbidity !== undefined && dto.turbidity !== '' && (
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">Turbidez</div>
+                    <div className="text-lg font-semibold text-gray-900">{dto.turbidity} NTU</div>
+                  </div>
+                  <div
+                    className={`text-sm flex items-center gap-1 ${Number(dto.turbidity) <= 4 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {Number(dto.turbidity) <= 4 ? (
+                      <>
+                        <CheckCircle2 className="size-4" aria-hidden="true" />
+                        <span>Dentro de parámetros</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="size-4" aria-hidden="true" />
+                        <span>Fuera de parámetros</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
+        </div>
 
-          {/* Archivos adjuntos */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <div className="mb-2">
-              <h2 className="text-sm font-medium text-gray-900">Archivos adjuntos</h2>
-            </div>
-            <div className="text-sm text-gray-500 italic">Sin archivos adjuntos</div>
+        {/* Observaciones */}
+        {dto.description && dto.description.trim().length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Observaciones</h2>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">{dto.description}</p>
+          </div>
+        )}
+
+        {/* Archivos adjuntos */}
+        {/* <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Archivos adjuntos</h2>
+          <div className="text-sm text-gray-500 italic">Sin archivos adjuntos</div>
+        </div> */}
+
+        {/* Acciones */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Acciones</h2>
+          <div className="flex gap-3">
+            <Link href={`/dashboard/registros/analiticas/${dto.id}/edit`}>
+              <Button className="flex items-center gap-2">
+                <Pencil className="w-4 h-4" />
+                Editar Análisis
+              </Button>
+            </Link>
+            <Button
+              variant="destructive"
+              className="flex items-center gap-2"
+              onClick={handleDelete}
+            >
+              <Trash className="w-4 h-4" />
+              Eliminar
+            </Button>
           </div>
         </div>
       </div>
-    </Page>
+    </div>
   )
 }

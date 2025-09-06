@@ -60,10 +60,10 @@ export const AnalysisForm: FC<{
                     <FormItem>
                       <FormLabel>Zona de Agua</FormLabel>
                       <FormControl>
-                        <>
+                        <div>
                           <input type="hidden" {...field} />
                           <Input type="text" value={zoneName} disabled />
-                        </>
+                        </div>
                       </FormControl>
                       <FormDescription />
                       <FormMessage />
@@ -272,7 +272,7 @@ export const AnalysisForm: FC<{
           Cancelar
         </Button>
         <Button className="flex-1" variant="default" type="submit">
-          Añadir Análisis
+          {isEdit ? 'Guardar Cambios' : 'Añadir Análisis'}
         </Button>
       </div>
     </form>

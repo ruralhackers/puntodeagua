@@ -20,7 +20,7 @@ export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
             <p className="text-gray-600">Listado de proveedores del sistema</p>
           </div>
           <div className="ml-auto">
-            <Button className="flex items-center gap-2" variant="destructive">
+            <Button className="flex items-center gap-2" variant="default">
               <Link href="/dashboard/proveedores/nuevo" className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
                 Añadir proveedor

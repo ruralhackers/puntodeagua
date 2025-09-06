@@ -148,12 +148,12 @@ export const CreateProviderPage: NextPage = () => {
           </div>
 
           <div className="flex gap-3 w-full">
-            <Button className="flex-1" type="button" onClick={() => router.back()}>
+            <Button className="flex-1" type="button" variant="outline" onClick={() => router.back()}>
               Cancelar
             </Button>
             <Button
               className="flex-1"
-              variant="destructive"
+              variant="default"
               type="submit"
               disabled={!form.getValues('communityId')}
             >

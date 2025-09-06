@@ -322,6 +322,7 @@ export const CreateWaterMeterReadingPage = ({
             <Button
               className="flex-1 hover:cursor-pointer"
               type="button"
+              variant="outline"
               onClick={() => router.back()}
               disabled={isLoading}
             >
@@ -329,7 +330,7 @@ export const CreateWaterMeterReadingPage = ({
             </Button>
             <Button
               className="flex-1 hover:cursor-pointer"
-              variant="destructive"
+              variant="default"
               type="submit"
               disabled={isLoading || (consumptionData?.isNegativeConsumption ?? false)}
             >

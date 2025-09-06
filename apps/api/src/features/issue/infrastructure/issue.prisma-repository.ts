@@ -52,22 +52,15 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
     return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
   }
 
-  async findAllOrderedByEndAt(startDate?: Date, endDate?: Date): Promise<Issue[]> {
-    const where =
-      startDate && endDate
-        ? {
-            endAt: {
-              gte: startDate,
-              lt: endDate
-            }
-          }
-        : undefined
-
+  async findAllOrderedByEndAt(communityId: Id): Promise<Issue[]> {
     const entityDtos = await this.getModel().findMany({
-      where,
+      where: {
+        communityId: communityId.toString()
+      },
       orderBy: { endAt: 'asc' }
     })
-    return entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
+    const result = entityDtos.map((c) => Issue.fromDto(this.fromPrismaPayload(c)))
+    return result
   }
 
   async delete(id: Id): Promise<void> {
@@ -82,6 +75,7 @@ export class IssuePrismaRepository extends BasePrismaRepository implements Issue
       reporterName: input.reporterName,
       description: input.description ?? undefined,
       status: input.status,
+      communityId: input.communityId.toString(),
       startAt: DateTime.fromDate(input.startAt).toISO(),
       endAt: input.endAt ? DateTime.fromDate(input.endAt).toISO() : undefined
     }

@@ -45,11 +45,12 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
   async findAllOrderedByAnalyzedAt(communityId: Id): Promise<Analysis[]> {
     const entityDtos = await this.getModel().findMany({
       where: {
-        communityId: communityId
+        communityId: communityId.toString()
       },
       orderBy: { analyzedAt: 'asc' }
     })
-    return entityDtos.map((c) => Analysis.fromDto(this.fromPrismaPayload(c)))
+    const result = entityDtos.map((c) => Analysis.fromDto(this.fromPrismaPayload(c)))
+    return result
   }
 
   async delete(id: Id): Promise<void> {
@@ -66,6 +67,7 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
       ph: input.ph?.toString(),
       turbidity: input.turbidity?.toString(),
       chlorine: input.chlorine?.toString(),
+      communityId: input.communityId.toString(),
       description: input.description ?? undefined
     }
   }

@@ -17,6 +17,7 @@ export class SummaryApiRestRepository implements SummaryRepository {
 
   async getSummary(params: SummaryParams): Promise<SummaryResponse> {
     const response = await this.httpClient.get<SummaryResponse>(`summary/${params?.communityId}`)
+    console.log('response', { response })
     return response.data!
   }
 }

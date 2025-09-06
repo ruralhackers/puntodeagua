@@ -25,11 +25,15 @@ export class GetSummaryQry implements Query<SummaryResponse, SummaryParams> {
   ) {}
 
   async handle(params: SummaryParams): Promise<SummaryResponse> {
+    console.log('params en get summary qry', { params })
     const [analyses, issues, maintenance] = await Promise.all([
       this.analysisRepository.findAllOrderedByAnalyzedAt(params.communityId),
       this.issueRepository.findAllOrderedByEndAt(params.communityId),
       this.maintenanceRepository.findAllOrderedByExecutionDate(params.communityId)
     ])
+    console.log('analyses en get summary qry', { analyses })
+    console.log('issues en get summary qry', { issues })
+    console.log('maintenance en get summary qry', { maintenance })
 
     return {
       analyses,

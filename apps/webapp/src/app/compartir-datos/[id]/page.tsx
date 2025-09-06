@@ -8,7 +8,9 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   try {
     const { id } = await params
     const useCaseService = webAppContainer.get<UseCaseService>(UseCaseService.ID)
-    const summaryData: SummaryResponse = await useCaseService.execute(GetSummaryQry, Id.create(id))
+    const summaryData: SummaryResponse = await useCaseService.execute(GetSummaryQry, {
+      communityId: Id.create(id)
+    })
 
     return <ShareDataPage summaryData={summaryData} />
   } catch (error) {

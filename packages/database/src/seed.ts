@@ -12,16 +12,17 @@ async function main() {
   // Create users for both communities
   await seedUsers(anceuCommunityId, ponteCaldelasCommunityId)
 
-  // Create water infrastructure for Anceu community
-  await seedWaterZones(anceuCommunityId)
-  await seedAnalyses()
-  const waterPointIds = await seedWaterPoints(anceuCommunityId)
+  // Create water infrastructure for both communities
+  await seedWaterZones(anceuCommunityId, ponteCaldelasCommunityId)
+  await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
+  const anceuWaterPointIds = await seedWaterPoints(anceuCommunityId)
+  const ponteCaldelasWaterPointIds = await seedWaterPoints(ponteCaldelasCommunityId)
   await seedHolders()
-  await seedWaterMeters(waterPointIds)
-  await seedIssues()
+  await seedWaterMeters(anceuWaterPointIds, ponteCaldelasWaterPointIds)
+  await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
   await seedWaterMeterReadings()
-  await seedMaintenances()
-  await seedProviders()
+  await seedMaintenances(anceuCommunityId, ponteCaldelasCommunityId)
+  await seedProviders(anceuCommunityId, ponteCaldelasCommunityId)
 }
 
 main()
@@ -44,6 +45,7 @@ async function deleteAll() {
   await prisma.holder.deleteMany({})
   await prisma.analysis.deleteMany({})
   await prisma.maintenance.deleteMany({})
+  await prisma.provider.deleteMany({})
   await prisma.community.deleteMany({})
   await prisma.plan.deleteMany({})
 }
@@ -175,20 +177,34 @@ async function seedWaterPoints(communityId: string) {
   return waterPoints.map((wp) => wp.id)
 }
 
-async function seedWaterZones(communityId: string) {
+async function seedWaterZones(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
   const waterZones = await prisma.waterZone.createMany({
     data: [
+      // Anceu zones
       {
         name: 'Os Casas',
-        communityId
+        communityId: anceuCommunityId
       },
       {
         name: 'Centro',
-        communityId
+        communityId: anceuCommunityId
       },
       {
         name: 'Ramis',
-        communityId
+        communityId: anceuCommunityId
+      },
+      // Ponte Caldelas zones
+      {
+        name: 'Zona Norte',
+        communityId: ponteCaldelasCommunityId
+      },
+      {
+        name: 'Zona Sur',
+        communityId: ponteCaldelasCommunityId
+      },
+      {
+        name: 'Centro Histórico',
+        communityId: ponteCaldelasCommunityId
       }
     ]
   })
@@ -196,98 +212,199 @@ async function seedWaterZones(communityId: string) {
   return waterZones
 }
 
-async function seedAnalyses() {
-  const waterZone = await prisma.waterZone.findFirst()
+async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const anceuWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+  const ponteCaldelasWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: ponteCaldelasCommunityId }
+  })
 
-  if (!waterZone) {
-    console.log('No water zone found, skipping analysis seed')
+  if (anceuWaterZones.length < 3 || ponteCaldelasWaterZones.length < 3) {
+    console.log('Not enough water zones found, skipping analysis seed')
     return
   }
+
+  const analyses = [
+    // Anceu analyses
+    {
+      waterZoneId: anceuWaterZones[0]?.id || '',
+      communityId: anceuCommunityId,
+      analysisType: 'chlorine_ph',
+      analyst: 'Rosa',
+      analyzedAt: new Date(),
+      ph: '7.2',
+      chlorine: '0.5'
+    },
+    {
+      waterZoneId: anceuWaterZones[1]?.id || '',
+      communityId: anceuCommunityId,
+      analysisType: 'chlorine_ph',
+      analyst: 'Pepe',
+      analyzedAt: new Date(),
+      ph: '7.1',
+      chlorine: '0.48'
+    },
+    {
+      waterZoneId: anceuWaterZones[2]?.id || '',
+      communityId: anceuCommunityId,
+      analysisType: 'bacteriological',
+      analyst: 'María',
+      analyzedAt: new Date(),
+      ph: '7.0',
+      chlorine: '0.52'
+    },
+    // Ponte Caldelas analyses
+    {
+      waterZoneId: ponteCaldelasWaterZones[0]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      analysisType: 'chlorine_ph',
+      analyst: 'Carlos',
+      analyzedAt: new Date(),
+      ph: '7.3',
+      chlorine: '0.45'
+    },
+    {
+      waterZoneId: ponteCaldelasWaterZones[1]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      analysisType: 'bacteriological',
+      analyst: 'Ana',
+      analyzedAt: new Date(),
+      ph: '7.4',
+      chlorine: '0.47'
+    },
+    {
+      waterZoneId: ponteCaldelasWaterZones[2]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      analysisType: 'chlorine_ph',
+      analyst: 'Luis',
+      analyzedAt: new Date(),
+      ph: '7.1',
+      chlorine: '0.49'
+    }
+  ]
 
   await prisma.analysis.createMany({
-    data: [
-      {
-        waterZoneId: waterZone!.id,
-        analysisType: 'chlorine_ph',
-        analyst: 'Rosa',
-        analyzedAt: new Date(),
-        ph: '7.2',
-        chlorine: '0.5'
-      },
-      {
-        waterZoneId: waterZone!.id,
-        analysisType: 'chlorine_ph',
-        analyst: 'Pepe',
-        analyzedAt: new Date(),
-        ph: '7.1',
-        chlorine: '0.48'
-      }
-    ]
+    data: analyses
   })
+
+  console.log(`Created ${analyses.length} analyses`)
 }
 
-async function seedMaintenances() {
-  const waterZone = await prisma.waterZone.findFirst()
+async function seedMaintenances(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const anceuWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+  const ponteCaldelasWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: ponteCaldelasCommunityId }
+  })
 
-  if (!waterZone) {
-    console.log('No water zone found, skipping maintenance seed')
+  if (anceuWaterZones.length < 3 || ponteCaldelasWaterZones.length < 3) {
+    console.log('Not enough water zones found, skipping maintenance seed')
     return
   }
+
+  const maintenances = [
+    // Anceu maintenances
+    {
+      waterZoneId: anceuWaterZones[0]?.id || '',
+      communityId: anceuCommunityId,
+      name: 'Limpieza de depósito Os Casas',
+      scheduledDate: new Date(),
+      responsible: 'Juan García'
+    },
+    {
+      waterZoneId: anceuWaterZones[1]?.id || '',
+      communityId: anceuCommunityId,
+      name: 'Revisión de bomba Centro',
+      scheduledDate: new Date(),
+      responsible: 'María López'
+    },
+    {
+      waterZoneId: anceuWaterZones[2]?.id || '',
+      communityId: anceuCommunityId,
+      name: 'Mantenimiento de válvulas Ramis',
+      scheduledDate: new Date(),
+      responsible: 'Carlos Rodríguez'
+    },
+    // Ponte Caldelas maintenances
+    {
+      waterZoneId: ponteCaldelasWaterZones[0]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      name: 'Inspección de tuberías Zona Norte',
+      scheduledDate: new Date(),
+      responsible: 'Pedro Martínez'
+    },
+    {
+      waterZoneId: ponteCaldelasWaterZones[1]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      name: 'Limpieza de filtros Zona Sur',
+      scheduledDate: new Date(),
+      responsible: 'Isabel Fernández'
+    },
+    {
+      waterZoneId: ponteCaldelasWaterZones[2]?.id || '',
+      communityId: ponteCaldelasCommunityId,
+      name: 'Revisión de contadores Centro Histórico',
+      scheduledDate: new Date(),
+      responsible: 'Antonio Silva'
+    }
+  ]
 
   await prisma.maintenance.createMany({
-    data: [
-      {
-        waterZoneId: waterZone.id,
-        name: 'Maintenance 1',
-        scheduledDate: new Date(),
-        responsible: 'Juan García'
-      },
-      {
-        waterZoneId: waterZone.id,
-        name: 'Maintenance 2',
-        scheduledDate: new Date(),
-        responsible: 'María López'
-      },
-      {
-        waterZoneId: waterZone.id,
-        name: 'Maintenance 3',
-        scheduledDate: new Date(),
-        responsible: 'Carlos Rodríguez'
-      }
-    ]
+    data: maintenances
   })
+
+  console.log(`Created ${maintenances.length} maintenances`)
 }
 
-async function seedProviders() {
-  const community = await prisma.community.findFirst()
-
-  if (!community) {
-    console.log('No community found, skipping provider seed')
-    return
-  }
+async function seedProviders(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const providers = [
+    // Anceu providers
+    {
+      communityId: anceuCommunityId,
+      name: 'Fontanería García',
+      phone: '986123456',
+      description: 'Servicios de fontanería y reparaciones'
+    },
+    {
+      communityId: anceuCommunityId,
+      name: 'Bombas del Sur',
+      phone: '986234567',
+      description: 'Instalación y mantenimiento de bombas de agua'
+    },
+    {
+      communityId: anceuCommunityId,
+      name: 'Análisis Hídricos Galicia',
+      phone: '986345678',
+      description: 'Laboratorio de análisis de agua'
+    },
+    // Ponte Caldelas providers
+    {
+      communityId: ponteCaldelasCommunityId,
+      name: 'Aqua Solutions',
+      phone: '986456789',
+      description: 'Soluciones integrales de agua'
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      name: 'Mantenimientos del Río',
+      phone: '986567890',
+      description: 'Mantenimiento de infraestructura hídrica'
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      name: 'Control Calidad Agua',
+      phone: '986678901',
+      description: 'Servicios de control de calidad del agua'
+    }
+  ]
 
   await prisma.provider.createMany({
-    data: [
-      {
-        communityId: community.id,
-        name: 'Proveedor 1',
-        phone: '1234567890',
-        description: 'Proveedor 1'
-      },
-      {
-        communityId: community.id,
-        name: 'Proveedor 2',
-        phone: '1234567890',
-        description: 'Proveedor 2'
-      },
-      {
-        communityId: community.id,
-        name: 'Proveedor 3',
-        phone: '1234567890',
-        description: 'Proveedor 3'
-      }
-    ]
+    data: providers
   })
+
+  console.log(`Created ${providers.length} providers`)
 }
 
 const HOLDERS = [
@@ -323,46 +440,84 @@ async function seedHolders() {
   })
 }
 
-async function seedWaterMeters(waterPointIds: string[]) {
+async function seedWaterMeters(anceuWaterPointIds: string[], ponteCaldelasWaterPointIds: string[]) {
   const holders = await prisma.holder.findMany()
-  const waterZones = await prisma.waterZone.findMany()
+  const anceuWaterPoint = await prisma.waterPoint.findUnique({
+    where: { id: anceuWaterPointIds[0] }
+  })
+  const ponteCaldelasWaterPoint = await prisma.waterPoint.findUnique({
+    where: { id: ponteCaldelasWaterPointIds[0] }
+  })
+
+  const anceuWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: anceuWaterPoint?.communityId }
+  })
+  const ponteCaldelasWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: ponteCaldelasWaterPoint?.communityId }
+  })
 
   const waterMeters = [
+    // Anceu water meters
     {
       name: 'Meter WP1-001',
-      holderId: holders[0]!.id,
-      waterPointId: waterPointIds[0]!,
-      waterZoneId: waterZones[0]!.id, // Os Casas
+      holderId: holders[0]?.id || '',
+      waterPointId: anceuWaterPointIds[0] || '',
+      waterZoneId: anceuWaterZones[0]?.id || '', // Os Casas
       measurementUnit: 'L',
       images: ['https://example.com/meter1.jpg', 'https://example.com/meter1_detail.jpg']
     },
     {
       name: 'Meter WP1-002',
-      holderId: holders[1]!.id,
-      waterPointId: waterPointIds[0]!,
-      waterZoneId: waterZones[1]!.id, // Centro
+      holderId: holders[1]?.id || '',
+      waterPointId: anceuWaterPointIds[0] || '',
+      waterZoneId: anceuWaterZones[1]?.id || '', // Centro
       measurementUnit: 'M3',
       images: ['https://example.com/meter2.jpg']
     },
     {
       name: 'Meter WP2-001',
-      holderId: holders[2]!.id,
-      waterPointId: waterPointIds[1]!,
-      waterZoneId: waterZones[1]!.id, // Centro
+      holderId: holders[2]?.id || '',
+      waterPointId: anceuWaterPointIds[1] || '',
+      waterZoneId: anceuWaterZones[1]?.id || '', // Centro
       measurementUnit: 'L',
       images: []
     },
     {
       name: 'Meter WP2-002',
-      holderId: holders[3]!.id,
-      waterPointId: waterPointIds[1]!,
-      waterZoneId: waterZones[2]!.id, // Ramis
+      holderId: holders[3]?.id || '',
+      waterPointId: anceuWaterPointIds[1] || '',
+      waterZoneId: anceuWaterZones[2]?.id || '', // Ramis
       measurementUnit: 'M3',
       images: [
         'https://example.com/meter4.jpg',
         'https://example.com/meter4_install.jpg',
         'https://example.com/meter4_reading.jpg'
       ]
+    },
+    // Ponte Caldelas water meters
+    {
+      name: 'Meter PC1-001',
+      holderId: holders[0]?.id || '',
+      waterPointId: ponteCaldelasWaterPointIds[0] || '',
+      waterZoneId: ponteCaldelasWaterZones[0]?.id || '', // Zona Norte
+      measurementUnit: 'L',
+      images: ['https://example.com/meter_pc1.jpg']
+    },
+    {
+      name: 'Meter PC1-002',
+      holderId: holders[1]?.id || '',
+      waterPointId: ponteCaldelasWaterPointIds[0] || '',
+      waterZoneId: ponteCaldelasWaterZones[1]?.id || '', // Zona Sur
+      measurementUnit: 'M3',
+      images: ['https://example.com/meter_pc2.jpg']
+    },
+    {
+      name: 'Meter PC2-001',
+      holderId: holders[2]?.id || '',
+      waterPointId: ponteCaldelasWaterPointIds[1] || '',
+      waterZoneId: ponteCaldelasWaterZones[2]?.id || '', // Centro Histórico
+      measurementUnit: 'L',
+      images: []
     }
   ]
 
@@ -373,10 +528,21 @@ async function seedWaterMeters(waterPointIds: string[]) {
   console.log(`Created ${waterMeters.length} water meters`)
 }
 
-async function seedIssues() {
-  const waterZones = await prisma.waterZone.findMany()
+async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const anceuWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+  const ponteCaldelasWaterZones = await prisma.waterZone.findMany({
+    where: { communityId: ponteCaldelasCommunityId }
+  })
+
+  if (anceuWaterZones.length < 3 || ponteCaldelasWaterZones.length < 3) {
+    console.log('Not enough water zones found, skipping issues seed')
+    return
+  }
 
   const issues = [
+    // Anceu issues
     {
       status: 'open',
       title: 'Fuga en tubería principal',
@@ -384,7 +550,8 @@ async function seedIssues() {
       reporterName: 'Olga',
       startAt: '2025-09-03T20:05:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0]!.id
+      waterZoneId: anceuWaterZones[0]?.id || '',
+      communityId: anceuCommunityId
     },
     {
       status: 'open',
@@ -393,7 +560,8 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-09-02T09:24:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0]!.id
+      waterZoneId: anceuWaterZones[0]?.id || '',
+      communityId: anceuCommunityId
     },
     {
       status: 'open',
@@ -402,7 +570,8 @@ async function seedIssues() {
       reporterName: 'Miguel',
       startAt: '2025-09-04T14:30:00.000Z',
       endAt: null,
-      waterZoneId: waterZones[2]!.id
+      waterZoneId: anceuWaterZones[2]?.id || '',
+      communityId: anceuCommunityId
     },
     {
       status: 'closed',
@@ -411,7 +580,40 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-08-25T18:45:00.000Z',
       endAt: '2025-09-03T10:00:00.000Z',
-      waterZoneId: waterZones[1]!.id
+      waterZoneId: anceuWaterZones[1]?.id || '',
+      communityId: anceuCommunityId
+    },
+    // Ponte Caldelas issues
+    {
+      status: 'open',
+      title: 'Filtro obstruido en Zona Norte',
+      description:
+        'El filtro principal de la Zona Norte presenta obstrucción y reduce el flujo de agua',
+      reporterName: 'Carmen',
+      startAt: '2025-09-05T08:15:00.000Z',
+      endAt: null,
+      waterZoneId: ponteCaldelasWaterZones[0]?.id || '',
+      communityId: ponteCaldelasCommunityId
+    },
+    {
+      status: 'open',
+      title: 'Válvula defectuosa en Centro Histórico',
+      description: null,
+      reporterName: 'Roberto',
+      startAt: '2025-09-04T16:20:00.000Z',
+      endAt: null,
+      waterZoneId: ponteCaldelasWaterZones[2]?.id || '',
+      communityId: ponteCaldelasCommunityId
+    },
+    {
+      status: 'closed',
+      title: 'Reparación de tubería Zona Sur',
+      description: 'Tubería principal dañada por obras en la calle',
+      reporterName: 'Elena',
+      startAt: '2025-08-28T10:00:00.000Z',
+      endAt: '2025-09-01T14:30:00.000Z',
+      waterZoneId: ponteCaldelasWaterZones[1]?.id || '',
+      communityId: ponteCaldelasCommunityId
     }
   ]
 

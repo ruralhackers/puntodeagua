@@ -10,8 +10,9 @@ interface ShareDataPageProps {
 export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
   const { analyses, issues, maintenance, waterZones } = summaryData
 
-  const zoneById = new Map<string, string>((waterZones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
-
+  const zoneById = new Map<string, string>(
+    (waterZones ?? []).map((z) => [z.toDto().id, z.toDto().name])
+  )
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold tracking-tight mb-1">
@@ -37,7 +38,12 @@ export default function ShareDataPage({ summaryData }: ShareDataPageProps) {
         <h2 className="text-lg font-semibold mb-2 mt-2">Incidencias</h2>
         <div className="flex flex-col gap-2">
           {issues.map((item) => (
-            <IssueItemCard key={item.id} variant="simple" dto={item} waterZoneName={zoneById.get(item.waterZoneId) ?? ''} />
+            <IssueItemCard
+              key={item.id}
+              variant="simple"
+              dto={item}
+              waterZoneName={zoneById.get(item.waterZoneId) ?? ''}
+            />
           ))}
         </div>
       </div>

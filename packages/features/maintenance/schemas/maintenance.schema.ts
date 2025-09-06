@@ -7,6 +7,7 @@ export const maintenanceSchema = z.object({
   id: idSchema,
   name: z.string(),
   waterZoneId: idSchema,
+  communityId: idSchema,
   scheduledDate: z.date(),
   executionDate: z.date().optional(),
   responsible: z.string(),

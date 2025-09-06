@@ -48,19 +48,15 @@ export class MaintenancePrismaRepository
     return entityDtos.map((c) => Maintenance.fromDto(this.fromPrismaPayload(c)))
   }
 
-  async findAllOrderedByExecutionDate(startDate?: Date, endDate?: Date): Promise<Maintenance[]> {
-    const where = startDate && endDate ? {
-      executionDate: {
-        gte: startDate,
-        lt: endDate
-      }
-    } : undefined
-
+  async findAllOrderedByExecutionDate(communityId: Id): Promise<Maintenance[]> {
     const entityDtos = await this.getModel().findMany({
-      where,
-      orderBy: { executionDate: 'asc' }
+      where: {
+        communityId: communityId.toString()
+      },
+      orderBy: { scheduledDate: 'asc' }
     })
-    return entityDtos.map((c) => Maintenance.fromDto(this.fromPrismaPayload(c)))
+    const result = entityDtos.map((c) => Maintenance.fromDto(this.fromPrismaPayload(c)))
+    return result
   }
 
   async delete(id: Id): Promise<void> {
@@ -77,6 +73,7 @@ export class MaintenancePrismaRepository
       executionDate: input.executionDate ?? undefined,
       description: input.description ?? undefined,
       nextMaintenanceDate: input.nextMaintenanceDate ?? undefined,
+      communityId: input.communityId.toString(),
       observations: input.observations ?? undefined,
       duration: input.duration ?? undefined
     }

@@ -1,9 +1,10 @@
-import type { Query } from 'core'
+import type { Id, Query } from 'core'
 import type {
-  SummaryParams,
   SummaryRepository,
   SummaryResponse
 } from '../infrastructure/summary.api-rest-repository'
+
+export type SummaryParams = { communityId: Id }
 
 export class GetSummaryQry implements Query<SummaryResponse, SummaryParams> {
   static readonly ID = 'GetSummaryQry'

@@ -121,28 +121,6 @@ export default function MaintenanceItemCard({
               )}
             </div>
           </div>
-
-          {showDetails && (
-            <div className="flex items-center gap-2 ml-4">
-              <Link
-                href={`/dashboard/registros/mantenimiento/${dto.id}/edit`}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Editar"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Edit3 className="w-4 h-4" />
-              </Link>
-              <button
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Eliminar"
-                type="button"
-                disabled
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </Link>

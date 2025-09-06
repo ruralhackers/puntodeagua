@@ -371,32 +371,32 @@ export default function WaterMeterDetailPage({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Fotos del Contador</Label>
-              <div className="space-y-2">
-                {displayData?.images && displayData.images.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {displayData.images.map((image) => (
-                      <div key={image} className="flex items-center gap-3 p-3 bg-muted rounded">
-                        <Camera className="h-5 w-5 text-muted-foreground" />
-                        <span className="text-sm">{image}</span>
-                        <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                          Disponible
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3 p-3 bg-muted rounded">
-                    <Camera className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">No hay fotos disponibles</span>
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Fotos de referencia del contador (formatos: JPG, PNG, máx. 5MB)
-              </p>
-            </div>
+            {/*<div className="space-y-2">*/}
+            {/*  <Label>Fotos del Contador</Label>*/}
+            {/*  <div className="space-y-2">*/}
+            {/*    {displayData?.images && displayData.images.length > 0 ? (*/}
+            {/*      <div className="flex flex-wrap gap-2">*/}
+            {/*        {displayData.images.map((image) => (*/}
+            {/*          <div key={image} className="flex items-center gap-3 p-3 bg-muted rounded">*/}
+            {/*            <Camera className="h-5 w-5 text-muted-foreground" />*/}
+            {/*            <span className="text-sm">{image}</span>*/}
+            {/*            <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">*/}
+            {/*              Disponible*/}
+            {/*            </span>*/}
+            {/*          </div>*/}
+            {/*        ))}*/}
+            {/*      </div>*/}
+            {/*    ) : (*/}
+            {/*      <div className="flex items-center gap-3 p-3 bg-muted rounded">*/}
+            {/*        <Camera className="h-5 w-5 text-muted-foreground" />*/}
+            {/*        <span className="text-sm text-muted-foreground">No hay fotos disponibles</span>*/}
+            {/*      </div>*/}
+            {/*    )}*/}
+            {/*  </div>*/}
+            {/*  <p className="text-xs text-muted-foreground">*/}
+            {/*    Fotos de referencia del contador (formatos: JPG, PNG, máx. 5MB)*/}
+            {/*  </p>*/}
+            {/*</div>*/}
           </div>
         </CollapsibleSection>
 

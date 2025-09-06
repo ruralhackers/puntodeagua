@@ -100,14 +100,14 @@ export function UsersPage() {
             Administra los usuarios del sistema y sus permisos
           </p>
         </div>
-        <div className="flex gap-2 flex-shrink-0">
-          <Button asChild className="whitespace-nowrap">
-            <Link href="/dashboard/usuarios/nuevo">
-              <Plus className="h-4 w-4 mr-2" />
-              Nuevo Usuario
-            </Link>
-          </Button>
-        </div>
+        {/*<div className="flex gap-2 flex-shrink-0">*/}
+        {/*  <Button asChild className="whitespace-nowrap">*/}
+        {/*    <Link href="/dashboard/usuarios/nuevo">*/}
+        {/*      <Plus className="h-4 w-4 mr-2" />*/}
+        {/*      Nuevo Usuario*/}
+        {/*    </Link>*/}
+        {/*  </Button>*/}
+        {/*</div>*/}
       </div>
 
       {/* Buscador */}
@@ -188,9 +188,9 @@ export function UsersPage() {
                   </div>
                 </div>
 
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
+                {/*<Button variant="ghost" size="sm">*/}
+                {/*  <MoreVertical className="h-4 w-4" />*/}
+                {/*</Button>*/}
               </div>
             </CardContent>
           </Card>

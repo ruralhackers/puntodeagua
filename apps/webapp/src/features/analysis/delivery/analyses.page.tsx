@@ -1,23 +1,19 @@
 import type { Analysis, WaterZone } from 'features'
+import { Plus } from 'lucide-react'
+import Link from 'next/link'
 import type { FC } from 'react'
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { Link } from '@/components/ui/link'
+import { Button } from '@/components/ui/button'
+import { Link as UILink } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
 import AnalysisItemCard from './AnalysisItemCard'
-import { formatDate, toTitle } from './analysis.utils'
 
 export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = ({
   analysis,
   zones
 }) => {
-  const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
+  const zoneById = new Map<number, string>(
+    (zones ?? []).map((z) => [Number(z.toDto().id), z.toDto().name])
+  )
 
   function hasAlert(a: Analysis) {
     const dto = a.toDto()
@@ -34,7 +30,7 @@ export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
       <div className="px-3 py-4">
         <div className="mb-6">
           <div className="mb-4">
-            <Link
+            <UILink
               to="/dashboard/registros"
               type="invisible"
               className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -57,16 +53,42 @@ export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
                 </svg>
               </span>
               <span className="text-sm">Volver</span>
-            </Link>
+            </UILink>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Analíticas</h1>
-          <p className="text-gray-600">Análisis de calidad del agua</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Analíticas</h1>
+              <p className="text-gray-600">Análisis de calidad del agua</p>
+            </div>
+            <Button className="flex items-center gap-2" variant="default">
+              <Link href="/dashboard/analiticas/nueva" className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Añadir
+              </Link>
+            </Button>
+          </div>
         </div>
         <div className="flex flex-col gap-3">
           {analysis.map((a) => {
             const dto = a.toDto()
             const alert = hasAlert(a)
-            return <AnalysisItemCard key={dto.id} dto={dto} alert={alert} zoneById={zoneById} />
+            const transformedDto = {
+              ...dto,
+              analysisType: dto.analysisType as 'chlorine' | 'turbidity' | 'hardness' | 'complete',
+              analyzedAt: new Date(dto.analyzedAt),
+              waterZoneId: Number(dto.waterZoneId),
+              chlorine: dto.chlorine ? Number(dto.chlorine) : undefined,
+              ph: dto.ph ? Number(dto.ph) : undefined,
+              turbidity: dto.turbidity ? Number(dto.turbidity) : undefined
+            }
+            return (
+              <AnalysisItemCard
+                key={dto.id}
+                dto={transformedDto}
+                alert={alert}
+                zoneById={zoneById}
+              />
+            )
           })}
         </div>
       </div>

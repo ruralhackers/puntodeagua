@@ -18,6 +18,10 @@ export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
   zones
 }) => {
   const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
+  // sort by analyzedAt descending
+  analysis.sort(
+    (a, b) => new Date(b.toDto().analyzedAt).getTime() - new Date(a.toDto().analyzedAt).getTime()
+  )
 
   function hasAlert(a: Analysis) {
     const dto = a.toDto()

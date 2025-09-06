@@ -29,7 +29,7 @@ export function DashboardPage({ incidenciasAbiertas }: DashboardPageProps) {
               to="/dashboard/nuevo-registro/contador"
               className="no-underline hover:no-underline font-bold text-center flex flex-col items-center gap-2"
             >
-              <Droplets className="h-6 w-6" />
+              <Droplets className="size-1 h-6 w-6" />
               <span>
                 Registrar Lectura <br /> de contadores
               </span>
@@ -43,7 +43,7 @@ export function DashboardPage({ incidenciasAbiertas }: DashboardPageProps) {
               to="/dashboard/nuevo-registro/analitica"
               className="no-underline hover:no-underline font-bold text-center flex flex-col items-center gap-2"
             >
-              <FlaskConical className="h-6 w-6" />
+              <FlaskConical className="size-1 w-6 h-6" />
               <span>Registrar Analítica</span>
             </Link>
           </Button>
@@ -55,7 +55,7 @@ export function DashboardPage({ incidenciasAbiertas }: DashboardPageProps) {
               to="/dashboard/nuevo-registro/mantenimiento"
               className="no-underline hover:no-underline font-bold text-center flex flex-col items-center gap-2"
             >
-              <Wrench className="h-6 w-6" />
+              <Wrench className="size-1 h-6 w-6" />
               <span>Registrar Mantenimiento</span>
             </Link>
           </Button>
@@ -68,7 +68,7 @@ export function DashboardPage({ incidenciasAbiertas }: DashboardPageProps) {
               to="/dashboard/nuevo-registro/incidencia"
               className="no-underline hover:no-underline font-bold text-center flex flex-col items-center gap-2"
             >
-              <AlertTriangle className="h-6 w-6" />
+              <AlertTriangle className="size-1 h-6 w-6" />
               <span>Registrar Incidencia</span>
             </Link>
           </Button>

@@ -59,8 +59,12 @@ export const IssueItemCard: FC<IssueItemCardProps> = ({ dto, waterZoneName, vari
               <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <span className="text-muted-foreground">Fecha reporte:</span>
               <span>{formatDate(dto.startAt)}</span>
-              <span>&middot;</span>
-              <span className="font-medium text-red-600">{daysSinceIssueOpened} días</span>
+              {showDetails && (
+                <span className="flex items-center gap-2">
+                  <span>&middot;</span>
+                  <span className="font-medium text-red-600">{daysSinceIssueOpened} días</span>
+                </span>
+              )}
             </div>
           )}
 

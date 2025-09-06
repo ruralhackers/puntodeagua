@@ -211,14 +211,16 @@ export default function WaterMeterDetailPage({
                 <div className="space-y-2">
                   <Label>Consumo</Label>
                   <div className="text-lg font-semibold text-gray-700">
-                    {lastReading.consumption ? `${lastReading.consumption} L` : 'No calculado'}
+                    {lastReading.consumption
+                      ? `${Number(lastReading.consumption).toFixed(2)} L`
+                      : 'No calculado'}
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Valor Normalizado</Label>
                   <div className="text-sm text-gray-600 font-mono">
                     {lastReading.normalizedReading
-                      ? `${lastReading.normalizedReading} L`
+                      ? `${Number(lastReading.normalizedReading).toFixed(2)} L`
                       : 'No disponible'}
                   </div>
                 </div>

@@ -1,5 +1,8 @@
 import type { Maintenance } from 'features'
+import { Plus } from 'lucide-react'
+import Link from 'next/link'
 import type { FC } from 'react'
+import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/src/components/shared-data/page-header'
 import { Page } from '../../../core/components/page'
 import MaintenanceItemCard from './maintenance-item-card'
@@ -30,10 +33,23 @@ export const MaintenancesPage: FC<{ maintenances: Maintenance[] }> = ({ maintena
   return (
     <Page>
       <div className="px-3 py-4 pb-20">
-        <PageHeader
-          title="Mantenimiento"
-          subtitle="Registros de mantenimiento preventivo y correctivo"
-        />
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Mantenimiento</h1>
+              <p className="text-gray-600">Registros de mantenimiento</p>
+            </div>
+            <Button className="flex items-center gap-2" variant="default">
+              <Link
+                href="/dashboard/nuevo-registro/mantenimiento"
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Añadir
+              </Link>
+            </Button>
+          </div>
+        </div>
 
         {/* Maintenances list */}
         <div className="space-y-4">

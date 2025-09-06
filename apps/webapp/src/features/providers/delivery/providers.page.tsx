@@ -1,29 +1,51 @@
 import type { Provider } from 'features'
-import { ArrowLeft, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import Link from 'next/link'
 import type { FC } from 'react'
 import { Button } from '@/components/ui/button'
+import { Link as UILink } from '@/components/ui/link'
 import { Page } from '../../../core/components/page'
 
 export const ProvidersPage: FC<{ providers: Provider[] }> = ({ providers }) => {
   return (
     <Page>
       <div className="px-3 py-4 pb-20">
-        <div className="flex items-center gap-3 mb-6">
-          <Button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" variant="ghost">
-            <Link href="/dashboard/registros">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Proveedores</h1>
-            <p className="text-gray-600">Listado de proveedores del sistema</p>
+        <div className="mb-6">
+          <div className="mb-4">
+            <UILink
+              to="/dashboard/registros"
+              type="invisible"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            >
+              <span className="p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </span>
+              <span className="text-sm">Volver</span>
+            </UILink>
           </div>
-          <div className="ml-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Proveedores</h1>
+              <p className="text-gray-600">Listado de proveedores</p>
+            </div>
             <Button className="flex items-center gap-2" variant="default">
               <Link href="/dashboard/proveedores/nuevo" className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
-                Añadir proveedor
+                Añadir
               </Link>
             </Button>
           </div>

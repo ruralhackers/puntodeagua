@@ -13,8 +13,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import WaterMeterCard from './components/WaterMeterCard'
-import {PageHeader} from "@/src/components/shared-data/page-header";
 
 type Props = {
   waterMeters: WaterMeterDto[]
@@ -63,9 +63,14 @@ export default function WaterMeterPage({
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <PageHeader title="Contadores" subtitle={cardTo === 'detail'
-              ? 'Gestiona los contadores y puntos de agua de la comunidad'
-              : 'Selecciona un contador para registrar una nueva lectura'} />
+      <PageHeader
+        title="Contadores"
+        subtitle={
+          cardTo === 'detail'
+            ? 'Gestiona los contadores y puntos de agua de la comunidad'
+            : 'Selecciona un contador para registrar una nueva lectura'
+        }
+      />
 
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         {cardTo === 'detail' && (

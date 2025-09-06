@@ -36,24 +36,24 @@ export default function WaterMeterCard({
 
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={handleCardClick}>
-      <CardContent className="p-4">
+      <CardContent>
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="mb-3">
               <h3 className="font-semibold text-lg truncate">
                 {holder?.name} • {meter.name}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              {/* <p className="text-sm text-muted-foreground">
                 {holder?.nationalId && `DNI: ${holder.nationalId}`}
-              </p>
+              </p> */}
             </div>
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              {waterPoint?.location && (
+              {/* {waterPoint?.location && (
                 <div className="flex items-center gap-1 min-w-0">
                   <MapPin className="h-4 w-4 flex-shrink-0" />
                   <span className="truncate">{waterPoint.location}</span>
                 </div>
-              )}
+              )} */}
               {waterPoint && (
                 <div className="flex items-center gap-1">
                   <User className="h-4 w-4 flex-shrink-0" />

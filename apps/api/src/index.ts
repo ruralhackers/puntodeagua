@@ -34,8 +34,6 @@ const privateApi = new Elysia()
   .use(registrosApiRest)
   .use(holderApiRest)
 
-console.log('privateApi')
-
 export const app = new Elysia({ prefix: '/api' })
   .use(swagger())
   .use(

@@ -8,7 +8,7 @@ export const analysisSchema = z.object({
   waterZoneId: idSchema,
   analysisType: z.string(),
   analyst: z.string(),
-  analyzedAt: z.date(),
+  analyzedAt: z.iso.datetime(),
   ph: z.string().min(0).optional(),
   turbidity: z.string().min(0).optional(),
   chlorine: z.string().min(0).optional(),

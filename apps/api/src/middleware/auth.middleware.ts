@@ -10,51 +10,46 @@ interface JwtPayload {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-export const authMiddleware = (app: Elysia) =>
-  app.use(jwt({ name: 'jwt', secret: JWT_SECRET })).derive(async ({ headers, jwt, set }) => {
-    // Skip authentication in development if DISABLE_AUTH is set
-    // if (process.env.DISABLE_AUTH === 'true' || process.env.NODE_ENV === 'development') {
-    //   // Return mock user for development
-    //   return {
-    //     user: {
-    //       userId: 'dev-user',
-    //       email: 'dev@example.com',
-    //       roles: ['SUPER_ADMIN'],
-    //       communityId: null
-    //     }
-    //   }
-    // }
-
-    const authHeader = headers.authorization
-    if (!authHeader) {
-      set.status = 401
-      return { error: 'Authorization header required' }
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-    if (!token) {
-      set.status = 401
-      return { error: 'Bearer token required' }
-    }
-
-    try {
-      const payload = await jwt.verify(token)
-      if (!payload) {
+export const authMiddleware = new Elysia({ name: 'auth/jwt' })
+  .use(jwt({ name: 'jwt', secret: JWT_SECRET }))
+  .resolve(
+    {
+      as: 'scoped'
+    },
+    async ({ headers, jwt, set, body }) => {
+      const authHeader = headers.authorization
+      if (!authHeader) {
         set.status = 401
-        return { error: 'Invalid token' }
+        throw new Error('Authorization header required')
       }
 
-      const jwtPayload = payload as unknown as JwtPayload
-      if (!jwtPayload.userId || !jwtPayload.email) {
+      const token = authHeader.replace('Bearer ', '')
+      if (!token) {
         set.status = 401
-        return { error: 'Invalid token payload' }
+        throw new Error('Bearer token required')
       }
 
-      return {
-        user: jwtPayload
+      try {
+        const payload = await jwt.verify(token)
+        if (!payload) {
+          set.status = 401
+          throw new Error('Invalid token')
+        }
+
+        const jwtPayload = payload as unknown as JwtPayload
+        if (!jwtPayload.userId || !jwtPayload.email) {
+          set.status = 401
+          throw new Error('Invalid token payload')
+        }
+
+        return {
+          user: jwtPayload,
+          body: body ? JSON.parse(body) : undefined
+        }
+      } catch (error) {
+        set.status = 401
+        console.log('Error occurred while verifying token:', error)
+        throw new Error('Invalid or expired token')
       }
-    } catch (error) {
-      set.status = 401
-      return { error: 'Invalid or expired token' }
     }
-  })
+  )

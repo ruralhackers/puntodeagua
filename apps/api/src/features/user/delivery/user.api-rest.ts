@@ -1,7 +1,6 @@
 import { UseCaseService } from 'core'
 import { Elysia, t } from 'elysia'
 import { apiContainer } from '../../../api.container'
-import { authMiddleware } from '../../../middleware/auth.middleware'
 import { CreateUserCmd } from '../application/create-user.cmd'
 import { DeleteUserCmd } from '../application/delete-user.cmd'
 import { GetUsersQry } from '../application/get-users.qry'
@@ -21,13 +20,13 @@ interface AuthenticatedUser {
   communityId: string | null
 }
 
-export const userApiRest = authMiddleware(new Elysia())
+export const userApiRest = new Elysia()
   .get('/users', async ({ user, set }) => {
     if (!user) {
       set.status = 401
       return { error: 'User authentication required' }
     }
-    
+
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const authenticatedUser = user as AuthenticatedUser
 
@@ -47,7 +46,7 @@ export const userApiRest = authMiddleware(new Elysia())
         set.status = 401
         return { error: 'User authentication required' }
       }
-      
+
       const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
       const authenticatedUser = user as AuthenticatedUser
 
@@ -69,7 +68,7 @@ export const userApiRest = authMiddleware(new Elysia())
       set.status = 401
       return { error: 'User authentication required' }
     }
-    
+
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const authenticatedUser = user as AuthenticatedUser
 

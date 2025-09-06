@@ -46,14 +46,18 @@ export class HttpClient {
       },
       ...(data !== undefined && { body: JSON.stringify(data) }),
       ...options
-    }).json()
+    })
+
+    if (!response) {
+      return {} as GretchResponse<T>
+    }
 
     // TODO - revisar si es necesario esto aqui, si no, eliminar
     if (response.error) {
       throw new Error(response.error.message)
     }
 
-    return response
+    return response.json()
   }
 
   /**

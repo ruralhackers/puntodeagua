@@ -2,13 +2,14 @@ import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
 import { getWaterPointsFiltersSchema } from 'features'
 import { apiContainer } from '../../../api.container'
-import { authMiddleware } from '../../../middleware/auth.middleware'
 import { GetWaterPointQry } from '../application/get-water-point.qry'
 import { GetWaterPointsQry } from '../application/get-water-points.qry'
 
-export const waterPointApiRest = authMiddleware(new Elysia())
+export const waterPointApiRest = new Elysia()
   .get('/water-points', async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
+
+    console.log('hit')
 
     // Parse and validate query parameters
     const filters = getWaterPointsFiltersSchema.parse(query)

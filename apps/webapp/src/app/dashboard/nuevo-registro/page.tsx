@@ -9,6 +9,8 @@ const Page: NextPage = async () => {
 
   const waterZones = await getWaterZonesQry.execute()
 
+  console.log({ waterZones })
+
   return <NewRegisterPage waterZones={waterZones.map((x: WaterZone) => x.toDto())} />
 }
 

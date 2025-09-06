@@ -3,7 +3,7 @@ export interface AnalysisDto {
   waterZoneId: string
   analysisType: string
   analyst: string
-  analyzedAt: Date
+  analyzedAt: string
   ph?: string
   chlorine?: string
   turbidity?: string

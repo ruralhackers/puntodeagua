@@ -25,17 +25,14 @@ export const analysisApiRest = new Elysia()
   })
   .post('/analyses', async ({ body, set }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    const createAnalysisSchema = analysisSchema
-      .omit({ id: true })
-      .extend({ analyzedAt: z.coerce.date() })
+    const createAnalysisSchema = analysisSchema.omit({ id: true })
     const dto = createAnalysisSchema.parse(body)
     await useCaseService.execute(CreateAnalysisCmd, dto)
     return
   })
   .post('/analyses/:id', async ({ body, params }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
-    const schema = analysisSchema.extend({ analyzedAt: z.coerce.date() })
-    const dto = schema.parse(body)
+    const dto = analysisSchema.parse(body)
     await useCaseService.execute(EditAnalysisCmd, dto)
     return
   })

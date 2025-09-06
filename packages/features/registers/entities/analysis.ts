@@ -1,6 +1,7 @@
-import { Decimal, Id } from 'core'
+import { DateTime, Decimal, Id } from 'core'
 import type { AnalysisSchema } from '../schemas/analysis.schema'
 import { AnalysisType } from '../value-objects/analysis-type'
+import type { AnalysisDto } from './analysis.dto'
 
 export class Analysis {
   private constructor(
@@ -8,24 +9,24 @@ export class Analysis {
     public readonly waterZoneId: Id,
     public readonly analysisType: AnalysisType,
     public analyst: string,
-    public analyzedAt: Date,
+    public analyzedAt: DateTime,
     public ph: Decimal | undefined = undefined,
     public turbidity: Decimal | undefined = undefined,
     public chlorine: Decimal | undefined = undefined,
     public description: string | undefined = undefined
   ) {}
 
-  static create(analysisSchema: Omit<AnalysisSchema, 'id'>) {
+  static create(schema: Omit<AnalysisSchema, 'id'>) {
     return new Analysis(
       Id.generateUniqueId(),
-      Id.create(analysisSchema.waterZoneId),
-      AnalysisType.create(analysisSchema.analysisType),
-      analysisSchema.analyst,
-      analysisSchema.analyzedAt,
-      analysisSchema.ph ? Decimal.fromString(analysisSchema.ph) : undefined,
-      analysisSchema.turbidity ? Decimal.fromString(analysisSchema.turbidity) : undefined,
-      analysisSchema.chlorine ? Decimal.fromString(analysisSchema.chlorine) : undefined,
-      analysisSchema.description ?? undefined
+      Id.create(schema.waterZoneId),
+      AnalysisType.create(schema.analysisType),
+      schema.analyst,
+      DateTime.fromISO(schema.analyzedAt),
+      schema.ph ? Decimal.fromString(schema.ph) : undefined,
+      schema.turbidity ? Decimal.fromString(schema.turbidity) : undefined,
+      schema.chlorine ? Decimal.fromString(schema.chlorine) : undefined,
+      schema.description ?? undefined
     )
   }
 
@@ -35,7 +36,7 @@ export class Analysis {
       Id.create(dto.waterZoneId),
       AnalysisType.create(dto.analysisType),
       dto.analyst,
-      dto.analyzedAt,
+      DateTime.fromISO(dto.analyzedAt),
       dto.ph ? Decimal.fromString(dto.ph) : undefined,
       dto.turbidity ? Decimal.fromString(dto.turbidity) : undefined,
       dto.chlorine ? Decimal.fromString(dto.chlorine) : undefined,
@@ -49,7 +50,7 @@ export class Analysis {
       waterZoneId: this.waterZoneId.toString(),
       analysisType: this.analysisType.toString(),
       analyst: this.analyst,
-      analyzedAt: this.analyzedAt,
+      analyzedAt: this.analyzedAt.toISO(),
       ph: this.ph?.toString(),
       turbidity: this.turbidity?.toString(),
       chlorine: this.chlorine?.toString(),

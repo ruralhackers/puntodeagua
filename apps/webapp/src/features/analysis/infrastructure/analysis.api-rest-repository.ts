@@ -35,6 +35,7 @@ export class AnalysisApiRestRepository implements AnalysisCreateRepository {
   }
 
   async create(analysis: Omit<AnalysisSchema, 'id'>): Promise<void> {
+    console.log(analysis)
     await this.httpClient.post<void, Omit<AnalysisSchema, 'id'>>('analyses', analysis)
     return
   }

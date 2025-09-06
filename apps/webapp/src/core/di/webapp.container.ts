@@ -22,6 +22,7 @@ import { GetAnalysisQry } from '../../features/analysis/application/get-analysis
 import { AnalysisApiRestRepository } from '../../features/analysis/infrastructure/analysis.api-rest-repository'
 import { LoginCmd } from '../../features/auth/application/login.cmd'
 import { AuthApiRestRepository } from '../../features/auth/infrastructure/auth.api-rest-repository'
+import { ClientAuthHttpClient } from '../../features/auth/infrastructure/client-auth-http-client'
 import { ServerAuthHttpClient } from '../../features/auth/infrastructure/server-auth-http-client'
 import { GetHolderQry } from '../../features/holder/application/get-holder.qry'
 import { GetHoldersQry } from '../../features/holder/application/get-holders.qry'
@@ -53,8 +54,8 @@ import {
   HOLDER_REPOSITORY,
   ISSUE_REPOSITORY,
   MAINTENANCE_REPOSITORY,
-  SUMMARY_REPOSITORY,
   PROVIDER_REPOSITORY,
+  SUMMARY_REPOSITORY,
   USER_REPOSITORY,
   WATER_METER_REPOSITORY,
   WATER_REPOSITORY
@@ -64,27 +65,30 @@ export class WebappContainer extends CoreContainer {
   protected override registerInstances(): void {
     super.registerInstances()
 
-    const httpClient = new HttpClient(
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
-    )
-    this.register(HttpClient.ID, httpClient)
+    const baseApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+    const isServer = typeof window === 'undefined'
 
-    // Server-side authenticated HTTP client
-    const serverAuthHttpClient = new ServerAuthHttpClient(
-      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
-    )
-    this.register('ServerAuthHttpClient', serverAuthHttpClient)
+    // Public (unauthenticated) client
+    const publicHttpClient = new HttpClient(baseApiUrl)
+    this.register(HttpClient.ID, publicHttpClient)
+
+    const clientAuthHttpClient = new ClientAuthHttpClient(baseApiUrl)
+    const serverAuthHttpClient = new ServerAuthHttpClient(baseApiUrl)
+
+    // Protected client (server side we can attach secure cookies automatically)
+    const authHttpClient = isServer ? serverAuthHttpClient : clientAuthHttpClient
+    this.register('authHttpClient', authHttpClient)
 
     // AuthHttpClient is created via useAuthHttpClient hook on client-side
     // No need to register it in the container as it requires React context
 
-    const waterPointApiRestRepository = new WaterPointApiRestRepository(serverAuthHttpClient)
+    const waterPointApiRestRepository = new WaterPointApiRestRepository(authHttpClient)
     this.register(WATER_REPOSITORY, waterPointApiRestRepository)
 
-    const holderApiRestRepository = new HolderApiRestRepository(serverAuthHttpClient)
+    const holderApiRestRepository = new HolderApiRestRepository(authHttpClient)
     this.register(HOLDER_REPOSITORY, holderApiRestRepository)
 
-    const issueApiRestRepository = new IssueApiRestRepository(httpClient)
+    const issueApiRestRepository = new IssueApiRestRepository(authHttpClient)
     this.register(ISSUE_REPOSITORY, issueApiRestRepository)
 
     const saveIssueCmd = new EditIssueCmd(issueApiRestRepository)
@@ -93,7 +97,7 @@ export class WebappContainer extends CoreContainer {
     const getWaterPointsQry = new GetWaterPointsQry(waterPointApiRestRepository)
     this.register(GetWaterPointsQry.ID, getWaterPointsQry)
 
-    const providersApiRestRepository = new ProvidersApiRestRepository(httpClient)
+    const providersApiRestRepository = new ProvidersApiRestRepository(authHttpClient)
     this.register(PROVIDER_REPOSITORY, providersApiRestRepository)
 
     const getProvidersQry = new GetProvidersQry(providersApiRestRepository)
@@ -115,7 +119,7 @@ export class WebappContainer extends CoreContainer {
     const getHolderQry = new GetHolderQry(holderApiRestRepository)
     this.register(GetHolderQry.ID, getHolderQry)
 
-    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(serverAuthHttpClient)
+    const waterMeterApiRestRepository = new WaterMeterApiRestRepository(authHttpClient)
     this.register(WATER_METER_REPOSITORY, waterMeterApiRestRepository)
 
     const getWaterMetersQry = new GetWaterMetersQry(waterMeterApiRestRepository)
@@ -124,14 +128,14 @@ export class WebappContainer extends CoreContainer {
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterApiRestRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
 
-    const authApiRestRepository = new AuthApiRestRepository(httpClient)
+    const authApiRestRepository = new AuthApiRestRepository(publicHttpClient)
     this.register(AUTH_REPOSITORY, authApiRestRepository)
 
     const loginCmd = new LoginCmd(authApiRestRepository)
     this.register(LoginCmd.ID, loginCmd)
 
     //analysis
-    const analysisRepository = new AnalysisApiRestRepository(httpClient)
+    const analysisRepository = new AnalysisApiRestRepository(authHttpClient)
     const getAnalysesQry = new GetAnalysesQry(analysisRepository)
     this.register(GetAnalysesQry.ID, getAnalysesQry)
     const getAnalysisQry = new GetAnalysisQry(analysisRepository)
@@ -144,7 +148,7 @@ export class WebappContainer extends CoreContainer {
     this.register(DeleteAnalysisCmd.ID, deleteAnalysisCmd)
 
     // water zones
-    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(serverAuthHttpClient)
+    const waterZoneApiRestRepository = new WaterZoneApiRestRepository(authHttpClient)
     const getWaterZonesQry = new GetWaterZonesQry(waterZoneApiRestRepository)
     this.register(GetWaterZonesQry.ID, getWaterZonesQry)
 
@@ -161,7 +165,9 @@ export class WebappContainer extends CoreContainer {
     this.register(CreateIssueCmd.ID, createIssueCmd)
 
     // Water meter reading commands
-    const waterMeterReadingApiRestRepository = new WaterMeterReadingApiRestRepository(httpClient)
+    const waterMeterReadingApiRestRepository = new WaterMeterReadingApiRestRepository(
+      authHttpClient
+    )
     const createWaterMeterReadingCmd = new CreateWaterMeterReadingCmd(
       waterMeterReadingApiRestRepository
     )
@@ -173,13 +179,13 @@ export class WebappContainer extends CoreContainer {
     this.register(DeleteWaterMeterReadingCmd.ID, deleteWaterMeterReadingCmd)
 
     // User management
-    const userApiRestRepository = new UserApiRestRepository(httpClient)
+    const userApiRestRepository = new UserApiRestRepository(authHttpClient)
     this.register(USER_REPOSITORY, userApiRestRepository)
 
     const getUsersQry = new GetUsersQry(userApiRestRepository)
     this.register(GetUsersQry.ID, getUsersQry)
     // maintenance
-    const maintenanceRepository = new MaintenanceApiRestRepository(httpClient)
+    const maintenanceRepository = new MaintenanceApiRestRepository(authHttpClient)
     this.register(MAINTENANCE_REPOSITORY, maintenanceRepository)
     const getMaintenancesQry = new GetMaintenancesQry(maintenanceRepository)
     this.register(GetMaintenancesQry.ID, getMaintenancesQry)
@@ -191,12 +197,12 @@ export class WebappContainer extends CoreContainer {
     this.register(EditMaintenanceCmd.ID, editMaintenanceCmd)
 
     // registros stats
-    const registrosStatsRepository = new RegistrosStatsApiRestRepository(serverAuthHttpClient)
+    const registrosStatsRepository = new RegistrosStatsApiRestRepository(authHttpClient)
     const getRegistrosStatsQry = new GetRegistrosStatsQry(registrosStatsRepository)
     this.register(GetRegistrosStatsQry.ID, getRegistrosStatsQry)
 
     // summary
-    const summaryRepository = new SummaryApiRestRepository(serverAuthHttpClient)
+    const summaryRepository = new SummaryApiRestRepository(authHttpClient)
     this.register(SUMMARY_REPOSITORY, summaryRepository)
     const getSummaryQry = new GetSummaryQry(summaryRepository)
     this.register(GetSummaryQry.ID, getSummaryQry)

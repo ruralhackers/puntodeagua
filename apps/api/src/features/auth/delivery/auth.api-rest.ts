@@ -32,6 +32,7 @@ export const authApiRest = new Elysia()
       return result
     } catch (error) {
       set.status = 401
+      console.log(error)
       return { error: error instanceof Error ? error.message : 'Authentication failed' }
     }
   })

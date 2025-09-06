@@ -1,15 +1,19 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
+import { DateTime } from 'core'
 import type { WaterZoneDto } from 'features'
-import { analysisSchema } from 'features/registers/schemas/analysis.schema'
+import { type AnalysisSchema, analysisSchema } from 'features/registers/schemas/analysis.schema'
 import { AnalysisType } from 'features/registers/value-objects/analysis-type'
+import { CalendarIcon } from 'lucide-react'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/navigation'
 import { useId, useMemo } from 'react'
 import { type ControllerRenderProps, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Form,
   FormControl,
@@ -20,15 +24,16 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { CreateAnalysisCmd } from '@/src/features/analysis/application/create-analysis.cmd'
-import {PageHeader} from "@/src/components/shared-data/page-header";
+import { cn } from '../../../../lib/utils'
 
 export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ waterZones }) => {
   const router = useRouter()
   const createAnalysisCommand = useUseCase(CreateAnalysisCmd)
   const createAnalysisSchema = analysisSchema.omit({ id: true })
-
+  type FormFieldType = ControllerRenderProps<Omit<AnalysisSchema, 'id'>, any>
 
   const form = useForm<z.infer<typeof createAnalysisSchema>>({
     resolver: zodResolver(createAnalysisSchema),
@@ -37,7 +42,7 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
       waterZoneId: '',
       analysisType: '',
       analyst: '',
-      analyzedAt: new Date(),
+      analyzedAt: DateTime.fromNow().toISO(),
       ph: '',
       turbidity: '',
       chlorine: ''
@@ -52,9 +57,8 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
   }, [selectedType])
 
   async function onSubmit(values: z.infer<typeof createAnalysisSchema>) {
-    console.log('onSubmit', values)
     await createAnalysisCommand.execute(values)
-    router.push('/')
+    router.push('/dashboard/registros/analiticas')
   }
 
   function onChangeAnalysisType(value: string) {
@@ -83,7 +87,9 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                         <select
                           required
                           value={field.value}
-                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value)}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            field.onChange(e.target.value)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Selecciona una zona</option>
@@ -119,36 +125,53 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
               </div>
 
               {/* analyzedAt */}
-              <div>
-                <FormField
-                  control={form.control}
-                  name="analyzedAt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de análisis</FormLabel>
-                      <FormControl>
-                        <input
-                          type="date"
-                          required
-                          placeholder="Fecha de análisis"
-                          value={
-                            field.value
-                              ? new Date(field.value as unknown as Date).toISOString().slice(0, 10)
-                              : ''
+              <FormField
+                control={form.control}
+                name="analyzedAt"
+                render={({ field }: { field: FormFieldType }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Fecha de análisis *</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'w-[240px] pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value ? (
+                              DateTime.fromISO(field.value).format('cccc, dd LLL yyyy')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? DateTime.fromISO(field.value).toDate() : undefined
                           }
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            field.onChange(
-                              e.target.value ? new Date(`${e.target.value}T00:00:00`) : undefined
-                            )
-                          }
+                          onSelect={(x: Date | undefined, ...args: any[]) => {
+                            if (x) {
+                              field.onChange(DateTime.fromDate(x).toISO(), ...args)
+                            } else {
+                              field.onChange('', ...args)
+                            }
+                          }}
+                          captionLayout="dropdown"
                         />
-                      </FormControl>
-                      <FormDescription />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-              </div>
+                      </PopoverContent>
+                    </Popover>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              ></FormField>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -162,7 +185,9 @@ export const CreateAnalysisPage: NextPage<{ waterZones: WaterZoneDto[] }> = ({ w
                     id={analysisTypeId}
                     name="analysisType"
                     value={form.getValues('analysisType')}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChangeAnalysisType(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      onChangeAnalysisType(e.target.value)
+                    }
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >

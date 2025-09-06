@@ -2,14 +2,13 @@ import { Id, UseCaseService } from 'core'
 import { Elysia } from 'elysia'
 import { holderSchema } from 'features/schemas/holder.schema'
 import { apiContainer } from '../../../api.container'
-import { authMiddleware } from '../../../middleware/auth.middleware'
 import { CreateHolderCmd } from '../../holder/application/create-holder.cmd'
 import { DeleteHolderCmd } from '../../holder/application/delete-holder.cmd'
 import { EditHolderCmd } from '../../holder/application/edit-holder.cmd'
 import { GetHolderQry } from '../../holder/application/get-holder.qry'
 import { GetHoldersQry } from '../../holder/application/get-holders.qry'
 
-export const holdersApiRest = authMiddleware(new Elysia())
+export const holdersApiRest = new Elysia()
   .get('/holders', async ({ set }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
     const holders = await useCaseService.execute(GetHoldersQry)

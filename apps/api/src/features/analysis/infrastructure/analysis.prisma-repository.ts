@@ -1,4 +1,4 @@
-import type { Id } from 'core'
+import { DateTime, type Id } from 'core'
 import type { Prisma, PrismaClient } from 'database'
 import { Analysis, type AnalysisRepository, BasePrismaRepository } from 'features'
 
@@ -13,7 +13,7 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
       waterZoneId: input.waterZoneId.toString(),
       analysisType: input.analysisType.toString(),
       analyst: input.analyst,
-      analyzedAt: input.analyzedAt,
+      analyzedAt: input.analyzedAt.toDate(),
       ph: input.ph?.toString(),
       turbidity: input.turbidity?.toString(),
       chlorine: input.chlorine?.toString(),
@@ -43,12 +43,15 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
   }
 
   async findAllOrderedByAnalyzedAt(startDate?: Date, endDate?: Date): Promise<Analysis[]> {
-    const where = startDate && endDate ? {
-      analyzedAt: {
-        gte: startDate,
-        lt: endDate
-      }
-    } : undefined
+    const where =
+      startDate && endDate
+        ? {
+            analyzedAt: {
+              gte: startDate,
+              lt: endDate
+            }
+          }
+        : undefined
 
     const entityDtos = await this.getModel().findMany({
       where,
@@ -67,7 +70,7 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
       waterZoneId: input.waterZoneId.toString(),
       analysisType: input.analysisType.toString(),
       analyst: input.analyst,
-      analyzedAt: input.analyzedAt,
+      analyzedAt: DateTime.fromDate(input.analyzedAt).toISO(),
       ph: input.ph?.toString(),
       turbidity: input.turbidity?.toString(),
       chlorine: input.chlorine?.toString(),

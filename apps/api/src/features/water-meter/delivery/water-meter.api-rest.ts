@@ -2,7 +2,6 @@ import { UseCaseService } from 'core'
 import { Elysia } from 'elysia'
 import { getWaterMetersFiltersSchema } from 'features'
 import { apiContainer } from '../../../api.container'
-import { authMiddleware } from '../../../middleware/auth.middleware'
 import { GetWaterMeterQry } from '../application/get-water-meter.qry'
 import { GetWaterMetersQry } from '../application/get-water-meters.qry'
 import { UpdateWaterMeterCmd } from '../application/update-water-meter.cmd'
@@ -21,7 +20,7 @@ interface AuthenticatedUser {
   communityId: string | null
 }
 
-export const waterMeterApiRest = authMiddleware(new Elysia())
+export const waterMeterApiRest = new Elysia()
   .get('/water-meters', async ({ query, user }) => {
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 

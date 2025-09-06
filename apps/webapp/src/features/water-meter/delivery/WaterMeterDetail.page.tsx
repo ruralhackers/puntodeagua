@@ -2,11 +2,11 @@
 
 import { MeasurementUnit } from 'core'
 import type { HolderDto, WaterMeterDto, WaterPointDto } from 'features'
-import { AlertTriangle, ArrowLeft, Camera, Droplets, Edit, Plus, Save, X } from 'lucide-react'
+import { AlertTriangle, Camera, Droplets, Edit, Plus, Save, X } from 'lucide-react'
 import Link from 'next/link'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CollapsibleSection } from '@/components/ui/collapsible-section'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -16,11 +16,11 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useGetWaterMeter } from '@/src/features/water-meter/hooks/use-get-water-meter'
 import { useUpdateWaterMeter } from '@/src/features/water-meter/hooks/use-update-water-meter'
 import { useGetWaterZones } from '@/src/features/water-zone/hooks/use-get-water-zones'
 import WaterMeterReadingHistory from './components/WaterMeterReadingHistory'
-import {PageHeader} from "@/src/components/shared-data/page-header";
 
 interface WaterMeterDetailPageProps {
   waterMeter: WaterMeterDto
@@ -126,7 +126,11 @@ export default function WaterMeterDetailPage({
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-        <PageHeader title={displayData?.name} subtitle={`Detalles del contador • ID: ${displayData?.id}`} subtitleClassName="text-muted-foreground text-sm lg:text-base" />
+        <PageHeader
+          title={displayData?.name}
+          subtitle={`Detalles del contador • ID: ${displayData?.id}`}
+          subtitleClassName="text-muted-foreground text-sm lg:text-base"
+        />
 
         <div className="flex gap-2 flex-shrink-0">
           {isEditing ? (
@@ -159,83 +163,79 @@ export default function WaterMeterDetailPage({
 
       <div className="space-y-6">
         {/* Última Lectura */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5" />
-              Última Lectura
-            </CardTitle>
-            <CardDescription>Información de la última medición registrada</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Valor</Label>
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-900">
-                    {lastReading ? formatReadingValue(lastReading.reading) : 'No disponible'}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Fecha</Label>
-                <div className="p-3 bg-muted rounded-lg">
-                  <div className="text-sm">
-                    {lastReading ? formatDate(lastReading.readingDate) : 'No disponible'}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Estado</Label>
-                <div className="p-3 rounded-lg">
-                  {lastReading?.['excess-consumption'] ? (
-                    <div className="flex items-center gap-2 text-orange-600">
-                      <AlertTriangle className="h-4 w-4" />
-                      <span className="text-sm font-medium">Consumo excesivo detectado</span>
-                    </div>
-                  ) : lastReading ? (
-                    <div className="text-green-600 text-sm font-medium">Normal</div>
-                  ) : (
-                    <div className="text-gray-500 text-sm font-medium">Sin lecturas</div>
-                  )}
+        <CollapsibleSection
+          title="Última Lectura"
+          description="Información de la última medición registrada"
+          icon={<Droplets className="h-5 w-5" />}
+          defaultExpanded={false}
+          className="pl-6 pr-6"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label>Valor</Label>
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-900">
+                  {lastReading ? formatReadingValue(lastReading.reading) : 'No disponible'}
                 </div>
               </div>
             </div>
-
-            {/* Información adicional de consumo */}
-            {lastReading && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Consumo</Label>
-                    <div className="text-lg font-semibold text-gray-700">
-                      {lastReading.consumption ? `${lastReading.consumption} L` : 'No calculado'}
-                    </div>
+            <div className="space-y-2">
+              <Label>Fecha</Label>
+              <div className="p-3 bg-muted rounded-lg">
+                <div className="text-sm">
+                  {lastReading ? formatDate(lastReading.readingDate) : 'No disponible'}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Estado</Label>
+              <div className="p-3 rounded-lg">
+                {lastReading?.['excess-consumption'] ? (
+                  <div className="flex items-center gap-2 text-orange-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span className="text-sm font-medium">Consumo excesivo detectado</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label>Valor Normalizado</Label>
-                    <div className="text-sm text-gray-600 font-mono">
-                      {lastReading.normalizedReading
-                        ? `${lastReading.normalizedReading} L`
-                        : 'No disponible'}
-                    </div>
+                ) : lastReading ? (
+                  <div className="text-green-600 text-sm font-medium">Normal</div>
+                ) : (
+                  <div className="text-gray-500 text-sm font-medium">Sin lecturas</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Información adicional de consumo */}
+          {lastReading && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Consumo</Label>
+                  <div className="text-lg font-semibold text-gray-700">
+                    {lastReading.consumption ? `${lastReading.consumption} L` : 'No calculado'}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Valor Normalizado</Label>
+                  <div className="text-sm text-gray-600 font-mono">
+                    {lastReading.normalizedReading
+                      ? `${lastReading.normalizedReading} L`
+                      : 'No disponible'}
                   </div>
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
+        </CollapsibleSection>
 
         {/* Datos del Contador */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5" />
-              Datos del Contador
-            </CardTitle>
-            <CardDescription>Información técnica del contador de agua</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <CollapsibleSection
+          title="Datos del Contador"
+          description="Información técnica del contador de agua"
+          icon={<Droplets className="h-5 w-5" />}
+          defaultExpanded={false}
+          className="pl-6 pr-6"
+        >
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor={nameInputId}>Nombre del Contador</Label>
@@ -243,7 +243,9 @@ export default function WaterMeterDetailPage({
                   <Input
                     id={nameInputId}
                     value={editData?.name || ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('name', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange('name', e.target.value)
+                    }
                   />
                 ) : (
                   <div className="p-2 bg-muted rounded">{displayData?.name}</div>
@@ -293,7 +295,7 @@ export default function WaterMeterDetailPage({
                       setEditData({
                         ...editData,
                         waterZoneId: value,
-                        waterZoneName: selectedZone?.name || ''
+                        waterZoneName: (selectedZone as any)?.name || ''
                       })
                     }}
                   >
@@ -393,31 +395,26 @@ export default function WaterMeterDetailPage({
                 Fotos de referencia del contador (formatos: JPG, PNG, máx. 5MB)
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CollapsibleSection>
 
         {/* Historial de Lecturas */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Droplets className="h-5 w-5" />
-              Historial de Lecturas
-            </CardTitle>
-            <CardDescription>
-              Registro histórico de todas las mediciones del contador
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <WaterMeterReadingHistory
-              readings={
-                waterMeter.readings?.map((reading) => ({
-                  ...reading
-                })) ?? []
-              }
-              onReadingDeleted={refreshWaterMeter}
-            />
-          </CardContent>
-        </Card>
+        <CollapsibleSection
+          title="Historial de Lecturas"
+          description="Registro histórico de todas las mediciones del contador"
+          icon={<Droplets className="h-5 w-5" />}
+          defaultExpanded={false}
+          className="pl-6 pr-6"
+        >
+          <WaterMeterReadingHistory
+            readings={
+              waterMeter.readings?.map((reading) => ({
+                ...reading
+              })) ?? []
+            }
+            onReadingDeleted={refreshWaterMeter}
+          />
+        </CollapsibleSection>
       </div>
     </div>
   )

@@ -82,7 +82,7 @@ export function DashboardPage({ incidenciasAbiertas }: DashboardPageProps) {
             <span className="text-sm text-gray-500">{incidenciasAbiertas.length} elementos</span>
           </div>
           <div className="space-y-2">
-            {incidenciasAbiertas.map((e: AttentionItemType) => (
+            {incidenciasAbiertas?.map((e: AttentionItemType) => (
               <AttentionItem key={`${e.id}`} item={e} />
             ))}
           </div>

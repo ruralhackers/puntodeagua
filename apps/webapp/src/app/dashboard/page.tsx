@@ -11,7 +11,7 @@ export default async function Page() {
   const zones = await service.execute(GetWaterZonesQry)
   const zoneById = new Map<string, string>((zones ?? []).map((z) => [z.toDto().id, z.toDto().name]))
 
-  const incidenciasAbiertas = openIssues.map((issue: Issue) => ({
+  const incidenciasAbiertas = openIssues?.map((issue: Issue) => ({
     id: issue.id.toString(),
     titulo: issue.title,
     ubicacion: zoneById.get(issue.waterZoneId.toString()),

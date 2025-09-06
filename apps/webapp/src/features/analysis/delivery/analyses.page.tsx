@@ -61,7 +61,7 @@ export const AnalysesPage: FC<{ analysis: Analysis[]; zones?: WaterZone[] }> = (
               <p className="text-gray-600">Análisis de calidad del agua</p>
             </div>
             <Button className="flex items-center gap-2" variant="default">
-              <Link href="/dashboard/analiticas/nueva" className="flex items-center gap-2">
+              <Link href="/dashboard/nuevo-registro/analitica" className="flex items-center gap-2">
                 <Plus className="w-4 h-4" />
                 Añadir
               </Link>

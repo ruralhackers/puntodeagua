@@ -37,7 +37,7 @@ export const TabBar: FC = () => {
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t md:hidden pb-2">
       <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
           return (

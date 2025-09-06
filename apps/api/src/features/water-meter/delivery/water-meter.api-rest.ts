@@ -23,7 +23,6 @@ interface AuthenticatedUser {
 
 export const waterMeterApiRest = authMiddleware(new Elysia())
   .get('/water-meters', async ({ query, user }) => {
-    console.log('water-meters', { query, user })
     const useCaseService = apiContainer.get<UseCaseService>(UseCaseService.ID)
 
     // Parse and validate query parameters

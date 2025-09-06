@@ -1,8 +1,8 @@
 import { UseCaseService } from 'core'
-import { Holder } from 'features/entities/holder'
-import { WaterMeter } from 'features/entities/water-meter'
-import { WaterPoint } from 'features/entities/water-point'
-import { WaterZone } from 'features/entities/water-zone'
+import type { Holder } from 'features/entities/holder'
+import type { WaterMeter } from 'features/entities/water-meter'
+import type { WaterPoint } from 'features/entities/water-point'
+import type { WaterZone } from 'features/entities/water-zone'
 import { webAppContainer } from '@/src/core/di/webapp.container'
 import { GetHoldersQry } from '@/src/features/holder/application/get-holders.qry'
 import { GetWaterMetersQry } from '@/src/features/water-meter/application/get-water-meters.qry'
@@ -27,7 +27,6 @@ const Page = async () => {
       waterZones={waterZones.map((zone: WaterZone) => zone.toDto())}
       holders={holders.map((holder: Holder) => holder.toDto())}
       waterPoints={waterPoints.map((point: WaterPoint) => point.toDto())}
-      cardTo="detail"
     />
   )
 }

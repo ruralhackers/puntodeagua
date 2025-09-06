@@ -144,6 +144,9 @@ export class WaterMeterPrismaRepository
         }
       }
     })
+    const x = waterMeters.filter((wm) => wm.id === 'cmf6qi2jr000pp4whqup3aakr')
+    console.log({ x: x[0].waterMeterReadings })
+    console.log('con filters')
 
     return waterMeters.map((wm) =>
       WaterMeter.create({

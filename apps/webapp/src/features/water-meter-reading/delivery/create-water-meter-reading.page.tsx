@@ -19,10 +19,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import { useUseCase } from '@/src/core/use-cases/use-use-case'
 import { useAuth } from '@/src/features/auth/context/auth-context'
 import { CreateWaterMeterReadingCmd } from '../application/create-water-meter-reading.cmd'
-import {PageHeader} from "@/src/components/shared-data/page-header";
 
 const createWaterMeterReadingSchema = z.object({
   reading: z
@@ -66,7 +66,7 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
         uploadedBy: user?.id || 'anonymous'
       })
 
-      router.push(`/dashboard/contadores/${waterMeter.id}`)
+      router.push(`/dashboard/nuevo-registro/contador`)
     } catch (error) {
       console.error('Error creating water meter reading:', error)
     }
@@ -76,7 +76,10 @@ export const CreateWaterMeterReadingPage = ({ waterMeter }: CreateWaterMeterRead
     <div className="px-3 py-4 pb-20">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <PageHeader title="Nueva Lectura" subtitle={`Registra una nueva lectura para ${waterMeter.name}`} />
+        <PageHeader
+          title="Nueva Lectura"
+          subtitle={`Registra una nueva lectura para ${waterMeter.name}`}
+        />
       </div>
 
       {/* Formulario */}

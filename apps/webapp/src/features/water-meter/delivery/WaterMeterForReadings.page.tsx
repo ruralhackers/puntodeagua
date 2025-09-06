@@ -12,9 +12,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { PageHeader } from '@/src/components/shared-data/page-header'
 import WaterMeterCardForReadings from './components/WaterMeterCardForReadings'
 import { getDaysSinceLastReading } from './utils/reading-utils'
-import {PageHeader} from "@/src/components/shared-data/page-header";
 
 type Props = {
   waterMeters: WaterMeterDto[]
@@ -32,8 +32,19 @@ export default function WaterMeterForReadingsPage({ waterMeters, waterZones, hol
     return holders.find((holder) => holder.id === holderId)
   }
 
+  // Sort water meters by last reading date (oldest first, no readings at the top)
+  const sortedWaterMeters = [...waterMeters].sort((a, b) => {
+    // Contadores sin lecturas van primero
+    if (!a.lastReadingDate && !b.lastReadingDate) return 0
+    if (!a.lastReadingDate) return -1
+    if (!b.lastReadingDate) return 1
+
+    // Ordenar por fecha de última lectura (más antigua primero)
+    return new Date(a.lastReadingDate).getTime() - new Date(b.lastReadingDate).getTime()
+  })
+
   // Filter water meters based on selected zone and search term
-  const filteredWaterMeters = waterMeters.filter((meter) => {
+  const filteredWaterMeters = sortedWaterMeters.filter((meter) => {
     const matchesZone = selectedZone === 'all' || meter.waterZoneId.toString() === selectedZone
 
     if (!nameFilter) return matchesZone
@@ -62,7 +73,10 @@ export default function WaterMeterForReadingsPage({ waterMeters, waterZones, hol
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <PageHeader title="Contadores - Lecturas" subtitle="Selecciona un contador para registrar una nueva lectura" />
+      <PageHeader
+        title="Contadores - Lecturas"
+        subtitle="Selecciona un contador para registrar una nueva lectura"
+      />
 
       {/* Barra de búsqueda y filtro */}
       <div className="flex gap-3 items-center">

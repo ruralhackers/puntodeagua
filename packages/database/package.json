@@ -11,7 +11,7 @@
     "db:push": "bun --env-file=../../.env.local prisma db push",
     "db:seed": "bun --env-file=../../.env.local run src/seed.ts",
     "db:fresh": "bun migrate:reset && bun db:push && bun db:seed",
-    "db:sync": "bun generate && bun db:push",
+    "db:sync": "bun generate && bun db:push --force-reset",
     "db:studio": "bun --env-file=../../.env.local prisma studio",
     "migrate:dev": "bun --env-file=../../.env.local prisma migrate dev",
     "migrate:deploy": "bun --env-file=../../.env.local prisma migrate deploy",

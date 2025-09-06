@@ -208,6 +208,7 @@ async function seedAnalyses() {
     data: [
       {
         waterZoneId: waterZone!.id,
+        communityId: waterZone!.communityId,
         analysisType: 'chlorine_ph',
         analyst: 'Rosa',
         analyzedAt: new Date(),
@@ -216,6 +217,7 @@ async function seedAnalyses() {
       },
       {
         waterZoneId: waterZone!.id,
+        communityId: waterZone!.communityId,
         analysisType: 'chlorine_ph',
         analyst: 'Pepe',
         analyzedAt: new Date(),
@@ -238,18 +240,21 @@ async function seedMaintenances() {
     data: [
       {
         waterZoneId: waterZone.id,
+        communityId: waterZone.communityId,
         name: 'Maintenance 1',
         scheduledDate: new Date(),
         responsible: 'Juan García'
       },
       {
         waterZoneId: waterZone.id,
+        communityId: waterZone.communityId,
         name: 'Maintenance 2',
         scheduledDate: new Date(),
         responsible: 'María López'
       },
       {
         waterZoneId: waterZone.id,
+        communityId: waterZone.communityId,
         name: 'Maintenance 3',
         scheduledDate: new Date(),
         responsible: 'Carlos Rodríguez'
@@ -384,7 +389,8 @@ async function seedIssues() {
       reporterName: 'Olga',
       startAt: '2025-09-03T20:05:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0]!.id
+      waterZoneId: waterZones[0]!.id,
+      communityId: waterZones[0]!.communityId
     },
     {
       status: 'open',
@@ -393,7 +399,8 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-09-02T09:24:35.000Z',
       endAt: null,
-      waterZoneId: waterZones[0]!.id
+      waterZoneId: waterZones[0]!.id,
+      communityId: waterZones[0]!.communityId
     },
     {
       status: 'open',
@@ -402,7 +409,8 @@ async function seedIssues() {
       reporterName: 'Miguel',
       startAt: '2025-09-04T14:30:00.000Z',
       endAt: null,
-      waterZoneId: waterZones[2]!.id
+      waterZoneId: waterZones[2]!.id,
+      communityId: waterZones[2]!.communityId
     },
     {
       status: 'closed',
@@ -411,7 +419,8 @@ async function seedIssues() {
       reporterName: 'Rosabel',
       startAt: '2025-08-25T18:45:00.000Z',
       endAt: '2025-09-03T10:00:00.000Z',
-      waterZoneId: waterZones[1]!.id
+      waterZoneId: waterZones[1]!.id,
+      communityId: waterZones[1]!.communityId
     }
   ]
 

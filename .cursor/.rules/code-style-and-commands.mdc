@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Code Style Guidelines
+- don't have to include jsdoc comments
+- do avoid type assertions, only when is absolutely necessary
+- Let TypeScript infer return types from function implementations, only explicitly declare return types in interfaces and abstract methods.
+- Naming: Follow Domain-Driven Design patterns
+- Architecture: Application, Domain, Infrastructure layers
+- Packages: Monorepo with workspaces in packages/* /apps/*
+- Comments Language: Use always english language for comments
+
+## Commands
+
+- DB client generate: `bun db:generate`
+- DB sync: `bun db:push`
+- TEST: `TEST_LOGGER=1 bun test <file_path: ex. packages/business/rest-of-the-path>`

@@ -1,0 +1,14 @@
+---
+description: Add features to the frontend
+globs: apps/admin/**
+alwaysApply: false
+---
+
+# Frontend
+
+- is inside a bun monorepo
+- the frontend folder is /apps/admin
+- uses NextJs version 14
+- uses shadcn for frontend components
+
+

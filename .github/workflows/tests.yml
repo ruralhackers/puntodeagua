@@ -1,0 +1,31 @@
+name: Run Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: "1.2.21"
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+        env:
+          # Environment variables
+          NODE_ENV: test
+          WALLETS_API_ALLOWED_IPS: "127.0.0.1"
+
+          # Secrets
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}

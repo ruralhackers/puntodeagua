@@ -1,0 +1,27 @@
+{
+  "name": "ey-prompthero",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "concurrently -k --prefix-colors 'red,green,blue,yellow' --names 'admin,app' --prefix '[{name}]' 'bun run admin' 'bun run app'",
+    "admin": "bun run --elide-lines=100 -F admin dev --port 3000",
+    "app": "bun run --elide-lines=100 -F app dev --port 3001",
+    "dbs": "docker-compose -f docker-compose.yml up -d"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "apps/*"
+    ],
+    "catalog": {}
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/bun": "latest",
+    "concurrently": "^9.1.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

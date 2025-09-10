@@ -1,72 +1,58 @@
-import Link from "next/link";
+import Image from 'next/image'
+import { redirect } from 'next/navigation'
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/auth";
-import { HydrateClient, api } from "@/trpc/server";
+import { LoginForm } from '@/app/(main)/auth/_components/login-form'
+import { APP_CONFIG } from '@/config/app-config'
+import { auth } from '@/server/auth'
+import { HydrateClient } from '@/trpc/server'
 
 export default async function Home() {
-	const hello = await api.post.hello({ text: "from tRPC" });
-	const session = await auth();
+  const session = await auth()
 
-	if (session?.user) {
-		void api.post.getLatest.prefetch();
-	}
+  // Redirect to dashboard if user is already authenticated
+  if (session?.user) {
+    redirect('/dashboard')
+  }
 
-	return (
-		<HydrateClient>
-			<main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-				<div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-					<h1 className="font-extrabold text-5xl tracking-tight sm:text-[5rem]">
-						Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-					</h1>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-						<Link
-							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-							href="https://create.t3.gg/en/usage/first-steps"
-							target="_blank"
-						>
-							<h3 className="font-bold text-2xl">First Steps →</h3>
-							<div className="text-lg">
-								Just the basics - Everything you need to know to set up your
-								database and authentication.
-							</div>
-						</Link>
-						<Link
-							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-							href="https://create.t3.gg/en/introduction"
-							target="_blank"
-						>
-							<h3 className="font-bold text-2xl">Documentation →</h3>
-							<div className="text-lg">
-								Learn more about Create T3 App, the libraries it uses, and how
-								to deploy it.
-							</div>
-						</Link>
-					</div>
-					<div className="flex flex-col items-center gap-2">
-						<p className="text-2xl text-white">
-							{hello ? hello.greeting : "Loading tRPC query..."}
-						</p>
+  return (
+    <HydrateClient>
+      <div className="flex h-dvh">
+        <div className="bg-gradient-to-br from-rose-600 via-pink-600 to-red-600 hidden lg:block lg:w-1/3">
+          <div className="flex h-full flex-col items-center justify-center p-12 text-center">
+            <div className="space-y-8">
+              <div className="flex justify-center">
+                <Image
+                  src="/logo-96x96.png"
+                  alt="PromptHero Logo"
+                  width={80}
+                  height={80}
+                  className="h-20 w-20 rounded-2xl shadow-2xl ring-4 ring-white/20"
+                />
+              </div>
+              <div className="space-y-3">
+                <h1 className="text-white text-4xl font-light tracking-tight">
+                  Welcome to {APP_CONFIG.name}
+                </h1>
+                <p className="text-white/90 text-xl font-medium">Login to continue your journey</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-						<div className="flex flex-col items-center justify-center gap-4">
-							<p className="text-center text-2xl text-white">
-								{session && <span>Logged in as {session.user?.name}</span>}
-							</p>
-							<Link
-								href={session ? "/api/auth/signout" : "/api/auth/signin"}
-								className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-							>
-								{session ? "Sign out" : "Sign in"}
-							</Link>
-						</div>
-					</div>
-
-					{session?.user && <div className="flex flex-col items-center gap-4">
-						<h2 className="text-3xl">User logged with email</h2>
-						<p className="text-xl text-white">{session.user?.email}</p>
-					</div>}
-				</div>
-			</main>
-		</HydrateClient>
-	);
+        <div className="bg-gradient-to-br from-slate-50 to-gray-100 flex w-full items-center justify-center p-8 lg:w-2/3">
+          <div className="w-full max-w-md space-y-10 py-24 lg:py-32">
+            <div className="space-y-4 text-center">
+              <div className="text-gray-900 text-2xl font-semibold tracking-tight">Login</div>
+              <div className="text-gray-600 mx-auto max-w-xl text-base">
+                Welcome back. Enter your email to receive a magic link.
+              </div>
+            </div>
+            <div className="space-y-4 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+              <LoginForm />
+            </div>
+          </div>
+        </div>
+      </div>
+    </HydrateClient>
+  )
 }

@@ -12,7 +12,8 @@
     "format": "bunx biome format --write .",
     "check": "biome check .",
     "check:unsafe": "biome check --write --unsafe .",
-    "check:write": "biome check --write ."
+    "check:write": "biome check --write --max-diagnostics=20000 .",
+    "check:errors": "bunx biome check --max-diagnostics=20000 --diagnostic-level=error ."
   },
   "workspaces": {
     "packages": [

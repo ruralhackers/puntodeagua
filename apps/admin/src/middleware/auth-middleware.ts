@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export function authMiddleware(req: NextRequest) {
   const { pathname } = req.nextUrl

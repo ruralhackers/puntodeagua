@@ -7,7 +7,8 @@
     "start": "concurrently -k --prefix-colors 'red,green,blue,yellow' --names 'admin,app' --prefix '[{name}]' 'bun run admin' 'bun run app'",
     "admin": "bun run --elide-lines=100 -F admin dev --port 3000",
     "app": "bun run --elide-lines=100 -F app dev --port 3001",
-    "dbs": "docker-compose -f docker-compose.yml up -d"
+    "dbs": "docker-compose -f docker-compose.yml up -d",
+    "db:sync": "bun run -F @ph/database db:sync"
   },
   "workspaces": {
     "packages": [

@@ -1,18 +1,29 @@
-"use client";
+'use client'
 
-import { Clock } from "lucide-react";
-import { FunnelChart, Funnel, LabelList } from "recharts";
+import { Clock } from 'lucide-react'
+import { Funnel, FunnelChart, LabelList } from 'recharts'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
+import { ChartContainer } from '@/components/ui/chart'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Progress } from '@/components/ui/progress'
+import { cn, formatCurrency } from '@/lib/utils'
 
-import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { formatCurrency, cn } from "@/lib/utils";
-
-import { salesPipelineChartData, salesPipelineChartConfig, regionSalesData, actionItems } from "./crm.config";
+import {
+  actionItems,
+  regionSalesData,
+  salesPipelineChartConfig,
+  salesPipelineChartData
+} from './crm.config'
 
 export function OperationalCards() {
-  const totalSales = regionSalesData.reduce((sum, region) => sum + region.sales, 0);
+  const totalSales = regionSalesData.reduce((sum, region) => sum + region.sales, 0)
   return (
     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:shadow-xs sm:grid-cols-2 xl:grid-cols-3">
       <Card>
@@ -22,15 +33,31 @@ export function OperationalCards() {
         <CardContent className="size-full">
           <ChartContainer config={salesPipelineChartConfig} className="size-full">
             <FunnelChart margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
-              <Funnel className="stroke-card stroke-2" dataKey="value" data={salesPipelineChartData}>
-                <LabelList className="fill-foreground stroke-0" dataKey="stage" position="right" offset={10} />
-                <LabelList className="fill-foreground stroke-0" dataKey="value" position="left" offset={10} />
+              <Funnel
+                className="stroke-card stroke-2"
+                dataKey="value"
+                data={salesPipelineChartData}
+              >
+                <LabelList
+                  className="fill-foreground stroke-0"
+                  dataKey="stage"
+                  position="right"
+                  offset={10}
+                />
+                <LabelList
+                  className="fill-foreground stroke-0"
+                  dataKey="value"
+                  position="left"
+                  offset={10}
+                />
               </Funnel>
             </FunnelChart>
           </ChartContainer>
         </CardContent>
         <CardFooter>
-          <p className="text-muted-foreground text-xs">Leads increased by 18.2% since last month.</p>
+          <p className="text-muted-foreground text-xs">
+            Leads increased by 18.2% since last month.
+          </p>
         </CardFooter>
       </Card>
 
@@ -53,8 +80,8 @@ export function OperationalCards() {
                     </span>
                     <span
                       className={cn(
-                        "text-xs font-medium tabular-nums",
-                        region.isPositive ? "text-green-500" : "text-destructive",
+                        'text-xs font-medium tabular-nums',
+                        region.isPositive ? 'text-green-500' : 'text-destructive'
                       )}
                     >
                       {region.growth}
@@ -63,7 +90,9 @@ export function OperationalCards() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Progress value={region.percentage} />
-                  <span className="text-muted-foreground text-xs font-medium tabular-nums">{region.percentage}%</span>
+                  <span className="text-muted-foreground text-xs font-medium tabular-nums">
+                    {region.percentage}%
+                  </span>
                 </div>
               </div>
             ))}
@@ -91,10 +120,10 @@ export function OperationalCards() {
                   <span className="text-sm font-medium">{item.title}</span>
                   <span
                     className={cn(
-                      "w-fit rounded-md px-2 py-1 text-xs font-medium",
-                      item.priority === "High" && "text-destructive bg-destructive/20",
-                      item.priority === "Medium" && "bg-yellow-500/20 text-yellow-500",
-                      item.priority === "Low" && "bg-green-500/20 text-green-500",
+                      'w-fit rounded-md px-2 py-1 text-xs font-medium',
+                      item.priority === 'High' && 'text-destructive bg-destructive/20',
+                      item.priority === 'Medium' && 'bg-yellow-500/20 text-yellow-500',
+                      item.priority === 'Low' && 'bg-green-500/20 text-green-500'
                     )}
                   >
                     {item.priority}
@@ -111,5 +140,5 @@ export function OperationalCards() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

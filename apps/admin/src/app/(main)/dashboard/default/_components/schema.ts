@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const sectionSchema = z.object({
   id: z.number(),
@@ -7,5 +7,5 @@ export const sectionSchema = z.object({
   status: z.string(),
   target: z.string(),
   limit: z.string(),
-  reviewer: z.string(),
-});
+  reviewer: z.string()
+})

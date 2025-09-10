@@ -1,32 +1,39 @@
-"use client";
+'use client'
 
-import { ShoppingBasket, TramFront, Ellipsis } from "lucide-react";
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
+import { Ellipsis, ShoppingBasket, TramFront } from 'lucide-react'
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent
+} from '@/components/ui/chart'
+import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@/lib/utils'
 
-const chartData = [{ period: "last-week", groceries: 380, transport: 120, other: 80 }];
+const chartData = [{ period: 'last-week', groceries: 380, transport: 120, other: 80 }]
 
 const chartConfig = {
   groceries: {
-    label: "Groceries",
-    color: "var(--chart-1)",
+    label: 'Groceries',
+    color: 'var(--chart-1)'
   },
   transport: {
-    label: "Transport",
-    color: "var(--chart-2)",
+    label: 'Transport',
+    color: 'var(--chart-2)'
   },
   other: {
-    label: "Other",
-    color: "var(--chart-3)",
-  },
-} satisfies ChartConfig;
+    label: 'Other',
+    color: 'var(--chart-3)'
+  }
+} satisfies ChartConfig
 
 export function ExpenseSummary() {
-  const totalExpenses = chartData.length ? chartData[0].groceries + chartData[0].transport + chartData[0].other : 0;
+  const totalExpenses = chartData.length
+    ? chartData[0].groceries + chartData[0].transport + chartData[0].other
+    : 0
   return (
     <Card>
       <CardHeader>
@@ -48,7 +55,7 @@ export function ExpenseSummary() {
               <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
                 <Label
                   content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                       return (
                         <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
                           <tspan
@@ -58,11 +65,15 @@ export function ExpenseSummary() {
                           >
                             {formatCurrency(totalExpenses, { noDecimals: true })}
                           </tspan>
-                          <tspan x={viewBox.cx} y={(viewBox.cy ?? 0) + 4} className="fill-muted-foreground">
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy ?? 0) + 4}
+                            className="fill-muted-foreground"
+                          >
                             Spent
                           </tspan>
                         </text>
-                      );
+                      )
                     }
                   }}
                 />
@@ -99,7 +110,9 @@ export function ExpenseSummary() {
             </div>
             <div className="space-y-0.5 text-center">
               <p className="text-muted-foreground text-xs uppercase">Groceries</p>
-              <p className="font-medium tabular-nums">{formatCurrency(chartData[0].groceries, { noDecimals: true })}</p>
+              <p className="font-medium tabular-nums">
+                {formatCurrency(chartData[0].groceries, { noDecimals: true })}
+              </p>
             </div>
           </div>
           <Separator orientation="vertical" className="!h-auto" />
@@ -109,7 +122,9 @@ export function ExpenseSummary() {
             </div>
             <div className="space-y-0.5 text-center">
               <p className="text-muted-foreground text-xs uppercase">Transport</p>
-              <p className="font-medium tabular-nums">{formatCurrency(chartData[0].transport, { noDecimals: true })}</p>
+              <p className="font-medium tabular-nums">
+                {formatCurrency(chartData[0].transport, { noDecimals: true })}
+              </p>
             </div>
           </div>
           <Separator orientation="vertical" className="!h-auto" />
@@ -119,7 +134,9 @@ export function ExpenseSummary() {
             </div>
             <div className="space-y-0.5 text-center">
               <p className="text-muted-foreground text-xs uppercase">Other</p>
-              <p className="font-medium tabular-nums">{formatCurrency(chartData[0].other, { noDecimals: true })}</p>
+              <p className="font-medium tabular-nums">
+                {formatCurrency(chartData[0].other, { noDecimals: true })}
+              </p>
             </div>
           </div>
         </div>
@@ -128,5 +145,5 @@ export function ExpenseSummary() {
         </span>
       </CardContent>
     </Card>
-  );
+  )
 }

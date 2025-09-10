@@ -1,7 +1,7 @@
-import { client } from './client'
 import { Client } from 'pg'
+import { client as PrismaClient } from './client'
 
-const prisma = client
+const prisma = PrismaClient
 
 interface StagingUser {
   id: string

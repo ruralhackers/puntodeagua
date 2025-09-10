@@ -1,17 +1,26 @@
-"use client";
+'use client'
 
-import { ArrowLeftRight, RefreshCw } from "lucide-react";
+import { ArrowLeftRight, RefreshCw } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/utils";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@/lib/utils'
 
 function CurrencySelector(props: { defaultValue: string }) {
   return (
     <Select defaultValue={props.defaultValue}>
-      <SelectTrigger size="sm" className="border-none shadow-none outline-none focus-visible:ring-0">
+      <SelectTrigger
+        size="sm"
+        className="border-none shadow-none outline-none focus-visible:ring-0"
+      >
         <SelectValue placeholder="Currency" />
       </SelectTrigger>
       <SelectContent>
@@ -21,7 +30,7 @@ function CurrencySelector(props: { defaultValue: string }) {
         <SelectItem value="aed">AED</SelectItem>
       </SelectContent>
     </Select>
-  );
+  )
 }
 
 export function CurrencyExchange() {
@@ -69,7 +78,7 @@ export function CurrencyExchange() {
           </div>
           <div className="flex items-center justify-between">
             <span>Total Amount</span>
-            <span className="font-medium">{formatCurrency(82.77, { currency: "EUR" })}</span>
+            <span className="font-medium">{formatCurrency(82.77, { currency: 'EUR' })}</span>
           </div>
         </div>
         <Button variant="outline" className="w-full">
@@ -77,5 +86,5 @@ export function CurrencyExchange() {
         </Button>
       </CardContent>
     </Card>
-  );
+  )
 }

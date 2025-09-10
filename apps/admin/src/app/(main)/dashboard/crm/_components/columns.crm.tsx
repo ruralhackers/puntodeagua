@@ -1,17 +1,17 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { EllipsisVertical } from "lucide-react";
-import z from "zod";
+import { ColumnDef } from '@tanstack/react-table'
+import { EllipsisVertical } from 'lucide-react'
+import z from 'zod'
 
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
-import { recentLeadSchema } from "./schema";
+import { recentLeadSchema } from './schema'
 
 export const recentLeadsColumns: ColumnDef<z.infer<typeof recentLeadSchema>>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <div className="flex items-center justify-center">
         <Checkbox
@@ -31,53 +31,55 @@ export const recentLeadsColumns: ColumnDef<z.infer<typeof recentLeadSchema>>[] =
       </div>
     ),
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: false
   },
   {
-    accessorKey: "id",
+    accessorKey: 'id',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Ref" />,
     cell: ({ row }) => <span className="tabular-nums">{row.original.id}</span>,
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: false
   },
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     cell: ({ row }) => <span>{row.original.name}</span>,
-    enableHiding: false,
+    enableHiding: false
   },
   {
-    accessorKey: "company",
+    accessorKey: 'company',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Company" />,
     cell: ({ row }) => <span>{row.original.company}</span>,
-    enableSorting: false,
+    enableSorting: false
   },
   {
-    accessorKey: "status",
+    accessorKey: 'status',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
     cell: ({ row }) => <Badge variant="secondary">{row.original.status}</Badge>,
-    enableSorting: false,
+    enableSorting: false
   },
   {
-    accessorKey: "source",
+    accessorKey: 'source',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Source" />,
     cell: ({ row }) => <Badge variant="outline">{row.original.source}</Badge>,
-    enableSorting: false,
+    enableSorting: false
   },
   {
-    accessorKey: "lastActivity",
+    accessorKey: 'lastActivity',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Last Activity" />,
-    cell: ({ row }) => <span className="text-muted-foreground tabular-nums">{row.original.lastActivity}</span>,
-    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-muted-foreground tabular-nums">{row.original.lastActivity}</span>
+    ),
+    enableSorting: false
   },
   {
-    id: "actions",
+    id: 'actions',
     cell: () => (
       <Button variant="ghost" className="text-muted-foreground flex size-8" size="icon">
         <EllipsisVertical />
         <span className="sr-only">Open menu</span>
       </Button>
     ),
-    enableSorting: false,
-  },
-];
+    enableSorting: false
+  }
+]

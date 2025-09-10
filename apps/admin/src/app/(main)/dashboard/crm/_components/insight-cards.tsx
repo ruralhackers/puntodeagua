@@ -1,20 +1,35 @@
-"use client";
-
-import { XAxis, Label, Pie, PieChart, Bar, BarChart, CartesianGrid, LabelList, YAxis } from "recharts";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend } from "@/components/ui/chart";
+'use client'
 
 import {
-  leadsBySourceChartData,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Label,
+  LabelList,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis
+} from 'recharts'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartTooltip,
+  ChartTooltipContent
+} from '@/components/ui/chart'
+
+import {
   leadsBySourceChartConfig,
-  projectRevenueChartData,
+  leadsBySourceChartData,
   projectRevenueChartConfig,
-} from "./crm.config";
+  projectRevenueChartData
+} from './crm.config'
 
 export function InsightCards() {
-  const totalLeads = leadsBySourceChartData.reduce((acc, curr) => acc + curr.leads, 0);
+  const totalLeads = leadsBySourceChartData.reduce((acc, curr) => acc + curr.leads, 0)
 
   return (
     <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:shadow-xs sm:grid-cols-2 xl:grid-cols-5">
@@ -30,7 +45,7 @@ export function InsightCards() {
                 top: 0,
                 right: 0,
                 left: 0,
-                bottom: 0,
+                bottom: 0
               }}
             >
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
@@ -45,9 +60,14 @@ export function InsightCards() {
               >
                 <Label
                   content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                       return (
-                        <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                        <text
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
                           <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
@@ -55,11 +75,15 @@ export function InsightCards() {
                           >
                             {totalLeads.toLocaleString()}
                           </tspan>
-                          <tspan x={viewBox.cx} y={(viewBox.cy ?? 0) + 24} className="fill-muted-foreground">
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy ?? 0) + 24}
+                            className="fill-muted-foreground"
+                          >
                             Leads
                           </tspan>
                         </text>
-                      );
+                      )
                     }
                   }}
                 />
@@ -73,7 +97,10 @@ export function InsightCards() {
                     {leadsBySourceChartData.map((item) => (
                       <li key={item.source} className="flex w-36 items-center justify-between">
                         <span className="flex items-center gap-2 capitalize">
-                          <span className="size-2.5 rounded-full" style={{ background: item.fill }} />
+                          <span
+                            className="size-2.5 rounded-full"
+                            style={{ background: item.fill }}
+                          />
                           {leadsBySourceChartConfig[item.source].label}
                         </span>
                         <span className="tabular-nums">{item.leads}</span>
@@ -146,9 +173,11 @@ export function InsightCards() {
           </ChartContainer>
         </CardContent>
         <CardFooter>
-          <p className="text-muted-foreground text-xs">Average progress: 78% · 2 projects above target</p>
+          <p className="text-muted-foreground text-xs">
+            Average progress: 78% · 2 projects above target
+          </p>
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }

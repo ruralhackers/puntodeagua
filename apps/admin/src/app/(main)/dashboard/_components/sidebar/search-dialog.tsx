@@ -1,9 +1,17 @@
-"use client";
-import * as React from "react";
+'use client'
 
-import { LayoutDashboard, ChartBar, Gauge, ShoppingBag, GraduationCap, Forklift, Search } from "lucide-react";
+import {
+  ChartBar,
+  Forklift,
+  Gauge,
+  GraduationCap,
+  LayoutDashboard,
+  Search,
+  ShoppingBag
+} from 'lucide-react'
+import * as React from 'react'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,34 +19,34 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
+  CommandSeparator
+} from '@/components/ui/command'
 
 const searchItems = [
-  { group: "Dashboards", icon: LayoutDashboard, label: "Default" },
-  { group: "Dashboards", icon: ChartBar, label: "CRM", disabled: true },
-  { group: "Dashboards", icon: Gauge, label: "Analytics", disabled: true },
-  { group: "Dashboards", icon: ShoppingBag, label: "E-Commerce", disabled: true },
-  { group: "Dashboards", icon: GraduationCap, label: "Academy", disabled: true },
-  { group: "Dashboards", icon: Forklift, label: "Logistics", disabled: true },
-  { group: "Authentication", label: "Login v1" },
-  { group: "Authentication", label: "Login v2" },
-  { group: "Authentication", label: "Register v1" },
-  { group: "Authentication", label: "Register v2" },
-];
+  { group: 'Dashboards', icon: LayoutDashboard, label: 'Default' },
+  { group: 'Dashboards', icon: ChartBar, label: 'CRM', disabled: true },
+  { group: 'Dashboards', icon: Gauge, label: 'Analytics', disabled: true },
+  { group: 'Dashboards', icon: ShoppingBag, label: 'E-Commerce', disabled: true },
+  { group: 'Dashboards', icon: GraduationCap, label: 'Academy', disabled: true },
+  { group: 'Dashboards', icon: Forklift, label: 'Logistics', disabled: true },
+  { group: 'Authentication', label: 'Login v1' },
+  { group: 'Authentication', label: 'Login v2' },
+  { group: 'Authentication', label: 'Register v1' },
+  { group: 'Authentication', label: 'Register v2' }
+]
 
 export function SearchDialog() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
+      if (e.key === 'j' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
       }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   return (
     <>
@@ -64,7 +72,11 @@ export function SearchDialog() {
                 {searchItems
                   .filter((item) => item.group === group)
                   .map((item) => (
-                    <CommandItem className="!py-1.5" key={item.label} onSelect={() => setOpen(false)}>
+                    <CommandItem
+                      className="!py-1.5"
+                      key={item.label}
+                      onSelect={() => setOpen(false)}
+                    >
                       {item.icon && <item.icon />}
                       <span>{item.label}</span>
                     </CommandItem>
@@ -75,5 +87,5 @@ export function SearchDialog() {
         </CommandList>
       </CommandDialog>
     </>
-  );
+  )
 }

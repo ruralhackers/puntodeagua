@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import { LucideIcon, Ellipsis, Folder, Forward, Trash2 } from "lucide-react";
+import { Ellipsis, Folder, Forward, type LucideIcon, Trash2 } from 'lucide-react'
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,19 +16,19 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar";
+  useSidebar
+} from '@/components/ui/sidebar'
 
 export function NavDocuments({
-  items,
+  items
 }: {
   readonly items: readonly {
-    readonly name: string;
-    readonly url: string;
-    readonly icon: LucideIcon;
-  }[];
+    readonly name: string
+    readonly url: string
+    readonly icon: LucideIcon
+  }[]
 }) {
-  const { isMobile } = useSidebar();
+  const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -51,8 +51,8 @@ export function NavDocuments({
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="w-24 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
+                side={isMobile ? 'bottom' : 'right'}
+                align={isMobile ? 'end' : 'start'}
               >
                 <DropdownMenuItem>
                   <Folder />
@@ -79,5 +79,5 @@ export function NavDocuments({
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  );
+  )
 }

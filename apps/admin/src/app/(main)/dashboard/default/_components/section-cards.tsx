@@ -1,7 +1,14 @@
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingDown, TrendingUp } from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 
 export function SectionCards() {
   return (
@@ -9,7 +16,9 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">$1,250.00</CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            $1,250.00
+          </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <TrendingUp />
@@ -27,7 +36,9 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">1,234</CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            1,234
+          </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <TrendingDown />
@@ -45,7 +56,9 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">45,678</CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            45,678
+          </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <TrendingUp />
@@ -63,7 +76,9 @@ export function SectionCards() {
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">4.5%</CardTitle>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            4.5%
+          </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <TrendingUp />
@@ -79,5 +94,5 @@ export function SectionCards() {
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }

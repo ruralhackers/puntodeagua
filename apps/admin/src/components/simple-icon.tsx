@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import * as React from "react";
+import * as React from 'react'
 
-import type { SimpleIcon } from "simple-icons";
+import type { SimpleIcon } from 'simple-icons'
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 
 type SimpleIconProps = {
-  icon: SimpleIcon;
-  className?: string;
-} & React.SVGProps<SVGSVGElement>;
+  icon: SimpleIcon
+  className?: string
+} & React.SVGProps<SVGSVGElement>
 
 export function SimpleIcon({ icon, className, ...props }: SimpleIconProps) {
-  const { title, path } = icon;
+  const { title, path } = icon
 
   return (
     <svg
@@ -20,11 +20,11 @@ export function SimpleIcon({ icon, className, ...props }: SimpleIconProps) {
       aria-label={title}
       aria-hidden="false"
       focusable="false"
-      className={cn("fill-foreground size-5", className)}
+      className={cn('fill-foreground size-5', className)}
       {...props}
     >
       <title>{title}</title>
       <path d={path} />
     </svg>
-  );
+  )
 }

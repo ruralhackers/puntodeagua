@@ -27,6 +27,8 @@ prompthero/
 │       │   └── events/
 │       ├── application/
 │       └── infrastructure/
+├── lib-docs/
+│   └── legacy/         # Legacy documentation and guides
 └── docker-compose.yml
 ```
 
@@ -129,7 +131,11 @@ This project follows strict Domain-Driven Design principles. Please ensure:
 3. Infrastructure concerns are separated
 4. Services follow single responsibility principle
 
-## 📄 License
+## � Documentation
+
+Legacy documentation and migration guides can be found in `lib-docs/legacy/`. This includes historical implementation details and transition documentation from previous architectures.
+
+## �📄 License
 
 [Add your license information here]
 

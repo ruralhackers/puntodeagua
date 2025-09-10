@@ -18,9 +18,11 @@
     "migrate:reset": "bun --env-file=../../.env.local prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/client": "latest",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
+    "@types/pg": "^8.15.5",
     "prisma": "latest",
     "prisma-json-types-generator": "3.2.2",
     "typescript": "latest"

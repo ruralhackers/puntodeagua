@@ -17,8 +17,8 @@ datasource db {
 
 // Necessary for Next auth
 model Account {
-  id                       String  @id @default(cuid())
-  userId                   String
+  id                       String  @id @default(uuid()) @db.Uuid
+  userId                   String  @db.Uuid
   type                     String
   provider                 String
   providerAccountId        String
@@ -36,22 +36,11 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid()) @db.Uuid
   sessionToken String   @unique
-  userId       String
+  userId       String   @db.Uuid
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
 }
 
 model VerificationToken {
@@ -62,14 +51,44 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified") // new field
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
+  lockedAt  DateTime? @map("locked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
-  @@index([name])
+  // Custom fields
+  username  String? @unique
+  credits   Int     @default(4)
+  admin     Boolean @default(false)
+  moderator Boolean @default(false)
+  verified  Boolean @default(false)
+  banned    Boolean @default(false)
+  nsfw      Boolean @default(false)
+
+  // Profile fields
+  profileViewCount Int @default(0) @map("profile_view_count")
+  promptCount      Int @default(0) @map("prompt_count")
+  favCount         Int @default(0) @map("fav_count")
+  searchCount      Int @default(0) @map("search_count")
+
+  // Streak fields
+  streakDays  Int       @default(0) @map("streak_days")
+  streakStart DateTime? @map("streak_start")
+  streakEnd   DateTime? @map("streak_end")
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
+
+  @@index([email])
+  @@index([username])
+  @@index([admin])
+  @@index([moderator])
+  @@index([verified])
+  @@index([banned])
+  @@map("users")
 }

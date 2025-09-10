@@ -61,7 +61,10 @@ export default async function Home() {
 						</div>
 					</div>
 
-					{session?.user && <LatestPost />}
+					{session?.user && <div className="flex flex-col items-center gap-4">
+						<h2 className="text-3xl">User logged with email</h2>
+						<p className="text-xl text-white">{session.user?.email}</p>
+					</div>}
 				</div>
 			</main>
 		</HydrateClient>

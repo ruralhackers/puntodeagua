@@ -135,7 +135,5 @@ This project follows strict Domain-Driven Design principles. Please ensure:
 
 Legacy documentation and migration guides can be found in `lib-docs/legacy/`. This includes historical implementation details and transition documentation from previous architectures.
 
-## �📄 License
 
-[Add your license information here]
 

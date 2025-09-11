@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import type { ReactNode } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { APP_CONFIG } from '@/config/app-config'
@@ -38,7 +39,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     >
       <body className={`${inter.className} min-h-screen antialiased`}>
         <PreferencesStoreProvider themeMode={themeMode} themePreset={themePreset}>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </TRPCReactProvider>
           <Toaster />
         </PreferencesStoreProvider>
       </body>

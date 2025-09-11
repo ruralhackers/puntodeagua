@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react'
 import * as React from 'react'
-import { z } from 'zod'
+import type { z } from 'zod'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -21,9 +21,8 @@ import { DataTable as DataTableNew } from '../../../../../components/data-table/
 import { DataTablePagination } from '../../../../../components/data-table/data-table-pagination'
 import { DataTableViewOptions } from '../../../../../components/data-table/data-table-view-options'
 import { withDndColumn } from '../../../../../components/data-table/table-utils'
-
 import { dashboardColumns } from './columns'
-import { sectionSchema } from './schema'
+import type { sectionSchema } from './schema'
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof sectionSchema>[] }) {
   const [data, setData] = React.useState(() => initialData)

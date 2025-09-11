@@ -5,6 +5,38 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function generatePageTitle(title: string) {
+  const env = process.env.NEXT_PUBLIC_DEPLOY_MODE || process.env.DEPLOY_MODE
+  const abbreviation = getAbbreviation(env)
+  return `${abbreviation} SWS | ${title}`
+}
+
+function getAbbreviation(env: string | undefined) {
+  switch (env) {
+    case 'local':
+      return '🔵🄻'
+    case 'dev':
+      return '🟠🄳'
+    case 'prod':
+      return '🟢🄿'
+    default:
+      return '🟡'
+  }
+}
+
+export function getEnvAbbreviation(env: string | undefined) {
+  switch (env) {
+    case 'local':
+      return 'LCL'
+    case 'dev':
+      return 'DEV'
+    case 'prod':
+      return 'PRD'
+    default:
+      return 'TST'
+  }
+}
+
 export const getInitials = (str: string): string => {
   if (typeof str !== 'string' || !str.trim()) return '?'
 

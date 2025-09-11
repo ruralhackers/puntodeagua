@@ -1,7 +1,11 @@
 'use client'
+import type { UserDto } from '@ph/users/domain'
 import type { SearchParams } from 'nuqs/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Table from '@/features/tables/table'
+import { IdCopy } from '../../components/id-copy'
+import { RelativeDate } from '../../components/relative-date'
+import { UserActions } from './users-actions'
 
 export default function UsersTable(searchParams: SearchParams) {
   return (
@@ -25,13 +29,31 @@ export default function UsersTable(searchParams: SearchParams) {
                   <AvatarImage src={image} alt={name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
-                <span>{id}</span>
+                <span>
+                  <IdCopy id={id} />
+                </span>
               </div>
             )
           }
         },
         { accessorKey: 'username', header: 'username' },
-        { accessorKey: 'email', header: 'Email' }
+        { accessorKey: 'email', header: 'Email' },
+        { accessorKey: 'credits', header: 'credits' },
+        {
+          accessorKey: 'createdAt',
+          header: 'createdAt',
+          cell: ({ row }) => {
+            const { local, relative } = RelativeDate(row.getValue('createdAt'))
+            return <span title={local}>{relative}</span>
+          }
+        },
+        {
+          id: 'actions',
+          cell: ({ row }) => {
+            const user = row.original as UserDto
+            return <UserActions data={user} />
+          }
+        }
       ]}
     />
   )

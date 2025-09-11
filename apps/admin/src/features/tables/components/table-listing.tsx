@@ -75,8 +75,6 @@ export default function TableListingPage(props: TableListingPageProps) {
     }
   )
 
-  console.log('TableListingPage', { queryParams, data })
-
   const TableComponent = props.customDataTable ?? DataTable
 
   return (

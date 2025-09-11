@@ -2,6 +2,7 @@
 import type { UserDto } from '@ph/users/domain'
 import { useQueryClient } from '@tanstack/react-query'
 import { Edit, Ellipsis, MoreHorizontal, Trash } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-
 import { api } from '@/trpc/react'
 
 interface CellActionProps {
@@ -20,27 +20,11 @@ interface CellActionProps {
 }
 
 export const UserActions: React.FC<CellActionProps> = ({ data }) => {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const queryClient = useQueryClient()
 
-  const { mutateAsync: updateUser } = api.user.update.useMutation()
   const { mutateAsync: deleteUser } = api.user.delete.useMutation()
-
-  const update = async () => {
-    setLoading(true)
-    updateUser(data)
-      .then((tx) => {
-        toast.success(`User updated successfully`)
-      })
-      .catch((error) => {
-        console.log({ error })
-        toast.error(`Failed to update User: ${error}`)
-      })
-      .finally(() => {
-        setLoading(false)
-        void queryClient.refetchQueries({ queryKey: [['table', 'domainTable']], exact: false })
-      })
-  }
 
   const cancel = async () => {
     setLoading(true)
@@ -72,7 +56,7 @@ export const UserActions: React.FC<CellActionProps> = ({ data }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => update()}>
+        <DropdownMenuItem onClick={() => router.push(`/dashboard/users/${data.id}`)}>
           <Edit className="mr-2 h-4 w-4" /> Update
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => cancel()}>

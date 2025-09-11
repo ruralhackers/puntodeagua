@@ -48,8 +48,6 @@ export function DataTable<TData, TValue>({
   cellClassName,
   hideFooter = false
 }: DataTableProps<TData, TValue>) {
-  console.log('DataTable', { data, totalItems, columns })
-
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
     parseAsInteger.withOptions({ shallow: false }).withDefault(1)

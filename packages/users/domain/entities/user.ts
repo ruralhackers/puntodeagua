@@ -78,4 +78,20 @@ export class User {
   equals(other: User): boolean {
     return this.id.equals(other.id)
   }
+
+  update(data: Partial<UserDto>) {
+    if (data.username !== undefined) this.username = data.username
+    if (data.credits !== undefined) this.credits = data.credits
+    if (data.admin !== undefined) this.admin = data.admin
+    if (data.moderator !== undefined) this.moderator = data.moderator
+    if (data.verified !== undefined) this.verified = data.verified
+    if (data.banned !== undefined) this.banned = data.banned
+    if (data.nsfw !== undefined) this.nsfw = data.nsfw
+    if (data.profileViewCount !== undefined) this.profileViewCount = data.profileViewCount
+    if (data.promptCount !== undefined) this.promptCount = data.promptCount
+    if (data.favCount !== undefined) this.favCount = data.favCount
+    if (data.searchCount !== undefined) this.searchCount = data.searchCount
+    if (data.streakDays !== undefined) this.streakDays = data.streakDays
+    this.updatedAt = new Date()
+  }
 }

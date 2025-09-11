@@ -1,5 +1,5 @@
 {
-  "name": "@ph/common",
+  "name": "@ph/users",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -8,9 +8,5 @@
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "@paralleldrive/cuid2": "^2.2.2",
-    "decimal.js": "^10.6.0"
   }
 }

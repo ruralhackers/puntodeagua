@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "bun --env-file ../../.env.local next dev --port 3000",
     "build": "next build",
-    "generate:presets": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/generate-theme-presets.ts",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
     "preview": "next build && next start",
-    "start": "next start"
+    "generate:presets": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/generate-theme-presets.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",
@@ -20,6 +19,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@ph/common": "workspace:*",
     "@ph/database": "workspace:*",
+    "@ph/users": "workspace:*",
     "@prisma/client": "^6.16.0",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.69.0",

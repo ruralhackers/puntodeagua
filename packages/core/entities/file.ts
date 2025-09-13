@@ -1,5 +1,4 @@
 import { Id } from 'core'
-import type { FileSchema } from '../schemas/file.schema.ts'
 import type { FileDto } from './file.dto.ts'
 
 export class File {
@@ -18,33 +17,37 @@ export class File {
     public readonly createdAt: Date
   ) {}
 
-  static create({
-    id,
-    filename,
-    originalName,
-    mimeType,
-    size,
-    url,
-    bucket,
-    key,
-    entityType,
-    entityId,
-    uploadedBy,
-    createdAt
-  }: FileSchema) {
+  static create(dto: Omit<FileDto, 'id'>) {
     return new File(
-      Id.create(id),
-      filename,
-      originalName,
-      mimeType,
-      size,
-      url,
-      bucket,
-      key,
-      entityType,
-      entityId,
-      Id.create(uploadedBy),
-      createdAt
+      Id.generateUniqueId(),
+      dto.filename,
+      dto.originalName,
+      dto.mimeType,
+      dto.size,
+      dto.url,
+      dto.bucket,
+      dto.key,
+      dto.entityType,
+      dto.entityId,
+      Id.create(dto.uploadedBy),
+      dto.createdAt
+    )
+  }
+
+  static fromDto(dto: FileDto): File {
+    return new File(
+      Id.create(dto.id),
+      dto.filename,
+      dto.originalName,
+      dto.mimeType,
+      dto.size,
+      dto.url,
+      dto.bucket,
+      dto.key,
+      dto.entityType,
+      dto.entityId,
+      Id.create(dto.uploadedBy),
+      dto.createdAt
     )
   }
 

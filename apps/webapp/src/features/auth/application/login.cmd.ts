@@ -1,6 +1,6 @@
 import type { Command } from 'core'
 import type { AuthRepository } from 'features/repositories/auth.repository'
-import type { LoginDto, AuthResponseDto } from '../schemas/auth.schema'
+import type { AuthResponseDto, LoginDto } from '../schemas/auth.schema'
 
 export class LoginCmd implements Command<LoginDto, AuthResponseDto> {
   static readonly ID = 'LoginCmd'

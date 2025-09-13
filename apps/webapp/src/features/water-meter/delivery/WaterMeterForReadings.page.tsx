@@ -43,7 +43,7 @@ export default function WaterMeterForReadingsPage({ waterMeters, waterZones, hol
 
   // Filter water meters based on selected zone and search term
   const filteredWaterMeters = sortedWaterMeters.filter((meter) => {
-    const matchesZone = selectedZone === 'all' || meter.waterZoneId.toString() === selectedZone
+    const matchesZone = selectedZone === 'all' || meter.waterZone.id.toString() === selectedZone
 
     if (!nameFilter) return matchesZone
 

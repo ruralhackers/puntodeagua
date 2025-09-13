@@ -1,6 +1,5 @@
 import { Id } from 'core'
-import type { HolderSchema } from '../schemas/holder.schema.ts'
-import type { HolderDto } from './holder.dto.ts'
+import type { HolderDto } from './holder.dto'
 
 export class Holder {
   private constructor(
@@ -11,7 +10,7 @@ export class Holder {
     public description?: string // descripción
   ) {}
 
-  static create(holderSchema: Omit<HolderSchema, 'id'>) {
+  static create(holderSchema: Omit<HolderDto, 'id'>) {
     return new Holder(
       Id.generateUniqueId(),
       holderSchema.name,

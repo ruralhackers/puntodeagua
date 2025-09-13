@@ -32,7 +32,7 @@ export const waterPointApiRest = new Elysia()
     }
 
     const waterPoints = await useCaseService.execute(GetWaterPointsQry, filters)
-    console.log({ waterPoints })
+
     return waterPoints.map((x) => x.toDto())
   })
   .get('/water-points/:id', async ({ params, user }) => {

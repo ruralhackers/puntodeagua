@@ -16,15 +16,15 @@ export class WaterMeterPrismaRepository
     const update = {
       name: input.name,
       measurementUnit: input.measurementUnit.toString(),
-      images: input.images,
-      waterZoneId: input.waterZoneId.toString()
+      images: input.images
     }
 
     const create = {
       ...update,
       id: input.id.toString(),
       holderId: input.holderId.toString(),
-      waterPointId: input.waterPoint.id.toString()
+      waterPointId: input.waterPoint.id.toString(),
+      waterZoneId: input.waterZone.id.toString()
     }
 
     await this.getModel().upsert({
@@ -48,6 +48,9 @@ export class WaterMeterPrismaRepository
       where,
       include: {
         waterPoint: true,
+        waterZone: {
+          include: { community: true }
+        },
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
           take: 8
@@ -85,6 +88,9 @@ export class WaterMeterPrismaRepository
       where,
       include: {
         waterPoint: true,
+        waterZone: {
+          include: { community: true }
+        },
         waterMeterReadings: {
           orderBy: { readingDate: 'desc' },
           take: 2

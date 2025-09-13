@@ -1,7 +1,6 @@
 import type { Query } from 'core'
 import { Id } from 'core'
-import type { WaterMeterRepository } from 'features'
-import type { WaterMeter } from 'features/entities/water-meter'
+import type { WaterMeter, WaterMeterRepository } from 'features'
 
 export class GetWaterMeterQry implements Query<WaterMeter | null, string> {
   static readonly ID = 'GetWaterMeterQry'

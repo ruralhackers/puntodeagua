@@ -9,12 +9,21 @@ export class Community {
     public readonly dailyWaterLimitLitersPerPerson: number
   ) {}
 
-  static create(communitySchema: CommunitySchema) {
+  static create(communitySchema: Omit<CommunitySchema, 'id'>) {
     return new Community(
-      Id.create(communitySchema.id),
+      Id.generateUniqueId(),
       communitySchema.name,
       Id.create(communitySchema.planId),
       communitySchema.dailyWaterLimitLitersPerPerson
+    )
+  }
+
+  static fromDto(dto: CommunitySchema): Community {
+    return new Community(
+      Id.create(dto.id),
+      dto.name,
+      Id.create(dto.planId),
+      dto.dailyWaterLimitLitersPerPerson
     )
   }
 

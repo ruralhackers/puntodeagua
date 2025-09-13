@@ -1,6 +1,5 @@
 import { Id, type Query } from 'core'
-import type { WaterMeterRepository } from 'features'
-import type { WaterMeter } from 'features/entities/water-meter'
+import type { WaterMeter, WaterMeterRepository } from 'features'
 
 interface GetWaterMeterParams {
   id: string

@@ -1,5 +1,5 @@
 import { type Command, Id, MeasurementUnit } from 'core'
-import { WaterMeter, type WaterMeterRepository, type WaterZoneRepository } from 'features'
+import type { WaterMeterRepository } from 'features'
 
 export interface UpdateWaterMeterCommand {
   id: string

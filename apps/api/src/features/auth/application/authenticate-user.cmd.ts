@@ -29,22 +29,18 @@ export class AuthenticateUserCmd implements Command<LoginDto, AuthResponseDto> {
       throw new Error('Invalid credentials')
     }
 
-    const token = await this.jwtSign({
-      userId: user.id,
+    const payload = {
+      userId: user.id.toString(),
       email: user.email,
-      roles: user.roles,
-      communityId: user.communityId
-    })
+      roles: user.roles.map((role) => role.toString()),
+      communityId: user.communityId ? user.communityId.toString() : null
+    }
+
+    const token = await this.jwtSign(payload)
 
     return {
       token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        roles: user.roles,
-        communityId: user.communityId
-      }
+      user: payload
     }
   }
 }

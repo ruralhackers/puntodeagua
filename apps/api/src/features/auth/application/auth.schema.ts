@@ -10,9 +10,8 @@ export type LoginDto = z.infer<typeof loginSchema>
 export const authResponseSchema = z.object({
   token: z.string(),
   user: z.object({
-    id: z.string(),
-    email: z.string(),
-    name: z.string().nullable(),
+    userId: z.string(),
+    email: z.string().email(),
     roles: z.array(z.string()),
     communityId: z.string().nullable()
   })

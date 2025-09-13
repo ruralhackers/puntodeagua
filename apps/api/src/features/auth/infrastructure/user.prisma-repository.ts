@@ -1,188 +1,91 @@
-import type { PrismaClient } from 'database'
-import type { UserRepository } from 'features'
+import type { Id, UserRoleType } from 'core'
+import type { Prisma, PrismaClient } from 'database'
+import { BasePrismaRepository, User, type UserDto, type UserRepository } from 'features'
 
-export class UserPrismaRepository implements UserRepository {
-  constructor(private readonly prisma: PrismaClient) {}
-
-  async findByEmail(email: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        password: true,
-        roles: true,
-        communityId: true
-      }
-    })
-
-    if (!user) {
-      return null
-    }
-
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      password: user.password,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
-      communityId: user.communityId
-    }
+export class UserPrismaRepository extends BasePrismaRepository implements UserRepository {
+  protected readonly model = 'user'
+  protected getModel(): PrismaClient['user'] {
+    return this.db.user
   }
 
-  async findById(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        communityId: true,
-        emailVerified: true,
-        image: true
-      }
+  async findByEmail(email: string) {
+    const user = await this.getModel().findUnique({
+      where: { email }
     })
 
     if (!user) {
-      return null
+      return undefined
     }
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
-      communityId: user.communityId,
-      emailVerified: user.emailVerified,
-      image: user.image
+    return User.fromDto(this.fromPrismaPayload(user))
+  }
+
+  async findById(id: Id) {
+    const user = await this.getModel().findUnique({
+      where: { id: id.toString() }
+    })
+
+    if (!user) {
+      return undefined
     }
+
+    return User.fromDto(this.fromPrismaPayload(user))
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        communityId: true,
-        emailVerified: true,
-        image: true
-      },
-      orderBy: {
-        name: 'asc'
-      }
-    })
+    const users = await this.getModel().findMany({})
 
-    return users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
-      communityId: user.communityId,
-      emailVerified: user.emailVerified,
-      image: user.image
-    }))
+    return users.map((user) => User.fromDto(this.fromPrismaPayload(user)))
   }
 
-  async findByCommunity(communityId: string) {
-    const users = await this.prisma.user.findMany({
+  async findByCommunity(id: Id) {
+    const users = await this.getModel().findMany({
       where: {
-        communityId: communityId
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        roles: true,
-        communityId: true,
-        emailVerified: true,
-        image: true
+        communityId: id.toString()
       },
       orderBy: {
         name: 'asc'
       }
     })
 
-    return users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
-      communityId: user.communityId,
-      emailVerified: user.emailVerified,
-      image: user.image
-    }))
+    return users.map((user) => User.fromDto(this.fromPrismaPayload(user)))
   }
 
-  async save(userData: {
-    id?: string
-    email: string
-    name?: string | null
-    password?: string | null
-    roles: string[]
-    communityId?: string | null
-    emailVerified?: Date | null
-    image?: string | null
-  }) {
-    const data = {
-      email: userData.email,
-      name: userData.name,
-      password: userData.password,
-      roles: userData.roles,
-      communityId: userData.communityId,
-      emailVerified: userData.emailVerified,
-      image: userData.image
+  async save(user: User) {
+    const update = {
+      name: user.name,
+      roles: user.roles.map((role) => role.toString()),
+      emailVerified: user.emailVerified,
+      image: user.image
     }
 
-    let user: any
-    if (userData.id) {
-      // Update existing user
-      user = await this.prisma.user.update({
-        where: { id: userData.id },
-        data,
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          roles: true,
-          communityId: true,
-          emailVerified: true,
-          image: true
-        }
-      })
-    } else {
-      // Create new user
-      user = await this.prisma.user.create({
-        data,
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          roles: true,
-          communityId: true,
-          emailVerified: true,
-          image: true
-        }
-      })
-    }
+    await this.getModel().upsert({
+      where: { id: user.id.toString() },
+      create: {
+        ...update,
+        email: user.email,
+        communityId: user.communityId ? user.communityId.toString() : null
+      },
+      update
+    })
+  }
 
+  async delete(id: Id): Promise<void> {
+    await this.getModel().delete({
+      where: { id: id.toString() }
+    })
+  }
+
+  private fromPrismaPayload(user: Prisma.UserGetPayload<null>): UserDto {
     return {
       id: user.id,
       email: user.email,
+      password: user.password ?? '',
       name: user.name,
-      roles: Array.isArray(user.roles) ? (user.roles as string[]) : [],
+      roles: Array.isArray(user.roles) ? (user.roles as UserRoleType[]) : [],
       communityId: user.communityId,
       emailVerified: user.emailVerified,
       image: user.image
     }
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({
-      where: { id }
-    })
   }
 }

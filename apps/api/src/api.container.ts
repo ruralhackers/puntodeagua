@@ -3,7 +3,6 @@ import { EmptyMiddleware } from 'core/use-cases/middleware/empty.middleware'
 import { LogMiddleware } from 'core/use-cases/middleware/log.middleware'
 import type { Middleware } from 'core/use-cases/middleware/middleware'
 import { client } from 'database'
-import { FilePrismaRepository } from 'features'
 import { ISSUE_REPOSITORY } from 'webapp/src/core/di/injection-tokens'
 import {
   ANALYSIS_REPOSITORY,
@@ -59,6 +58,7 @@ import { WaterMeterPrismaRepository } from './features/water-meter/infrastructur
 import { CreateWaterMeterReadingCmd } from './features/water-meter-reading/application/create-water-meter-reading.cmd'
 import { DeleteWaterMeterReadingCmd } from './features/water-meter-reading/application/delete-water-meter-reading.cmd'
 import { GetWaterMeterReadingsQry } from './features/water-meter-reading/application/get-water-meter-readings.qry'
+import { FilePrismaRepository } from './features/water-meter-reading/infrastructure/file.prisma-repository'
 import { WaterMeterReadingPrismaRepository } from './features/water-meter-reading/infrastructure/water-meter-reading.prisma-repository'
 import { CreateWaterPointCmd } from './features/water-point/application/create-water-point.cmd'
 import { DeleteWaterPointCmd } from './features/water-point/application/delete-water-point.cmd'
@@ -96,10 +96,7 @@ export class ApiContainer extends CoreContainer {
     this.register(GetWaterMetersQry.ID, getWaterMetersQry)
     const getWaterMeterQry = new GetWaterMeterQry(waterMeterPrismaRepository)
     this.register(GetWaterMeterQry.ID, getWaterMeterQry)
-    const updateWaterMeterCmd = new UpdateWaterMeterCmd(
-      waterMeterPrismaRepository,
-      waterPointPrismaRepository
-    )
+    const updateWaterMeterCmd = new UpdateWaterMeterCmd(waterMeterPrismaRepository)
     this.register(UpdateWaterMeterCmd.ID, updateWaterMeterCmd)
 
     // Water Meter Readings

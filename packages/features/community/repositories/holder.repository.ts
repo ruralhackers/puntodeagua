@@ -1,6 +1,6 @@
 import type { Deletable, FindableAll, FindableById, Savable } from 'core'
+import type { GetHoldersFiltersDto } from '../../schemas/get-holders-filters.schema'
 import type { Holder } from '../entities/holder'
-import type { GetHoldersFiltersDto } from '../schemas/get-holders-filters.schema'
 
 export interface HolderRepository
   extends Savable<Holder>,

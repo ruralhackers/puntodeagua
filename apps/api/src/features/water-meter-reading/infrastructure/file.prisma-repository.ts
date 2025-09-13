@@ -1,7 +1,5 @@
-import { Id } from 'core'
+import { File, type FileRepository, type Id } from 'core'
 import type { PrismaClient } from 'database'
-import type { FileRepository } from 'features'
-import { File } from 'features'
 
 export class FilePrismaRepository implements FileRepository {
   constructor(private readonly client: PrismaClient) {}
@@ -11,22 +9,7 @@ export class FilePrismaRepository implements FileRepository {
       orderBy: { createdAt: 'desc' }
     })
 
-    return files.map((file) =>
-      File.create({
-        id: file.id,
-        filename: file.filename,
-        originalName: file.originalName,
-        mimeType: file.mimeType,
-        size: file.size,
-        url: file.url,
-        bucket: file.bucket,
-        key: file.key,
-        entityType: file.entityType,
-        entityId: file.entityId,
-        uploadedBy: file.uploadedBy,
-        createdAt: file.createdAt
-      })
-    )
+    return files.map((file) => File.fromDto(file))
   }
 
   async findById(id: Id): Promise<File | undefined> {
@@ -36,20 +19,7 @@ export class FilePrismaRepository implements FileRepository {
 
     if (!file) return undefined
 
-    return File.create({
-      id: file.id,
-      filename: file.filename,
-      originalName: file.originalName,
-      mimeType: file.mimeType,
-      size: file.size,
-      url: file.url,
-      bucket: file.bucket,
-      key: file.key,
-      entityType: file.entityType,
-      entityId: file.entityId,
-      uploadedBy: file.uploadedBy,
-      createdAt: file.createdAt
-    })
+    return File.fromDto(file)
   }
 
   async findByEntity(entityType: string, entityId: string): Promise<File[]> {
@@ -58,22 +28,7 @@ export class FilePrismaRepository implements FileRepository {
       orderBy: { createdAt: 'desc' }
     })
 
-    return files.map((file) =>
-      File.create({
-        id: file.id,
-        filename: file.filename,
-        originalName: file.originalName,
-        mimeType: file.mimeType,
-        size: file.size,
-        url: file.url,
-        bucket: file.bucket,
-        key: file.key,
-        entityType: file.entityType,
-        entityId: file.entityId,
-        uploadedBy: file.uploadedBy,
-        createdAt: file.createdAt
-      })
-    )
+    return files.map((file) => File.fromDto(file))
   }
 
   async save(entity: File): Promise<void> {

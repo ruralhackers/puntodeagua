@@ -18,7 +18,7 @@ export const authApiRest = new Elysia()
     try {
       const loginDto = loginSchema.parse(body)
       // Create a JWT sign function and inject it
-      const jwtSign = async (payload: { userId: string; email: string; roles: string[] }) => {
+      const jwtSign = async (payload: { password: string; email: string }) => {
         return await jwt.sign(payload)
       }
 
@@ -27,7 +27,10 @@ export const authApiRest = new Elysia()
       const { userRepository } = authenticateCmd as unknown as { userRepository: UserRepository }
       const cmdWithJwt = new AuthenticateUserCmd(userRepository, jwtSign)
 
+      console.log('Authenticating user with email:', loginDto.email, loginDto.password)
+
       const result = await cmdWithJwt.handle(loginDto)
+      console.log('Authentication successful for user:', result)
       return result
     } catch (error) {
       set.status = 401

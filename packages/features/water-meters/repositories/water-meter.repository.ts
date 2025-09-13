@@ -1,6 +1,6 @@
 import type { Deletable, FindableAll, FindableById, Id, Savable } from 'core'
 import type { WaterMeter } from '../entities/water-meter'
-import type { GetWaterMetersFiltersDto } from '../schemas/get-water-meters-filters.schema'
+import type { GetWaterMetersFiltersDto } from '../entities/water-meter.dto'
 
 export interface WaterMeterRepository
   extends Savable<WaterMeter>,

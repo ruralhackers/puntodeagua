@@ -1,7 +1,7 @@
 import { idSchema } from 'core'
 import { z } from 'zod'
 
-export type CommunitySchema = z.infer<typeof communitySchema>
+export type CommunityDto = z.infer<typeof communitySchema>
 
 export const communitySchema = z.object({
   id: idSchema,

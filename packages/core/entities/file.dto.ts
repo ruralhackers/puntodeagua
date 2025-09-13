@@ -1,7 +1,7 @@
 import { idSchema } from 'core'
 import { z } from 'zod'
 
-export type FileSchema = z.infer<typeof fileSchema>
+export type FileDto = z.infer<typeof fileSchema>
 
 export const fileSchema = z.object({
   id: idSchema,

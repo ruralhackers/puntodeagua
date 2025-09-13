@@ -53,7 +53,7 @@ export function getLastNormalizedReading(
     reading: string
     normalizedReading: string
     consumption: number
-    'excess-consumption': boolean
+    excessConsumption: boolean
   }>
 ): string | null {
   if (!readings || readings.length === 0) {

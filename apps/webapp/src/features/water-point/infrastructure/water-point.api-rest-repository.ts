@@ -1,7 +1,10 @@
 import type { HttpClient, Id } from 'core'
-import type { GetWaterPointsFiltersDto, WaterPointRepository } from 'features'
-import { WaterPoint } from 'features/entities/water-point'
-import type { WaterPointDto } from 'features/entities/water-point.dto'
+import {
+  type GetWaterPointsFiltersDto,
+  WaterPoint,
+  type WaterPointDto,
+  type WaterPointRepository
+} from 'features'
 
 export class WaterPointApiRestRepository implements WaterPointRepository {
   constructor(private readonly httpClient: HttpClient) {}

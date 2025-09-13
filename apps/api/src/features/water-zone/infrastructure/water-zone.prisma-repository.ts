@@ -11,7 +11,7 @@ export class WaterZonePrismaRepository extends BasePrismaRepository implements W
 
   async save(input: WaterZone): Promise<void> {
     const update = {
-      communityId: input.communityId.toString(),
+      communityId: input.community.id.toString(),
       name: input.name
     }
 
@@ -28,12 +28,15 @@ export class WaterZonePrismaRepository extends BasePrismaRepository implements W
   }
 
   async findById(id: Id): Promise<WaterZone | undefined> {
-    const entityDto = await this.getModel().findUnique({ where: { id: id.toString() } })
+    const entityDto = await this.getModel().findUnique({
+      where: { id: id.toString() },
+      include: { community: true }
+    })
     return entityDto ? WaterZone.fromDto(entityDto) : undefined
   }
 
   async findAll(): Promise<WaterZone[]> {
-    const entityDtos = await this.getModel().findMany()
+    const entityDtos = await this.getModel().findMany({ include: { community: true } })
     return entityDtos.map((e) => WaterZone.fromDto(e))
   }
 
@@ -43,7 +46,7 @@ export class WaterZonePrismaRepository extends BasePrismaRepository implements W
     if (filters.communityId) {
       where.communityId = filters.communityId
     }
-    const entityDtos = await this.getModel().findMany({ where })
+    const entityDtos = await this.getModel().findMany({ where, include: { community: true } })
     return entityDtos.map((e) => WaterZone.fromDto(e))
   }
 

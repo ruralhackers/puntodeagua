@@ -67,7 +67,7 @@ export default function WaterMeterDetailPage({
       await updateWaterMeter(waterMeterId, {
         name: editData.name || '',
         measurementUnit: editData.measurementUnit || 'litros',
-        waterZoneId: editData.waterZoneId,
+        waterZoneId: editData.waterZone.id,
         images: editData.images
       })
 
@@ -111,11 +111,11 @@ export default function WaterMeterDetailPage({
 
   // Función para obtener la última lectura
   const getLastReading = () => {
-    if (!waterMeter.readings || waterMeter.readings.length === 0) {
+    if (!waterMeter.waterMeterReadings || waterMeter.waterMeterReadings.length === 0) {
       return null
     }
     // Ordenar por fecha descendente y tomar la primera
-    return waterMeter.readings.sort(
+    return waterMeter.waterMeterReadings?.sort(
       (a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime()
     )[0]
   }
@@ -190,7 +190,7 @@ export default function WaterMeterDetailPage({
             <div className="space-y-2">
               <Label>Estado</Label>
               <div className="p-3 rounded-lg">
-                {lastReading?.['excess-consumption'] ? (
+                {lastReading?.excessConsumption ? (
                   <div className="flex items-center gap-2 text-orange-600">
                     <AlertTriangle className="h-4 w-4" />
                     <span className="text-sm font-medium">Consumo excesivo detectado</span>
@@ -289,7 +289,7 @@ export default function WaterMeterDetailPage({
                 <Label htmlFor={waterZoneInputId}>Zona de Agua</Label>
                 {isEditing ? (
                   <Select
-                    value={editData?.waterZoneId || ''}
+                    value={editData?.waterZone.id || ''}
                     onValueChange={(value: string) => {
                       const selectedZone = waterZones?.find(
                         (zone: any) => zone.id.toString() === value
@@ -362,7 +362,7 @@ export default function WaterMeterDetailPage({
                   </div>
                 ) : (
                   <div className="p-2 bg-muted rounded font-mono text-sm">
-                    {displayData?.waterPointId}
+                    {displayData?.waterPoint.id}
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
@@ -410,7 +410,7 @@ export default function WaterMeterDetailPage({
         >
           <WaterMeterReadingHistory
             readings={
-              waterMeter.readings?.map((reading) => ({
+              waterMeter.waterMeterReadings?.map((reading) => ({
                 ...reading
               })) ?? []
             }

@@ -1,23 +1,22 @@
 import { MeasurementUnit } from 'core'
 import { Id } from 'core/value-object/id.ts'
-import type { WaterMeterSchema } from '../schemas/water-meter.schema.ts'
-import type { WaterMeterReadingSchema } from '../schemas/water-meter-reading.schema.ts'
-import type { WaterPointSchema } from '../schemas/water-point.schema.ts'
+import type { CommunityDto } from '../../community/entities/community.dto.ts'
+import type { WaterPointDto } from '../../community/entities/water-point.dto.ts'
+import { WaterPoint } from '../../community/entities/water-point.ts'
+import { WaterZone } from '../../community/entities/water-zone.ts'
+import type { WaterMeterDto } from './water-meter.dto.ts'
+import type { WaterMeterReadingDto } from './water-meter-reading.dto.ts'
 import { WaterMeterReading } from './water-meter-reading.ts'
-import { WaterPoint } from './water-point.ts'
 
 export class WaterMeter {
-  private static readonly dailyWaterLimitLitersPerPerson = 150
-
   private constructor(
     public readonly id: Id,
     public name: string,
     public readonly holderId: Id,
     public readonly waterPoint: WaterPoint,
-    public readonly waterZoneId: Id,
+    public readonly waterZone: WaterZone,
     public measurementUnit: MeasurementUnit,
     public images: string[] | [],
-    public readonly waterZoneName?: string,
     public readonly lastReadingValue?: string,
     public readonly lastReadingDate?: Date,
     public readonly waterMeterReadings?: WaterMeterReading[]
@@ -27,29 +26,31 @@ export class WaterMeter {
     name,
     holderId,
     waterPoint,
-    waterZoneId,
+    waterZone,
     measurementUnit,
     images,
-    waterZoneName,
     lastReadingValue,
     lastReadingDate
-  }: Omit<WaterMeterSchema, 'id'>) {
+  }: Omit<WaterMeterDto, 'id'>) {
     return new WaterMeter(
       Id.generateUniqueId(),
       name,
       Id.create(holderId),
       WaterPoint.fromDto(waterPoint),
-      Id.create(waterZoneId),
+      WaterZone.fromDto(waterZone),
       MeasurementUnit.create(measurementUnit),
       images || [],
-      waterZoneName,
       lastReadingValue,
       lastReadingDate
     )
   }
 
-  static fromDto(dto: WaterMeterSchema): WaterMeter {
-    const readings = WaterMeter.calculateConsumption(dto.waterMeterReadings, dto.waterPoint)
+  static fromDto(dto: WaterMeterDto): WaterMeter {
+    const readings = WaterMeter.calculateConsumption(
+      dto.waterZone?.community,
+      dto.waterPoint,
+      dto.waterMeterReadings
+    )
     const lastReadingValue = dto.waterMeterReadings?.[0]?.reading.toString()
     const lastReadingDate = dto.waterMeterReadings?.[0]?.readingDate
 
@@ -58,10 +59,9 @@ export class WaterMeter {
       dto.name,
       Id.create(dto.holderId),
       WaterPoint.fromDto(dto.waterPoint),
-      Id.create(dto.waterZoneId),
+      WaterZone.fromDto(dto.waterZone),
       MeasurementUnit.create(dto.measurementUnit),
       dto.images || [],
-      dto.waterZoneName,
       lastReadingValue,
       lastReadingDate,
       readings
@@ -74,8 +74,7 @@ export class WaterMeter {
       name: this.name,
       holderId: this.holderId.toString(),
       waterPoint: this.waterPoint.toDto(),
-      waterZoneId: this.waterZoneId.toString(),
-      waterZoneName: this.waterZoneName,
+      waterZone: this.waterZone.toDto(),
       measurementUnit: this.measurementUnit.toString(),
       images: this.images,
       lastReadingValue: this.lastReadingValue,
@@ -85,8 +84,9 @@ export class WaterMeter {
   }
 
   private static calculateConsumption(
-    readings: WaterMeterReadingSchema[],
-    waterPoint: WaterPointSchema
+    community: CommunityDto,
+    waterPoint: WaterPointDto,
+    readings?: WaterMeterReadingDto[]
   ): WaterMeterReading[] {
     if (!readings || readings.length === 0) return []
     return readings
@@ -105,7 +105,7 @@ export class WaterMeter {
             (readingDate.getTime() - beforeReadingDate.getTime()) / (1000 * 60 * 60 * 24)
           )
           const totalPopulation = waterPoint.fixedPopulation + waterPoint.floatingPopulation
-          const totalDailyLimit = WaterMeter.dailyWaterLimitLitersPerPerson * totalPopulation
+          const totalDailyLimit = community?.dailyWaterLimitLitersPerPerson * totalPopulation
 
           excessConsumption =
             daysBetween > 0 && totalPopulation > 0 && consumption / daysBetween > totalDailyLimit

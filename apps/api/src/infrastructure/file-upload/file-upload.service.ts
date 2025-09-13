@@ -1,6 +1,6 @@
-import type { StorageService, UploadOptions } from 'core'
-import type { FileRepository } from 'features'
-import { File } from 'features'
+import type { FileRepository, StorageService, UploadOptions } from 'core'
+import { File } from 'core'
+import type {} from 'features'
 
 export class FileUploadService {
   constructor(
@@ -17,7 +17,6 @@ export class FileUploadService {
 
     // Create file entity
     const fileEntity = File.create({
-      id: crypto.randomUUID(), // Generate new ID
       filename: uploadResult.filename,
       originalName: options.originalName,
       mimeType: options.mimeType,

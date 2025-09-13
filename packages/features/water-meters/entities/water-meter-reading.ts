@@ -1,7 +1,6 @@
 import { Decimal } from 'core'
+import { File } from 'core/entities/file.ts'
 import { Id } from 'core/value-object/id.ts'
-import type { WaterMeterReadingSchema } from '../schemas/water-meter-reading.schema.ts'
-import { File } from './file'
 import type { WaterMeterReadingDto } from './water-meter-reading.dto.ts'
 
 export class WaterMeterReading {
@@ -12,7 +11,7 @@ export class WaterMeterReading {
     public readonly normalizedReading: Decimal,
     public readonly readingDate: Date,
     public readonly notes?: string,
-    public readonly files: File[] = [],
+    public readonly files?: File[],
     public readonly consumption?: number,
     public readonly excessConsumption?: boolean
   ) {}
@@ -24,7 +23,7 @@ export class WaterMeterReading {
     readingDate,
     notes,
     files
-  }: Omit<WaterMeterReadingSchema, 'id'>) {
+  }: Omit<WaterMeterReadingDto, 'id'>) {
     return new WaterMeterReading(
       Id.generateUniqueId(),
       Id.create(waterMeterId),
@@ -36,7 +35,7 @@ export class WaterMeterReading {
     )
   }
 
-  static fromDto(dto: WaterMeterReadingSchema): WaterMeterReading {
+  static fromDto(dto: WaterMeterReadingDto): WaterMeterReading {
     return new WaterMeterReading(
       Id.create(dto.id),
       Id.create(dto.waterMeterId),
@@ -58,7 +57,7 @@ export class WaterMeterReading {
       normalizedReading: this.normalizedReading.toString(),
       readingDate: this.readingDate,
       notes: this.notes,
-      files: this.files.map((file) => file.toDto()),
+      files: this.files?.map((file) => file.toDto()),
       consumption: this.consumption,
       excessConsumption: this.excessConsumption
     }

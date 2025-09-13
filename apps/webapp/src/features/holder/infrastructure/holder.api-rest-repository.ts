@@ -1,6 +1,5 @@
 import type { HttpClient, Id } from 'core'
-import type { GetHoldersFiltersDto, HolderDto, HolderRepository } from 'features'
-import { Holder } from 'features/entities/holder'
+import { type GetHoldersFiltersDto, Holder, type HolderDto, type HolderRepository } from 'features'
 
 export class HolderApiRestRepository implements HolderRepository {
   constructor(private readonly httpClient: HttpClient) {}

@@ -38,6 +38,7 @@ export const waterMeterApiRest = new Elysia()
     }
 
     const waterMeters = await useCaseService.execute(GetWaterMetersQry, filters)
+
     return waterMeters.map((x) => x.toDto())
   })
   .get('/water-meter/:id', async ({ params, user }) => {

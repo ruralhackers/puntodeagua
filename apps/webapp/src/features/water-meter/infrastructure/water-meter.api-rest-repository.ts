@@ -1,6 +1,10 @@
 import type { HttpClient, Id } from 'core'
-import type { GetWaterMetersFiltersDto, WaterMeterDto, WaterMeterRepository } from 'features'
-import { WaterMeter } from 'features/entities/water-meter'
+import {
+  type GetWaterMetersFiltersDto,
+  WaterMeter,
+  type WaterMeterDto,
+  type WaterMeterRepository
+} from 'features'
 
 export class WaterMeterApiRestRepository implements WaterMeterRepository {
   constructor(private readonly httpClient: HttpClient) {}
@@ -17,6 +21,8 @@ export class WaterMeterApiRestRepository implements WaterMeterRepository {
     }
 
     const url = `water-meters${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    console.log('Fetching water meters from URL:', url) // --- IGNORE ---
 
     // The httpClient will automatically handle authentication if it's ServerAuthHttpClient
     const response = await this.httpClient.get<WaterMeterDto[]>(url)

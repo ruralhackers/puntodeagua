@@ -1,8 +1,8 @@
 import { decimalSchema, idSchema } from 'core'
+import { fileSchema } from 'core/entities/file.dto'
 import { z } from 'zod'
-import { fileSchema } from './file.schema'
 
-export type WaterMeterReadingSchema = z.infer<typeof waterMeterReadingSchema>
+export type WaterMeterReadingDto = z.infer<typeof waterMeterReadingSchema>
 
 export const waterMeterReadingSchema = z.object({
   id: idSchema,
@@ -11,7 +11,7 @@ export const waterMeterReadingSchema = z.object({
   normalizedReading: decimalSchema,
   readingDate: z.date(),
   notes: z.string().optional(),
-  files: z.array(fileSchema).optional().default([]),
+  files: z.array(fileSchema).optional().default([]).optional(),
   consumption: z.number().optional(),
   excessConsumption: z.boolean().optional()
 })

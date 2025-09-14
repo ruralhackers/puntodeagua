@@ -1,6 +1,6 @@
-import type { Email, TableQueryParams, TableQueryResult, Uuid } from '@ph/common/domain'
-import { BasePrismaRepository, PrismaTableQueryBuilder } from '@ph/common/infrastructure'
-import type { Prisma, client as prisma } from '@ph/database'
+import type { Email, Id, TableQueryParams, TableQueryResult } from '@pda/common/domain'
+import { BasePrismaRepository, PrismaTableQueryBuilder } from '@pda/common/infrastructure'
+import type { Prisma, client as prisma } from '@pda/database'
 import { User } from '../../domain/entities/user'
 import type { UserRepository } from '../../domain/repositories/user-repository'
 import { userTableConfig } from './user-table-config'
@@ -29,7 +29,7 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
     return user ? User.fromDto(user) : undefined
   }
 
-  async findById(id: Uuid) {
+  async findById(id: Id) {
     const user = await this.getModel().findUnique({
       where: { id: id.toString() }
     })
@@ -37,21 +37,21 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
   }
 
   async save(user: User) {
-    const update = user.toDto() as Prisma.UserUpdateInput
-    delete update.id
-    delete update.createdAt
-    delete update.updatedAt
-
-    await this.getModel().upsert({
+    await this.getModel().update({
       where: {
         id: user.id.toString()
       },
-      create: user.toDto() as Prisma.UserCreateInput,
-      update
+      update: {
+        roles: user.roles.map((role) => role.toString()),
+        name: user.name,
+        passwordHash: user.passwordHash,
+        emailVerified: user.emailVerified,
+        updatedAt: new Date()
+      }
     })
   }
 
-  async delete(id: Uuid) {
+  async delete(id: Id) {
     await this.getModel().delete({
       where: { id: id.toString() }
     })

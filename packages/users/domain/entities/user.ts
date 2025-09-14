@@ -1,52 +1,31 @@
-import { Email, Uuid } from '@ph/common/domain'
+import { Email, Id } from '@pda/common/domain'
+import { UserRole } from '../value-objects/user-role'
 import type { UserDto } from './user.dto'
 
 export class User {
   private constructor(
-    public readonly id: Uuid,
+    public readonly id: Id,
     public readonly email: Email,
-    public username: string,
-    public credits: number,
-    public admin: boolean,
-    public moderator: boolean,
-    public verified: boolean,
-    public banned: boolean,
-    public nsfw: boolean,
-    public profileViewCount: number,
-    public promptCount: number,
-    public favCount: number,
-    public searchCount: number,
-    public streakDays: number,
+    public roles: UserRole[],
+    public communityId: Id,
+    public createdAt: Date,
     public updatedAt: Date,
-    public readonly createdAt: Date,
-    public emailVerified?: Date | null,
-    public lockedAt?: Date | null,
-    public streakStart?: Date | null,
-    public streakEnd?: Date | null
+    public passwordHash?: string,
+    public name?: string | undefined,
+    public emailVerified?: Date | undefined
   ) {}
 
   static fromDto(dto: UserDto) {
     return new User(
-      Uuid.fromString(dto.id),
+      Id.fromString(dto.id),
       Email.fromString(dto.email),
-      dto.username,
-      dto.credits,
-      dto.admin,
-      dto.moderator,
-      dto.verified,
-      dto.banned,
-      dto.nsfw,
-      dto.profileViewCount,
-      dto.promptCount,
-      dto.favCount,
-      dto.searchCount,
-      dto.streakDays,
+      dto.roles.map((role) => UserRole.fromString(role)),
+      Id.fromString(dto.communityId),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
-      dto.emailVerified ? new Date(dto.emailVerified) : null,
-      dto.lockedAt ? new Date(dto.lockedAt) : null,
-      dto.streakStart ? new Date(dto.streakStart) : null,
-      dto.streakEnd ? new Date(dto.streakEnd) : null
+      dto.passwordHash,
+      dto.name,
+      dto.emailVerified
     )
   }
 
@@ -54,24 +33,13 @@ export class User {
     return {
       id: this.id.toString(),
       email: this.email.toString(),
-      username: this.username,
-      credits: this.credits,
-      admin: this.admin,
-      moderator: this.moderator,
-      verified: this.verified,
-      banned: this.banned,
-      nsfw: this.nsfw,
-      profileViewCount: this.profileViewCount,
-      promptCount: this.promptCount,
-      favCount: this.favCount,
-      searchCount: this.searchCount,
-      streakDays: this.streakDays,
+      passwordHash: this.passwordHash,
+      name: this.name,
+      roles: this.roles.map((role) => role.toString()),
+      communityId: this.communityId.toString(),
+      emailVerified: this.emailVerified,
       createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      emailVerified: this.emailVerified ?? null,
-      lockedAt: this.lockedAt ?? null,
-      streakStart: this.streakStart ?? null,
-      streakEnd: this.streakEnd ?? null
+      updatedAt: this.updatedAt
     }
   }
 
@@ -79,19 +47,17 @@ export class User {
     return this.id.equals(other.id)
   }
 
-  update(data: Partial<UserDto>) {
-    if (data.username !== undefined) this.username = data.username
-    if (data.credits !== undefined) this.credits = data.credits
-    if (data.admin !== undefined) this.admin = data.admin
-    if (data.moderator !== undefined) this.moderator = data.moderator
-    if (data.verified !== undefined) this.verified = data.verified
-    if (data.banned !== undefined) this.banned = data.banned
-    if (data.nsfw !== undefined) this.nsfw = data.nsfw
-    if (data.profileViewCount !== undefined) this.profileViewCount = data.profileViewCount
-    if (data.promptCount !== undefined) this.promptCount = data.promptCount
-    if (data.favCount !== undefined) this.favCount = data.favCount
-    if (data.searchCount !== undefined) this.searchCount = data.searchCount
-    if (data.streakDays !== undefined) this.streakDays = data.streakDays
-    this.updatedAt = new Date()
+  hasRole(role: UserRole): boolean {
+    return this.roles.some((userRole) => userRole.equals(role))
+  }
+
+  addRole(role: UserRole): void {
+    if (!this.hasRole(role)) {
+      this.roles.push(role)
+    }
+  }
+
+  removeRole(role: UserRole): void {
+    this.roles = this.roles.filter((userRole) => !userRole.equals(role))
   }
 }

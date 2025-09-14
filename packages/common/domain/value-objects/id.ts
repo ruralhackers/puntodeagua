@@ -1,4 +1,7 @@
 import { init, isCuid } from '@paralleldrive/cuid2'
+import { z } from 'zod'
+
+export const idSchema = z.string().cuid2()
 
 export class Id {
   private readonly value: string

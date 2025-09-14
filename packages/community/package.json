@@ -1,8 +1,12 @@
 {
-  "name": "@pda/users",
+  "name": "@pda/community",
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "dependencies": {
+    "@pda/common": "workspace:*",
+    "zod": "catalog:"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

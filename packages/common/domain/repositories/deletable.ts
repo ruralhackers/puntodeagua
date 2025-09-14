@@ -1,4 +1,4 @@
-import type { Uuid } from '../value-objects/uuid'
+import type { Id } from '../value-objects/id'
 export interface Deletable<In> {
-  delete(id: Uuid): Promise<void>
+  delete(id: Id): Promise<void>
 }

@@ -50,10 +50,18 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  passwordHash  String?
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
+  roles         String[]  @default([]) // e.g., ['ADMIN', 'USER']
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  communityId String    @map("community_id")
+  community   Community @relation(fields: [communityId], references: [id])
+
+  accounts Account[]
+  sessions Session[]
 }
 
 model VerificationToken {
@@ -62,4 +70,25 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Plan {
+  id   String @id @default(cuid())
+  name String
+
+  communities Community[]
+}
+
+model Community {
+  id   String @id @default(cuid())
+  name String
+
+  waterLimitRule Json @map("water_limit_rule")
+
+  plan   Plan   @relation(fields: [planId], references: [id])
+  planId String @map("plan_id")
+
+  users User[]
+
+  @@index([planId])
 }

@@ -1,9 +1,10 @@
 {
-  "name": "@pta/common",
+  "name": "@pda/common",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/bun": "latest"
   },
   "peerDependencies": {
@@ -11,6 +12,8 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
-    "decimal.js": "^10.6.0"
+    "bcrypt": "^6.0.0",
+    "decimal.js": "^10.6.0",
+    "zod": "catalog:"
   }
 }

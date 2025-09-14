@@ -1,6 +1,6 @@
 import { createAutoTableConfig } from '@pda/common/domain'
 
-export const userTableConfig = createAutoTableConfig({
+export const communityTableConfig = createAutoTableConfig({
   databaseType: 'prisma' as const,
-  modelName: 'user'
+  modelName: 'community'
 })

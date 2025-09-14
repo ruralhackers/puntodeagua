@@ -1,6 +1,6 @@
-import { client as prisma } from '@ph/database'
+import { client as prisma } from '@pda/database'
 import { UserUpdaterController } from '../controllers/user-updater.controller'
-import { UserPrismaRepository } from '../repositories/user-prisma.repository'
+import { UserPrismaRepository } from '../repositories/user.prisma-repository'
 
 export class UserFactory {
   private static userPrismaRepositoryInstance: UserPrismaRepository

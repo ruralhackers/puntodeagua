@@ -1,139 +1,28 @@
-import { Client } from 'pg'
-import { client as PrismaClient } from './client'
+import { saltAndHashPassword } from '@pda/common/domain'
+import { client } from './client'
 
-const prisma = PrismaClient
-
-interface StagingUser {
-  id: string
-  email: string | null
-  username: string | null
-  locked_at: Date | null
-  created_at: Date
-  updated_at: Date
-  credits: number
-  admin: boolean
-  moderator: boolean
-  verified: boolean
-  banned: boolean
-  nsfw: boolean
-  profile_view_count: number
-  prompt_count: number
-  fav_count: number
-  search_count: number
-  streak_days: number
-  streak_start: Date | null
-  streak_end: Date | null
-}
-
-async function connectToStaging() {
-  const stagingClient = new Client({
-    connectionString: process.env.STAGING_DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  })
-
-  await stagingClient.connect()
-  return stagingClient
-}
-
-async function fetchUsersFromStaging(stagingClient: Client) {
-  const query = `
-    SELECT
-      id, email, username, locked_at, created_at, updated_at,
-      credits, admin, moderator, verified, banned, nsfw,
-      profile_view_count, prompt_count, fav_count, search_count,
-      streak_days, streak_start, streak_end
-    FROM users
-    ORDER BY created_at ASC
-    LIMIT 100
-  `
-
-  const result = await stagingClient.query<StagingUser>(query)
-  return result.rows
-}
-
-async function createUsersInPrisma(users: StagingUser[]) {
-  console.log(`Creating ${users.length} users in Prisma...`)
-
-  for (const [index, user] of users.entries()) {
-    try {
-      await prisma.user.upsert({
-        where: { id: user.id },
-        update: {
-          email: user.email,
-          username: user.username,
-          lockedAt: user.locked_at,
-          updatedAt: user.updated_at,
-          credits: user.credits,
-          admin: user.admin || false,
-          moderator: user.moderator || false,
-          verified: user.verified || false,
-          banned: user.banned || false,
-          nsfw: user.nsfw || false,
-          profileViewCount: user.profile_view_count || 0,
-          promptCount: user.prompt_count || 0,
-          favCount: user.fav_count || 0,
-          searchCount: user.search_count || 0,
-          streakDays: user.streak_days || 0,
-          streakStart: user.streak_start || null,
-          streakEnd: user.streak_end || null
-        },
-        create: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          lockedAt: user.locked_at,
-          createdAt: user.created_at,
-          updatedAt: user.updated_at,
-          credits: user.credits,
-          admin: user.admin || false,
-          moderator: user.moderator || false,
-          verified: user.verified || false,
-          banned: user.banned || false,
-          nsfw: user.nsfw || false,
-          profileViewCount: user.profile_view_count || 0,
-          promptCount: user.prompt_count,
-          favCount: user.fav_count,
-          searchCount: user.search_count,
-          streakDays: user.streak_days,
-          streakStart: user.streak_start,
-          streakEnd: user.streak_end
-        }
-      })
-
-      if (index % 10 === 0) {
-        console.log(`Processed ${index + 1}/${users.length} users`)
-      }
-    } catch (error) {
-      console.error(`Error processing user ${user.id}:`, error)
-    }
-  }
-}
+const prisma = client
 
 async function main() {
-  let stagingClient: Client | null = null
+  await deleteAll()
 
-  try {
-    console.log('Connecting to staging database...')
-    stagingClient = await connectToStaging()
+  // Create multiple communities
+  const { anceuCommunityId, ponteCaldelasCommunityId } = await seedPlanAndCommunities()
 
-    console.log('Fetching users from staging...')
-    const users = await fetchUsersFromStaging(stagingClient)
+  // // Create users for both communities
+  await seedUsers(anceuCommunityId, ponteCaldelasCommunityId)
 
-    console.log(`Found ${users.length} users in staging`)
-
-    await createUsersInPrisma(users)
-
-    console.log('Migration completed successfully!')
-  } catch (error) {
-    console.error('Migration failed:', error)
-    throw error
-  } finally {
-    if (stagingClient) {
-      await stagingClient.end()
-    }
-  }
+  // // Create water infrastructure for both communities
+  // await seedWaterZones(anceuCommunityId, ponteCaldelasCommunityId)
+  // await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
+  // const anceuWaterPointIds = await seedWaterPoints(anceuCommunityId)
+  // const ponteCaldelasWaterPointIds = await seedWaterPoints(ponteCaldelasCommunityId)
+  // await seedHolders()
+  // await seedWaterMeters(anceuWaterPointIds, ponteCaldelasWaterPointIds)
+  // await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
+  // await seedWaterMeterReadings()
+  // await seedMaintenances(anceuCommunityId, ponteCaldelasCommunityId)
+  // await seedProviders(anceuCommunityId, ponteCaldelasCommunityId)
 }
 
 main()
@@ -144,3 +33,116 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
+
+async function deleteAll() {
+  await prisma.user.deleteMany({})
+  await prisma.community.deleteMany({})
+  await prisma.plan.deleteMany({})
+  // await prisma.file.deleteMany({})
+  // await prisma.waterMeterReading.deleteMany({})
+  // await prisma.waterMeter.deleteMany({})
+  // await prisma.waterPoint.deleteMany({})
+  // await prisma.waterZone.deleteMany({})
+  // await prisma.issue.deleteMany({})
+  // await prisma.holder.deleteMany({})
+  // await prisma.analysis.deleteMany({})
+  // await prisma.maintenance.deleteMany({})
+  // await prisma.provider.deleteMany({})
+}
+
+async function seedPlanAndCommunities() {
+  const plan = await prisma.plan.create({
+    data: {
+      name: 'Aguas de Galicia'
+    }
+  })
+
+  const anceuCommunity = await prisma.community.create({
+    data: {
+      name: 'Anceu',
+      planId: plan.id,
+      waterLimitRule: {
+        type: 'PERSON_BASED',
+        value: 150
+      }
+    }
+  })
+
+  const ponteCaldelasCommunity = await prisma.community.create({
+    data: {
+      name: 'Ponte Caldelas',
+      planId: plan.id,
+      waterLimitRule: {
+        type: 'HOUSEHOLD_BASED',
+        value: 220
+      }
+    }
+  })
+
+  return {
+    anceuCommunityId: anceuCommunity.id,
+    ponteCaldelasCommunityId: ponteCaldelasCommunity.id
+  }
+}
+
+async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const users = [
+    // Anceu community users
+    {
+      email: 'admin@anceu.com',
+      name: 'Admin Anceu',
+      passwordHash: await saltAndHashPassword('admin123'),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: anceuCommunityId
+    },
+    {
+      email: 'manager@anceu.com',
+      name: 'Manager Anceu',
+      passwordHash: await saltAndHashPassword('manager123'),
+      roles: ['MANAGER'],
+      communityId: anceuCommunityId
+    },
+    {
+      email: 'user1@anceu.com',
+      name: 'Usuario 1 Anceu',
+      passwordHash: await saltAndHashPassword('user123'),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: anceuCommunityId
+    },
+    {
+      email: 'user2@anceu.com',
+      name: 'Usuario 2 Anceu',
+      passwordHash: await saltAndHashPassword('user123'),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: anceuCommunityId
+    },
+    // Ponte Caldelas community users
+    {
+      email: 'admin@pontecaldelas.com',
+      name: 'Admin Ponte Caldelas',
+      passwordHash: await saltAndHashPassword('admin123'),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: ponteCaldelasCommunityId
+    },
+    {
+      email: 'user@pontecaldelas.com',
+      name: 'Usuario Ponte Caldelas',
+      passwordHash: await saltAndHashPassword('user123'),
+      roles: ['COMMUNITY_ADMIN'],
+      communityId: ponteCaldelasCommunityId
+    }
+  ]
+
+  await prisma.user.createMany({
+    data: users
+  })
+
+  console.log('Created users:')
+  console.log('- superadmin@puntodeagua.com (password: superadmin123) - SUPER_ADMIN')
+  console.log('- admin@anceu.com (password: admin123) - COMMUNITY_ADMIN')
+  console.log('- manager@anceu.com (password: manager123) - MANAGER')
+  console.log('- user1@anceu.com (password: user123) - COMMUNITY_ADMIN')
+  console.log('- user2@anceu.com (password: user123) - COMMUNITY_ADMIN')
+  console.log('- admin@pontecaldelas.com (password: admin123) - COMMUNITY_ADMIN')
+  console.log('- user@pontecaldelas.com (password: user123) - COMMUNITY_ADMIN')
+}

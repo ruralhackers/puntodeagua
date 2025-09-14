@@ -105,6 +105,13 @@ bun run app
 - **Language**: TypeScript
 - **Containerization**: Docker Compose
 
+### GitHub Actions
+
+This project includes automated workflows:
+
+- **Tests**: Automated test execution on pull requests and pushes
+- **Biome**: Code formatting and linting checks for code quality
+
 ### Commands
 
 | Command | Description |

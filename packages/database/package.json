@@ -1,5 +1,5 @@
 {
-  "name": "@ph/database",
+  "name": "@mb/database",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.ts",

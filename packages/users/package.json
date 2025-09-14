@@ -1,5 +1,5 @@
 {
-  "name": "@ph/users",
+  "name": "@mb/users",
   "module": "index.ts",
   "type": "module",
   "private": true,

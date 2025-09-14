@@ -1,6 +1,6 @@
-# PromptHero
+# Monorepo Boilerplate
 
-A modern monorepo containing all PromptHero applications and packages, built with Domain-Driven Design principles and a clean architecture approach.
+A modern monorepo template containing applications and packages, built with Domain-Driven Design principles and a clean architecture approach.
 
 ## 🏗️ Architecture
 
@@ -9,28 +9,40 @@ This project follows Domain-Driven Design (DDD) with a ports and adapters (hexag
 - **Bounded Contexts**: Organized in `packages/<bounded-context>`
 - **Layered Architecture**: Application, Domain, and Infrastructure layers
 - **Monorepo Structure**: Workspaces in `packages/*` and `apps/*`
+- **Package Naming**: Follows `@project-acronym/package-name` convention
+- **Database**: PostgreSQL with Docker Compose configuration
 
 ### Project Structure
 
 ```
-prompthero/
+monorepo-boilerplate/
 ├── apps/
-│   ├── admin/          # NextJS 15 admin dashboard
+│   ├── admin/          # NextJS 14 admin dashboard
 │   └── app/            # Main application
 ├── packages/
 │   └── <bounded-context>/
-│       ├── domain/
+│       ├── domain/     # @mb/domain-<context>
 │       │   ├── entities/
 │       │   ├── valueObjects/
 │       │   ├── repositories/
 │       │   ├── services/
 │       │   └── events/
-│       ├── application/
-│       └── infrastructure/
-├── lib-docs/
-│   └── legacy/         # Legacy documentation and guides
-└── docker-compose.yml
+│       ├── application/ # @mb/application-<context>
+│       └── infrastructure/ # @mb/infrastructure-<context>
+├── lib-docs/           # documentation and guides
+└── docker-compose.yml  # Database services configuration
 ```
+
+### Package Naming Convention
+
+All packages follow the naming pattern: `@<project-acronym>/<package-name>`
+
+Examples:
+- `@mb/common` - Authentication application layer
+- `@mb/database` - Database infrastructure package
+- `@mb/user` - User domain package
+
+> Replace `mb` (monorepo-boilerplate) with your project's acronym
 
 ## 🚀 Quick Start
 
@@ -51,13 +63,16 @@ prompthero/
    bun install
    ```
 
-3. **Start the database**:
+3. **Configure project names**:
+   Update the database names and service names in `docker-compose.yml` to match your project name before starting the database services.
+
+4. **Start the database**:
    ```bash
    bun run dbs
    ```
    > This runs `docker-compose -f docker-compose.yml up -d` to start PostgreSQL
 
-4. **Sync the database**:
+5. **Sync the database**:
    ```bash
    bun run db:sync
    ```
@@ -73,7 +88,7 @@ bun run admin
 ```
 
 ### Main Application
-Core PromptHero application.
+Core application template.
 
 ```bash
 bun run app
@@ -88,13 +103,14 @@ bun run app
 - **Database**: PostgreSQL
 - **Architecture**: DDD + Hexagonal Architecture
 - **Language**: TypeScript
+- **Containerization**: Docker Compose
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
 | `bun install` | Install all dependencies |
-| `bun run dbs` | Start database services |
+| `bun run dbs` | Start database services (PostgreSQL) |
 | `bun run db:sync` | Synchronize database schema |
 | `bun run admin` | Start admin dashboard |
 | `bun run app` | Start main application |
@@ -107,6 +123,7 @@ bun run app
 - English language for all comments
 - No getters/setters in classes
 - Services start with public `run` method
+- Package naming: `@project-acronym/package-name`
 
 ## 📁 Domain Organization
 
@@ -133,7 +150,7 @@ This project follows strict Domain-Driven Design principles. Please ensure:
 
 ## � Documentation
 
-Legacy documentation and migration guides can be found in `lib-docs/legacy/`. This includes historical implementation details and transition documentation from previous architectures.
+Legacy documentation and migration guides can be found in `lib-docs/`. This includes historical implementation details and transition documentation from previous architectures.
 
 
 

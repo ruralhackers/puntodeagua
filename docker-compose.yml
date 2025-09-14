@@ -1,28 +1,18 @@
 version: "3.8"
 
 volumes:
-  monorepo_boilerplate_postgres:
-  monorepo_boilerplate_redis:
+  puntodeagua2_postgres:
 
 services:
   postgres:
     image: postgres:15
-    container_name: monorepo_boilerplate_postgres
+    container_name: puntodeagua2_postgres
     restart: always
     ports:
-      - 5555:5432
+      - 5559:5432
     environment:
-      POSTGRES_DB: monorepo_boilerplate_local
-      POSTGRES_USER: monorepo_boilerplate_user
-      POSTGRES_PASSWORD: monorepo_boilerplate_password
+      POSTGRES_DB: puntodeagua2_local
+      POSTGRES_USER: puntodeagua2_user
+      POSTGRES_PASSWORD: puntodeagua2_password
     volumes:
-      - monorepo_boilerplate_postgres:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7
-    container_name: monorepo_boilerplate_redis
-    command: redis-server --save 20 1 --loglevel warning --requirepass unarayademetralha
-    ports:
-      - "6378:6378"
-    volumes:
-      - monorepo_boilerplate_redis:/data
+      - puntodeagua2_postgres:/var/lib/postgresql/data

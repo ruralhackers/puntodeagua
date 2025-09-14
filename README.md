@@ -1,4 +1,4 @@
-# Punto de Agua
+# 💧 Punto de Agua
 
 A water management system built with Domain-Driven Design principles and clean architecture. This platform enables communities to manage their water infrastructure, monitor consumption, and handle administrative tasks efficiently.
 

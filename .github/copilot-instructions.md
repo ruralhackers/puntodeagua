@@ -25,7 +25,7 @@
 
 - usually has the following folders
   - packages/domain/entities
-  - packages/domain/valueObjects
+  - packages/domain/value-objects
   - packages/domain/repositories
   - packages/domain/services
   - packages/domain/events

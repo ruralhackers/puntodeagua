@@ -9,9 +9,17 @@ export const userSchema = z.object({
   name: z.string().optional(),
   emailVerified: z.date().optional(),
   roles: z.array(z.string()).default([]),
-  communityId: idSchema,
+  communityId: idSchema.optional(),
   createdAt: z.date(),
   updatedAt: z.date()
 })
 
+export const userClientSchema = userSchema.omit({
+  passwordHash: true,
+  emailVerified: true,
+  createdAt: true,
+  updatedAt: true
+})
+
+export type UserClientDto = z.infer<typeof userClientSchema>
 export type UserDto = z.infer<typeof userSchema>

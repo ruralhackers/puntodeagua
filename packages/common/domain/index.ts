@@ -10,7 +10,7 @@ export type {
   TableQueryPort,
   TableQueryResult
 } from './repositories/table-query-port'
-export { saltAndHashPassword } from './utils/salt-and-hash-password'
+export { saltAndHashPassword, verifyPassword } from './utils/salt-and-hash-password'
 export { Decimal } from './value-objects/decimal'
 export { Email } from './value-objects/email'
 export { Id, idSchema } from './value-objects/id'

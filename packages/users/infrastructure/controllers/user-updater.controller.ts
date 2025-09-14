@@ -1,4 +1,4 @@
-import { Uuid } from '@ph/common/domain'
+import { Uuid } from '@pda/common/domain'
 import { type UserDto, userSchema } from '../../domain/entities/user.dto'
 import type { UserRepository } from '../../domain/repositories/user-repository'
 

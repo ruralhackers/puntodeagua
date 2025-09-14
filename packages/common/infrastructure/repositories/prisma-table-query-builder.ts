@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@ph/database'
+import type { PrismaClient } from '@pda/database'
 import type { TableQueryConfig } from '../../domain/repositories/table-query-config'
 import type { TableQueryParams, TableQueryResult } from '../../domain/repositories/table-query-port'
 

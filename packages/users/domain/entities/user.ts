@@ -1,15 +1,15 @@
 import { Email, Id } from '@pda/common/domain'
 import { UserRole } from '../value-objects/user-role'
-import type { UserDto } from './user.dto'
+import type { UserClientDto, UserDto } from './user.dto'
 
 export class User {
   private constructor(
     public readonly id: Id,
     public readonly email: Email,
     public roles: UserRole[],
-    public communityId: Id,
     public createdAt: Date,
     public updatedAt: Date,
+    public communityId?: Id,
     public passwordHash?: string,
     public name?: string | undefined,
     public emailVerified?: Date | undefined
@@ -20,9 +20,9 @@ export class User {
       Id.fromString(dto.id),
       Email.fromString(dto.email),
       dto.roles.map((role) => UserRole.fromString(role)),
-      Id.fromString(dto.communityId),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
+      dto.communityId ? Id.fromString(dto.communityId) : undefined,
       dto.passwordHash,
       dto.name,
       dto.emailVerified
@@ -36,10 +36,20 @@ export class User {
       passwordHash: this.passwordHash,
       name: this.name,
       roles: this.roles.map((role) => role.toString()),
-      communityId: this.communityId.toString(),
+      communityId: this.communityId?.toString(),
       emailVerified: this.emailVerified,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
+    }
+  }
+
+  toClientDto(): UserClientDto {
+    return {
+      id: this.id.toString(),
+      email: this.email.toString(),
+      name: this.name,
+      roles: this.roles.map((role) => role.toString()),
+      communityId: this.communityId?.toString()
     }
   }
 

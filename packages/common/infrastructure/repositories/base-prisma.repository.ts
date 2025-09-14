@@ -1,4 +1,4 @@
-import type { PrismaClient, client as prisma } from '@ph/database'
+import type { PrismaClient, client as prisma } from '@pda/database'
 
 export abstract class BasePrismaRepository {
   constructor(protected readonly db: typeof prisma) {}

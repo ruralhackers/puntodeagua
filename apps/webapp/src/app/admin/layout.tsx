@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
-import { AppSidebar } from '@/app/(main)/admin/_components/sidebar/app-sidebar'
+import { AppSidebar } from '@/app/admin/_components/sidebar/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { users } from '@/data/users'

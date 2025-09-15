@@ -1,6 +1,6 @@
 'use client'
 
-import type { UserDto } from '@pda/users/domain'
+import type { UserClientDto } from '@pda/users/domain'
 import { createContext, useContext, useRef } from 'react'
 import { type StoreApi, useStore } from 'zustand'
 import { createUserStore, type UserState } from './user-store'
@@ -12,7 +12,7 @@ export const UserStoreProvider = ({
   user
 }: {
   children: React.ReactNode
-  user: UserDto | null
+  user: UserClientDto | null
 }) => {
   const storeRef = useRef<StoreApi<UserState> | null>(null)
 

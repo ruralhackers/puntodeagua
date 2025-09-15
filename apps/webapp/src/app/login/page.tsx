@@ -8,9 +8,8 @@ import { HydrateClient } from '@/trpc/server'
 
 export default async function Home() {
   const session = await auth()
-  console.log({ session })
   if (session?.user) {
-    redirect('/admin')
+    redirect('/')
   }
 
   return (

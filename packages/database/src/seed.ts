@@ -87,7 +87,13 @@ async function seedPlanAndCommunities() {
 
 async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
   const users = [
-    // Anceu community users
+    {
+      email: 'superadmin@puntodeagua.com',
+      name: 'Super Admin',
+      password: await saltAndHashPassword('superadmin123'),
+      roles: ['ADMIN'],
+      communityId: null // Super admin doesn't belong to a specific community
+    },
     {
       email: 'admin@anceu.com',
       name: 'Admin Anceu',

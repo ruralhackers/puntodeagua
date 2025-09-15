@@ -2,6 +2,7 @@ import {
   Banknote,
   ChartBar,
   Fingerprint,
+  GlassWater,
   LayoutDashboard,
   type LucideIcon,
   SquareArrowUpRight,
@@ -36,50 +37,38 @@ export interface NavGroup {
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
-    label: 'Dashboards',
+    label: 'Community',
     items: [
       {
         title: 'Dashboard',
-        url: '/dashboard',
+        url: '/admin',
         icon: LayoutDashboard
       },
       {
-        title: 'Default',
-        url: '/dashboard/default',
-        icon: Fingerprint
-      },
-      {
-        title: 'CRM',
-        url: '/dashboard/crm',
+        title: 'Communities',
+        url: '/admin/communities',
         icon: ChartBar
       },
       {
-        title: 'Finance',
-        url: '/dashboard/finance',
-        icon: Banknote
-      }
-    ]
-  },
-  {
-    id: 2,
-    label: 'Pages',
-    items: [
-      {
         title: 'Users',
-        url: '/dashboard/users',
+        url: '/admin/users',
         icon: Users
       }
     ]
   },
   {
-    id: 3,
-    label: 'Misc',
+    id: 2,
+    label: 'Registers',
     items: [
       {
-        title: 'Others',
-        url: '/dashboard/coming-soon',
-        icon: SquareArrowUpRight,
-        comingSoon: true
+        title: 'Water Points',
+        url: '/admin/water-points',
+        icon: GlassWater
+      },
+      {
+        title: 'Water Meters',
+        url: '/admin/water-meters',
+        icon: Fingerprint
       }
     ]
   }

@@ -1,5 +1,5 @@
 export class UserRole {
-  private static readonly VALID_ROLES = ['COMMUNITY_ADMIN', 'MANAGER']
+  private static readonly VALID_ROLES = ['ADMIN', 'COMMUNITY_ADMIN', 'MANAGER']
 
   private constructor(private readonly value: string) {}
 
@@ -24,6 +24,10 @@ export class UserRole {
 
   equals(other: UserRole): boolean {
     return this.value === other.value
+  }
+
+  isAdmin(): boolean {
+    return this.value === 'ADMIN'
   }
 
   isCommunityAdmin(): boolean {

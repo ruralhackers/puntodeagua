@@ -1,7 +1,12 @@
 export abstract class WaterLimitRule {
   abstract getRuleType(): string
   abstract getValue(): number
-  abstract toDto(): Record<string, unknown>
+  abstract toDto(): WaterLimitRuleDto
+}
+
+export type WaterLimitRuleDto = {
+  type: string
+  value: number
 }
 
 export class WaterLimitRuleFactory {

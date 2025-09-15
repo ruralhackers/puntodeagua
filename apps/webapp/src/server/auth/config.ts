@@ -106,7 +106,6 @@ export const authConfig = {
         session.user.communityId = token.communityId as string
       }
 
-      console.log('SESSION AFTER UPDATE', session)
       return session
     },
     jwt: ({ token, user }) => {

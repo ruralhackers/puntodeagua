@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
-import { TableRepositoryProxy } from '@/server/repositories/TableRepositoryProxy'
+import { TableRepositoryProxy } from '@/server/repositories/table-proxy.repository'
 
 export const tableRouter = createTRPCRouter({
   domainTable: protectedProcedure

@@ -3,17 +3,22 @@ import { BasePrismaRepository, PrismaTableQueryBuilder } from '@pda/common/infra
 import type { Prisma, client as prisma } from '@pda/database'
 import { Community } from '../../domain/entities/community'
 import type { CommunityRepository } from '../../domain/repositories/community.repository'
+import type { WaterLimitRuleDto } from '../../domain/value-objects/water-limit-rules'
 import { communityTableConfig } from './community-table-config'
 
 export class CommunityPrismaRepository extends BasePrismaRepository implements CommunityRepository {
   protected readonly model = 'community'
   private readonly tableBuilder: PrismaTableQueryBuilder<Community, Community>
+  protected getModel() {
+    return this.db[this.model]
+  }
 
   constructor(db: typeof prisma) {
     super(db)
     const customConfig = {
       ...communityTableConfig,
-      entityFromDto: (dto: Prisma.CommunityGetPayload<null>) => Community.fromDto(dto)
+      entityFromDto: (dto: Prisma.CommunityGetPayload<null>) =>
+        Community.fromDto(this.fromPrismaPayload(dto))
     }
     this.tableBuilder = new PrismaTableQueryBuilder(customConfig, db, this.model)
   }
@@ -24,14 +29,14 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
 
   async findAll(): Promise<Community[]> {
     const communities = await this.getModel().findMany()
-    return communities.map((community) => Community.fromDto(community))
+    return communities.map((community) => Community.fromDto(this.fromPrismaPayload(community)))
   }
 
   async findById(id: Id) {
     const community = await this.getModel().findUnique({
       where: { id: id.toString() }
     })
-    return community ? Community.fromDto(community) : undefined
+    return community ? Community.fromDto(this.fromPrismaPayload(community)) : undefined
   }
 
   async save(community: Community) {
@@ -59,7 +64,10 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
     })
   }
 
-  protected getModel() {
-    return this.db[this.model]
+  private fromPrismaPayload(payload: Prisma.CommunityGetPayload<null>) {
+    return {
+      ...payload,
+      waterLimitRule: payload.waterLimitRule as WaterLimitRuleDto
+    }
   }
 }

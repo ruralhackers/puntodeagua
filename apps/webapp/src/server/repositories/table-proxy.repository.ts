@@ -1,5 +1,5 @@
 import type { TableQueryParams, TableQueryPort, TableQueryResult } from '@pda/common/domain'
-
+import { CommunityFactory } from '@pda/community'
 import { UserFactory } from '@pda/users'
 
 /**
@@ -38,6 +38,10 @@ export class TableRepositoryProxy implements TableRepositoryProxyPort {
   private proxy(model: string): TableQueryPort<unknown, unknown> {
     if (model === 'user') {
       return UserFactory.userPrismaRepository()
+    }
+
+    if (model === 'community') {
+      return CommunityFactory.communityPrismaRepository()
     }
 
     // Unknown model

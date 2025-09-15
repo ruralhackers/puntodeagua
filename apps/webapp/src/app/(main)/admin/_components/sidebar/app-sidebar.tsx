@@ -32,7 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <a href="/dashboard">
                 <Image
-                  src="/logo-32x32.png"
+                  src="/favicon/32x32.png"
                   alt="Logo"
                   width={24}
                   height={24}

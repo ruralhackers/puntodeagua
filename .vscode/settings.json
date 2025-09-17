@@ -27,5 +27,9 @@
   "github.copilot.chat.testGeneration.instructions": "Use Bun to generate tests for the current file.",
   "cSpell.words": ["Cctx", "Derivator", "kyts", "utxo"],
   "typescript.preferences.importModuleSpecifier": "relative",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
+  }
 }

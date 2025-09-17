@@ -8,5 +8,5 @@ export type { WaterPointDto } from './entities/water-point.dto'
 
 // Repositories
 export type { CommunityRepository } from './repositories/community.repository'
-export type { WaterPointRepository } from './repositories/water-point.repository'
 export type { CommunityZoneRepository } from './repositories/community-zone.repository'
+export type { WaterPointRepository } from './repositories/water-point.repository'

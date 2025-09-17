@@ -7,8 +7,8 @@ import type {
 import { differenceInDays } from 'date-fns'
 
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
-import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
+import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 
 export class ReadingCreatorService {
   constructor(

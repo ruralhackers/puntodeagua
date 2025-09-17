@@ -1,0 +1,19 @@
+import { Id } from '@pda/common/domain'
+import { type UserDto, type UserRepository, userSchema } from '../domain'
+
+export class UserUpdater {
+  constructor(private readonly repo: UserRepository) {}
+
+  async run(input: UserDto) {
+    const parsed = userSchema.parse(input)
+    if (!parsed.id) throw new Error('MISSING_ID')
+
+    const user = await this.repo.findById(Id.fromString(parsed.id))
+    if (!user) throw new Error('USER_NOT_FOUND')
+
+    user.update(parsed)
+
+    await this.repo.save(user)
+    return user
+  }
+}

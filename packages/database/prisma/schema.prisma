@@ -74,23 +74,97 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Plan {
-  id   String @id @default(cuid())
-  name String
-
-  communities Community[]
-}
-
 model Community {
-  id   String @id @default(cuid())
-  name String
-
-  waterLimitRule Json @map("water_limit_rule")
-
-  plan   Plan   @relation(fields: [planId], references: [id])
-  planId String @map("plan_id")
+  id             String @id @default(cuid())
+  name           String
+  waterLimitRule Json   @map("water_limit_rule")
 
   users User[]
+  zones CommunityZone[]
+}
 
-  @@index([planId])
+model CommunityZone {
+  id   String @id @default(cuid())
+  name String
+
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
+
+  notes String @default("") @db.Text
+
+  @@index([communityId])
+}
+
+model WaterPoint {
+  id       String @id @default(cuid())
+  name     String
+  location String @default("")
+
+  notes String @default("") @db.Text
+
+  fixedPopulation    Int    @default(0) @map("fixed_population")
+  floatingPopulation Int    @default(0) @map("floating_population")
+  cadastralReference String @map("cadastral_reference")
+
+  communityZone   CommunityZone @relation(fields: [communityZoneId], references: [id])
+  communityZoneId String        @map("community_zone_id")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([communityZoneId])
+}
+
+model WaterAccount {
+  id         String @id @default(cuid())
+  name       String
+  nationalId String @map("national_id")
+
+  notes String @default("") @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  waterMeters WaterMeter[]
+}
+
+model WaterMeter {
+  id   String @id @default(cuid())
+  name String
+
+  waterAccount   WaterAccount @relation(fields: [waterAccountId], references: [id])
+  waterAccountId String       @map("water_account_id")
+
+  waterPoint   WaterPoint @relation(fields: [waterPointId], references: [id], onDelete: Cascade)
+  waterPointId String     @map("water_point_id")
+
+  measurementUnit              String
+  lastReadingNormalizedValue   Int?      @map("last_reading_normalized_value")
+  lastReadingDate              DateTime? @map("last_reading_date")
+  lastReadingExcessConsumption Boolean?  @map("last_reading_excess_consumption")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  waterMeterReadings WaterMeterReading[]
+
+  @@index([waterAccountId])
+  @@index([waterPointId])
+}
+
+model WaterMeterReading {
+  id String @id @default(cuid())
+
+  waterMeter   WaterMeter @relation(fields: [waterMeterId], references: [id], onDelete: Cascade)
+  waterMeterId String     @map("water_meter_id")
+
+  reading           Decimal  @db.Decimal(10, 3)
+  normalizedReading Int      @map("normalized_reading")
+  readingDate       DateTime
+  notes             String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([waterMeterId])
 }

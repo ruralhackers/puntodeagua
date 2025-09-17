@@ -6,7 +6,6 @@ export type CommunityDto = z.infer<typeof communitySchema>
 export const communitySchema = z.object({
   id: idSchema,
   name: z.string(),
-  planId: idSchema,
   waterLimitRule: z.object({
     type: z.string(),
     value: z.number()

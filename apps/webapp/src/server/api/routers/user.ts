@@ -11,12 +11,12 @@ export const userRouter = createTRPCRouter({
       const repo = UserFactory.userPrismaRepository()
       const user = await repo.findById(Id.fromString(input.id))
       if (!user) return null
-      return user.toDto()
+      return user.toClientDto()
     }),
 
   update: protectedProcedure.input(userSchema).mutation(async ({ input }) => {
-    const controller = UserFactory.userUpdaterController()
-    return controller.run(input)
+    const user = await UserFactory.userUpdaterService().run(input)
+    return user.toClientDto()
   }),
 
   delete: protectedProcedure

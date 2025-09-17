@@ -70,4 +70,19 @@ export class User {
   removeRole(role: UserRole): void {
     this.roles = this.roles.filter((userRole) => !userRole.equals(role))
   }
+
+  update(data: Partial<UserDto>): void {
+    if (data.name !== undefined) {
+      this.name = data.name
+    }
+    if (data.passwordHash !== undefined) {
+      this.passwordHash = data.passwordHash
+    }
+    if (data.communityId !== undefined) {
+      this.communityId = data.communityId ? Id.fromString(data.communityId) : undefined
+    }
+    if (data.emailVerified !== undefined) {
+      this.emailVerified = data.emailVerified
+    }
+  }
 }

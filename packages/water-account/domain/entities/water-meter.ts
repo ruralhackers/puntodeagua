@@ -52,4 +52,14 @@ export class WaterMeter {
       lastReadingExcessConsumption: this.lastReadingExcessConsumption
     }
   }
+
+  updateLastReading(params: {
+    normalizedReading: number
+    readingDate: Date
+    excessConsumption: boolean
+  }) {
+    this.lastReadingNormalizedValue = params.normalizedReading
+    this.lastReadingDate = params.readingDate
+    this.lastReadingExcessConsumption = params.excessConsumption
+  }
 }

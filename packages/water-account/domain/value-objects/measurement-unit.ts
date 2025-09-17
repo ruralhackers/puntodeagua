@@ -23,4 +23,15 @@ export class MeasurementUnit {
   toString(): string {
     return this.value
   }
+
+  is(value: string): boolean {
+    return this.value === value
+  }
+
+  normalize(reading: number): number {
+    if (this.equals(MeasurementUnit.L)) {
+      return reading / 1000
+    }
+    return reading
+  }
 }

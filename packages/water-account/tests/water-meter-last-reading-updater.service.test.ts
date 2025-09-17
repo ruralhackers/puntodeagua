@@ -186,7 +186,7 @@ describe('ReadingCreatorService', () => {
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(false)
   })
 
-  it.only('should update the last reading with excess consumption true with household based water limit rule', async () => {
+  it('should update the last reading with excess consumption true with household based water limit rule', async () => {
     // Arrange
     const waterMeter = defaultWaterMeter
     const waterPoint = defaultWaterPoint

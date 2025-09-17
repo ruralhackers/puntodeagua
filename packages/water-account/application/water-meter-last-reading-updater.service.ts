@@ -63,7 +63,9 @@ export class WaterMeterLastReadingUpdater {
       if (daysSinceLastReading <= 0) {
         throw new Error('Days since last reading must be greater than 0')
       }
-      dailyConsumption = latestReading.normalizedReading / daysSinceLastReading
+      dailyConsumption =
+        (latestReading.normalizedReading - secondLatestReading.normalizedReading) /
+        daysSinceLastReading
     }
 
     const excessConsumption = dailyConsumption > waterLimitPerDay

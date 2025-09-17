@@ -29,8 +29,8 @@ export class MeasurementUnit {
   }
 
   normalize(reading: number): number {
-    if (this.equals(MeasurementUnit.L)) {
-      return reading / 1000
+    if (this.equals(MeasurementUnit.M3)) {
+      return reading * 1000
     }
     return reading
   }

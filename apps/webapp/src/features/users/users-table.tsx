@@ -1,5 +1,5 @@
 'use client'
-import type { UserDto } from '@pda/users/domain'
+import type { UserDto } from '@pda/user/domain'
 import type { SearchParams } from 'nuqs/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Table from '@/features/tables/table'

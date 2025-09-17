@@ -1,6 +1,6 @@
 import { Id } from '@pda/common/domain'
-import { UserFactory } from '@pda/users'
-import { userSchema } from '@pda/users/domain'
+import { UserFactory } from '@pda/user'
+import { userSchema } from '@pda/user/domain'
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 

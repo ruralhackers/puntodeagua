@@ -1,4 +1,4 @@
-import type { UserClientDto } from '@pda/users/domain'
+import type { UserClientDto } from '@pda/user/domain'
 import { createStore } from 'zustand/vanilla'
 
 export type UserState = {

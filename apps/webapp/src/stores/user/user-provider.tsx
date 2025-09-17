@@ -1,6 +1,6 @@
 'use client'
 
-import type { UserClientDto } from '@pda/users/domain'
+import type { UserClientDto } from '@pda/user/domain'
 import { createContext, useContext, useRef } from 'react'
 import { type StoreApi, useStore } from 'zustand'
 import { createUserStore, type UserState } from './user-store'

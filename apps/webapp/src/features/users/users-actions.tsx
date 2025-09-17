@@ -1,5 +1,5 @@
 'use client'
-import type { UserDto } from '@pda/users/domain'
+import type { UserDto } from '@pda/user/domain'
 import { useQueryClient } from '@tanstack/react-query'
 import { Edit, Ellipsis, MoreHorizontal, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'

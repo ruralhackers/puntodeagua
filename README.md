@@ -20,9 +20,9 @@ puntodeagua/
 │   └── admin/          # NextJS 14 admin dashboard
 ├── packages/
 │   ├── common/         # @pda/common - Shared domain utilities
-│   ├── users/          # @pda/users - User management bounded context
-│   ├── communities/    # @pda/communities - Community management
-│   ├── water/          # @pda/water - Water infrastructure management
+│   ├── users/          # @pda/user - User management bounded context
+│   ├── communities/    # @pda/community - Community management
+│   ├── water/          # @pda/water-account - Water infrastructure management
 │   └── database/       # @pda/database - Database infrastructure
 │       └── <bounded-context>/
 │           ├── domain/
@@ -44,9 +44,9 @@ All packages follow the naming pattern: `@pda/<package-name>`
 Examples:
 - `@pda/common` - Common domain utilities and shared components
 - `@pda/database` - Database infrastructure package
-- `@pda/users` - User management bounded context
-- `@pda/communities` - Community management bounded context
-- `@pda/water` - Water infrastructure and monitoring
+- `@pda/user` - User management bounded context
+- `@pda/community` - Community management bounded context
+- `@pda/water-account` - Water infrastructure and monitoring
 
 ## 🚀 Quick Start
 
@@ -153,13 +153,13 @@ This project includes automated workflows:
 
 ### Bounded Contexts
 
-#### Users (`@pda/users`)
+#### Users (`@pda/user`)
 User management, authentication, and role-based access control.
 
-#### Communities (`@pda/communities`)
+#### Communities (`@pda/community`)
 Community management with configurable water usage rules and limits.
 
-#### Water (`@pda/water`)
+#### Water (`@pda/water-account`)
 Water infrastructure management including:
 - Water points and zones
 - Meter readings and consumption tracking

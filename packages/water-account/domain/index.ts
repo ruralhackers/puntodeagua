@@ -1,0 +1,6 @@
+export { WaterAccount } from './entities/water-account'
+export type { WaterAccountDto } from './entities/water-account.dto'
+export { WaterMeter } from './entities/water-meter'
+export type { WaterMeterDto } from './entities/water-meter.dto'
+export { WaterMeterReading } from './entities/water-meter-reading'
+export type { WaterMeterReadingDto } from './entities/water-meter-reading.dto'

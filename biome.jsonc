@@ -49,5 +49,8 @@
       "quoteStyle": "single",
       "attributePosition": "auto"
     }
+  },
+  "organizeImports": {
+    "enabled": false
   }
 }

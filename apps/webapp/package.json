@@ -20,7 +20,7 @@
     "@pda/community": "workspace:*",
     "@pda/common": "workspace:*",
     "@pda/database": "workspace:*",
-    "@pda/users": "workspace:*",
+    "@pda/user": "workspace:*",
     "@prisma/client": "^6.16.0",
     "@radix-ui/react-icons": "^1.3.2",
     "@t3-oss/env-nextjs": "^0.12.0",

@@ -1,6 +1,6 @@
 import type { TableQueryParams, TableQueryPort, TableQueryResult } from '@pda/common/domain'
 import { CommunityFactory } from '@pda/community'
-import { UserFactory } from '@pda/users'
+import { UserFactory } from '@pda/user'
 
 /**
  * Interface for the proxy that accepts model as first parameter

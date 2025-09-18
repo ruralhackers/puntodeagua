@@ -6,7 +6,7 @@ export class WaterMeterReading {
     public readonly id: Id,
     public waterMeterId: Id,
     public reading: number,
-    public normalizedReading: number,
+    public normalizedReading: number, // this is the reading in Liters
     public readingDate: Date,
     public notes?: string
   ) {}

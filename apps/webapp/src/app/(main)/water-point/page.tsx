@@ -34,42 +34,52 @@ export default function Page() {
         </div>
 
         {/* Filters and Search */}
-        <Card>
+        <Card className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200 shadow-lg shadow-blue-100/50">
           <CardHeader>
-            <CardTitle className="text-lg">Filtros y Búsqueda</CardTitle>
-            <CardDescription>Encuentra rápidamente el contador que necesitas</CardDescription>
+            <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
+              <Search className="h-5 w-5 text-blue-600" />
+              Filtros y Búsqueda
+            </CardTitle>
+            <CardDescription className="text-blue-600">
+              Encuentra rápidamente el contador que necesitas
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Search Input */}
             <div className="space-y-2">
-              <label htmlFor="search" className="text-sm font-medium">
+              <label htmlFor="search" className="text-sm font-semibold text-blue-700">
                 Buscar por nombre
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-4 w-4" />
                 <Input
                   id="search"
                   placeholder="Buscar contador por nombre..."
                   value={nameFilter}
                   onChange={(e) => setNameFilter(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/90 border-blue-200 focus:border-blue-400 focus:ring-blue-200"
                 />
               </div>
             </div>
 
             {/* Zone Filter */}
             <div className="space-y-2">
-              <label htmlFor={zoneFilterId} className="text-sm font-medium">
+              <label htmlFor={zoneFilterId} className="text-sm font-semibold text-blue-700">
                 Filtrar por zona de agua
               </label>
               <Select onValueChange={setSelectedZone} value={selectedZone}>
-                <SelectTrigger id={zoneFilterId} className="w-full max-w-xs">
+                <SelectTrigger
+                  id={zoneFilterId}
+                  className="w-full max-w-xs bg-white/90 border-blue-200 focus:border-blue-400 focus:ring-blue-200"
+                >
                   <SelectValue placeholder="Todas las zonas" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las zonas</SelectItem>
+                <SelectContent className="bg-white border-blue-200">
+                  <SelectItem value="all" className="focus:bg-blue-50">
+                    Todas las zonas
+                  </SelectItem>
                   {zones.map((zone) => (
-                    <SelectItem key={zone.id} value={zone.id}>
+                    <SelectItem key={zone.id} value={zone.id} className="focus:bg-blue-50">
                       {zone.name}
                     </SelectItem>
                   ))}

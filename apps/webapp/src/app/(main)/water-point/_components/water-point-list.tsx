@@ -86,55 +86,57 @@ export default function WaterPointList({ selectedZone, nameFilter }: WaterPointL
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-0">
       {filteredWaterPoints.map((waterPoint) => (
-        <Card key={waterPoint.id} className="hover:shadow-md transition-shadow">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-lg">{waterPoint.name}</CardTitle>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                  <MapPin className="h-3 w-3" />
-                  {waterPoint.location}
+        <Link key={waterPoint.id} href={`/water-point/${waterPoint.id}`} className="block mb-8">
+          <Card className="hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-100 cursor-pointer hover:border-blue-200 hover:-translate-y-0.5">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg hover:text-blue-700 transition-colors">
+                    {waterPoint.name}
+                  </CardTitle>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                    <MapPin className="h-3 w-3" />
+                    {waterPoint.location}
+                  </div>
+                </div>
+                <Badge variant="outline">{waterPoint.cadastralReference}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Population Info */}
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-1">
+                  <Users className="h-4 w-4 text-blue-500" />
+                  <span className="font-medium">Población fija:</span>
+                  <span>{waterPoint.fixedPopulation}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Users className="h-4 w-4 text-green-500" />
+                  <span className="font-medium">Población flotante:</span>
+                  <span>{waterPoint.floatingPopulation}</span>
                 </div>
               </div>
-              <Badge variant="outline">{waterPoint.cadastralReference}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {/* Population Info */}
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span className="font-medium">Población fija:</span>
-                <span>{waterPoint.fixedPopulation}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Users className="h-4 w-4 text-green-500" />
-                <span className="font-medium">Población flotante:</span>
-                <span>{waterPoint.floatingPopulation}</span>
-              </div>
-            </div>
 
-            {/* Notes */}
-            {waterPoint.notes && (
-              <div className="flex items-start gap-2 text-sm">
-                <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <p className="text-muted-foreground">{waterPoint.notes}</p>
-              </div>
-            )}
+              {/* Notes */}
+              {waterPoint.notes && (
+                <div className="flex items-start gap-2 text-sm">
+                  <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-muted-foreground">{waterPoint.notes}</p>
+                </div>
+              )}
 
-            {/* Action Button - placeholder for future functionality */}
-            <div className="pt-2">
-              <Link
-                href={`/water-point/${waterPoint.id}`}
-                className="text-sm text-primary hover:underline hover:cursor-pointer"
-              >
-                Ver contador →
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+              {/* Action indicator */}
+              <div className="pt-2 flex items-center justify-between">
+                <span className="text-sm text-blue-600 font-medium">Click para ver contadores</span>
+                <div className="text-blue-500 opacity-70 group-hover:opacity-100 transition-opacity">
+                  →
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       ))}
     </div>
   )

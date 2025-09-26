@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
-import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
@@ -39,43 +38,52 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
               'data-[content-layout=centered]:!mx-auto data-[content-layout=centered]:max-w-screen-2xl',
               // Adds right margin for inset sidebar in centered layout up to 113rem.
               // On wider screens with collapsed sidebar, removes margin and sets margin auto for alignment.
-              'max-[113rem]:peer-data-[variant=inset]:!mr-2 min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:!mr-auto'
+              'max-[113rem]:peer-data-[variant=inset]:!mr-2 min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:!mr-auto',
+              // Ensure proper flexbox layout for scroll and add background
+              'flex flex-col h-screen bg-gradient-to-br from-blue-50/40 to-slate-50/60'
             )}
           >
-            <header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <header className="flex h-14 shrink-0 items-center gap-2 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 shadow-lg transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14">
               <div className="flex w-full items-center justify-between px-4 lg:px-6">
-                <div className="flex items-center gap-2">
-                  <a href="/" className="flex items-center gap-2">
-                    <Image
-                      src="/favicon/32x32.png"
-                      alt="Logo"
-                      width={24}
-                      height={24}
-                      className="h-6 w-6"
-                    />
-                    <span className="text-base font-semibold">{APP_CONFIG.name}</span>
+                <div className="flex items-center gap-3">
+                  <a href="/" className="flex items-center gap-3">
+                    <div className="relative">
+                      <Image
+                        src="/favicon/32x32.png"
+                        alt="Logo"
+                        width={28}
+                        height={28}
+                        className="h-7 w-7 rounded-lg shadow-lg ring-2 ring-white/20"
+                      />
+                    </div>
+                    <span className="text-lg font-bold text-white tracking-tight">
+                      {APP_CONFIG.name}
+                    </span>
                   </a>
                   {session?.user.community?.name && (
                     <>
-                      <Separator orientation="vertical" className="h-4" />
-                      <div className="flex items-center gap-1.5">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                        <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                      <div className="h-6 w-px bg-white/20 mx-1" />
+                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                        <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-sm animate-pulse" />
+                        <span className="text-sm font-semibold text-white/95">
                           {session.user.community.name}
                         </span>
                       </div>
                     </>
                   )}
-                  <Separator orientation="vertical" className="h-6" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <ThemeSwitcher />
-                  <AccountMenu />
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 border border-white/10">
+                    <ThemeSwitcher />
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
+                    <AccountMenu />
+                  </div>
                 </div>
               </div>
             </header>
             <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
-              <div className="h-full p-4 md:p-6">{children}</div>
+              <div className="min-h-0 flex-1 p-4 md:p-6 overflow-y-auto">{children}</div>
             </CommunityZonesStoreProvider>
           </SidebarInset>
         </SidebarProvider>

@@ -79,8 +79,9 @@ model Community {
   name           String
   waterLimitRule Json   @map("water_limit_rule")
 
-  users User[]
-  zones CommunityZone[]
+  users         User[]
+  zones         CommunityZone[]
+  waterDeposits WaterDeposit[]
 }
 
 model CommunityZone {
@@ -92,6 +93,19 @@ model CommunityZone {
 
   notes      String       @default("") @db.Text
   WaterPoint WaterPoint[]
+
+  @@index([communityId])
+}
+
+model WaterDeposit {
+  id       String @id @default(cuid())
+  name     String
+  location String @default("")
+
+  community   Community @relation(fields: [communityId], references: [id])
+  communityId String    @map("community_id")
+
+  notes String @default("") @db.Text
 
   @@index([communityId])
 }

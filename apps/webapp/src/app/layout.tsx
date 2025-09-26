@@ -1,9 +1,7 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import type { ReactNode } from 'react'
 import { Toaster } from '@/components/ui/sonner'
-import { APP_CONFIG } from '@/config/app-config'
 import { getPreference } from '@/server/server-actions'
 import { PreferencesStoreProvider } from '@/stores/preferences/preferences-provider'
 import {
@@ -13,14 +11,12 @@ import {
   type ThemePreset
 } from '@/types/preferences/theme'
 import '../styles/globals.css'
+import { APP_METADATA } from '../data/metadata'
 import { TRPCReactProvider } from '../trpc/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: APP_CONFIG.meta.title,
-  description: APP_CONFIG.meta.description
-}
+export const metadata = APP_METADATA
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const themeMode = await getPreference<ThemeMode>('theme_mode', THEME_MODE_VALUES, 'light')

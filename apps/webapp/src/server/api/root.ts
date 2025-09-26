@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc'
+import { communityRouter } from './routers/community'
 import { tableRouter } from './routers/table'
 import { userRouter } from './routers/user'
 
@@ -8,6 +9,7 @@ import { userRouter } from './routers/user'
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  community: communityRouter,
   user: userRouter,
   table: tableRouter
 })

@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import { users } from '@/data/users'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
 import { getPreference } from '@/server/server-actions'
@@ -12,6 +11,7 @@ import { UserStoreProvider } from '@/stores/user/user-provider'
 import { HydrateClient } from '@/trpc/server'
 import { CONTENT_LAYOUT_VALUES, type ContentLayout } from '@/types/preferences/layout'
 import { APP_CONFIG } from '../../config/app-config'
+import { CommunityZonesStoreProvider } from '../../stores/community/community-zones-provider'
 import { AccountMenu } from './app/_components/account-menu'
 import { ThemeSwitcher } from './app/_components/theme-switcher'
 
@@ -28,8 +28,6 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   const [contentLayout] = await Promise.all([
     getPreference<ContentLayout>('content_layout', CONTENT_LAYOUT_VALUES, 'full-width')
   ])
-
-  console.log(session)
 
   return (
     <HydrateClient>
@@ -76,7 +74,9 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
                 </div>
               </div>
             </header>
-            <div className="h-full p-4 md:p-6">{children}</div>
+            <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
+              <div className="h-full p-4 md:p-6">{children}</div>
+            </CommunityZonesStoreProvider>
           </SidebarInset>
         </SidebarProvider>
       </UserStoreProvider>

@@ -1,3 +1,5 @@
+import type { Decimal } from '@pda/common/domain'
+
 export const measurementUnitValues = [
   'L', // Liters
   'M3' // Cubic meters
@@ -28,10 +30,10 @@ export class MeasurementUnit {
     return this.value === value
   }
 
-  normalize(reading: number): number {
+  normalize(reading: Decimal): number {
     if (this.equals(MeasurementUnit.M3)) {
-      return reading * 1000
+      return reading.multiplyBy(1000).toNumber() // Convert cubic meters to liters
     }
-    return reading
+    return reading.toNumber()
   }
 }

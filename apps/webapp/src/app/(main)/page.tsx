@@ -12,7 +12,7 @@ export default async function Home() {
     <main className="flex-1 px-3 py-4">
       <div className="mb-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/registers/water-meter" className="group">
+          <Link href="/water-point" className="group">
             <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 hover:border-cyan-300 dark:from-cyan-950 dark:to-cyan-900 dark:border-cyan-800">
               <CardContent className="flex items-center justify-center h-full p-6">
                 <div className="flex flex-col items-center gap-3 text-center">

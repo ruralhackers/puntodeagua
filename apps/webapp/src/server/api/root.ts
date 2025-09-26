@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc'
 import { communityRouter } from './routers/community'
 import { tableRouter } from './routers/table'
 import { userRouter } from './routers/user'
+import { waterAccountRouter } from './routers/water-account'
 
 /**
  * This is the primary router for your server.
@@ -11,7 +12,8 @@ import { userRouter } from './routers/user'
 export const appRouter = createTRPCRouter({
   community: communityRouter,
   user: userRouter,
-  table: tableRouter
+  table: tableRouter,
+  waterAccount: waterAccountRouter
 })
 
 // export type definition of API

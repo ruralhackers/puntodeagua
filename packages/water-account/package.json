@@ -1,5 +1,5 @@
 {
-  "name": "water-account",
+  "name": "@pda/water-account",
   "module": "index.ts",
   "type": "module",
   "private": true,

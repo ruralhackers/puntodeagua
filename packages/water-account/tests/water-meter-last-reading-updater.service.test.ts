@@ -113,7 +113,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 18000,
+        reading: '18000',
         normalizedReading: 18000,
         readingDate: now,
         notes: 'Test reading'
@@ -121,7 +121,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 1000,
+        reading: '1000',
         normalizedReading: 1000,
         readingDate: tenDaysAgo,
         notes: 'Test reading'
@@ -155,7 +155,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 15000,
+        reading: '15000',
         normalizedReading: 15000,
         readingDate: now,
         notes: 'Test reading'
@@ -163,7 +163,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 1000,
+        reading: '1000',
         normalizedReading: 1000,
         readingDate: tenDaysAgo,
         notes: 'Test reading'
@@ -204,7 +204,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 12000,
+        reading: '12000',
         normalizedReading: 12000,
         readingDate: now,
         notes: 'Test reading'
@@ -212,7 +212,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 1000,
+        reading: '1000',
         normalizedReading: 1000,
         readingDate: tenDaysAgo,
         notes: 'Test reading'
@@ -252,7 +252,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 10000,
+        reading: '10000',
         normalizedReading: 10000,
         readingDate: now,
         notes: 'Test reading'
@@ -260,7 +260,7 @@ describe('ReadingCreatorService', () => {
       WaterMeterReading.fromDto({
         id: Id.generateUniqueId().toString(),
         waterMeterId: waterMeter.id.toString(),
-        reading: 1000,
+        reading: '1000',
         normalizedReading: 1000,
         readingDate: tenDaysAgo,
         notes: 'Test reading'

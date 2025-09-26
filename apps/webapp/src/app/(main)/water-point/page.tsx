@@ -13,6 +13,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
+import WaterPointList from './_components/water-point-list'
 
 export default function Page() {
   const zoneFilterId = useId()
@@ -20,8 +21,6 @@ export default function Page() {
   const [nameFilter, setNameFilter] = useState<string>('')
 
   const zones = useCommunityZonesStore((state) => state.zones)
-  // const isLoading = useCommunityZonesStore((state) => state.isLoading)
-  // const error = useCommunityZonesStore((state) => state.error)
 
   return (
     <PageContainer>
@@ -79,6 +78,9 @@ export default function Page() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Water Points List */}
+        <WaterPointList selectedZone={selectedZone} nameFilter={nameFilter} />
       </div>
     </PageContainer>
   )

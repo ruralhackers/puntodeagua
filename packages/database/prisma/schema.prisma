@@ -124,9 +124,10 @@ model WaterPoint {
   communityZone   CommunityZone @relation(fields: [communityZoneId], references: [id])
   communityZoneId String        @map("community_zone_id")
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  WaterMeter WaterMeter[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  waterMeters WaterMeter[]
 
   @@index([communityZoneId])
 }

@@ -29,8 +29,10 @@ export class WaterPointPrismaRepository
     return this.tableBuilder.findForTable(params)
   }
 
-  async findAll(): Promise<WaterPoint[]> {
-    const waterPoints = await this.getModel().findMany()
+  async findByCommunityZonesId(zonesIds: Id[]): Promise<WaterPoint[]> {
+    const waterPoints = await this.getModel().findMany({
+      where: { communityZoneId: { in: zonesIds.map((id) => id.toString()) } }
+    })
     return waterPoints.map((waterPoint) => WaterPoint.fromDto(this.fromPrismaPayload(waterPoint)))
   }
 

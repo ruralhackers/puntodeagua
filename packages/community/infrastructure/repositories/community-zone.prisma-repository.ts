@@ -28,6 +28,14 @@ export class CommunityZonePrismaRepository
     return this.tableBuilder.findForTable(params)
   }
 
+  async findById(id: Id) {
+    const dto = await this.getModel().findUnique({
+      where: { id: id.toString() }
+    })
+    if (!dto) return undefined
+    return CommunityZone.fromDto(dto)
+  }
+
   async findByCommunityId(id: Id) {
     const zones = await this.getModel().findMany({
       where: { communityId: id.toString() }

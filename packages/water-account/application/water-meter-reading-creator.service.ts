@@ -1,4 +1,4 @@
-import type { Id } from '@pda/common/domain'
+import { Decimal, type Id } from '@pda/common/domain'
 import { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
@@ -11,8 +11,8 @@ export class WaterMeterReadingCreator {
     private readonly waterMeterRepository: WaterMeterRepository
   ) {}
 
-  async run(params: { waterMeterId: Id; reading: number; notes?: string }) {
-    const { waterMeterId, reading, notes } = params
+  async run(params: { waterMeterId: Id; reading: string; date?: Date; notes?: string }) {
+    const { waterMeterId, reading, date, notes } = params
     const waterMeter = await this.waterMeterRepository.findById(waterMeterId)
     if (!waterMeter) {
       throw new Error('Water meter not found')
@@ -23,8 +23,8 @@ export class WaterMeterReadingCreator {
     const newWaterReading = WaterMeterReading.create({
       waterMeterId: waterMeter.id.toString(),
       reading,
-      normalizedReading: waterMeter.measurementUnit.normalize(reading),
-      readingDate: new Date(),
+      normalizedReading: waterMeter.measurementUnit.normalize(Decimal.fromString(reading)),
+      readingDate: date ? new Date(date) : new Date(),
       notes
     })
 

@@ -9,6 +9,9 @@ async function main() {
   // Create multiple communities
   const { anceuCommunityId, ponteCaldelasCommunityId } = await seedPlanAndCommunities()
 
+  // Create water deposits for both communities
+  await seedWaterDeposits(anceuCommunityId, ponteCaldelasCommunityId)
+
   // Create community zones for Anceu
   const zoneIds = await seedCommunityZones(anceuCommunityId)
 
@@ -52,6 +55,7 @@ async function deleteAll() {
   await prisma.waterMeter.deleteMany({})
   await prisma.waterAccount.deleteMany({})
   await prisma.waterPoint.deleteMany({})
+  await prisma.waterDeposit.deleteMany({})
   await prisma.communityZone.deleteMany({})
   await prisma.community.deleteMany({})
   // await prisma.plan.deleteMany({})
@@ -89,6 +93,60 @@ async function seedPlanAndCommunities() {
     anceuCommunityId: anceuCommunity.id,
     ponteCaldelasCommunityId: ponteCaldelasCommunity.id
   }
+}
+
+async function seedWaterDeposits(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  const waterDeposits = [
+    // Anceu community deposits
+    {
+      name: 'Depósito Principal Anceu',
+      location: 'Zona alta de Anceu, junto al depósito de agua potable',
+      communityId: anceuCommunityId,
+      notes:
+        'Depósito principal de almacenamiento de agua para la comunidad de Anceu. Capacidad de 50,000 litros.'
+    },
+    {
+      name: 'Depósito de Reserva Anceu',
+      location: 'Zona norte, cerca del campo de fútbol',
+      communityId: anceuCommunityId,
+      notes: 'Depósito de reserva para situaciones de emergencia. Capacidad de 25,000 litros.'
+    },
+    {
+      name: 'Depósito O Ramis',
+      location: 'Centro de O Ramis, junto a la fuente principal',
+      communityId: anceuCommunityId,
+      notes: 'Depósito específico para la zona de O Ramis. Capacidad de 30,000 litros.'
+    },
+    {
+      name: 'Depósito Os Casas',
+      location: 'Zona sur de Os Casas, cerca del lavadero',
+      communityId: anceuCommunityId,
+      notes: 'Depósito para la zona de Os Casas. Capacidad de 20,000 litros.'
+    },
+
+    // Ponte Caldelas community deposits
+    {
+      name: 'Depósito Principal Ponte Caldelas',
+      location: 'Centro de Ponte Caldelas, zona industrial',
+      communityId: ponteCaldelasCommunityId,
+      notes: 'Depósito principal de almacenamiento para Ponte Caldelas. Capacidad de 75,000 litros.'
+    },
+    {
+      name: 'Depósito de Emergencia Ponte Caldelas',
+      location: 'Zona residencial, cerca del centro de salud',
+      communityId: ponteCaldelasCommunityId,
+      notes: 'Depósito de emergencia para situaciones críticas. Capacidad de 40,000 litros.'
+    }
+  ]
+
+  await prisma.waterDeposit.createMany({
+    data: waterDeposits
+  })
+
+  console.log('Created water deposits:')
+  console.log('- Anceu community: 4 deposits (Principal, Reserva, O Ramis, Os Casas)')
+  console.log('- Ponte Caldelas community: 2 deposits (Principal, Emergencia)')
+  console.log('- Total: 6 water deposits')
 }
 
 async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: string) {

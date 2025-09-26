@@ -56,10 +56,18 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
                       className="h-6 w-6"
                     />
                     <span className="text-base font-semibold">{APP_CONFIG.name}</span>
-                    <span className="text-xs font-mono font-light text-muted-foreground">
-                      {session?.user.community?.name}
-                    </span>
                   </a>
+                  {session?.user.community?.name && (
+                    <>
+                      <Separator orientation="vertical" className="h-4" />
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                        <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                          {session.user.community.name}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   <Separator orientation="vertical" className="h-6" />
                 </div>
                 <div className="flex items-center gap-2">

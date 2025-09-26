@@ -1,7 +1,7 @@
 'use client'
 
 import type { WaterMeterDto } from '@pda/water-account/domain'
-import { ArrowLeft, FileText, Gauge, MapPin, Users } from 'lucide-react'
+import { ArrowLeft, FileText, Gauge, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
@@ -9,34 +9,19 @@ import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/trpc/react'
+import AddReadingModal from '../_components/add-reading-modal'
+import PopulationInfoSection from '../_components/population-info-section'
+import WaterMeterCard from '../_components/water-meter-card'
 
 export default function WaterPointDetailPage() {
   const params = useParams()
   const waterPointId = params.id as string
 
-  // Modal state
+  // Modal state - simplified
   const [isReadingModalOpen, setIsReadingModalOpen] = useState(false)
   const [selectedMeter, setSelectedMeter] = useState<WaterMeterDto | null>(null)
-  const [readingForm, setReadingForm] = useState({
-    reading: '',
-    readingDate: new Date().toISOString().split('T')[0], // Today's date
-    notes: ''
-  })
-
-  const utils = api.useUtils()
 
   const {
     data: waterPoint,
@@ -53,39 +38,14 @@ export default function WaterPointDetailPage() {
     { enabled: !!waterPointId }
   )
 
-  // Mutation for adding new reading
-  const addReadingMutation = api.waterAccount.addWaterMeterReading.useMutation({
-    onSuccess: async () => {
-      // Invalidate and refetch water meters data
-      await utils.waterAccount.getWaterMetersByWaterPointId.invalidate({ id: waterPointId })
-      setIsReadingModalOpen(false)
-      setSelectedMeter(null)
-      setReadingForm({
-        reading: '',
-        readingDate: new Date().toISOString().split('T')[0],
-        notes: ''
-      })
-    }
-  })
-
   const handleOpenReadingModal = (meter: WaterMeterDto) => {
     setSelectedMeter(meter)
     setIsReadingModalOpen(true)
   }
 
-  const handleSubmitReading = async () => {
-    if (!selectedMeter || !readingForm.reading || !readingForm.readingDate) return
-
-    try {
-      await addReadingMutation.mutateAsync({
-        waterMeterId: selectedMeter.id,
-        reading: readingForm.reading,
-        readingDate: new Date(readingForm.readingDate),
-        notes: readingForm.notes || null
-      })
-    } catch (error) {
-      console.error('Error adding reading:', error)
-    }
+  const handleCloseReadingModal = () => {
+    setIsReadingModalOpen(false)
+    setSelectedMeter(null)
   }
 
   if (isLoading) {
@@ -203,36 +163,7 @@ export default function WaterPointDetailPage() {
 
           <CardContent className="space-y-6">
             {/* Population Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Información de Población</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                  <Users className="h-6 w-6 text-blue-600" />
-                  <div>
-                    <p className="font-medium">Población Fija</p>
-                    <p className="text-2xl font-bold text-blue-600">{waterPoint.fixedPopulation}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-                  <Users className="h-6 w-6 text-green-600" />
-                  <div>
-                    <p className="font-medium">Población Flotante</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {waterPoint.floatingPopulation}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <Users className="h-6 w-6 text-gray-600" />
-                <div>
-                  <p className="font-medium">Población Total</p>
-                  <p className="text-2xl font-bold text-gray-600">
-                    {waterPoint.fixedPopulation + waterPoint.floatingPopulation}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <PopulationInfoSection waterPoint={waterPoint} />
 
             {/* Notes Section */}
             {waterPoint.notes && (
@@ -318,70 +249,11 @@ export default function WaterPointDetailPage() {
               ) : (
                 <div className="space-y-3">
                   {waterMeters.map((meter) => (
-                    <Card key={meter.id} className="hover:shadow-sm transition-shadow">
-                      <CardContent>
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Gauge className="h-4 w-4 text-blue-500" />
-                              <h4 className="font-semibold">{meter.name}</h4>
-                              <Badge variant="outline" className="text-xs">
-                                {meter.measurementUnit}
-                              </Badge>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                              <div>
-                                <p className="font-medium text-muted-foreground">Última Lectura</p>
-                                <p className="font-mono">
-                                  {meter.lastReadingNormalizedValue !== null
-                                    ? `${meter.lastReadingNormalizedValue} ${meter.measurementUnit}`
-                                    : 'Sin lecturas'}
-                                </p>
-                              </div>
-
-                              <div>
-                                <p className="font-medium text-muted-foreground">Fecha</p>
-                                <p>
-                                  {meter.lastReadingDate
-                                    ? new Date(meter.lastReadingDate).toLocaleDateString('es-ES')
-                                    : 'N/A'}
-                                </p>
-                              </div>
-
-                              <div>
-                                <p className="font-medium text-muted-foreground">Estado</p>
-                                <div className="flex items-center gap-1">
-                                  {meter.lastReadingExcessConsumption === true && (
-                                    <Badge variant="destructive" className="text-xs">
-                                      Consumo Excesivo
-                                    </Badge>
-                                  )}
-                                  {meter.lastReadingExcessConsumption === false && (
-                                    <Badge variant="secondary" className="text-xs">
-                                      Normal
-                                    </Badge>
-                                  )}
-                                  {meter.lastReadingExcessConsumption === null && (
-                                    <Badge variant="outline" className="text-xs">
-                                      Sin datos
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenReadingModal(meter)}
-                          >
-                            Nueva Lectura
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <WaterMeterCard
+                      key={meter.id}
+                      meter={meter}
+                      onAddReading={handleOpenReadingModal}
+                    />
                   ))}
                 </div>
               )}
@@ -390,80 +262,12 @@ export default function WaterPointDetailPage() {
         </Card>
 
         {/* Reading Modal */}
-        <Dialog open={isReadingModalOpen} onOpenChange={setIsReadingModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Nueva Lectura</DialogTitle>
-              <DialogDescription>
-                Añadir una nueva lectura para el contador: {selectedMeter?.name}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="reading" className="text-right">
-                  Lectura
-                </Label>
-                <Input
-                  id="reading"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="col-span-3"
-                  value={readingForm.reading}
-                  onChange={(e) => setReadingForm((prev) => ({ ...prev, reading: e.target.value }))}
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="readingDate" className="text-right">
-                  Fecha
-                </Label>
-                <Input
-                  id="readingDate"
-                  type="date"
-                  className="col-span-3"
-                  value={readingForm.readingDate}
-                  onChange={(e) =>
-                    setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="notes" className="text-right">
-                  Notas
-                </Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Notas opcionales..."
-                  className="col-span-3"
-                  rows={3}
-                  value={readingForm.notes}
-                  onChange={(e) => setReadingForm((prev) => ({ ...prev, notes: e.target.value }))}
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsReadingModalOpen(false)}
-                disabled={addReadingMutation.isPending}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSubmitReading}
-                disabled={!readingForm.reading || addReadingMutation.isPending}
-              >
-                {addReadingMutation.isPending ? 'Guardando...' : 'Guardar Lectura'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AddReadingModal
+          isOpen={isReadingModalOpen}
+          onClose={handleCloseReadingModal}
+          selectedMeter={selectedMeter}
+          waterPointId={waterPointId}
+        />
       </div>
     </PageContainer>
   )

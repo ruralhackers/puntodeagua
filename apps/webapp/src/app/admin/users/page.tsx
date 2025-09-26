@@ -1,5 +1,5 @@
 import type { SearchParams } from 'nuqs/server'
-import UsersTable from '@/features/users/users-table'
+import UsersTable from '@/features/user/user-table'
 import { generatePageTitle } from '@/lib/utils'
 
 export const metadata = {

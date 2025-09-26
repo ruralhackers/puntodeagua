@@ -1,5 +1,5 @@
 import type { SearchParams } from 'nuqs/server'
-import CommunityTable from '@/features/communities/communities-table'
+import CommunityTable from '@/features/community/community-table'
 import { generatePageTitle } from '@/lib/utils'
 
 export const metadata = {

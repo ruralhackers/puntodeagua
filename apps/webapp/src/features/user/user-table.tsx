@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Table from '@/features/tables/table'
 import { IdCopy } from '../../components/id-copy'
 import { RelativeDate } from '../../components/relative-date'
-import { UserActions } from './users-actions'
+import { UserActions } from './user-actions'
 
 export default function UsersTable(searchParams: SearchParams) {
   return (

@@ -1,5 +1,5 @@
 import type { SearchParams } from 'nuqs/server'
-import WaterPointTable from '@/features/water-points/water-points-table'
+import WaterPointTable from '@/features/water-point/water-point-table'
 import { generatePageTitle } from '@/lib/utils'
 
 export const metadata = {

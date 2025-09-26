@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import FormCardSkeleton from '@/components/form-card-skeleton'
-import UserEditPage from '@/features/users/user-edit-page'
+import UserEditPage from '@/features/user/user-edit-page'
 import { generatePageTitle } from '@/lib/utils'
 
 export const metadata = {

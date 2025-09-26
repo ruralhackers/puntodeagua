@@ -32,4 +32,11 @@ export class Community {
       waterLimitRule: this.waterLimitRule.toDto()
     }
   }
+
+  toClientDto() {
+    return {
+      id: this.id.toString(),
+      name: this.name
+    }
+  }
 }

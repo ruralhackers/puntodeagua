@@ -6,6 +6,12 @@ import type { CommunityRepository } from '../../domain/repositories/community.re
 import type { WaterLimitRuleDto } from '../../domain/value-objects/water-limit-rules'
 import { communityTableConfig } from './community-table-config'
 
+export const fromCommunityPrismaPayload = (payload: Prisma.CommunityGetPayload<null>) => {
+  return {
+    ...payload,
+    waterLimitRule: payload.waterLimitRule as WaterLimitRuleDto
+  }
+}
 export class CommunityPrismaRepository extends BasePrismaRepository implements CommunityRepository {
   protected readonly model = 'community'
   private readonly tableBuilder: PrismaTableQueryBuilder<Community, Community>
@@ -18,7 +24,7 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
     const customConfig = {
       ...communityTableConfig,
       entityFromDto: (dto: Prisma.CommunityGetPayload<null>) =>
-        Community.fromDto(this.fromPrismaPayload(dto))
+        Community.fromDto(fromCommunityPrismaPayload(dto))
     }
     this.tableBuilder = new PrismaTableQueryBuilder(customConfig, db, this.model)
   }
@@ -29,14 +35,14 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
 
   async findAll(): Promise<Community[]> {
     const communities = await this.getModel().findMany()
-    return communities.map((community) => Community.fromDto(this.fromPrismaPayload(community)))
+    return communities.map((community) => Community.fromDto(fromCommunityPrismaPayload(community)))
   }
 
   async findById(id: Id) {
     const community = await this.getModel().findUnique({
       where: { id: id.toString() }
     })
-    return community ? Community.fromDto(this.fromPrismaPayload(community)) : undefined
+    return community ? Community.fromDto(fromCommunityPrismaPayload(community)) : undefined
   }
 
   async save(community: Community) {
@@ -51,8 +57,7 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
       },
       create: {
         ...update,
-        id: community.id.toString(),
-        planId: community.planId.toString()
+        id: community.id.toString()
       },
       update
     })
@@ -62,12 +67,5 @@ export class CommunityPrismaRepository extends BasePrismaRepository implements C
     await this.getModel().delete({
       where: { id: id.toString() }
     })
-  }
-
-  private fromPrismaPayload(payload: Prisma.CommunityGetPayload<null>) {
-    return {
-      ...payload,
-      waterLimitRule: payload.waterLimitRule as WaterLimitRuleDto
-    }
   }
 }

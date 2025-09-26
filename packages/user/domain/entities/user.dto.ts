@@ -1,24 +1,22 @@
-import { idSchema } from '@pda/common/domain'
+import { communityClientSchema, communitySchema } from '@pda/community/domain'
 import { z } from 'zod'
 
 // Complete User DTO schema aligned with Prisma User model
-export const userSchema = z.object({
+
+export const userClientSchema = z.object({
   id: z.string().uuid(),
-  email: z.string().email(),
-  passwordHash: z.string().optional(),
-  name: z.string().optional(),
-  emailVerified: z.date().optional(),
+  email: z.string().email().nullable(),
+  name: z.string().optional().nullable(),
   roles: z.array(z.string()).default([]),
-  communityId: idSchema.optional(),
-  createdAt: z.date(),
-  updatedAt: z.date()
+  community: communityClientSchema.nullable()
 })
 
-export const userClientSchema = userSchema.omit({
-  passwordHash: true,
-  emailVerified: true,
-  createdAt: true,
-  updatedAt: true
+export const userSchema = userClientSchema.extend({
+  passwordHash: z.string().nullable(),
+  emailVerified: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  community: communitySchema.nullable()
 })
 
 export type UserClientDto = z.infer<typeof userClientSchema>

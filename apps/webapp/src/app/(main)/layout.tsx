@@ -12,7 +12,7 @@ import { UserStoreProvider } from '@/stores/user/user-provider'
 import { HydrateClient } from '@/trpc/server'
 import { CONTENT_LAYOUT_VALUES, type ContentLayout } from '@/types/preferences/layout'
 import { APP_CONFIG } from '../../config/app-config'
-import { AccountSwitcher } from './app/_components/account-switcher'
+import { AccountMenu } from './app/_components/account-menu'
 import { ThemeSwitcher } from './app/_components/theme-switcher'
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
@@ -28,6 +28,8 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   const [contentLayout] = await Promise.all([
     getPreference<ContentLayout>('content_layout', CONTENT_LAYOUT_VALUES, 'full-width')
   ])
+
+  console.log(session)
 
   return (
     <HydrateClient>
@@ -54,12 +56,15 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
                       className="h-6 w-6"
                     />
                     <span className="text-base font-semibold">{APP_CONFIG.name}</span>
+                    <span className="text-xs font-mono font-light text-muted-foreground">
+                      {session?.user.community?.name}
+                    </span>
                   </a>
                   <Separator orientation="vertical" className="h-6" />
                 </div>
                 <div className="flex items-center gap-2">
                   <ThemeSwitcher />
-                  <AccountSwitcher users={users} />
+                  <AccountMenu />
                 </div>
               </div>
             </header>

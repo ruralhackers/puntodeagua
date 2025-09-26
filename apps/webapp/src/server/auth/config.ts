@@ -1,5 +1,6 @@
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { Email, verifyPassword } from '@pda/common/domain'
+import type { CommunityClientDto } from '@pda/community'
 import { UserFactory } from '@pda/user'
 import type { UserClientDto } from '@pda/user/domain'
 import type { DefaultSession, NextAuthConfig } from 'next-auth'
@@ -20,7 +21,7 @@ declare module 'next-auth' {
       email: string | null
       name: string | null
       image: string | null
-      communityId: string | null
+      community: CommunityClientDto | null
       roles: string[]
     } & DefaultSession['user']
   }
@@ -103,7 +104,7 @@ export const authConfig = {
         session.user.name = token.name as string | null
         session.user.image = token.image as string | null
         session.user.roles = (token.roles as string[]) ?? []
-        session.user.communityId = token.communityId as string
+        session.user.community = token.community as CommunityClientDto | null
       }
 
       return session
@@ -116,7 +117,7 @@ export const authConfig = {
         token.name = user.name
         token.image = user.image
         token.roles = user.roles
-        token.communityId = user.communityId
+        token.community = user.community as CommunityClientDto | null
       }
       return token
     }

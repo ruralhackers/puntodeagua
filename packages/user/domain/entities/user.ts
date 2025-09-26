@@ -1,4 +1,5 @@
 import { Email, Id } from '@pda/common/domain'
+import { Community } from '@pda/community'
 import { UserRole } from '../value-objects/user-role'
 import type { UserClientDto, UserDto } from './user.dto'
 
@@ -9,21 +10,21 @@ export class User {
     public roles: UserRole[],
     public createdAt: Date,
     public updatedAt: Date,
-    public communityId?: Id,
-    public passwordHash?: string,
-    public name?: string | undefined,
-    public emailVerified?: Date | undefined
+    public community?: Community | null,
+    public passwordHash?: string | null,
+    public name?: string | null,
+    public emailVerified?: Date | null
   ) {}
 
   static fromDto(dto: UserDto) {
     return new User(
       Id.fromString(dto.id),
-      Email.fromString(dto.email),
+      Email.fromString(dto.email || ''),
       dto.roles.map((role) => UserRole.fromString(role)),
       new Date(dto.createdAt),
       new Date(dto.updatedAt),
-      dto.communityId ? Id.fromString(dto.communityId) : undefined,
-      dto.passwordHash,
+      dto.community ? Community.fromDto(dto.community) : undefined,
+      dto.passwordHash ?? null,
       dto.name,
       dto.emailVerified
     )
@@ -33,11 +34,11 @@ export class User {
     return {
       id: this.id.toString(),
       email: this.email.toString(),
-      passwordHash: this.passwordHash,
+      passwordHash: this.passwordHash || null,
       name: this.name,
       roles: this.roles.map((role) => role.toString()),
-      communityId: this.communityId?.toString(),
-      emailVerified: this.emailVerified,
+      community: this.community ? this.community.toDto() : null,
+      emailVerified: this.emailVerified || null,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
@@ -49,7 +50,7 @@ export class User {
       email: this.email.toString(),
       name: this.name,
       roles: this.roles.map((role) => role.toString()),
-      communityId: this.communityId?.toString()
+      community: this.community ? this.community.toClientDto() : null
     }
   }
 
@@ -72,16 +73,13 @@ export class User {
   }
 
   update(data: Partial<UserDto>): void {
-    if (data.name !== undefined) {
+    if (data.name) {
       this.name = data.name
     }
-    if (data.passwordHash !== undefined) {
+    if (data.passwordHash) {
       this.passwordHash = data.passwordHash
     }
-    if (data.communityId !== undefined) {
-      this.communityId = data.communityId ? Id.fromString(data.communityId) : undefined
-    }
-    if (data.emailVerified !== undefined) {
+    if (data.emailVerified) {
       this.emailVerified = data.emailVerified
     }
   }

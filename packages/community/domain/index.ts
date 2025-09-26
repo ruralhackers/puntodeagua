@@ -1,6 +1,11 @@
 // Entities
 export { Community } from './entities/community'
-export type { CommunityDto } from './entities/community.dto'
+export {
+  type CommunityClientDto,
+  type CommunityDto,
+  communityClientSchema,
+  communitySchema
+} from './entities/community.dto'
 export { CommunityZone } from './entities/community-zone'
 export type { CommunityZoneDto } from './entities/community-zone.dto'
 export { WaterPoint } from './entities/water-point'

@@ -1,6 +1,8 @@
 import type { Email, Id, TableQueryParams, TableQueryResult } from '@pda/common/domain'
 import { BasePrismaRepository, PrismaTableQueryBuilder } from '@pda/common/infrastructure'
+import { fromCommunityPrismaPayload } from '@pda/community'
 import type { Prisma, client as prisma } from '@pda/database'
+import type { UserDto } from '../../domain'
 import { User } from '../../domain/entities/user'
 import type { UserRepository } from '../../domain/repositories/user-repository'
 import { userTableConfig } from './user-table-config'
@@ -13,7 +15,8 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
     super(db)
     const customConfig = {
       ...userTableConfig,
-      entityFromDto: (dto: Prisma.UserGetPayload<null>) => User.fromDto(dto)
+      entityFromDto: (dto: Prisma.UserGetPayload<{ include: { community: true } }>) =>
+        User.fromDto(this.fromUserPrismaPayload(dto))
     }
     this.tableBuilder = new PrismaTableQueryBuilder(customConfig, db, this.model)
   }
@@ -24,16 +27,18 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
 
   async findByEmail(email: Email) {
     const user = await this.getModel().findUnique({
-      where: { email: email.toString() }
+      where: { email: email.toString() },
+      include: { community: true }
     })
-    return user ? User.fromDto(user) : undefined
+    return user ? User.fromDto(this.fromUserPrismaPayload(user)) : undefined
   }
 
   async findById(id: Id) {
     const user = await this.getModel().findUnique({
-      where: { id: id.toString() }
+      where: { id: id.toString() },
+      include: { community: true }
     })
-    return user ? User.fromDto(user) : undefined
+    return user ? User.fromDto(this.fromUserPrismaPayload(user)) : undefined
   }
 
   async save(user: User) {
@@ -41,7 +46,7 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
       where: {
         id: user.id.toString()
       },
-      update: {
+      data: {
         roles: user.roles.map((role) => role.toString()),
         name: user.name,
         passwordHash: user.passwordHash,
@@ -59,5 +64,14 @@ export class UserPrismaRepository extends BasePrismaRepository implements UserRe
 
   protected getModel() {
     return this.db[this.model]
+  }
+
+  private fromUserPrismaPayload(
+    payload: Prisma.UserGetPayload<{ include: { community: true } }>
+  ): UserDto {
+    return {
+      ...payload,
+      community: payload.community ? fromCommunityPrismaPayload(payload.community) : null
+    }
   }
 }

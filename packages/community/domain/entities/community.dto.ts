@@ -11,3 +11,8 @@ export const communitySchema = z.object({
     value: z.number()
   })
 })
+
+export const communityClientSchema = communitySchema.omit({
+  waterLimitRule: true
+})
+export type CommunityClientDto = z.infer<typeof communityClientSchema>

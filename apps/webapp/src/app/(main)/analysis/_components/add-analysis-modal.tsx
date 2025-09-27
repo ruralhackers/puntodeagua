@@ -1,8 +1,8 @@
 'use client'
 
 import { Calendar, Droplets, Loader2, MapPin, TestTube, User } from 'lucide-react'
-import { useState } from 'react'
 import { toast } from 'sonner'
+import MeasurementFields from '@/components/analysis/measurement-fields'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -23,6 +23,8 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { ANALYSIS_TYPE_OPTIONS, type AnalysisType } from '@/constants/analysis-types'
+import { useAnalysisForm } from '@/hooks/useAnalysisForm'
 import { api } from '@/trpc/react'
 
 interface AddAnalysisModalProps {
@@ -31,54 +33,8 @@ interface AddAnalysisModalProps {
   communityId: string
 }
 
-type AnalysisType = 'chlorine_ph' | 'turbidity' | 'hardness' | 'complete'
-
-const ANALYSIS_TYPE_OPTIONS: {
-  value: AnalysisType
-  label: string
-  description: string
-  icon: string
-}[] = [
-  {
-    value: 'chlorine_ph',
-    label: 'Cloro y pH',
-    description: 'Medición de cloro residual y nivel de pH',
-    icon: '🧪'
-  },
-  {
-    value: 'turbidity',
-    label: 'Turbidez',
-    description: 'Medición de la claridad del agua',
-    icon: '💧'
-  },
-  {
-    value: 'hardness',
-    label: 'Dureza',
-    description: 'Medición del contenido de minerales',
-    icon: '⚗️'
-  },
-  {
-    value: 'complete',
-    label: 'Análisis Completo',
-    description: 'Todas las mediciones disponibles',
-    icon: '🔬'
-  }
-]
-
 export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAnalysisModalProps) {
-  const [formData, setFormData] = useState({
-    analysisType: '' as AnalysisType | '',
-    analyst: '',
-    analyzedAt: new Date().toISOString().split('T')[0],
-    waterZoneId: '',
-    waterDepositId: '',
-    ph: '',
-    turbidity: '',
-    chlorine: '',
-    description: ''
-  })
-
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const { formData, errors, updateFormData, validateForm, resetForm } = useAnalysisForm()
 
   const utils = api.useUtils()
 
@@ -108,65 +64,8 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
   })
 
   const handleClose = () => {
-    setFormData({
-      analysisType: '',
-      analyst: '',
-      analyzedAt: new Date().toISOString().split('T')[0],
-      waterZoneId: '',
-      waterDepositId: '',
-      ph: '',
-      turbidity: '',
-      chlorine: '',
-      description: ''
-    })
-    setErrors({})
+    resetForm()
     onClose()
-  }
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (!formData.analysisType) {
-      newErrors.analysisType = 'El tipo de análisis es requerido'
-    }
-    if (!formData.analyst.trim()) {
-      newErrors.analyst = 'El nombre del analista es requerido'
-    }
-    if (!formData.analyzedAt) {
-      newErrors.analyzedAt = 'La fecha de análisis es requerida'
-    }
-
-    // Conditional validation based on analysis type
-    if (formData.analysisType) {
-      if (['chlorine_ph', 'hardness', 'complete'].includes(formData.analysisType)) {
-        if (!formData.ph || Number.isNaN(Number(formData.ph)) || Number(formData.ph) < 0) {
-          newErrors.ph = 'El valor de pH es requerido y debe ser un número mayor o igual a 0'
-        }
-      }
-      if (['chlorine_ph', 'complete'].includes(formData.analysisType)) {
-        if (
-          !formData.chlorine ||
-          Number.isNaN(Number(formData.chlorine)) ||
-          Number(formData.chlorine) < 0
-        ) {
-          newErrors.chlorine =
-            'El valor de cloro es requerido y debe ser un número mayor o igual a 0'
-        }
-      }
-      if (['turbidity', 'complete'].includes(formData.analysisType)) {
-        if (
-          !formData.turbidity ||
-          Number.isNaN(Number(formData.turbidity)) ||
-          Number(formData.turbidity) < 0
-        ) {
-          newErrors.turbidity =
-            'El valor de turbidez es requerido y debe ser un número mayor o igual a 0'
-        }
-      }
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = () => {
@@ -188,14 +87,6 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
       chlorine: formData.chlorine ? Number(formData.chlorine) : undefined,
       description: formData.description.trim() || undefined
     })
-  }
-
-  const updateFormData = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }))
-    }
   }
 
   // Don't render if no communityId
@@ -389,110 +280,12 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
           </Card>
 
           {/* Measurement Fields - Conditional */}
-          {formData.analysisType && (
-            <Card className="border-purple-200 bg-purple-50/30">
-              <CardContent className="p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <TestTube className="h-4 w-4 text-purple-600" />
-                    <Label className="text-sm font-semibold text-purple-800">
-                      Mediciones del Análisis
-                    </Label>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* pH Field - Conditional */}
-                    {['chlorine_ph', 'hardness', 'complete'].includes(formData.analysisType) && (
-                      <div className="space-y-2">
-                        <Label htmlFor="ph" className="flex items-center gap-2 text-sm font-medium">
-                          <span className="text-lg">🧪</span>
-                          pH *
-                        </Label>
-                        <Input
-                          id="ph"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          max="14"
-                          placeholder="7.0"
-                          value={formData.ph}
-                          onChange={(e) => updateFormData('ph', e.target.value)}
-                          className={errors.ph ? 'border-destructive' : 'border-purple-200'}
-                        />
-                        {errors.ph && (
-                          <p className="text-sm text-destructive flex items-center gap-1">
-                            <span className="text-red-500">⚠</span>
-                            {errors.ph}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">Rango: 0-14 (7.0 = neutro)</p>
-                      </div>
-                    )}
-
-                    {/* Chlorine Field - Conditional */}
-                    {['chlorine_ph', 'complete'].includes(formData.analysisType) && (
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="chlorine"
-                          className="flex items-center gap-2 text-sm font-medium"
-                        >
-                          <span className="text-lg">🧴</span>
-                          Cloro (mg/L) *
-                        </Label>
-                        <Input
-                          id="chlorine"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          placeholder="0.5"
-                          value={formData.chlorine}
-                          onChange={(e) => updateFormData('chlorine', e.target.value)}
-                          className={errors.chlorine ? 'border-destructive' : 'border-purple-200'}
-                        />
-                        {errors.chlorine && (
-                          <p className="text-sm text-destructive flex items-center gap-1">
-                            <span className="text-red-500">⚠</span>
-                            {errors.chlorine}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">Recomendado: 0.2-0.5 mg/L</p>
-                      </div>
-                    )}
-
-                    {/* Turbidity Field - Conditional */}
-                    {['turbidity', 'complete'].includes(formData.analysisType) && (
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="turbidity"
-                          className="flex items-center gap-2 text-sm font-medium"
-                        >
-                          <span className="text-lg">💧</span>
-                          Turbidez (NTU) *
-                        </Label>
-                        <Input
-                          id="turbidity"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          placeholder="1.0"
-                          value={formData.turbidity}
-                          onChange={(e) => updateFormData('turbidity', e.target.value)}
-                          className={errors.turbidity ? 'border-destructive' : 'border-purple-200'}
-                        />
-                        {errors.turbidity && (
-                          <p className="text-sm text-destructive flex items-center gap-1">
-                            <span className="text-red-500">⚠</span>
-                            {errors.turbidity}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground">Recomendado: &lt; 1 NTU</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <MeasurementFields
+            analysisType={formData.analysisType}
+            formData={formData}
+            errors={errors}
+            updateFormData={updateFormData}
+          />
 
           {/* Description */}
           <Card className="border-gray-200 bg-gray-50/30">

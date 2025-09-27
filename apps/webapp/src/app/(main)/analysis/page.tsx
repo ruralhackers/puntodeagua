@@ -1,6 +1,5 @@
 'use client'
 
-import type { AnalysisDto } from '@pda/registers/domain'
 import { Plus, TestTube } from 'lucide-react'
 import { useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
@@ -25,10 +24,6 @@ export default function AnalysisPage() {
     { enabled: !!communityId }
   )
 
-  const handleViewDetails = (analysis: AnalysisDto) => {
-    // TODO: Open analysis detail modal or navigate to detail page
-    console.log('View details for analysis:', analysis.id)
-  }
 
   if (!communityId) {
     return (
@@ -94,7 +89,6 @@ export default function AnalysisPage() {
                   <AnalysisCard
                     key={analysis.id}
                     analysis={analysis}
-                    onViewDetails={handleViewDetails}
                   />
                 ))}
               </div>

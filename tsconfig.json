@@ -26,11 +26,5 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    ".next",
-    "apps/*/node_modules",
-    "packages/*/node_modules"
-  ]
+  "exclude": ["node_modules", "dist", ".next", "apps/*/node_modules", "packages/*/node_modules"]
 }

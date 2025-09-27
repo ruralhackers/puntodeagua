@@ -40,7 +40,7 @@ export function Header({ session }: HeaderProps) {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-1 border border-white/10">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
             <ThemeSwitcher />
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">

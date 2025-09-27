@@ -1,6 +1,6 @@
 'use client'
 
-import { ExternalLink, FileText, Gauge, LogOut, ShieldUser, Truck, Users } from 'lucide-react'
+import { FileText, Gauge, LogOut, Menu, ShieldUser, Truck, User, Users } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -23,10 +23,12 @@ export function AccountMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="size-9 rounded-lg">
-          <AvatarImage src={user.avatar || '/avatars/arhamkhnz.png'} />
-          <AvatarFallback className="rounded-lg">{getInitials(user.name)}</AvatarFallback>
-        </Avatar>
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
+        >
+          <Menu className="h-5 w-5 text-slate-700" />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="min-w-56 space-y-1 rounded-lg"
@@ -37,7 +39,7 @@ export function AccountMenu() {
         <DropdownMenuItem className="cursor-default focus:bg-transparent hover:bg-transparent">
           <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
             <Avatar className="size-9 rounded-lg">
-              <AvatarImage src={user.avatar || '/avatars/arhamkhnz.png'} />
+              <AvatarImage src={user.avatar || '/favicon/32x32.png'} />
               <AvatarFallback className="rounded-lg">{getInitials(user.email)}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">

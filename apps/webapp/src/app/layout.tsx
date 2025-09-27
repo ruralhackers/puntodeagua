@@ -1,4 +1,4 @@
-import { Inter } from 'next/font/google'
+import { Inter, Playfair_Display } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import type { ReactNode } from 'react'
 import { Toaster } from '@/components/ui/sonner'
@@ -16,6 +16,12 @@ import { TRPCReactProvider } from '../trpc/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-playfair'
+})
+
 export const metadata = APP_METADATA
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -29,7 +35,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html
       lang="en"
-      className={themeMode === 'dark' ? 'dark' : ''}
+      className={`${themeMode === 'dark' ? 'dark' : ''} ${playfairDisplay.variable}`}
       data-theme-preset={themePreset}
       suppressHydrationWarning
     >

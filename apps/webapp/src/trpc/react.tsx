@@ -10,7 +10,7 @@ import SuperJSON from 'superjson'
 import type { AppRouter } from '@/server/api/root'
 import { createQueryClient } from './query-client'
 
-let clientQueryClientSingleton: QueryClient | undefined = undefined
+let clientQueryClientSingleton: QueryClient | undefined
 const getQueryClient = () => {
   if (typeof window === 'undefined') {
     // Server: always make a new query client
@@ -45,9 +45,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
     api.createClient({
       links: [
         loggerLink({
-          enabled: (op) =>
-            process.env.NODE_ENV === 'development' ||
-            (op.direction === 'down' && op.result instanceof Error)
+          enabled: (op) => false
+          // process.env.NODE_ENV === 'development' ||
+          // (op.direction === 'down' && op.result instanceof Error)
         }),
         httpBatchStreamLink({
           transformer: SuperJSON,

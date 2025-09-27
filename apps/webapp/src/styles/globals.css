@@ -151,6 +151,42 @@ These serve as the fallback; there is no separate default.css file. */
   }
 }
 
+/* Custom Toast Styles for Better Visibility */
+@layer components {
+  /* Success toast styles */
+  .toaster [data-type="success"] {
+    background: var(--success-bg) !important;
+    color: var(--success-text) !important;
+    border: 1px solid var(--success-border) !important;
+  }
+
+  .toaster [data-type="success"] .toast-description {
+    color: var(--success-text) !important;
+    opacity: 0.8;
+  }
+
+  /* Error toast styles */
+  .toaster [data-type="error"] {
+    background: var(--error-bg) !important;
+    color: var(--error-text) !important;
+    border: 1px solid var(--error-border) !important;
+  }
+
+  .toaster [data-type="error"] .toast-description {
+    color: var(--error-text) !important;
+    opacity: 0.8;
+  }
+
+  /* Ensure good contrast for icons */
+  .toaster [data-type="success"] [data-icon] {
+    color: var(--success-text) !important;
+  }
+
+  .toaster [data-type="error"] [data-icon] {
+    color: var(--error-text) !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

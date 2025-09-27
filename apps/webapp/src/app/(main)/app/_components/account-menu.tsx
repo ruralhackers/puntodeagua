@@ -1,6 +1,7 @@
 'use client'
 
-import { BadgeCheck, Bell, CreditCard, LogOut } from 'lucide-react'
+import { ExternalLink, FileText, Gauge, LogOut, ShieldUser, Truck, Users } from 'lucide-react'
+import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -47,17 +48,40 @@ export function AccountMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BadgeCheck />
-            Account
+          {user.roles.includes('ADMIN') && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
+                  <ShieldUser />
+                  Admin
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          <DropdownMenuItem asChild>
+            <Link href={`/users`} className="flex items-center gap-2 cursor-pointer">
+              <Users />
+              Usuarios
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard />
-            Billing
+          <DropdownMenuItem asChild>
+            <Link href={`/water-point`} className="flex items-center gap-2 cursor-pointer">
+              <Gauge />
+              Contadores
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Bell />
-            Notifications
+          <DropdownMenuItem asChild>
+            <Link href={`/providers`} className="flex items-center gap-2 cursor-pointer">
+              <Truck />
+              Proveedores
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={`/records`} className="flex items-center gap-2 cursor-pointer">
+              <FileText />
+              Registros
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

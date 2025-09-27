@@ -39,13 +39,29 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-100 to-white flex w-full items-center justify-center p-8 lg:w-2/3">
-          <div className="w-full max-w-md space-y-10 py-24 lg:py-32">
+        <div className="bg-gradient-to-br from-blue-100 to-white flex w-full flex-col items-center justify-center p-8 lg:w-2/3">
+          {/* Mobile header with logo and app name */}
+          <div className="lg:hidden mb-8 text-center">
+            <div className="flex justify-center mb-4">
+              <Image
+                src="/favicon/192x192.png"
+                alt="PromptHero Logo"
+                width={60}
+                height={60}
+                className="h-15 w-15 rounded-xl shadow-lg ring-2 ring-blue-200"
+              />
+            </div>
+            <h1 className="text-blue-800 text-2xl font-semibold tracking-tight">
+              {APP_CONFIG.name}
+            </h1>
+          </div>
+
+          <div className="w-full max-w-md space-y-10 py-8 lg:py-24 xl:py-32">
             <div className="space-y-4 text-center">
-              <div className="text-blue-800 text-2xl font-semibold tracking-tight">
+              <div className="text-blue-800 text-xl font-semibold tracking-tight">
                 Iniciar sesión
               </div>
-              <div className="text-blue-600 mx-auto max-w-xl text-base">
+              <div className="text-blue-600 mx-auto max-w-xl text-sm">
                 Bienvenido de nuevo. Ingresa tu correo electrónico para recibir un enlace mágico o
                 accede con tu contraseña.
               </div>

@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -20,17 +21,18 @@ import {
 import { Input } from '@/components/ui/input'
 
 const MagicLinkSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' })
+  email: z.string().email({ message: 'Por favor ingresa una dirección de correo válida.' })
 })
 
 const CredentialsSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(1, { message: 'Password is required.' })
+  email: z.string().email({ message: 'Por favor ingresa una dirección de correo válida.' }),
+  password: z.string().min(1, { message: 'La contraseña es requerida.' })
 })
 
 type LoginMethod = 'magic-link' | 'credentials'
 
 export function LoginForm() {
+  const router = useRouter()
   const emailId = useId()
   const passwordId = useId()
   const [isLoading, setIsLoading] = useState(false)
@@ -58,8 +60,8 @@ export function LoginForm() {
         })
 
         if (result?.error) {
-          toast.error('Error sending magic link', {
-            description: 'Please check your email address and try again.'
+          toast.error('Error enviando el enlace mágico', {
+            description: 'Por favor verifica tu correo electrónico e intenta de nuevo.'
           })
         } else {
           setEmailSent(true)
@@ -69,22 +71,21 @@ export function LoginForm() {
         const result = await signIn('credentials', {
           email: data.email,
           password: (data as z.infer<typeof CredentialsSchema>).password,
-          redirect: true
+          redirect: false
         })
 
-        console.log('Sign-in result:', result)
-
         if (result?.error || result?.ok === false) {
-          toast.error('Invalid credentials', {
-            description: 'Please check your email and password and try again.'
+          toast.error('Credenciales inválidas', {
+            description: 'Por favor verifica tu correo y contraseña e intenta de nuevo.'
           })
         } else {
-          toast.success('Signed in successfully')
+          toast.success('Sesión iniciada exitosamente')
+          router.push('/')
         }
       }
     } catch {
-      toast.error('An error occurred', {
-        description: 'Please try again later.'
+      toast.error('Ocurrió un error', {
+        description: 'Por favor intenta de nuevo más tarde.'
       })
     } finally {
       setIsLoading(false)
@@ -101,13 +102,13 @@ export function LoginForm() {
     return (
       <div className="space-y-6 text-center">
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-gray-900">Check your email</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Revisa tu correo</h2>
           <p className="text-gray-600">
-            We've sent a magic link to{' '}
+            Hemos enviado un enlace mágico a{' '}
             <span className="font-medium text-gray-900">{sentEmail}</span>
           </p>
           <p className="text-sm text-gray-500">
-            Click the link in your email to sign in to your account.
+            Haz clic en el enlace de tu correo para iniciar sesión en tu cuenta.
           </p>
         </div>
         <Button
@@ -119,7 +120,7 @@ export function LoginForm() {
           }}
           className="w-full cursor-pointer"
         >
-          Try different email
+          Usar otro correo
         </Button>
       </div>
     )
@@ -138,7 +139,7 @@ export function LoginForm() {
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          Email & Password
+          Correo y Contraseña
         </button>
         <button
           type="button"
@@ -149,7 +150,7 @@ export function LoginForm() {
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          Magic Link
+          Enlace Mágico
         </button>
       </div>
 
@@ -160,12 +161,12 @@ export function LoginForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email Address</FormLabel>
+                <FormLabel>Correo Electrónico</FormLabel>
                 <FormControl>
                   <Input
                     id={emailId}
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="tu@ejemplo.com"
                     autoComplete="email"
                     {...field}
                   />
@@ -181,7 +182,7 @@ export function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
                     <Input
                       id={passwordId}
@@ -205,11 +206,11 @@ export function LoginForm() {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isLoading
               ? loginMethod === 'magic-link'
-                ? 'Sending...'
-                : 'Signing in...'
+                ? 'Enviando...'
+                : 'Iniciando sesión...'
               : loginMethod === 'magic-link'
-                ? 'Send Magic Link'
-                : 'Sign In'}
+                ? 'Enviar Enlace Mágico'
+                : 'Iniciar Sesión'}
           </Button>
         </form>
       </Form>

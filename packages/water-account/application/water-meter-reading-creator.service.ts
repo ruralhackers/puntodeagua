@@ -18,6 +18,10 @@ export class WaterMeterReadingCreator {
       throw new Error('Water meter not found')
     }
 
+    if (date && date > new Date()) {
+      throw new Error('Reading date cannot be in the future')
+    }
+
     const lastReadings = []
 
     const newWaterReading = WaterMeterReading.create({
@@ -31,6 +35,12 @@ export class WaterMeterReadingCreator {
     const lastReading = await this.waterMeterReadingRepository.findLastReading(waterMeter.id)
     if (lastReading) {
       lastReadings.push(lastReading)
+      if (newWaterReading.readingDate <= lastReading.readingDate) {
+        throw new Error('New reading date must be after the last reading date')
+      }
+      if (newWaterReading.normalizedReading < lastReading.normalizedReading) {
+        throw new Error('New reading is lower than last reading')
+      }
     }
 
     await this.waterMeterReadingRepository.save(newWaterReading)

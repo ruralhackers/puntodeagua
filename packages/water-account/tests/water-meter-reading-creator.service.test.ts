@@ -38,7 +38,7 @@ describe('WaterMeterReadingCreator', () => {
   const defaultLastReading = WaterMeterReading.fromDto({
     id: Id.generateUniqueId().toString(),
     waterMeterId: defaultWaterMeterLiters.id.toString(),
-    reading: 5000,
+    reading: '5000',
     normalizedReading: 5000,
     readingDate: new Date(Date.now() - 86400000), // 1 day ago
     notes: 'Previous reading'
@@ -72,10 +72,52 @@ describe('WaterMeterReadingCreator', () => {
     )
   })
 
+  it('should throw error if provided date is in the future', async () => {
+    // Arrange
+    const futureDate = new Date(Date.now() + 86400000) // 1 day in the future
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeterLiters)
+
+    // Act & Assert
+    await expect(
+      service.run({ waterMeterId: Id.generateUniqueId(), reading: '1000', date: futureDate })
+    ).rejects.toThrow('Reading date cannot be in the future')
+
+    // Verify repository call
+    expect(mockWaterMeterRepository.findById).toHaveBeenCalled()
+  })
+
+  it('should throw error if water meter not found', async () => {
+    // Arrange
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(null)
+
+    // Act & Assert
+    await expect(
+      service.run({ waterMeterId: Id.generateUniqueId(), reading: '1000' })
+    ).rejects.toThrow('Water meter not found')
+
+    // Verify repository call
+    expect(mockWaterMeterRepository.findById).toHaveBeenCalled()
+  })
+
+  it('should throw error if new reading is lower than last reading', async () => {
+    // Arrange
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeterLiters)
+    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(defaultLastReading)
+
+    // Act & Assert
+    await expect(
+      service.run({ waterMeterId: defaultWaterMeterLiters.id, reading: '1000' })
+    ).rejects.toThrow('New reading is lower than last reading')
+
+    // Verify repository call
+    expect(mockWaterMeterRepository.findById).toHaveBeenCalled()
+    expect(mockWaterMeterReadingRepository.findLastReading).toHaveBeenCalled()
+  })
+
   it('should create reading with liters measurement unit and normalize correctly', async () => {
     // Arrange
     const waterMeter = defaultWaterMeterLiters
-    const reading = 15000 // 15k liters
+    const reading = '15000' // 15k liters
 
     mockWaterMeterRepository.findById = mock().mockResolvedValue(waterMeter)
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(null)
@@ -88,13 +130,12 @@ describe('WaterMeterReadingCreator', () => {
       reading,
       notes: 'Test reading'
     })
-    console.log('result', result)
 
     // Assert
     expect(result).toBeInstanceOf(WaterMeterReading)
     expect(result.waterMeterId.toString()).toBe(waterMeter.id.toString())
-    expect(result.reading).toBe(reading)
-    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(reading))
+    expect(result.reading.toString()).toBe(reading)
+    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(result.reading))
     expect(result.notes).toBe('Test reading')
     expect(result.readingDate).toBeInstanceOf(Date)
 
@@ -108,7 +149,7 @@ describe('WaterMeterReadingCreator', () => {
   it('should create reading with cubic meters measurement unit and normalize correctly', async () => {
     // Arrange
     const waterMeter = defaultWaterMeterCubicMeters
-    const reading = 15 // 15 cubic meters
+    const reading = '15' // 15 cubic meters
 
     mockWaterMeterRepository.findById = mock().mockResolvedValue(waterMeter)
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(null)
@@ -123,7 +164,7 @@ describe('WaterMeterReadingCreator', () => {
     })
 
     // Assert
-    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(reading))
+    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(result.reading))
     expect(result.normalizedReading).toBe(15000)
 
     // Verify repository calls
@@ -137,7 +178,7 @@ describe('WaterMeterReadingCreator', () => {
     // Arrange
     const waterMeter = defaultWaterMeterLiters
     const lastReading = defaultLastReading
-    const reading = 20000
+    const reading = '20000'
 
     mockWaterMeterRepository.findById = mock().mockResolvedValue(waterMeter)
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(lastReading)
@@ -153,8 +194,8 @@ describe('WaterMeterReadingCreator', () => {
 
     // Assert
     expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading).toBe(reading)
-    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(reading))
+    expect(result.reading.toString()).toBe(reading)
+    expect(result.normalizedReading).toBe(waterMeter.measurementUnit.normalize(result.reading))
 
     // Verify that both last reading and new reading are passed to updater
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(waterMeter, [
@@ -166,7 +207,7 @@ describe('WaterMeterReadingCreator', () => {
   it('should create reading without existing last reading', async () => {
     // Arrange
     const waterMeter = defaultWaterMeterLiters
-    const reading = 10000
+    const reading = '10000'
 
     mockWaterMeterRepository.findById = mock().mockResolvedValue(waterMeter)
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(null)
@@ -181,8 +222,8 @@ describe('WaterMeterReadingCreator', () => {
 
     // Assert
     expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading).toBe(reading)
-    expect(result.notes).toBeUndefined()
+    expect(result.reading.toString()).toBe(reading)
+    expect(result.notes).toBeNull()
 
     // Verify that only new reading is passed to updater
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(waterMeter, [result])

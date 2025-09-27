@@ -2,6 +2,7 @@
 
 import type { WaterMeterDto } from '@pda/water-account/domain'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -48,22 +49,23 @@ export default function AddReadingModal({
         readingDate: new Date().toISOString().split('T')[0],
         notes: ''
       })
+      toast.success('Lectura añadida con éxito')
+    },
+    onError: (error) => {
+      const errorMessage = error.message || 'Error desconocido'
+      toast.error(`Ha habido un problema al añadir lectura: ${errorMessage}`)
     }
   })
 
-  const handleSubmitReading = async () => {
+  const handleSubmitReading = () => {
     if (!selectedMeter || !readingForm.reading || !readingForm.readingDate) return
 
-    try {
-      await addReadingMutation.mutateAsync({
-        waterMeterId: selectedMeter.id,
-        reading: readingForm.reading,
-        readingDate: new Date(readingForm.readingDate),
-        notes: readingForm.notes || null
-      })
-    } catch (error) {
-      console.error('Error adding reading:', error)
-    }
+    addReadingMutation.mutate({
+      waterMeterId: selectedMeter.id,
+      reading: readingForm.reading,
+      readingDate: new Date(readingForm.readingDate),
+      notes: readingForm.notes || null
+    })
   }
 
   const handleClose = () => {
@@ -111,6 +113,7 @@ export default function AddReadingModal({
               type="date"
               className="col-span-3"
               value={readingForm.readingDate}
+              max={new Date().toISOString().split('T')[0]}
               onChange={(e) => setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))}
             />
           </div>

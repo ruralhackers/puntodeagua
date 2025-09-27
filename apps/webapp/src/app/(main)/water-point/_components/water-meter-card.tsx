@@ -14,9 +14,9 @@ interface WaterMeterCardProps {
 export default function WaterMeterCard({ meter, onAddReading }: WaterMeterCardProps) {
   return (
     <Card className="hover:shadow-sm transition-shadow">
-      <CardContent>
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
+      <CardContent className="p-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="space-y-3 flex-1">
             <div className="flex items-center gap-2">
               <Gauge className="h-4 w-4 text-blue-500" />
               <h4 className="font-semibold">{meter.name}</h4>
@@ -25,7 +25,7 @@ export default function WaterMeterCard({ meter, onAddReading }: WaterMeterCardPr
               </Badge>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
               <div>
                 <p className="font-medium text-muted-foreground">Última Lectura</p>
                 <p className="font-mono">
@@ -67,7 +67,7 @@ export default function WaterMeterCard({ meter, onAddReading }: WaterMeterCardPr
             </div>
           </div>
 
-          <Button variant="outline" size="sm" onClick={() => onAddReading(meter)}>
+          <Button onClick={() => onAddReading(meter)} className="w-full sm:w-auto">
             Nueva Lectura
           </Button>
         </div>

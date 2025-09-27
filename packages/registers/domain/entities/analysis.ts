@@ -18,10 +18,32 @@ export class Analysis {
   ) {}
 
   static create(dto: Omit<AnalysisDto, 'id'>) {
+    // if analysis type is chlorine_ph, then ph and chlorine must be provided
+    // if analysis type is turbidity, then turbidity must be provided
+    // if analysis type is hardness, then ph must be provided
+    // if analysis type is complete, then ph, chlorine and turbidity must be provided
+
+    const analysisType = AnalysisType.fromString(dto.analysisType)
+    if (analysisType.equals(AnalysisType.CHLORINE_PH) && dto.ph === undefined) {
+      throw new Error('Ph is required for chlorine_ph analysis')
+    }
+    if (analysisType.equals(AnalysisType.TURBIDITY) && dto.turbidity === undefined) {
+      throw new Error('Turbidity is required for turbidity analysis')
+    }
+    if (analysisType.equals(AnalysisType.HARDNESS) && dto.ph === undefined) {
+      throw new Error('Ph is required for hardness analysis')
+    }
+    if (
+      analysisType.equals(AnalysisType.COMPLETE) &&
+      (dto.ph === undefined || dto.chlorine === undefined || dto.turbidity === undefined)
+    ) {
+      throw new Error('Ph, chlorine and turbidity are required for complete analysis')
+    }
+
     return new Analysis(
       Id.generateUniqueId(),
       Id.fromString(dto.communityId),
-      AnalysisType.fromString(dto.analysisType),
+      analysisType,
       dto.analyst,
       dto.analyzedAt,
       dto.waterZoneId ? Id.fromString(dto.waterZoneId) : undefined,

@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function generatePageTitle(title: string) {
   const env = process.env.NEXT_PUBLIC_DEPLOY_MODE || process.env.DEPLOY_MODE
   const abbreviation = getAbbreviation(env)
-  return `${abbreviation} SWS | ${title}`
+  return `${abbreviation} PDA | ${title}`
 }
 
 function getAbbreviation(env: string | undefined) {

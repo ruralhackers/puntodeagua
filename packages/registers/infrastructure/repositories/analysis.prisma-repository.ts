@@ -40,7 +40,8 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
 
   async findByCommunityId(communityId: Id) {
     const analyses = await this.getModel().findMany({
-      where: { communityId: communityId.toString() }
+      where: { communityId: communityId.toString() },
+      orderBy: { analyzedAt: 'desc' }
     })
     return analyses.map((analysis) => Analysis.fromDto(this.fromPrismaPayload(analysis)))
   }
@@ -80,6 +81,8 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
   private fromPrismaPayload(payload: Prisma.AnalysisGetPayload<null>) {
     return {
       ...payload,
+      waterZoneId: payload.waterZoneId ?? undefined,
+      waterDepositId: payload.waterDepositId ?? undefined,
       ph: payload.ph ? Number(payload.ph) : undefined,
       turbidity: payload.turbidity ? Number(payload.turbidity) : undefined,
       chlorine: payload.chlorine ? Number(payload.chlorine) : undefined,

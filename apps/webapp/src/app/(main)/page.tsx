@@ -30,7 +30,7 @@ export default async function Home() {
             </Card>
           </Link>
 
-          <Link href="/registers/analytics" className="group">
+          <Link href="/analysis" className="group">
             <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:border-blue-300 dark:from-blue-950 dark:to-blue-900 dark:border-blue-800">
               <CardContent className="flex items-center justify-center h-full p-6">
                 <div className="flex flex-col items-center gap-3 text-center">

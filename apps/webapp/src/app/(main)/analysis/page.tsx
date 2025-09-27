@@ -2,17 +2,19 @@
 
 import type { AnalysisDto } from '@pda/registers/domain'
 import { Plus, TestTube } from 'lucide-react'
-// import { useState } from 'react'
+import { useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
+import AddAnalysisModal from './_components/add-analysis-modal'
 import AnalysisCard from './_components/analysis-card'
 
 export default function AnalysisPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
+  const [isAddAnalysisModalOpen, setIsAddAnalysisModalOpen] = useState(false)
 
   const {
     data: analyses,
@@ -49,9 +51,9 @@ export default function AnalysisPage() {
               Gestiona los análisis de calidad del agua de tu comunidad
             </p>
           </div>
-          <Button disabled className="w-full sm:w-auto">
+          <Button onClick={() => setIsAddAnalysisModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
-            Nuevo Análisis (Próximamente)
+            Nuevo Análisis
           </Button>
         </div>
 
@@ -99,6 +101,15 @@ export default function AnalysisPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Add Analysis Modal */}
+        {communityId && (
+          <AddAnalysisModal
+            isOpen={isAddAnalysisModalOpen}
+            onClose={() => setIsAddAnalysisModalOpen(false)}
+            communityId={communityId}
+          />
+        )}
       </div>
     </PageContainer>
   )

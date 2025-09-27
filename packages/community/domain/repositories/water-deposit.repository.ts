@@ -7,4 +7,5 @@ export interface WaterDepositRepository
     Deletable<WaterDeposit>,
     FindableForTable<WaterDeposit> {
   findById(id: Id): Promise<WaterDeposit | undefined>
+  findByCommunityId(communityId: Id): Promise<WaterDeposit[]>
 }

@@ -197,6 +197,9 @@ model Analysis {
   analyst      String
   analyzedAt   DateTime
 
+  waterZoneId    String? @map("water_zone_id")
+  waterDepositId String? @map("water_deposit_id")
+
   ph          String?
   turbidity   String?
   chlorine    String?

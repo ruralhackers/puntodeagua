@@ -30,9 +30,8 @@ async function main() {
   // // Create users for both communities
   await seedUsers(anceuCommunityId, ponteCaldelasCommunityId)
 
-  // // Create water infrastructure for both communities
-  // await seedWaterZones(anceuCommunityId, ponteCaldelasCommunityId)
-  // await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
+  // Create analyses for both communities
+  await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedHolders()
   // await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedWaterMeterReadings()
@@ -56,6 +55,7 @@ async function deleteAll() {
   await prisma.waterAccount.deleteMany({})
   await prisma.waterPoint.deleteMany({})
   await prisma.waterDeposit.deleteMany({})
+  await prisma.analysis.deleteMany({}) // Delete analyses before communities
   await prisma.communityZone.deleteMany({})
   await prisma.community.deleteMany({})
   // await prisma.plan.deleteMany({})
@@ -63,7 +63,6 @@ async function deleteAll() {
   // await prisma.waterZone.deleteMany({})
   // await prisma.issue.deleteMany({})
   // await prisma.holder.deleteMany({})
-  // await prisma.analysis.deleteMany({})
   // await prisma.maintenance.deleteMany({})
   // await prisma.provider.deleteMany({})
 }
@@ -535,4 +534,126 @@ async function seedWaterMeterReadings(waterMeterIds: string[]) {
   console.log('- 2 readings per water meter (8 meters × 2 = 16 readings)')
   console.log('- Reading dates: Mix of recent and historical readings')
   console.log('- Realistic consumption patterns between readings')
+}
+
+async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  console.log('Creating water analyses...')
+
+  // Get water zones and deposits for both communities
+  const anceuZones = await prisma.communityZone.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+
+  const anceuDeposits = await prisma.waterDeposit.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+
+  const ponteCaldelasDeposits = await prisma.waterDeposit.findMany({
+    where: { communityId: ponteCaldelasCommunityId }
+  })
+
+  const analyses = []
+
+  // Create analyses for Anceu community
+  const anceuAnalyses = [
+    {
+      communityId: anceuCommunityId,
+      waterZoneId: anceuZones[0]?.id, // First zone
+      analysisType: 'complete',
+      analyst: 'Dr. María González',
+      analyzedAt: new Date('2024-01-15'),
+      ph: '7.2',
+      chlorine: '0.8',
+      turbidity: '1.2',
+      description:
+        'Análisis completo de calidad del agua en la zona principal. Todos los parámetros dentro de los rangos normales.'
+    },
+    {
+      communityId: anceuCommunityId,
+      waterZoneId: anceuZones[1]?.id, // Second zone
+      analysisType: 'chlorine_ph',
+      analyst: 'Ing. Carlos Ruiz',
+      analyzedAt: new Date('2024-01-20'),
+      ph: '6.8',
+      chlorine: '0.6',
+      description: 'Control rutinario de cloro y pH en zona residencial.'
+    },
+    {
+      communityId: anceuCommunityId,
+      waterDepositId: anceuDeposits[0]?.id, // First deposit
+      analysisType: 'turbidity',
+      analyst: 'Téc. Ana Martínez',
+      analyzedAt: new Date('2024-01-25'),
+      turbidity: '0.8',
+      description: 'Medición de turbidez en depósito principal. Agua cristalina.'
+    },
+    {
+      communityId: anceuCommunityId,
+      analysisType: 'hardness',
+      analyst: 'Dr. Pedro López',
+      analyzedAt: new Date('2024-02-01'),
+      ph: '7.5',
+      description: 'Análisis de dureza del agua en la red general de la comunidad.'
+    },
+    {
+      communityId: anceuCommunityId,
+      waterZoneId: anceuZones[0]?.id,
+      analysisType: 'complete',
+      analyst: 'Dr. María González',
+      analyzedAt: new Date('2024-02-10'),
+      ph: '7.1',
+      chlorine: '0.9',
+      turbidity: '1.0',
+      description: 'Seguimiento mensual de calidad del agua. Parámetros estables.'
+    }
+  ]
+
+  // Create analyses for Ponte Caldelas community
+  const ponteCaldelasAnalyses = [
+    {
+      communityId: ponteCaldelasCommunityId,
+      waterDepositId: ponteCaldelasDeposits[0]?.id,
+      analysisType: 'complete',
+      analyst: 'Dr. Laura Fernández',
+      analyzedAt: new Date('2024-01-18'),
+      ph: '7.3',
+      chlorine: '0.7',
+      turbidity: '1.1',
+      description: 'Análisis completo en depósito principal de Ponte Caldelas.'
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      analysisType: 'chlorine_ph',
+      analyst: 'Ing. Roberto Silva',
+      analyzedAt: new Date('2024-01-28'),
+      ph: '7.0',
+      chlorine: '0.8',
+      description: 'Control de desinfección en la red de distribución.'
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      waterDepositId: ponteCaldelasDeposits[1]?.id,
+      analysisType: 'turbidity',
+      analyst: 'Téc. Carmen Vázquez',
+      analyzedAt: new Date('2024-02-05'),
+      turbidity: '0.9',
+      description: 'Medición de turbidez en depósito secundario.'
+    }
+  ]
+
+  // Combine all analyses
+  analyses.push(...anceuAnalyses, ...ponteCaldelasAnalyses)
+
+  // Create analyses in database
+  await prisma.analysis.createMany({
+    data: analyses
+  })
+
+  console.log('Created water analyses:')
+  console.log(`- Total: ${analyses.length} analyses`)
+  console.log(`- Anceu: ${anceuAnalyses.length} analyses`)
+  console.log(`- Ponte Caldelas: ${ponteCaldelasAnalyses.length} analyses`)
+  console.log('- Analysis types: complete, chlorine_ph, turbidity, hardness')
+  console.log('- Date range: January-February 2024')
+  console.log('- Realistic water quality parameters')
 }

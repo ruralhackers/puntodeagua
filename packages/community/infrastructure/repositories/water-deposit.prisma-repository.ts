@@ -43,6 +43,15 @@ export class WaterDepositPrismaRepository
     return waterDeposit ? WaterDeposit.fromDto(this.fromPrismaPayload(waterDeposit)) : undefined
   }
 
+  async findByCommunityId(communityId: Id) {
+    const waterDeposits = await this.getModel().findMany({
+      where: { communityId: communityId.toString() }
+    })
+    return waterDeposits.map((waterDeposit) =>
+      WaterDeposit.fromDto(this.fromPrismaPayload(waterDeposit))
+    )
+  }
+
   async save(waterDeposit: WaterDeposit) {
     const update = {
       name: waterDeposit.name,

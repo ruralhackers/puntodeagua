@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc'
+import { registersRouter } from './routers/analysis'
 import { communityRouter } from './routers/community'
 import { tableRouter } from './routers/table'
 import { userRouter } from './routers/user'
@@ -11,6 +12,7 @@ import { waterAccountRouter } from './routers/water-account'
  */
 export const appRouter = createTRPCRouter({
   community: communityRouter,
+  registers: registersRouter,
   user: userRouter,
   table: tableRouter,
   waterAccount: waterAccountRouter

@@ -25,5 +25,13 @@ export const communityRouter = createTRPCRouter({
       const waterPoint = await repo.findById(Id.fromString(input.id))
       if (!waterPoint) return null
       return waterPoint.toDto()
+    }),
+
+  getWaterDepositsByCommunityId: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const repo = CommunityFactory.waterDepositPrismaRepository()
+      const waterDeposits = await repo.findByCommunityId(Id.fromString(input.id))
+      return waterDeposits.map((waterDeposit) => waterDeposit.toDto())
     })
 })

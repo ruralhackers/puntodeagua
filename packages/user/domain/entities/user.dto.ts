@@ -1,8 +1,6 @@
 import { communityClientSchema, communitySchema } from '@pda/community/domain'
 import { z } from 'zod'
 
-// Complete User DTO schema aligned with Prisma User model
-
 export const userClientSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email().nullable(),

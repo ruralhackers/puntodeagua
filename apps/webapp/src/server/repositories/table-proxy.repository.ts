@@ -1,7 +1,7 @@
 import type { TableQueryParams, TableQueryPort, TableQueryResult } from '@pda/common/domain'
 import { CommunityFactory } from '@pda/community'
+import { RegistersFactory } from '@pda/registers'
 import { UserFactory } from '@pda/user'
-import { WaterPointFactory } from '@pda/water-point'
 
 /**
  * Interface for the proxy that accepts model as first parameter
@@ -47,6 +47,10 @@ export class TableRepositoryProxy implements TableRepositoryProxyPort {
 
     if (model === 'waterPoint') {
       return CommunityFactory.waterPointPrismaRepository()
+    }
+
+    if (model === 'analysis') {
+      return RegistersFactory.analysisPrismaRepository()
     }
 
     // Unknown model

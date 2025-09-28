@@ -17,6 +17,7 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
     const where = this.buildWhereClause(params)
     const orderBy = this.buildOrderBy(params)
     const include = this.buildInclude(params.include)
+    console.log({ include, where, orderBy })
 
     const [items, totalItems] = await Promise.all([
       this.getModel().findMany({

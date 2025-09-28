@@ -94,6 +94,7 @@ model CommunityZone {
 
   notes      String       @default("") @db.Text
   WaterPoint WaterPoint[]
+  analyses   Analysis[]
 
   @@index([communityId])
 }
@@ -106,7 +107,8 @@ model WaterDeposit {
   community   Community @relation(fields: [communityId], references: [id])
   communityId String    @map("community_id")
 
-  notes String @default("") @db.Text
+  notes    String     @default("") @db.Text
+  analyses Analysis[]
 
   @@index([communityId])
 }
@@ -197,8 +199,10 @@ model Analysis {
   analyst      String
   analyzedAt   DateTime
 
-  waterZoneId    String? @map("water_zone_id")
-  waterDepositId String? @map("water_deposit_id")
+  waterZoneId    String?        @map("water_zone_id")
+  waterZone      CommunityZone? @relation(fields: [waterZoneId], references: [id])
+  waterDepositId String?        @map("water_deposit_id")
+  waterDeposit   WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
 
   ph          String?
   turbidity   String?
@@ -209,4 +213,6 @@ model Analysis {
   updatedAt DateTime @updatedAt
 
   @@index([communityId])
+  @@index([waterZoneId])
+  @@index([waterDepositId])
 }

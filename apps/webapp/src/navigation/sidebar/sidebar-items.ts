@@ -1,11 +1,10 @@
 import {
-  Banknote,
   ChartBar,
   Fingerprint,
   GlassWater,
   LayoutDashboard,
   type LucideIcon,
-  SquareArrowUpRight,
+  TestTube,
   Users
 } from 'lucide-react'
 
@@ -69,6 +68,11 @@ export const sidebarItems: NavGroup[] = [
         title: 'Water Meters',
         url: '/admin/water-meters',
         icon: Fingerprint
+      },
+      {
+        title: 'Analysis',
+        url: '/admin/analysis',
+        icon: TestTube
       }
     ]
   }

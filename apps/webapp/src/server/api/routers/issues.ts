@@ -49,21 +49,25 @@ export const issuesRouter = createTRPCRouter({
   updateIssue: protectedProcedure.input(issueSchema).mutation(async ({ input }) => {
     const service = RegistersFactory.issueUpdaterService()
 
-    const params = {
-      id: Id.fromString(input.id),
+    const updatedIssue = Issue.fromDto({
+      id: input.id,
       title: input.title,
       reporterName: input.reporterName,
       startAt: input.startAt,
-      waterZoneId: input.waterZoneId ? Id.fromString(input.waterZoneId) : undefined,
-      waterDepositId: input.waterDepositId ? Id.fromString(input.waterDepositId) : undefined,
-      waterPointId: input.waterPointId ? Id.fromString(input.waterPointId) : undefined,
-      description: input.description ?? undefined,
-      status: input.status as 'open' | 'closed',
-      endAt: input.endAt ?? undefined
-    }
+      communityId: input.communityId,
+      waterZoneId: input.waterZoneId,
+      waterDepositId: input.waterDepositId,
+      waterPointId: input.waterPointId,
+      description: input.description,
+      status: input.status,
+      endAt: input.endAt
+    })
 
-    const issue = await service.run(params)
-    return issue.toDto()
+    const savedIssue = await service.run({
+      id: Id.fromString(input.id),
+      updatedIssue
+    })
+    return savedIssue.toDto()
   }),
 
   deleteIssue: protectedProcedure

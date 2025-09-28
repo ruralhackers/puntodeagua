@@ -2,44 +2,34 @@ import type { Id } from '@pda/common/domain'
 import { Issue } from '../domain/entities/issue'
 import type { IssueRepository } from '../domain/repositories/issue.repository'
 
-export interface IssueUpdaterParams {
-  id: Id
-  title?: string
-  reporterName?: string
-  startAt?: Date
-  waterZoneId?: Id
-  waterDepositId?: Id
-  waterPointId?: Id
-  description?: string
-  status?: 'open' | 'closed'
-  endAt?: Date
-}
-
 export class IssueUpdater {
   constructor(private readonly issueRepository: IssueRepository) {}
 
-  async run(params: IssueUpdaterParams): Promise<Issue> {
-    const existingIssue = await this.issueRepository.findById(params.id)
+  async run(params: { id: Id; updatedIssue: Issue }): Promise<Issue> {
+    const { id, updatedIssue } = params
+
+    const existingIssue = await this.issueRepository.findById(id)
     if (!existingIssue) {
-      throw new Error(`Issue with id ${params.id.toString()} not found`)
+      throw new Error(`Issue with id ${id.toString()} not found`)
     }
 
-    // Create updated issue with new values
-    const updatedIssue = Issue.fromDto({
-      id: params.id.toString(),
-      title: params.title ?? existingIssue.title,
-      reporterName: params.reporterName ?? existingIssue.reporterName,
-      startAt: params.startAt ?? existingIssue.startAt,
-      communityId: existingIssue.communityId.toString(),
-      waterZoneId: params.waterZoneId?.toString() ?? existingIssue.waterZoneId?.toString(),
-      waterDepositId: params.waterDepositId?.toString() ?? existingIssue.waterDepositId?.toString(),
-      waterPointId: params.waterPointId?.toString() ?? existingIssue.waterPointId?.toString(),
-      description: params.description ?? existingIssue.description,
-      status: params.status ?? existingIssue.status.toString(),
-      endAt: params.endAt ?? existingIssue.endAt
+    // Create merged issue with existing values as fallback
+    const mergedIssue = Issue.fromDto({
+      id: id.toString(),
+      title: updatedIssue.title,
+      reporterName: updatedIssue.reporterName,
+      startAt: updatedIssue.startAt,
+      communityId: existingIssue.communityId.toString(), // Keep existing community
+      waterZoneId: updatedIssue.waterZoneId?.toString() ?? existingIssue.waterZoneId?.toString(),
+      waterDepositId:
+        updatedIssue.waterDepositId?.toString() ?? existingIssue.waterDepositId?.toString(),
+      waterPointId: updatedIssue.waterPointId?.toString() ?? existingIssue.waterPointId?.toString(),
+      description: updatedIssue.description ?? existingIssue.description,
+      status: updatedIssue.status.toString(),
+      endAt: updatedIssue.endAt ?? existingIssue.endAt
     })
 
-    await this.issueRepository.save(updatedIssue)
-    return updatedIssue
+    await this.issueRepository.save(mergedIssue)
+    return mergedIssue
   }
 }

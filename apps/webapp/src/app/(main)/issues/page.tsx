@@ -1,0 +1,159 @@
+'use client'
+
+import { AlertTriangle, Plus } from 'lucide-react'
+import { useState } from 'react'
+import PageContainer from '@/components/layout/page-container'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useUserStore } from '@/stores/user/user-provider'
+import { api } from '@/trpc/react'
+import AddIssueModal from './_components/add-issue-modal'
+import IssueCard from './_components/issue-card'
+
+export default function IssuesPage() {
+  const user = useUserStore((state) => state.user)
+  const communityId = user?.community?.id
+  const [isAddIssueModalOpen, setIsAddIssueModalOpen] = useState(false)
+
+  const {
+    data: issues,
+    isLoading,
+    error
+  } = api.issues.getIssuesByCommunityId.useQuery(
+    { id: communityId || '' },
+    { enabled: !!communityId }
+  )
+
+  if (!communityId) {
+    return (
+      <PageContainer>
+        <div className="text-center text-destructive">
+          No se pudo determinar la comunidad del usuario
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-muted-foreground">Loading issues...</div>
+        </div>
+      </PageContainer>
+    )
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <div className="text-center text-destructive">Error loading issues: {error.message}</div>
+      </PageContainer>
+    )
+  }
+
+  const openIssues = issues?.filter((issue) => issue.status === 'open') || []
+  const closedIssues = issues?.filter((issue) => issue.status === 'closed') || []
+
+  return (
+    <PageContainer>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Issues</h1>
+            <p className="text-muted-foreground">
+              Manage and track issues in your community's water infrastructure
+            </p>
+          </div>
+          <Button onClick={() => setIsAddIssueModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Issue
+          </Button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{issues?.length || 0}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open Issues</CardTitle>
+              <Badge variant="destructive" className="h-4 w-4 rounded-full" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-destructive">{openIssues.length}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Closed Issues</CardTitle>
+              <Badge variant="secondary" className="h-4 w-4 rounded-full" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-muted-foreground">{closedIssues.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Open Issues */}
+        {openIssues.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Open Issues</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {openIssues.map((issue) => (
+                <IssueCard key={issue.id} issue={issue} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Closed Issues */}
+        {closedIssues.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Closed Issues</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {closedIssues.map((issue) => (
+                <IssueCard key={issue.id} issue={issue} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {issues?.length === 0 && (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No issues found</h3>
+              <p className="text-muted-foreground text-center mb-4">
+                There are no issues reported in your community yet.
+              </p>
+              <Button onClick={() => setIsAddIssueModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Report First Issue
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Add Issue Modal */}
+      <AddIssueModal
+        isOpen={isAddIssueModalOpen}
+        onClose={() => setIsAddIssueModalOpen(false)}
+        communityId={communityId}
+      />
+    </PageContainer>
+  )
+}

@@ -704,7 +704,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'La presión del agua ha disminuido considerablemente en las últimas semanas. Los vecinos se quejan de poca presión.',
       reporterName: 'Carlos López',
-      status: 'in_progress',
+      status: 'open',
       startAt: new Date('2024-01-15'),
       endAt: null
     },
@@ -715,7 +715,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'La fuente tradicional en la plaza tiene una obstrucción que impide el flujo normal del agua.',
       reporterName: 'Ana Martínez',
-      status: 'resolved',
+      status: 'closed',
       startAt: new Date('2024-01-05'),
       endAt: new Date('2024-01-12')
     },
@@ -737,7 +737,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'Mantenimiento preventivo programado para el depósito de reserva. Incluye limpieza y revisión de válvulas.',
       reporterName: 'Técnico Municipal',
-      status: 'scheduled',
+      status: 'open',
       startAt: new Date('2024-02-15'),
       endAt: null
     }
@@ -752,7 +752,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'Se detectó posible contaminación en el depósito principal. Se requiere análisis inmediato del agua.',
       reporterName: 'Laura Fernández',
-      status: 'urgent',
+      status: 'open',
       startAt: new Date('2024-01-18'),
       endAt: null
     },
@@ -763,7 +763,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'El sistema de emergencia del depósito no está funcionando correctamente. Riesgo en caso de corte de suministro.',
       reporterName: 'Roberto Silva',
-      status: 'in_progress',
+      status: 'open',
       startAt: new Date('2024-01-25'),
       endAt: null
     },
@@ -773,7 +773,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'Corte programado para mantenimiento de la red principal. Afectará a toda la comunidad por 4 horas.',
       reporterName: 'Servicios Municipales',
-      status: 'scheduled',
+      status: 'open',
       startAt: new Date('2024-02-20'),
       endAt: null
     },
@@ -783,7 +783,7 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
       description:
         'Instalación de medidores digitales en la zona residencial. Proyecto de modernización de la red.',
       reporterName: 'Carmen Vázquez',
-      status: 'planned',
+      status: 'open',
       startAt: new Date('2024-03-01'),
       endAt: null
     }

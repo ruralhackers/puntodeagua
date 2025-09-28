@@ -1,0 +1,74 @@
+import { Id } from '@pda/common/domain'
+import { RegistersFactory } from '@pda/registers'
+import { issueSchema } from '@pda/registers/domain/entities/issue.dto'
+import { z } from 'zod'
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+
+export const issuesRouter = createTRPCRouter({
+  getIssues: protectedProcedure.query(async () => {
+    const repo = RegistersFactory.issuePrismaRepository()
+    const issues = await repo.findAll()
+    return issues.map((issue) => issue.toDto())
+  }),
+
+  getIssuesByCommunityId: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const repo = RegistersFactory.issuePrismaRepository()
+      const issues = await repo.findByCommunityId(Id.fromString(input.id))
+      return issues.map((issue) => issue.toDto())
+    }),
+
+  getIssueById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = RegistersFactory.issuePrismaRepository()
+    const issue = await repo.findById(Id.fromString(input.id))
+    return issue?.toDto()
+  }),
+
+  addIssue: protectedProcedure.input(issueSchema.omit({ id: true })).mutation(async ({ input }) => {
+    const service = RegistersFactory.issueCreatorService()
+
+    const params = {
+      title: input.title,
+      reporterName: input.reporterName,
+      startAt: input.startAt,
+      communityId: Id.fromString(input.communityId),
+      waterZoneId: input.waterZoneId ? Id.fromString(input.waterZoneId) : undefined,
+      waterDepositId: input.waterDepositId ? Id.fromString(input.waterDepositId) : undefined,
+      waterPointId: input.waterPointId ? Id.fromString(input.waterPointId) : undefined,
+      description: input.description ?? undefined,
+      endAt: input.endAt ?? undefined
+    }
+
+    const issue = await service.run(params)
+    return issue.toDto()
+  }),
+
+  updateIssue: protectedProcedure.input(issueSchema).mutation(async ({ input }) => {
+    const service = RegistersFactory.issueUpdaterService()
+
+    const params = {
+      id: Id.fromString(input.id),
+      title: input.title,
+      reporterName: input.reporterName,
+      startAt: input.startAt,
+      waterZoneId: input.waterZoneId ? Id.fromString(input.waterZoneId) : undefined,
+      waterDepositId: input.waterDepositId ? Id.fromString(input.waterDepositId) : undefined,
+      waterPointId: input.waterPointId ? Id.fromString(input.waterPointId) : undefined,
+      description: input.description ?? undefined,
+      status: input.status as 'open' | 'closed',
+      endAt: input.endAt ?? undefined
+    }
+
+    const issue = await service.run(params)
+    return issue.toDto()
+  }),
+
+  deleteIssue: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      const repo = RegistersFactory.issuePrismaRepository()
+      await repo.delete(Id.fromString(input.id))
+      return { success: true }
+    })
+})

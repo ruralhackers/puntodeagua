@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ChartBar,
   Fingerprint,
   GlassWater,
@@ -73,6 +74,11 @@ export const sidebarItems: NavGroup[] = [
         title: 'Analysis',
         url: '/admin/analysis',
         icon: TestTube
+      },
+      {
+        title: 'Issues',
+        url: '/issues',
+        icon: AlertTriangle
       }
     ]
   }

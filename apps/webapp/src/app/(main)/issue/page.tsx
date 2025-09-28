@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertTriangle, Plus } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +15,12 @@ import IssueCard from './_components/issue-card'
 export default function IssuesPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
-  const [isAddIssueModalOpen, setIsAddIssueModalOpen] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Check if modal should be opened by default based on URL parameter
+  const shouldOpenModal = searchParams.get('create-issue') === 'true'
+  const [isAddIssueModalOpen, setIsAddIssueModalOpen] = useState(shouldOpenModal)
 
   const {
     data: issues,
@@ -24,6 +30,15 @@ export default function IssuesPage() {
     { id: communityId || '' },
     { enabled: !!communityId }
   )
+
+  // Function to handle modal close and clean URL
+  const handleModalClose = () => {
+    setIsAddIssueModalOpen(false)
+    // Clean the URL parameter when modal is closed
+    if (searchParams.get('create-issue') === 'true') {
+      router.replace('/issue')
+    }
+  }
 
   if (!communityId) {
     return (
@@ -155,7 +170,7 @@ export default function IssuesPage() {
       {/* Add Issue Modal */}
       <AddIssueModal
         isOpen={isAddIssueModalOpen}
-        onClose={() => setIsAddIssueModalOpen(false)}
+        onClose={handleModalClose}
         communityId={communityId}
       />
     </PageContainer>

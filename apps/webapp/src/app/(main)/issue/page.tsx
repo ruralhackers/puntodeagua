@@ -77,14 +77,14 @@ export default function IssuesPage() {
     <PageContainer>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Incidencias</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Incidencias</h1>
             <p className="text-muted-foreground">
               Gestiona y rastrea las incidencias en la infraestructura de agua de tu comunidad
             </p>
           </div>
-          <Button onClick={() => setIsAddIssueModalOpen(true)}>
+          <Button onClick={() => setIsAddIssueModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nueva Incidencia
           </Button>

@@ -99,16 +99,21 @@ export default function IssueDetailPage() {
     <PageContainer>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/issues">
+        <div className="space-y-4">
+          {/* Back Button */}
+          <div>
+            <Link href="/issue">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver a Incidencias
               </Button>
             </Link>
+          </div>
+
+          {/* Title and Action Buttons */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{issue.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{issue.title}</h1>
               <div className="flex items-center space-x-2 mt-2">
                 <Badge variant={getStatusVariant(issue.status)}>{issue.status}</Badge>
                 <span className="text-sm text-muted-foreground">
@@ -116,37 +121,34 @@ export default function IssueDetailPage() {
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center space-x-2">
-            {issue.status === 'open' && (
-              <Button
-                onClick={() => handleStatusChange('closed')}
-                disabled={isUpdating}
-                variant="outline"
-                size="sm"
-              >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {isUpdating ? 'Cerrando...' : 'Cerrar Incidencia'}
-              </Button>
-            )}
-            {issue.status === 'closed' && (
-              <Button
-                onClick={() => handleStatusChange('open')}
-                disabled={isUpdating}
-                variant="outline"
-                size="sm"
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                {isUpdating ? 'Reabriendo...' : 'Reabrir Incidencia'}
-              </Button>
-            )}
-            <Link href={`/issues/${issue.id}/edit`}>
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Editar
-              </Button>
-            </Link>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              {issue.status === 'open' && (
+                <Button
+                  onClick={() => handleStatusChange('closed')}
+                  disabled={isUpdating}
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  {isUpdating ? 'Cerrando...' : 'Cerrar Incidencia'}
+                </Button>
+              )}
+              {issue.status === 'closed' && (
+                <Button
+                  onClick={() => handleStatusChange('open')}
+                  disabled={isUpdating}
+                  variant="outline"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {isUpdating ? 'Reabriendo...' : 'Reabrir Incidencia'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 

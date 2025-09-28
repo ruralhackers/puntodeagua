@@ -38,7 +38,7 @@ export default function IssueCard({ issue }: IssueCardProps) {
   }
 
   return (
-    <Link href={`/issues/${issue.id}`}>
+    <Link href={`/issue/${issue.id}`}>
       <Card className="hover:shadow-md transition-shadow cursor-pointer">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">

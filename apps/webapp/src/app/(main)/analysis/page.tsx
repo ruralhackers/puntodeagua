@@ -24,7 +24,6 @@ export default function AnalysisPage() {
     { enabled: !!communityId }
   )
 
-
   if (!communityId) {
     return (
       <PageContainer>
@@ -86,10 +85,7 @@ export default function AnalysisPage() {
             ) : (
               <div className="space-y-3">
                 {analyses.map((analysis) => (
-                  <AnalysisCard
-                    key={analysis.id}
-                    analysis={analysis}
-                  />
+                  <AnalysisCard key={analysis.id} analysis={analysis} />
                 ))}
               </div>
             )}

@@ -20,9 +20,10 @@ puntodeagua/
 │   └── admin/          # NextJS 14 admin dashboard
 ├── packages/
 │   ├── common/         # @pda/common - Shared domain utilities
-│   ├── users/          # @pda/user - User management bounded context
-│   ├── communities/    # @pda/community - Community management
-│   ├── water/          # @pda/water-account - Water infrastructure management
+│   ├── user/           # @pda/user - User management bounded context
+│   ├── community/      # @pda/community - Community management
+│   ├── water-account/  # @pda/water-account - Water infrastructure management
+│   ├── registers/      # @pda/registers - Issue and analysis management
 │   └── database/       # @pda/database - Database infrastructure
 │       └── <bounded-context>/
 │           ├── domain/
@@ -47,6 +48,7 @@ Examples:
 - `@pda/user` - User management bounded context
 - `@pda/community` - Community management bounded context
 - `@pda/water-account` - Water infrastructure and monitoring
+- `@pda/registers` - Issue tracking and water analysis management
 
 ## 🚀 Quick Start
 
@@ -163,8 +165,13 @@ Community management with configurable water usage rules and limits.
 Water infrastructure management including:
 - Water points and zones
 - Meter readings and consumption tracking
-- Issue reporting and maintenance
 - Provider management
+
+#### Registers (`@pda/registers`)
+Issue tracking and water analysis management including:
+- Issue reporting and resolution tracking
+- Water quality analysis and monitoring
+- Service pattern implementations (Creator/Updater services)
 
 ### Domain Layer Structure
 - **Entities**: Core business objects (User, Community, WaterPoint, etc.)

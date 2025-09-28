@@ -37,20 +37,20 @@ export interface NavGroup {
 export const sidebarItems: NavGroup[] = [
   {
     id: 1,
-    label: 'Community',
+    label: 'Comunidad',
     items: [
       {
-        title: 'Dashboard',
+        title: 'Panel',
         url: '/admin',
         icon: LayoutDashboard
       },
       {
-        title: 'Communities',
+        title: 'Comunidades',
         url: '/admin/communities',
         icon: ChartBar
       },
       {
-        title: 'Users',
+        title: 'Usuarios',
         url: '/admin/users',
         icon: Users
       }
@@ -58,25 +58,25 @@ export const sidebarItems: NavGroup[] = [
   },
   {
     id: 2,
-    label: 'Registers',
+    label: 'Registros',
     items: [
       {
-        title: 'Water Points',
+        title: 'Puntos de Agua',
         url: '/admin/water-points',
         icon: GlassWater
       },
       {
-        title: 'Water Meters',
+        title: 'Contadores',
         url: '/admin/water-meters',
         icon: Fingerprint
       },
       {
-        title: 'Analysis',
+        title: 'Análisis',
         url: '/admin/analysis',
         icon: TestTube
       },
       {
-        title: 'Issues',
+        title: 'Incidencias',
         url: '/issues',
         icon: AlertTriangle
       }

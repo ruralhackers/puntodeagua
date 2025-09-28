@@ -58,10 +58,10 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
     onSuccess: async () => {
       await utils.issues.getIssuesByCommunityId.invalidate({ id: communityId })
       handleClose()
-      toast.success('Issue created successfully')
+      toast.success('Incidencia creada con éxito')
     },
     onError: (error) => {
-      toast.error('Failed to create issue: ' + error.message)
+      toast.error('Error al crear la incidencia: ' + error.message)
     }
   })
 
@@ -81,7 +81,7 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
     e.preventDefault()
 
     if (!formData.title || !formData.reporterName) {
-      toast.error('Title and reporter name are required')
+      toast.error('El título y el nombre del reportero son obligatorios')
       return
     }
 
@@ -171,7 +171,8 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
                   className="border-gray-200"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Proporciona tantos detalles como sea posible para ayudar a resolver la incidencia rápidamente
+                  Proporciona tantos detalles como sea posible para ayudar a resolver la incidencia
+                  rápidamente
                 </p>
               </div>
             </CardContent>
@@ -235,7 +236,7 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
                         onValueChange={(value) => handleInputChange('waterDepositId', value)}
                       >
                         <SelectTrigger className="border-green-200">
-                          <SelectValue placeholder="Select deposit (optional)" />
+                          <SelectValue placeholder="Selecciona un depósito (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
                           {waterDeposits.map((deposit) => (
@@ -264,7 +265,7 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
             disabled={createIssueMutation.isPending}
             className="flex-1"
           >
-            Cancel
+            Cancelar
           </Button>
           <Button
             type="button"
@@ -275,12 +276,12 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
             {createIssueMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
+                Creando...
               </>
             ) : (
               <>
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                Create Issue
+                Crear Incidencia
               </>
             )}
           </Button>

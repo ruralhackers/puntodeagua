@@ -1,5 +1,6 @@
 import { Id } from '@pda/common/domain'
 import { RegistersFactory } from '@pda/registers'
+import { Issue } from '@pda/registers/domain/entities/issue'
 import { issueSchema } from '@pda/registers/domain/entities/issue.dto'
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
@@ -28,20 +29,21 @@ export const issuesRouter = createTRPCRouter({
   addIssue: protectedProcedure.input(issueSchema.omit({ id: true })).mutation(async ({ input }) => {
     const service = RegistersFactory.issueCreatorService()
 
-    const params = {
+    const issue = Issue.create({
       title: input.title,
       reporterName: input.reporterName,
       startAt: input.startAt,
-      communityId: Id.fromString(input.communityId),
-      waterZoneId: input.waterZoneId ? Id.fromString(input.waterZoneId) : undefined,
-      waterDepositId: input.waterDepositId ? Id.fromString(input.waterDepositId) : undefined,
-      waterPointId: input.waterPointId ? Id.fromString(input.waterPointId) : undefined,
-      description: input.description ?? undefined,
-      endAt: input.endAt ?? undefined
-    }
+      communityId: input.communityId,
+      waterZoneId: input.waterZoneId,
+      waterDepositId: input.waterDepositId,
+      waterPointId: input.waterPointId,
+      description: input.description,
+      endAt: input.endAt,
+      status: 'open'
+    })
 
-    const issue = await service.run(params)
-    return issue.toDto()
+    const savedIssue = await service.run({ issue })
+    return savedIssue.toDto()
   }),
 
   updateIssue: protectedProcedure.input(issueSchema).mutation(async ({ input }) => {

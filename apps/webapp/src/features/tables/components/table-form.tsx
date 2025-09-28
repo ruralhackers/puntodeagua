@@ -31,19 +31,19 @@ const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/web
 const formSchema = z.object({
   image: z
     .any()
-    .refine((files) => files?.length === 1, 'Image is required.')
-    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+    .refine((files) => files?.length === 1, 'La imagen es requerida.')
+    .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `El tamaño máximo del archivo es 5MB.`)
     .refine(
       (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      '.jpg, .jpeg, .png and .webp files are accepted.'
+      'Se aceptan archivos .jpg, .jpeg, .png y .webp.'
     ),
   name: z.string().min(2, {
-    message: 'Product name must be at least 2 characters.'
+    message: 'El nombre del producto debe tener al menos 2 caracteres.'
   }),
   category: z.string(),
   price: z.number(),
   description: z.string().min(10, {
-    message: 'Description must be at least 10 characters.'
+    message: 'La descripción debe tener al menos 10 caracteres.'
   })
 })
 

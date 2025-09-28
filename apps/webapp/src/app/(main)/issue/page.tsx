@@ -39,7 +39,7 @@ export default function IssuesPage() {
     return (
       <PageContainer>
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Loading issues...</div>
+          <div className="text-muted-foreground">Cargando incidencias...</div>
         </div>
       </PageContainer>
     )
@@ -48,7 +48,9 @@ export default function IssuesPage() {
   if (error) {
     return (
       <PageContainer>
-        <div className="text-center text-destructive">Error loading issues: {error.message}</div>
+        <div className="text-center text-destructive">
+          Error al cargar las incidencias: {error.message}
+        </div>
       </PageContainer>
     )
   }
@@ -62,14 +64,14 @@ export default function IssuesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Issues</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Incidencias</h1>
             <p className="text-muted-foreground">
-              Manage and track issues in your community's water infrastructure
+              Gestiona y rastrea las incidencias en la infraestructura de agua de tu comunidad
             </p>
           </div>
           <Button onClick={() => setIsAddIssueModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            New Issue
+            Nueva Incidencia
           </Button>
         </div>
 
@@ -77,7 +79,7 @@ export default function IssuesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Incidencias</CardTitle>
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -87,7 +89,7 @@ export default function IssuesPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Open Issues</CardTitle>
+              <CardTitle className="text-sm font-medium">Incidencias Abiertas</CardTitle>
               <Badge variant="destructive" className="h-4 w-4 rounded-full" />
             </CardHeader>
             <CardContent>
@@ -97,7 +99,7 @@ export default function IssuesPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Closed Issues</CardTitle>
+              <CardTitle className="text-sm font-medium">Incidencias Cerradas</CardTitle>
               <Badge variant="secondary" className="h-4 w-4 rounded-full" />
             </CardHeader>
             <CardContent>
@@ -109,7 +111,7 @@ export default function IssuesPage() {
         {/* Open Issues */}
         {openIssues.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Open Issues</h2>
+            <h2 className="text-xl font-semibold">Incidencias Abiertas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {openIssues.map((issue) => (
                 <IssueCard key={issue.id} issue={issue} />
@@ -121,7 +123,7 @@ export default function IssuesPage() {
         {/* Closed Issues */}
         {closedIssues.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Closed Issues</h2>
+            <h2 className="text-xl font-semibold">Incidencias Cerradas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {closedIssues.map((issue) => (
                 <IssueCard key={issue.id} issue={issue} />
@@ -135,13 +137,15 @@ export default function IssuesPage() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No issues found</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                No se encontraron incidencias en tu comunidad
+              </h3>
               <p className="text-muted-foreground text-center mb-4">
-                There are no issues reported in your community yet.
+                Aún no se han reportado incidencias en tu comunidad.
               </p>
               <Button onClick={() => setIsAddIssueModalOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Report First Issue
+                Reportar Primera Incidencia de tu comunidad
               </Button>
             </CardContent>
           </Card>

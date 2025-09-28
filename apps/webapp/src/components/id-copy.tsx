@@ -11,7 +11,7 @@ export function IdCopy({ id }: { id: string }) {
         className="text-muted-foreground h-4 w-4 hover:cursor-pointer hover:text-foreground"
         onClick={() => {
           navigator.clipboard.writeText(id)
-          toast.success(`Id ${id} copied to clipboard`)
+          toast.success(`ID ${id} copiado al portapapeles`)
         }}
       />
     </span>

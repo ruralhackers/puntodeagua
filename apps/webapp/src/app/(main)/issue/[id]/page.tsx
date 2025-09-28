@@ -26,12 +26,12 @@ export default function IssueDetailPage() {
 
   const updateIssueMutation = api.issues.updateIssue.useMutation({
     onSuccess: () => {
-      toast.success('Issue updated successfully')
+      toast.success('Incidencia actualizada con éxito')
       refetch()
       setIsUpdating(false)
     },
     onError: (error) => {
-      toast.error('Failed to update issue: ' + error.message)
+      toast.error('Error al actualizar la incidencia: ' + error.message)
       setIsUpdating(false)
     }
   })
@@ -51,7 +51,7 @@ export default function IssueDetailPage() {
     return (
       <PageContainer>
         <div className="flex items-center justify-center h-64">
-          <div className="text-muted-foreground">Loading issue...</div>
+          <div className="text-muted-foreground">Cargando incidencia...</div>
         </div>
       </PageContainer>
     )
@@ -61,7 +61,7 @@ export default function IssueDetailPage() {
     return (
       <PageContainer>
         <div className="text-center text-destructive">
-          {error ? `Error loading issue: ${error.message}` : 'Issue not found'}
+          {error ? `Error al cargar la incidencia: ${error.message}` : 'Incidencia no encontrada'}
         </div>
       </PageContainer>
     )
@@ -89,10 +89,10 @@ export default function IssueDetailPage() {
   }
 
   const getLocationText = () => {
-    if (issue.waterPointId) return 'Water Point'
-    if (issue.waterDepositId) return 'Water Deposit'
-    if (issue.waterZoneId) return 'Water Zone'
-    return 'Community'
+    if (issue.waterPointId) return 'Punto de Agua'
+    if (issue.waterDepositId) return 'Depósito de Agua'
+    if (issue.waterZoneId) return 'Zona de Agua'
+    return 'Comunidad'
   }
 
   return (
@@ -104,7 +104,7 @@ export default function IssueDetailPage() {
             <Link href="/issues">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Issues
+                Volver a Incidencias
               </Button>
             </Link>
             <div>
@@ -112,7 +112,7 @@ export default function IssueDetailPage() {
               <div className="flex items-center space-x-2 mt-2">
                 <Badge variant={getStatusVariant(issue.status)}>{issue.status}</Badge>
                 <span className="text-sm text-muted-foreground">
-                  Reported by {issue.reporterName}
+                  Reportado por {issue.reporterName}
                 </span>
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function IssueDetailPage() {
                 size="sm"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
-                {isUpdating ? 'Closing...' : 'Close Issue'}
+                {isUpdating ? 'Cerrando...' : 'Cerrar Incidencia'}
               </Button>
             )}
             {issue.status === 'closed' && (
@@ -138,13 +138,13 @@ export default function IssueDetailPage() {
                 size="sm"
               >
                 <Edit className="h-4 w-4 mr-2" />
-                {isUpdating ? 'Reopening...' : 'Reopen Issue'}
+                {isUpdating ? 'Reabriendo...' : 'Reabrir Incidencia'}
               </Button>
             )}
             <Link href={`/issues/${issue.id}/edit`}>
               <Button variant="outline" size="sm">
                 <Edit className="h-4 w-4 mr-2" />
-                Edit
+                Editar
               </Button>
             </Link>
           </div>
@@ -156,13 +156,13 @@ export default function IssueDetailPage() {
             {/* Description */}
             <Card>
               <CardHeader>
-                <CardTitle>Description</CardTitle>
+                <CardTitle>Descripción</CardTitle>
               </CardHeader>
               <CardContent>
                 {issue.description ? (
                   <p className="text-muted-foreground whitespace-pre-wrap">{issue.description}</p>
                 ) : (
-                  <p className="text-muted-foreground italic">No description provided</p>
+                  <p className="text-muted-foreground italic">No se proporcionó descripción</p>
                 )}
               </CardContent>
             </Card>
@@ -170,13 +170,13 @@ export default function IssueDetailPage() {
             {/* Timeline */}
             <Card>
               <CardHeader>
-                <CardTitle>Timeline</CardTitle>
+                <CardTitle>Cronología</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div>
-                    <p className="font-medium">Issue Created</p>
+                    <p className="font-medium">Incidencia Creada</p>
                     <p className="text-sm text-muted-foreground">{formatDate(issue.startAt)}</p>
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export default function IssueDetailPage() {
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <div>
-                        <p className="font-medium">Issue Closed</p>
+                        <p className="font-medium">Incidencia Cerrada</p>
                         <p className="text-sm text-muted-foreground">{formatDate(issue.endAt)}</p>
                       </div>
                     </div>
@@ -202,13 +202,13 @@ export default function IssueDetailPage() {
             {/* Issue Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Issue Details</CardTitle>
+                <CardTitle>Detalles de la Incidencia</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <User className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Reporter</p>
+                    <p className="text-sm font-medium">Reportero</p>
                     <p className="text-sm text-muted-foreground">{issue.reporterName}</p>
                   </div>
                 </div>
@@ -216,7 +216,7 @@ export default function IssueDetailPage() {
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Start Date</p>
+                    <p className="text-sm font-medium">Fecha de Inicio</p>
                     <p className="text-sm text-muted-foreground">{formatDate(issue.startAt)}</p>
                   </div>
                 </div>
@@ -225,7 +225,7 @@ export default function IssueDetailPage() {
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">End Date</p>
+                      <p className="text-sm font-medium">Fecha de Fin</p>
                       <p className="text-sm text-muted-foreground">{formatDate(issue.endAt)}</p>
                     </div>
                   </div>
@@ -234,7 +234,7 @@ export default function IssueDetailPage() {
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Location</p>
+                    <p className="text-sm font-medium">Ubicación</p>
                     <p className="text-sm text-muted-foreground">{getLocationText()}</p>
                   </div>
                 </div>
@@ -244,7 +244,7 @@ export default function IssueDetailPage() {
             {/* Status Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Status</CardTitle>
+                <CardTitle>Estado</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
@@ -256,7 +256,7 @@ export default function IssueDetailPage() {
                       size="sm"
                       variant="outline"
                     >
-                      {isUpdating ? 'Closing...' : 'Close'}
+                      {isUpdating ? 'Cerrando...' : 'Cerrar'}
                     </Button>
                   )}
                 </div>

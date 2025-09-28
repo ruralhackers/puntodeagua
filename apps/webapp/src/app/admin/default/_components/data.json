@@ -1,183 +1,183 @@
 [
   {
     "id": 1,
-    "header": "Cover page",
-    "type": "Cover page",
-    "status": "In Process",
+    "header": "Página de portada",
+    "type": "Página de portada",
+    "status": "En Proceso",
     "target": "18",
     "limit": "5",
     "reviewer": "Eddie Lake"
   },
   {
     "id": 2,
-    "header": "Table of contents",
-    "type": "Table of contents",
-    "status": "Done",
+    "header": "Tabla de contenidos",
+    "type": "Tabla de contenidos",
+    "status": "Completado",
     "target": "29",
     "limit": "24",
     "reviewer": "Eddie Lake"
   },
   {
     "id": 3,
-    "header": "Executive summary",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Resumen ejecutivo",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "10",
     "limit": "13",
     "reviewer": "Eddie Lake"
   },
   {
     "id": 4,
-    "header": "Technical approach",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Enfoque técnico",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "27",
     "limit": "23",
     "reviewer": "Jamik Tashpulatov"
   },
   {
     "id": 5,
-    "header": "Design",
-    "type": "Narrative",
-    "status": "In Process",
+    "header": "Diseño",
+    "type": "Narrativo",
+    "status": "En Proceso",
     "target": "2",
     "limit": "16",
     "reviewer": "Jamik Tashpulatov"
   },
   {
     "id": 6,
-    "header": "Capabilities",
-    "type": "Narrative",
-    "status": "In Process",
+    "header": "Capacidades",
+    "type": "Narrativo",
+    "status": "En Proceso",
     "target": "20",
     "limit": "8",
     "reviewer": "Jamik Tashpulatov"
   },
   {
     "id": 7,
-    "header": "Integration with existing systems",
-    "type": "Narrative",
-    "status": "In Process",
+    "header": "Integración con sistemas existentes",
+    "type": "Narrativo",
+    "status": "En Proceso",
     "target": "19",
     "limit": "21",
     "reviewer": "Jamik Tashpulatov"
   },
   {
     "id": 8,
-    "header": "Innovation and Advantages",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Innovación y Ventajas",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "25",
     "limit": "26",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 9,
-    "header": "Overview of EMR's Innovative Solutions",
-    "type": "Technical content",
-    "status": "Done",
+    "header": "Resumen de las Soluciones Innovadoras de EMR",
+    "type": "Contenido técnico",
+    "status": "Completado",
     "target": "7",
     "limit": "23",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 10,
-    "header": "Advanced Algorithms and Machine Learning",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Algoritmos Avanzados y Aprendizaje Automático",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "30",
     "limit": "28",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 11,
-    "header": "Adaptive Communication Protocols",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Protocolos de Comunicación Adaptativos",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "9",
     "limit": "31",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 12,
-    "header": "Advantages Over Current Technologies",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Ventajas sobre las Tecnologías Actuales",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "12",
     "limit": "0",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 13,
-    "header": "Past Performance",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Rendimiento Anterior",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "22",
     "limit": "33",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 14,
-    "header": "Customer Feedback and Satisfaction Levels",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Comentarios de Clientes y Niveles de Satisfacción",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "15",
     "limit": "34",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 15,
-    "header": "Implementation Challenges and Solutions",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Desafíos de Implementación y Soluciones",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "3",
     "limit": "35",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 16,
-    "header": "Security Measures and Data Protection Policies",
-    "type": "Narrative",
-    "status": "In Process",
+    "header": "Medidas de Seguridad y Políticas de Protección de Datos",
+    "type": "Narrativo",
+    "status": "En Proceso",
     "target": "6",
     "limit": "36",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 17,
-    "header": "Scalability and Future Proofing",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Escalabilidad y Preparación para el Futuro",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "4",
     "limit": "37",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 18,
-    "header": "Cost-Benefit Analysis",
-    "type": "Plain language",
-    "status": "Done",
+    "header": "Análisis Costo-Beneficio",
+    "type": "Lenguaje sencillo",
+    "status": "Completado",
     "target": "14",
     "limit": "38",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 19,
-    "header": "User Training and Onboarding Experience",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Experiencia de Capacitación e Incorporación de Usuarios",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "17",
     "limit": "39",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 20,
-    "header": "Future Development Roadmap",
-    "type": "Narrative",
-    "status": "Done",
+    "header": "Hoja de Ruta de Desarrollo Futuro",
+    "type": "Narrativo",
+    "status": "Completado",
     "target": "11",
     "limit": "40",
-    "reviewer": "Assign reviewer"
+    "reviewer": "Asignar revisor"
   },
   {
     "id": 21,

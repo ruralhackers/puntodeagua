@@ -21,7 +21,7 @@ import { api } from '@/trpc/react'
 
 const formSchema = z.object({
   id: z.string().uuid(),
-  username: z.string().min(1, 'Username required'),
+  username: z.string().min(1, 'Nombre de usuario requerido'),
   credits: z.number().int().nonnegative(),
   admin: z.boolean(),
   moderator: z.boolean(),
@@ -63,7 +63,7 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
         }
   })
 
-  if (!initialData) return <div>User not found</div>
+  if (!initialData) return <div>Usuario no encontrado</div>
 
   async function onSubmit(values: FormValues) {
     if (!initialData) return
@@ -92,14 +92,14 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
       streakEnd: initialData.streakEnd ?? null
     })
     await utils.user.getById.invalidate({ id: values.id })
-    toast.success('User updated successfully')
+    toast.success('Usuario actualizado exitosamente')
     router.push('/dashboard/users')
   }
 
   return (
     <div className="w-full space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold leading-none tracking-tight">Edit User</h1>
+        <h1 className="text-2xl font-semibold leading-none tracking-tight">Editar Usuario</h1>
         <p className="text-sm text-muted-foreground">ID: {initialData.id}</p>
       </div>
       <Form {...form}>
@@ -110,9 +110,9 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Nombre de Usuario</FormLabel>
                   <FormControl>
-                    <Input placeholder="username" {...field} />
+                    <Input placeholder="nombre de usuario" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,7 +123,7 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
               name="credits"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Credits</FormLabel>
+                  <FormLabel>Créditos</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -160,7 +160,7 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
           </div>
           <div className="max-w-sm">
             <label htmlFor="email" className="block text-xs font-medium text-muted-foreground">
-              Email (read-only)
+              Correo Electrónico (solo lectura)
             </label>
             <Input id="email" disabled value={initialData.email} className="mt-1" />
           </div>
@@ -172,11 +172,11 @@ export function UserForm({ initialData }: { initialData: UserDto | null }) {
               onClick={() => router.push('/dashboard/users')}
               disabled={status === 'pending'}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={status === 'pending'}>
               {status === 'pending' && <Loader2 className="animate-spin" />}
-              Save
+              Guardar
             </Button>
           </div>
         </form>

@@ -21,7 +21,7 @@ export default async function Home() {
               <div className="flex justify-center">
                 <Image
                   src="/favicon/192x192.png"
-                  alt="PromptHero Logo"
+                  alt="Logo de Punto de Agua"
                   width={80}
                   height={80}
                   className="h-20 w-20 rounded-2xl shadow-2xl ring-4 ring-white/20"
@@ -45,7 +45,7 @@ export default async function Home() {
             <div className="flex justify-center mb-4">
               <Image
                 src="/favicon/192x192.png"
-                alt="PromptHero Logo"
+                alt="Logo de Punto de Agua"
                 width={60}
                 height={60}
                 className="h-15 w-15 rounded-xl shadow-lg ring-2 ring-blue-200"

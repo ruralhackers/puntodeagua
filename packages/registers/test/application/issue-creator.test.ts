@@ -22,52 +22,46 @@ describe('IssueCreator Service', () => {
   })
 
   describe('run', () => {
-    it('should create and save an issue', async () => {
-      const params = {
+    it('should save an issue', async () => {
+      const issue = Issue.create({
         title: 'Water leak in main pipe',
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
-        communityId: Id.generateUniqueId(),
-        waterZoneId: Id.generateUniqueId(),
-        description: 'There is a significant water leak in the main pipe.'
-      }
-
-      const savedIssue = Issue.create({
-        title: params.title,
-        reporterName: params.reporterName,
-        startAt: params.startAt,
-        communityId: params.communityId.toString(),
-        waterZoneId: params.waterZoneId.toString(),
-        description: params.description,
+        communityId: Id.generateUniqueId().toString(),
+        waterZoneId: Id.generateUniqueId().toString(),
+        description: 'There is a significant water leak in the main pipe.',
         status: 'open'
       })
 
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueCreator.run(params)
+      const result = await issueCreator.run({ issue })
 
-      expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Issue))
-      expect(result.title).toBe(params.title)
-      expect(result.reporterName).toBe(params.reporterName)
+      expect(mockRepository.save).toHaveBeenCalledWith(issue)
+      expect(result).toBe(issue)
+      expect(result.title).toBe('Water leak in main pipe')
+      expect(result.reporterName).toBe('John Doe')
       expect(result.status.toString()).toBe('open')
       expect(result.id).toBeDefined()
     })
 
-    it('should create an issue with minimal required fields', async () => {
-      const params = {
+    it('should save an issue with minimal required fields', async () => {
+      const issue = Issue.create({
         title: 'Test Issue',
         reporterName: 'Jane Doe',
         startAt: new Date(),
-        communityId: Id.generateUniqueId()
-      }
+        communityId: Id.generateUniqueId().toString(),
+        status: 'open'
+      })
 
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueCreator.run(params)
+      const result = await issueCreator.run({ issue })
 
-      expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Issue))
-      expect(result.title).toBe(params.title)
-      expect(result.reporterName).toBe(params.reporterName)
+      expect(mockRepository.save).toHaveBeenCalledWith(issue)
+      expect(result).toBe(issue)
+      expect(result.title).toBe('Test Issue')
+      expect(result.reporterName).toBe('Jane Doe')
       expect(result.waterZoneId).toBeUndefined()
       expect(result.waterDepositId).toBeUndefined()
       expect(result.waterPointId).toBeUndefined()
@@ -75,17 +69,18 @@ describe('IssueCreator Service', () => {
     })
 
     it('should handle repository errors', async () => {
-      const params = {
+      const issue = Issue.create({
         title: 'Test Issue',
         reporterName: 'Jane Doe',
         startAt: new Date(),
-        communityId: Id.generateUniqueId()
-      }
+        communityId: Id.generateUniqueId().toString(),
+        status: 'open'
+      })
 
       const error = new Error('Database connection failed')
       mockRepository.save = mock().mockRejectedValue(error)
 
-      await expect(issueCreator.run(params)).rejects.toThrow('Database connection failed')
+      await expect(issueCreator.run({ issue })).rejects.toThrow('Database connection failed')
     })
   })
 })

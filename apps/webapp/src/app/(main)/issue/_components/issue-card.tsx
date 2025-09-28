@@ -31,10 +31,10 @@ export default function IssueCard({ issue }: IssueCardProps) {
   }
 
   const getLocationText = () => {
-    if (issue.waterPointId) return 'Water Point'
-    if (issue.waterDepositId) return 'Water Deposit'
-    if (issue.waterZoneId) return 'Water Zone'
-    return 'Community'
+    if (issue.waterPointId) return 'Punto de Agua'
+    if (issue.waterDepositId) return 'Depósito de Agua'
+    if (issue.waterZoneId) return 'Zona de Agua'
+    return 'Comunidad'
   }
 
   return (
@@ -56,8 +56,8 @@ export default function IssueCard({ issue }: IssueCardProps) {
 
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-4 w-4 mr-2" />
-            <span>Started: {formatDate(issue.startAt)}</span>
-            {issue.endAt && <span className="ml-4">Ended: {formatDate(issue.endAt)}</span>}
+            <span>Iniciado: {formatDate(issue.startAt)}</span>
+            {issue.endAt && <span className="ml-4">Finalizado: {formatDate(issue.endAt)}</span>}
           </div>
 
           <div className="flex items-center text-sm text-muted-foreground">

@@ -32,8 +32,10 @@ async function main() {
 
   // Create analyses for both communities
   await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
+
+  // Create issues for both communities
+  await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedHolders()
-  // await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedWaterMeterReadings()
   // await seedMaintenances(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedProviders(anceuCommunityId, ponteCaldelasCommunityId)
@@ -56,12 +58,12 @@ async function deleteAll() {
   await prisma.waterPoint.deleteMany({})
   await prisma.waterDeposit.deleteMany({})
   await prisma.analysis.deleteMany({}) // Delete analyses before communities
+  await prisma.issue.deleteMany({}) // Delete issues before communities
   await prisma.communityZone.deleteMany({})
   await prisma.community.deleteMany({})
   // await prisma.plan.deleteMany({})
   // await prisma.file.deleteMany({})
   // await prisma.waterZone.deleteMany({})
-  // await prisma.issue.deleteMany({})
   // await prisma.holder.deleteMany({})
   // await prisma.maintenance.deleteMany({})
   // await prisma.provider.deleteMany({})
@@ -656,4 +658,151 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
   console.log('- Analysis types: complete, chlorine_ph, turbidity, hardness')
   console.log('- Date range: January-February 2024')
   console.log('- Realistic water quality parameters')
+}
+
+async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  console.log('Creating water issues...')
+
+  // Get water zones, deposits, and points for both communities
+  const anceuZones = await prisma.communityZone.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+
+  const anceuDeposits = await prisma.waterDeposit.findMany({
+    where: { communityId: anceuCommunityId }
+  })
+
+  const anceuWaterPoints = await prisma.waterPoint.findMany({
+    where: {
+      communityZoneId: { in: anceuZones.map((z) => z.id) }
+    }
+  })
+
+  const ponteCaldelasDeposits = await prisma.waterDeposit.findMany({
+    where: { communityId: ponteCaldelasCommunityId }
+  })
+
+  const issues = []
+
+  // Create issues for Anceu community
+  const anceuIssues = [
+    {
+      communityId: anceuCommunityId,
+      waterZoneId: anceuZones[0]?.id, // Anceu zone
+      title: 'Fuga de agua en punto principal',
+      description:
+        'Se detectó una fuga significativa en el punto principal de distribución. El agua se está filtrando hacia la calle principal.',
+      reporterName: 'María García',
+      status: 'open',
+      startAt: new Date('2024-01-10'),
+      endAt: null
+    },
+    {
+      communityId: anceuCommunityId,
+      waterDepositId: anceuDeposits[0]?.id, // Principal deposit
+      title: 'Presión baja en depósito principal',
+      description:
+        'La presión del agua ha disminuido considerablemente en las últimas semanas. Los vecinos se quejan de poca presión.',
+      reporterName: 'Carlos López',
+      status: 'in_progress',
+      startAt: new Date('2024-01-15'),
+      endAt: null
+    },
+    {
+      communityId: anceuCommunityId,
+      waterPointId: anceuWaterPoints[1]?.id, // Fuente de Anceu
+      title: 'Fuente tradicional obstruida',
+      description:
+        'La fuente tradicional en la plaza tiene una obstrucción que impide el flujo normal del agua.',
+      reporterName: 'Ana Martínez',
+      status: 'resolved',
+      startAt: new Date('2024-01-05'),
+      endAt: new Date('2024-01-12')
+    },
+    {
+      communityId: anceuCommunityId,
+      waterZoneId: anceuZones[1]?.id, // O Ramis zone
+      title: 'Sabor extraño en el agua',
+      description:
+        'Los residentes de O Ramis reportan un sabor metálico en el agua potable. Necesita investigación urgente.',
+      reporterName: 'Pedro Ruiz',
+      status: 'open',
+      startAt: new Date('2024-01-20'),
+      endAt: null
+    },
+    {
+      communityId: anceuCommunityId,
+      waterDepositId: anceuDeposits[1]?.id, // Reserva deposit
+      title: 'Mantenimiento programado depósito de reserva',
+      description:
+        'Mantenimiento preventivo programado para el depósito de reserva. Incluye limpieza y revisión de válvulas.',
+      reporterName: 'Técnico Municipal',
+      status: 'scheduled',
+      startAt: new Date('2024-02-15'),
+      endAt: null
+    }
+  ]
+
+  // Create issues for Ponte Caldelas community
+  const ponteCaldelasIssues = [
+    {
+      communityId: ponteCaldelasCommunityId,
+      waterDepositId: ponteCaldelasDeposits[0]?.id, // Principal deposit
+      title: 'Contaminación en depósito principal',
+      description:
+        'Se detectó posible contaminación en el depósito principal. Se requiere análisis inmediato del agua.',
+      reporterName: 'Laura Fernández',
+      status: 'urgent',
+      startAt: new Date('2024-01-18'),
+      endAt: null
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      waterDepositId: ponteCaldelasDeposits[1]?.id, // Emergencia deposit
+      title: 'Falla en sistema de emergencia',
+      description:
+        'El sistema de emergencia del depósito no está funcionando correctamente. Riesgo en caso de corte de suministro.',
+      reporterName: 'Roberto Silva',
+      status: 'in_progress',
+      startAt: new Date('2024-01-25'),
+      endAt: null
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      title: 'Corte de suministro programado',
+      description:
+        'Corte programado para mantenimiento de la red principal. Afectará a toda la comunidad por 4 horas.',
+      reporterName: 'Servicios Municipales',
+      status: 'scheduled',
+      startAt: new Date('2024-02-20'),
+      endAt: null
+    },
+    {
+      communityId: ponteCaldelasCommunityId,
+      title: 'Instalación de nuevos medidores',
+      description:
+        'Instalación de medidores digitales en la zona residencial. Proyecto de modernización de la red.',
+      reporterName: 'Carmen Vázquez',
+      status: 'planned',
+      startAt: new Date('2024-03-01'),
+      endAt: null
+    }
+  ]
+
+  // Combine all issues
+  issues.push(...anceuIssues, ...ponteCaldelasIssues)
+
+  // Create issues in database
+  await prisma.issue.createMany({
+    data: issues
+  })
+
+  console.log('Created water issues:')
+  console.log(`- Total: ${issues.length} issues`)
+  console.log(`- Anceu: ${anceuIssues.length} issues`)
+  console.log(`- Ponte Caldelas: ${ponteCaldelasIssues.length} issues`)
+  console.log('- Issue types: leaks, pressure problems, contamination, maintenance, installations')
+  console.log('- Statuses: open, in_progress, resolved, urgent, scheduled, planned')
+  console.log('- Date range: January-March 2024')
+  console.log('- Realistic water infrastructure problems and maintenance tasks')
 }

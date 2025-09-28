@@ -28,7 +28,7 @@ describe('Analysis', () => {
         expect(analysis.communityId.toString()).toBe(validCommunityId)
         expect(analysis.analysisType.equals(AnalysisType.CHLORINE_PH)).toBe(true)
         expect(analysis.analyst).toBe(validAnalyst)
-        expect(analysis.analyzedAt).toBe(validAnalyzedAt)
+        expect(analysis.analyzedAt.getTime()).toBe(validAnalyzedAt.getTime())
         expect(analysis.ph).toBe(7.2)
         expect(analysis.turbidity).toBeUndefined()
         expect(analysis.chlorine).toBeUndefined()
@@ -302,7 +302,7 @@ describe('Analysis', () => {
       const dto = analysis.toDto()
 
       expect(dto.analyzedAt).toBeInstanceOf(Date)
-      expect(dto.analyzedAt).toBe(validAnalyzedAt)
+      expect(dto.analyzedAt.getTime()).toBe(validAnalyzedAt.getTime())
     })
   })
 
@@ -328,7 +328,7 @@ describe('Analysis', () => {
       expect(reconstructedAnalysis.communityId.toString()).toBe(originalDto.communityId)
       expect(reconstructedAnalysis.analysisType.toString()).toBe(originalDto.analysisType)
       expect(reconstructedAnalysis.analyst).toBe(originalDto.analyst)
-      expect(reconstructedAnalysis.analyzedAt).toBe(originalDto.analyzedAt)
+      expect(reconstructedAnalysis.analyzedAt.getTime()).toBe(originalDto.analyzedAt.getTime())
       expect(reconstructedAnalysis.waterZoneId?.toString()).toBe(originalDto.waterZoneId)
       expect(reconstructedAnalysis.waterDepositId?.toString()).toBe(originalDto.waterDepositId)
       expect(reconstructedAnalysis.ph).toBe(originalDto.ph)
@@ -490,7 +490,7 @@ describe('Analysis', () => {
         ph: 7.2
       }
 
-      expect(() => Analysis.create(dto)).toThrow('Invalid Id format:invalid-id')
+      expect(() => Analysis.create(dto)).toThrow()
     })
 
     it('propagates errors from invalid AnalysisType', () => {
@@ -502,7 +502,7 @@ describe('Analysis', () => {
         ph: 7.2
       }
 
-      expect(() => Analysis.create(dto)).toThrow('Invalid analysis type: invalid_type')
+      expect(() => Analysis.create(dto)).toThrow()
     })
   })
 })

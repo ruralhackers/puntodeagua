@@ -1,6 +1,6 @@
 import { Id } from '@pda/common/domain'
 import { AnalysisType } from '../value-objects/analysis-type'
-import type { AnalysisDto } from './analysis.dto'
+import { type AnalysisDto, analysisSchema } from './analysis.dto'
 
 export class Analysis {
   private constructor(
@@ -18,40 +18,43 @@ export class Analysis {
   ) {}
 
   static create(dto: Omit<AnalysisDto, 'id'>) {
+    const validatedData = analysisSchema.omit({ id: true }).parse(dto)
     // if analysis type is chlorine_ph, then ph and chlorine must be provided
     // if analysis type is turbidity, then turbidity must be provided
     // if analysis type is hardness, then ph must be provided
     // if analysis type is complete, then ph, chlorine and turbidity must be provided
 
-    const analysisType = AnalysisType.fromString(dto.analysisType)
-    if (analysisType.equals(AnalysisType.CHLORINE_PH) && dto.ph === undefined) {
+    const analysisType = AnalysisType.fromString(validatedData.analysisType)
+    if (analysisType.equals(AnalysisType.CHLORINE_PH) && validatedData.ph === undefined) {
       throw new Error('Ph is required for chlorine_ph analysis')
     }
-    if (analysisType.equals(AnalysisType.TURBIDITY) && dto.turbidity === undefined) {
+    if (analysisType.equals(AnalysisType.TURBIDITY) && validatedData.turbidity === undefined) {
       throw new Error('Turbidity is required for turbidity analysis')
     }
-    if (analysisType.equals(AnalysisType.HARDNESS) && dto.ph === undefined) {
+    if (analysisType.equals(AnalysisType.HARDNESS) && validatedData.ph === undefined) {
       throw new Error('Ph is required for hardness analysis')
     }
     if (
       analysisType.equals(AnalysisType.COMPLETE) &&
-      (dto.ph === undefined || dto.chlorine === undefined || dto.turbidity === undefined)
+      (validatedData.ph === undefined ||
+        validatedData.chlorine === undefined ||
+        validatedData.turbidity === undefined)
     ) {
       throw new Error('Ph, chlorine and turbidity are required for complete analysis')
     }
 
     return new Analysis(
       Id.generateUniqueId(),
-      Id.fromString(dto.communityId),
+      Id.fromString(validatedData.communityId),
       analysisType,
-      dto.analyst,
-      dto.analyzedAt,
-      dto.waterZoneId ? Id.fromString(dto.waterZoneId) : undefined,
-      dto.waterDepositId ? Id.fromString(dto.waterDepositId) : undefined,
-      dto.ph,
-      dto.turbidity,
-      dto.chlorine,
-      dto.description
+      validatedData.analyst,
+      validatedData.analyzedAt,
+      validatedData.waterZoneId ? Id.fromString(validatedData.waterZoneId) : undefined,
+      validatedData.waterDepositId ? Id.fromString(validatedData.waterDepositId) : undefined,
+      validatedData.ph,
+      validatedData.turbidity,
+      validatedData.chlorine,
+      validatedData.description
     )
   }
 

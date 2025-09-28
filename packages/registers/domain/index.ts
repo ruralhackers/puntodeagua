@@ -1,3 +1,6 @@
 export { Analysis } from './entities/analysis'
 export type { AnalysisDto } from './entities/analysis.dto'
+export { Issue } from './entities/issue'
+export type { IssueDto } from './entities/issue.dto'
 export type { AnalysisRepository } from './repositories/analysis.repository'
+export type { IssueRepository } from './repositories/issue.repository'

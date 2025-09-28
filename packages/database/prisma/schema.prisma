@@ -83,6 +83,7 @@ model Community {
   zones         CommunityZone[]
   waterDeposits WaterDeposit[]
   analyses      Analysis[]
+  issues        Issue[]
 }
 
 model CommunityZone {
@@ -95,6 +96,7 @@ model CommunityZone {
   notes      String       @default("") @db.Text
   WaterPoint WaterPoint[]
   analyses   Analysis[]
+  issues     Issue[]
 
   @@index([communityId])
 }
@@ -109,6 +111,7 @@ model WaterDeposit {
 
   notes    String     @default("") @db.Text
   analyses Analysis[]
+  issues   Issue[]
 
   @@index([communityId])
 }
@@ -131,6 +134,7 @@ model WaterPoint {
   updatedAt DateTime @updatedAt
 
   waterMeters WaterMeter[]
+  issues      Issue[]
 
   @@index([communityZoneId])
 }
@@ -215,4 +219,33 @@ model Analysis {
   @@index([communityId])
   @@index([waterZoneId])
   @@index([waterDepositId])
+}
+
+model Issue {
+  id String @id @default(cuid())
+
+  community      Community      @relation(fields: [communityId], references: [id])
+  communityId    String         @map("community_id")
+  waterZoneId    String?        @map("water_zone_id")
+  waterZone      CommunityZone? @relation(fields: [waterZoneId], references: [id])
+  waterDepositId String?        @map("water_deposit_id")
+  waterDeposit   WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
+  waterPointId   String?        @map("water_point_id")
+  waterPoint     WaterPoint?    @relation(fields: [waterPointId], references: [id])
+
+  title        String
+  description  String?
+  reporterName String
+
+  status  String
+  startAt DateTime
+  endAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([communityId])
+  @@index([waterZoneId])
+  @@index([waterDepositId])
+  @@index([waterPointId])
 }

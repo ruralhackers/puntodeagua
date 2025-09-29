@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { ANALYSIS_TYPE_OPTIONS, type AnalysisType } from '@/constants/analysis-types'
-import { useAnalysisForm } from '@/hooks/useAnalysisForm'
+import { useAnalysisForm } from '@/hooks/use-analysis-form'
 import { api } from '@/trpc/react'
 
 interface AddAnalysisModalProps {

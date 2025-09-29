@@ -3,6 +3,7 @@ import { Id } from '@pda/common/domain'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingCreator } from '../application/water-meter-reading-creator.service'
 import { WaterMeter, WaterMeterReading } from '../domain'
+import { WaterMeterReadingDateNotAllowedError } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 
@@ -80,7 +81,7 @@ describe('WaterMeterReadingCreator', () => {
     // Act & Assert
     await expect(
       service.run({ waterMeterId: Id.generateUniqueId(), reading: '1000', date: futureDate })
-    ).rejects.toThrow('Reading date cannot be in the future')
+    ).rejects.toThrow(WaterMeterReadingDateNotAllowedError)
 
     // Verify repository call
     expect(mockWaterMeterRepository.findById).toHaveBeenCalled()

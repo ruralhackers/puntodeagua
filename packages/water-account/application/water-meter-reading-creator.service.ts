@@ -1,5 +1,10 @@
 import { Decimal, type Id } from '@pda/common/domain'
 import { WaterMeterReading } from '../domain/entities/water-meter-reading'
+import {
+  WaterMeterNotFoundError,
+  WaterMeterReadingDateNotAllowedError,
+  WaterMeterReadingNotAllowedError
+} from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
@@ -15,11 +20,11 @@ export class WaterMeterReadingCreator {
     const { waterMeterId, reading, date, notes } = params
     const waterMeter = await this.waterMeterRepository.findById(waterMeterId)
     if (!waterMeter) {
-      throw new Error('Water meter not found')
+      throw new WaterMeterNotFoundError()
     }
 
     if (date && date > new Date()) {
-      throw new Error('Reading date cannot be in the future')
+      throw new WaterMeterReadingDateNotAllowedError()
     }
 
     const lastReadings = []
@@ -36,10 +41,10 @@ export class WaterMeterReadingCreator {
     if (lastReading) {
       lastReadings.push(lastReading)
       if (newWaterReading.readingDate <= lastReading.readingDate) {
-        throw new Error('New reading date must be after the last reading date')
+        throw new WaterMeterReadingDateNotAllowedError()
       }
       if (newWaterReading.normalizedReading < lastReading.normalizedReading) {
-        throw new Error('New reading is lower than last reading')
+        throw new WaterMeterReadingNotAllowedError()
       }
     }
 

@@ -1,3 +1,4 @@
+export * from './errors/domain-errors'
 export { DomainEvent } from './events/domain-event'
 export { createAutoTableConfig } from './repositories/auto-table-config'
 export type { Deletable } from './repositories/deletable'

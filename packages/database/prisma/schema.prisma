@@ -233,9 +233,10 @@ model Incident {
   waterPointId    String?        @map("water_point_id")
   waterPoint      WaterPoint?    @relation(fields: [waterPointId], references: [id])
 
-  title        String
-  description  String?
-  reporterName String
+  title              String
+  description        String?
+  closingDescription String? @map("closing_description")
+  reporterName       String
 
   status  String
   startAt DateTime

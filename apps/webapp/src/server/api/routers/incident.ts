@@ -72,7 +72,7 @@ export const incidentsRouter = createTRPCRouter({
         updatedIncidentData: {
           status: input.status,
           endAt: input.endAt,
-          description: input.description
+          closingDescription: input.closingDescription
         }
       })
       return savedIncident.toDto()

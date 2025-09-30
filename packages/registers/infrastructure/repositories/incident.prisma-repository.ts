@@ -54,6 +54,7 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
       waterDepositId: incident.waterDepositId?.toString(),
       waterPointId: incident.waterPointId?.toString(),
       description: incident.description ?? undefined,
+      closingDescription: incident.closingDescription ?? undefined,
       status: incident.status.toString(),
       startAt: incident.startAt,
       endAt: incident.endAt ? incident.endAt : undefined,
@@ -86,7 +87,8 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
       waterDepositId: payload.waterDepositId ?? undefined,
       waterPointId: payload.waterPointId ?? undefined,
       endAt: payload.endAt ? payload.endAt : undefined,
-      description: payload.description ?? undefined
+      description: payload.description ?? undefined,
+      closingDescription: payload.closingDescription ?? undefined
     }
   }
 }

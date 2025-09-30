@@ -15,13 +15,15 @@ export const incidentSchema = z.object({
   waterDepositId: idSchema.optional(),
   waterPointId: idSchema.optional(),
   endAt: z.date().optional(),
-  description: z.string().max(2000).optional()
+  description: z.string().max(2000).optional(),
+  closingDescription: z.string().max(2000).optional()
 })
 
 export const incidentUpdateSchema = z.object({
   status: z.enum(IncidentStatusType.values() as [string, ...string[]]),
   endAt: z.date().optional(),
-  description: z.string().max(2000).optional()
+  description: z.string().max(2000).optional(),
+  closingDescription: z.string().max(2000).optional()
 })
 
 export type IncidentUpdateDto = z.infer<typeof incidentUpdateSchema>

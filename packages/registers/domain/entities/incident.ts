@@ -18,7 +18,8 @@ export class Incident {
     public readonly communityZoneId?: Id,
     public readonly waterDepositId?: Id,
     public readonly waterPointId?: Id,
-    public description?: string,
+    public readonly description?: string,
+    public closingDescription?: string,
     public endAt?: Date
   ) {}
 
@@ -46,6 +47,7 @@ export class Incident {
       validatedData.waterDepositId ? Id.fromString(validatedData.waterDepositId) : undefined,
       validatedData.waterPointId ? Id.fromString(validatedData.waterPointId) : undefined,
       validatedData.description,
+      validatedData.closingDescription,
       validatedData.endAt
     )
   }
@@ -62,6 +64,7 @@ export class Incident {
       dto.waterDepositId ? Id.fromString(dto.waterDepositId) : undefined,
       dto.waterPointId ? Id.fromString(dto.waterPointId) : undefined,
       dto.description,
+      dto.closingDescription,
       dto.endAt
     )
   }
@@ -69,7 +72,7 @@ export class Incident {
   public update(incidentData: IncidentUpdateDto): Incident {
     this.status = IncidentStatusType.fromString(incidentData.status)
     this.endAt = incidentData.endAt
-    this.description = incidentData.description
+    this.closingDescription = incidentData.closingDescription
     return this
   }
 
@@ -83,6 +86,7 @@ export class Incident {
       reporterName: this.reporterName,
       waterPointId: this.waterPointId?.toString(),
       description: this.description,
+      closingDescription: this.closingDescription,
       status: this.status.toString() as 'open' | 'closed',
       startAt: this.startAt,
       endAt: this.endAt ? this.endAt : undefined

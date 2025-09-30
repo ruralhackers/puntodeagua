@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import CloseIncidentDialog from '@/components/incident/close-incident-dialog'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ export default function IncidentDetailPage() {
   const params = useParams()
   const incidentId = params.id as string
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false)
 
   const {
     data: incident,
@@ -40,12 +42,20 @@ export default function IncidentDetailPage() {
   const handleStatusChange = (newStatus: 'open' | 'closed') => {
     if (!incident) return
 
-    setIsUpdating(true)
-    updateIncidentMutation.mutate({
-      ...incident,
-      status: newStatus,
-      endAt: newStatus === 'closed' ? new Date() : undefined
-    })
+    if (newStatus === 'closed') {
+      setIsCloseDialogOpen(true)
+    } else {
+      setIsUpdating(true)
+      updateIncidentMutation.mutate({
+        ...incident,
+        status: newStatus,
+        endAt: undefined
+      })
+    }
+  }
+
+  const handleCloseDialogSuccess = () => {
+    refetch()
   }
 
   if (isLoading) {
@@ -134,7 +144,7 @@ export default function IncidentDetailPage() {
                   className="w-full sm:w-auto"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  {isUpdating ? 'Cerrando...' : 'Cerrar Incidencia'}
+                  Cerrar Incidencia
                 </Button>
               )}
               {incident.status === 'closed' && (
@@ -159,7 +169,7 @@ export default function IncidentDetailPage() {
             {/* Description */}
             <Card>
               <CardHeader>
-                <CardTitle>Descripción</CardTitle>
+                <CardTitle>Descripción Original</CardTitle>
               </CardHeader>
               <CardContent>
                 {incident.description ? (
@@ -171,6 +181,20 @@ export default function IncidentDetailPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Closing Description */}
+            {incident.status === 'closed' && incident.closingDescription && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Descripción de Cierre</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground whitespace-pre-wrap">
+                    {incident.closingDescription}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Timeline */}
             <Card>
@@ -263,7 +287,7 @@ export default function IncidentDetailPage() {
                       size="sm"
                       variant="outline"
                     >
-                      {isUpdating ? 'Cerrando...' : 'Cerrar'}
+                      Cerrar
                     </Button>
                   )}
                 </div>
@@ -272,6 +296,16 @@ export default function IncidentDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Close Incident Dialog */}
+      {incident && (
+        <CloseIncidentDialog
+          incident={incident}
+          open={isCloseDialogOpen}
+          onOpenChange={setIsCloseDialogOpen}
+          onSuccess={handleCloseDialogSuccess}
+        />
+      )}
     </PageContainer>
   )
 }

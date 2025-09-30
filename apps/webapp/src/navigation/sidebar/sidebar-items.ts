@@ -77,8 +77,7 @@ export const sidebarItems: NavGroup[] = [
       },
       {
         title: 'Incidencias',
-        url: '/incident
-s',
+        url: '/incidents',
         icon: AlertTriangle
       }
     ]

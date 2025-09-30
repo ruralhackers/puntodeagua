@@ -48,23 +48,23 @@ export default async function Home() {
             </Card>
           </Link>
 
-          <Link href="/registers/maintenance" className="group">
-            <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:border-green-300 dark:from-green-950 dark:to-green-900 dark:border-green-800">
-              <CardContent className="flex items-center justify-center h-full p-6">
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <Wrench className="h-8 w-8 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
-                  <div>
-                    <CardTitle className="text-green-800 dark:text-green-200 text-sm font-semibold">
-                      Registrar Mantenimiento
-                    </CardTitle>
-                    <CardDescription className="text-green-600 dark:text-green-400 text-xs mt-1">
-                      Tareas y reparaciones
-                    </CardDescription>
-                  </div>
+          {/* <Link href="/registers/maintenance" className="group"> */}
+          <Card className="h-32 bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 dark:from-gray-800 dark:to-gray-900 dark:border-gray-700 opacity-60 relative">
+            <CardContent className="flex items-center justify-center h-full p-6">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <Wrench className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                <div>
+                  <CardTitle className="text-gray-500 dark:text-gray-400 text-sm font-semibold">
+                    Registrar Mantenimiento
+                  </CardTitle>
+                  <CardDescription className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                    Próximamente
+                  </CardDescription>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
+              </div>
+            </CardContent>
+          </Card>
+          {/* </Link> */}
 
           <Link href="/incident?create-incident=true" className="group">
             <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:border-orange-300 dark:from-orange-950 dark:to-orange-900 dark:border-orange-800">

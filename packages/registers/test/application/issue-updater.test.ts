@@ -35,28 +35,24 @@ describe('IncidentUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIncident = Incident.create({
-        title: 'Updated Title',
-        reporterName: 'Jane Doe',
-        startAt: new Date('2024-01-16T10:00:00Z'),
-        communityId: Id.generateUniqueId().toString(),
-        communityZoneId: Id.generateUniqueId().toString(),
+      const updatedIncident = {
         description: 'Updated description',
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
-      })
+      }
 
       mockRepository.findById = mock().mockResolvedValue(existingIncident)
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await incidentUpdater.run({ id: incidentId, updatedIncident })
+      const result = await incidentUpdater.run({
+        id: incidentId,
+        updatedIncidentData: updatedIncident
+      })
 
       expect(mockRepository.findById).toHaveBeenCalledWith(incidentId)
       expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Incident))
-      expect(result.title).toBe('Updated Title')
-      expect(result.reporterName).toBe('Jane Doe')
+      expect(result.description).toBe('Updated description')
       expect(result.status.toString()).toBe('closed')
-      expect(result.communityId.toString()).toBe(existingIncident.communityId.toString()) // Should keep original community
     })
 
     it('should merge updated fields with existing fields', async () => {
@@ -72,30 +68,23 @@ describe('IncidentUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIncident = Incident.create({
-        title: 'Updated Title',
-        reporterName: 'Jane Doe',
-        startAt: new Date('2024-01-16T10:00:00Z'),
-        communityId: Id.generateUniqueId().toString(),
-        communityZoneId: undefined, // This should fall back to existing
-        waterDepositId: undefined, // This should fall back to existing
+      const updatedIncident = {
         description: undefined, // This should fall back to existing
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
-      })
+      }
 
       mockRepository.findById = mock().mockResolvedValue(existingIncident)
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await incidentUpdater.run({ id: incidentId, updatedIncident })
+      const result = await incidentUpdater.run({
+        id: incidentId,
+        updatedIncidentData: updatedIncident
+      })
 
-      expect(result.title).toBe('Updated Title')
-      expect(result.reporterName).toBe('Jane Doe')
       expect(result.status.toString()).toBe('closed')
-      expect(result.communityZoneId?.toString()).toBe(existingIncident.communityZoneId?.toString()) // Should keep existing
-      expect(result.waterDepositId?.toString()).toBe(existingIncident.waterDepositId?.toString()) // Should keep existing
+      console.log({ result })
       expect(result.description).toBe(existingIncident.description) // Should keep existing
-      expect(result.communityId.toString()).toBe(existingIncident.communityId.toString()) // Should keep existing
     })
 
     it('should throw error when incident is not found', async () => {

@@ -18,7 +18,7 @@ export class IncidentUpdater {
     const updatedIncident = existingIncident.update({
       status: updatedIncidentData.status.toString(),
       endAt: updatedIncidentData.endAt,
-      description: updatedIncidentData.description
+      description: updatedIncidentData.description ?? existingIncident.description
     })
 
     await this.incidentRepository.save(updatedIncident)

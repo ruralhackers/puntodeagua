@@ -1,6 +1,7 @@
 # registers
 
-This package contains the domain logic and application services for managing water system registers, including issues and analysis records.
+This package contains the domain logic and application services for managing water system registers, including incident
+s and analysis records.
 
 To install dependencies:
 
@@ -24,35 +25,57 @@ The package follows a clean architecture pattern with clear separation of concer
 
 ## Services
 
-### Issue Management
+### Incident
+ Management
 
-#### IssueCreator Service
-Creates new issues in the system.
+#### Incident
+Creator Service
+Creates new incident
+s in the system.
 
 **Pattern**: Pure persistence service
-- Receives a pre-formed `Issue` object
-- Simply saves the issue to the repository
-- Returns the saved issue
+- Receives a pre-formed `Incident
+` object
+- Simply saves the incident
+ to the repository
+- Returns the saved incident
+
 
 ```typescript
-const service = RegistersFactory.issueCreatorService()
-const issue = Issue.create({...})
-const savedIssue = await service.run({ issue })
+const service = RegistersFactory.incident
+CreatorService()
+const incident
+ = Incident
+.create({...})
+const savedIncident
+ = await service.run({ incident
+ })
 ```
 
-#### IssueUpdater Service
-Updates existing issues in the system.
+#### Incident
+Updater Service
+Updates existing incident
+s in the system.
 
 **Pattern**: Hybrid update service
-- Receives an `id` and a pre-formed `Issue` object with updated values
-- Fetches the existing issue from the repository
+- Receives an `id` and a pre-formed `Incident
+` object with updated values
+- Fetches the existing incident
+ from the repository
 - Merges updated values with existing values (preserving unchanged fields)
-- Saves the merged issue and returns it
+- Saves the merged incident
+ and returns it
 
 ```typescript
-const service = RegistersFactory.issueUpdaterService()
-const updatedIssue = Issue.fromDto({...})
-const savedIssue = await service.run({ id: issueId, updatedIssue })
+const service = RegistersFactory.incident
+UpdaterService()
+const updatedIncident
+ = Incident
+.fromDto({...})
+const savedIncident
+ = await service.run({ id: incident
+Id, updatedIncident
+ })
 ```
 
 ### Analysis Management
@@ -73,22 +96,29 @@ const savedAnalysis = await service.run({ analysis })
 
 ## Domain Entities
 
-### Issue Entity
-Represents a water system issue or problem report.
+### Incident
+ Entity
+Represents a water system incident
+ or problem report.
 
 **Key Properties:**
 - `id`: Unique identifier
-- `title`: Issue title
-- `reporterName`: Name of the person reporting the issue
-- `startAt`: When the issue started
-- `endAt`: When the issue was resolved (optional)
+- `title`: Incident
+ title
+- `reporterName`: Name of the person reporting the incident
+
+- `startAt`: When the incident
+ started
+- `endAt`: When the incident
+ was resolved (optional)
 - `status`: Current status ('open' or 'closed')
 - `communityId`: Associated community
 - `waterZoneId`, `waterDepositId`, `waterPointId`: Associated water infrastructure (optional)
 - `description`: Detailed description (optional)
 
 **Business Rules:**
-- Closed issues must have an end date
+- Closed incident
+s must have an end date
 - End date cannot be before start date
 - Description has length validation
 
@@ -110,14 +140,25 @@ Represents water quality analysis results.
 
 ## Repository Interfaces
 
-### IssueRepository
+### Incident
+Repository
 Extends common repository interfaces:
-- `Savable<Issue>`: Save issues
-- `FindableAll<Issue>`: Find all issues
-- `Deletable<Issue>`: Delete issues
-- `FindableForTable<Issue>`: Find issues for table display
-- `findById(id: Id)`: Find issue by ID
-- `findByCommunityId(communityId: Id)`: Find issues by community
+- `Savable<Incident
+>`: Save incident
+s
+- `FindableAll<Incident
+>`: Find all incident
+s
+- `Deletable<Incident
+>`: Delete incident
+s
+- `FindableForTable<Incident
+>`: Find incident
+s for table display
+- `findById(id: Id)`: Find incident
+ by ID
+- `findByCommunityId(communityId: Id)`: Find incident
+s by community
 
 ### AnalysisRepository
 Extends common repository interfaces:
@@ -133,26 +174,34 @@ Provides singleton instances of services and repositories:
 
 ```typescript
 // Services
-const issueCreator = RegistersFactory.issueCreatorService()
-const issueUpdater = RegistersFactory.issueUpdaterService()
+const incident
+Creator = RegistersFactory.incident
+CreatorService()
+const incident
+Updater = RegistersFactory.incident
+UpdaterService()
 const analysisCreator = RegistersFactory.analysisCreatorService()
 
 // Repositories
-const issueRepo = RegistersFactory.issuePrismaRepository()
+const incident
+Repo = RegistersFactory.incident
+PrismaRepository()
 const analysisRepo = RegistersFactory.analysisPrismaRepository()
 ```
 
 ## Service Patterns
 
 ### Pure Persistence Pattern (Creators)
-Used by `IssueCreator` and `AnalysisCreator`:
+Used by `Incident
+Creator` and `AnalysisCreator`:
 - Receive pre-formed entity objects
 - Perform simple persistence operations
 - Minimal business logic
 - High testability
 
 ### Hybrid Update Pattern (Updaters)
-Used by `IssueUpdater`:
+Used by `Incident
+Updater`:
 - Receive entity ID and updated entity object
 - Handle fetch-and-merge logic internally
 - Preserve business rules and validation
@@ -173,12 +222,17 @@ bun test packages/registers/test/
 
 ## Usage Examples
 
-### Creating an Issue
+### Creating an Incident
+
 ```typescript
 import { RegistersFactory } from '@pda/registers'
-import { Issue } from '@pda/registers/domain/entities/issue'
+import { Incident
+ } from '@pda/registers/domain/entities/incident
+'
 
-const issue = Issue.create({
+const incident
+ = Incident
+.create({
   title: 'Water leak in main pipe',
   reporterName: 'John Doe',
   startAt: new Date(),
@@ -188,25 +242,39 @@ const issue = Issue.create({
   status: 'open'
 })
 
-const service = RegistersFactory.issueCreatorService()
-const savedIssue = await service.run({ issue })
+const service = RegistersFactory.incident
+CreatorService()
+const savedIncident
+ = await service.run({ incident
+ })
 ```
 
-### Updating an Issue
+### Updating an Incident
+
 ```typescript
 import { Id } from '@pda/common/domain'
 
-const existingIssue = await issueRepo.findById(Id.fromString('issue-123'))
-const updatedIssue = Issue.fromDto({
-  ...existingIssue.toDto(),
+const existingIncident
+ = await incident
+Repo.findById(Id.fromString('incident
+-123'))
+const updatedIncident
+ = Incident
+.fromDto({
+  ...existingIncident
+.toDto(),
   status: 'closed',
   endAt: new Date()
 })
 
-const service = RegistersFactory.issueUpdaterService()
-const savedIssue = await service.run({ 
-  id: Id.fromString('issue-123'), 
-  updatedIssue 
+const service = RegistersFactory.incident
+UpdaterService()
+const savedIncident
+ = await service.run({ 
+  id: Id.fromString('incident
+-123'), 
+  updatedIncident
+ 
 })
 ```
 

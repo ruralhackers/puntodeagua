@@ -12,19 +12,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { api } from '@/trpc/react'
 
-export default function IssueDetailPage() {
+export default function IncidentDetailPage() {
   const params = useParams()
-  const issueId = params.id as string
+  const incidentId = params.id as string
   const [isUpdating, setIsUpdating] = useState(false)
 
   const {
-    data: issue,
+    data: incident,
     isLoading,
     error,
     refetch
-  } = api.issues.getIssueById.useQuery({ id: issueId }, { enabled: !!issueId })
+  } = api.incidents.getIncidentById.useQuery({ id: incidentId }, { enabled: !!incidentId })
 
-  const updateIssueMutation = api.issues.updateIssue.useMutation({
+  const updateIncidentMutation = api.incidents.updateIncident.useMutation({
     onSuccess: () => {
       toast.success('Incidencia actualizada con éxito')
       refetch()
@@ -37,11 +37,11 @@ export default function IssueDetailPage() {
   })
 
   const handleStatusChange = (newStatus: 'open' | 'closed') => {
-    if (!issue) return
+    if (!incident) return
 
     setIsUpdating(true)
-    updateIssueMutation.mutate({
-      ...issue,
+    updateIncidentMutation.mutate({
+      ...incident,
       status: newStatus,
       endAt: newStatus === 'closed' ? new Date() : undefined
     })
@@ -57,7 +57,7 @@ export default function IssueDetailPage() {
     )
   }
 
-  if (error || !issue) {
+  if (error || !incident) {
     return (
       <PageContainer>
         <div className="text-center text-destructive">
@@ -89,9 +89,9 @@ export default function IssueDetailPage() {
   }
 
   const getLocationText = () => {
-    if (issue.waterPointId) return 'Punto de Agua'
-    if (issue.waterDepositId) return 'Depósito de Agua'
-    if (issue.waterZoneId) return 'Zona de Agua'
+    if (incident.waterPointId) return 'Punto de Agua'
+    if (incident.waterDepositId) return 'Depósito de Agua'
+    if (incident.waterZoneId) return 'Zona de Agua'
     return 'Comunidad'
   }
 
@@ -102,7 +102,7 @@ export default function IssueDetailPage() {
         <div className="space-y-4">
           {/* Back Button */}
           <div>
-            <Link href="/issue">
+            <Link href="/incident">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Volver a Incidencias
@@ -113,18 +113,18 @@ export default function IssueDetailPage() {
           {/* Title and Action Buttons */}
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{issue.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{incident.title}</h1>
               <div className="flex items-center space-x-2 mt-2">
-                <Badge variant={getStatusVariant(issue.status)}>{issue.status}</Badge>
+                <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
                 <span className="text-sm text-muted-foreground">
-                  Reportado por {issue.reporterName}
+                  Reportado por {incident.reporterName}
                 </span>
               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              {issue.status === 'open' && (
+              {incident.status === 'open' && (
                 <Button
                   onClick={() => handleStatusChange('closed')}
                   disabled={isUpdating}
@@ -136,7 +136,7 @@ export default function IssueDetailPage() {
                   {isUpdating ? 'Cerrando...' : 'Cerrar Incidencia'}
                 </Button>
               )}
-              {issue.status === 'closed' && (
+              {incident.status === 'closed' && (
                 <Button
                   onClick={() => handleStatusChange('open')}
                   disabled={isUpdating}
@@ -161,8 +161,10 @@ export default function IssueDetailPage() {
                 <CardTitle>Descripción</CardTitle>
               </CardHeader>
               <CardContent>
-                {issue.description ? (
-                  <p className="text-muted-foreground whitespace-pre-wrap">{issue.description}</p>
+                {incident.description ? (
+                  <p className="text-muted-foreground whitespace-pre-wrap">
+                    {incident.description}
+                  </p>
                 ) : (
                   <p className="text-muted-foreground italic">No se proporcionó descripción</p>
                 )}
@@ -179,18 +181,20 @@ export default function IssueDetailPage() {
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <div>
                     <p className="font-medium">Incidencia Creada</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(issue.startAt)}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(incident.startAt)}</p>
                   </div>
                 </div>
 
-                {issue.endAt && (
+                {incident.endAt && (
                   <>
                     <Separator />
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <div>
                         <p className="font-medium">Incidencia Cerrada</p>
-                        <p className="text-sm text-muted-foreground">{formatDate(issue.endAt)}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(incident.endAt)}
+                        </p>
                       </div>
                     </div>
                   </>
@@ -201,7 +205,7 @@ export default function IssueDetailPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Issue Details */}
+            {/* Incident Details */}
             <Card>
               <CardHeader>
                 <CardTitle>Detalles de la Incidencia</CardTitle>
@@ -211,7 +215,7 @@ export default function IssueDetailPage() {
                   <User className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Reportero</p>
-                    <p className="text-sm text-muted-foreground">{issue.reporterName}</p>
+                    <p className="text-sm text-muted-foreground">{incident.reporterName}</p>
                   </div>
                 </div>
 
@@ -219,16 +223,16 @@ export default function IssueDetailPage() {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm font-medium">Fecha de Inicio</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(issue.startAt)}</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(incident.startAt)}</p>
                   </div>
                 </div>
 
-                {issue.endAt && (
+                {incident.endAt && (
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Fecha de Fin</p>
-                      <p className="text-sm text-muted-foreground">{formatDate(issue.endAt)}</p>
+                      <p className="text-sm text-muted-foreground">{formatDate(incident.endAt)}</p>
                     </div>
                   </div>
                 )}
@@ -250,8 +254,8 @@ export default function IssueDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <Badge variant={getStatusVariant(issue.status)}>{issue.status}</Badge>
-                  {issue.status === 'open' && (
+                  <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
+                  {incident.status === 'open' && (
                     <Button
                       onClick={() => handleStatusChange('closed')}
                       disabled={isUpdating}

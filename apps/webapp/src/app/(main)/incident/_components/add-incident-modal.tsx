@@ -25,13 +25,13 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/trpc/react'
 
-interface AddIssueModalProps {
+interface AddIncidentModalProps {
   isOpen: boolean
   onClose: () => void
   communityId: string
 }
 
-export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssueModalProps) {
+export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIncidentModalProps) {
   const [formData, setFormData] = useState({
     title: '',
     reporterName: '',
@@ -54,9 +54,9 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
       { enabled: !!communityId && isOpen }
     )
 
-  const createIssueMutation = api.issues.addIssue.useMutation({
+  const createIncidentMutation = api.incidents.addIncident.useMutation({
     onSuccess: async () => {
-      await utils.issues.getIssuesByCommunityId.invalidate({ id: communityId })
+      await utils.incidents.getIncidentsByCommunityId.invalidate({ id: communityId })
       handleClose()
       toast.success('Incidencia creada con éxito')
     },
@@ -85,7 +85,7 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
       return
     }
 
-    createIssueMutation.mutate({
+    createIncidentMutation.mutate({
       title: formData.title,
       reporterName: formData.reporterName,
       description: formData.description || undefined,
@@ -262,7 +262,7 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
             type="button"
             variant="outline"
             onClick={handleClose}
-            disabled={createIssueMutation.isPending}
+            disabled={createIncidentMutation.isPending}
             className="flex-1"
           >
             Cancelar
@@ -270,10 +270,10 @@ export default function AddIssueModal({ isOpen, onClose, communityId }: AddIssue
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={createIssueMutation.isPending || !formData.title || !formData.reporterName}
+            disabled={createIncidentMutation.isPending || !formData.title || !formData.reporterName}
             className="flex-1 bg-red-600 hover:bg-red-700"
           >
-            {createIssueMutation.isPending ? (
+            {createIncidentMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creando...

@@ -23,7 +23,7 @@ puntodeagua/
 │   ├── user/           # @pda/user - User management bounded context
 │   ├── community/      # @pda/community - Community management
 │   ├── water-account/  # @pda/water-account - Water infrastructure management
-│   ├── registers/      # @pda/registers - Issue and analysis management
+│   ├── registers/      # @pda/registers - Incident and analysis management
 │   └── database/       # @pda/database - Database infrastructure
 │       └── <bounded-context>/
 │           ├── domain/
@@ -48,7 +48,7 @@ Examples:
 - `@pda/user` - User management bounded context
 - `@pda/community` - Community management bounded context
 - `@pda/water-account` - Water infrastructure and monitoring
-- `@pda/registers` - Issue tracking and water analysis management
+- `@pda/registers` - Incident tracking and water analysis management
 
 ## 🚀 Quick Start
 
@@ -104,7 +104,7 @@ bun run admin
 - **User Roles**: Super Admin, Community Admin, and Manager roles with granular permissions
 - **Water Infrastructure**: Management of water points, zones, and meter readings
 - **Consumption Monitoring**: Track water usage with configurable limits per community
-- **Issue Tracking**: Report and manage water infrastructure issues
+- **Incident Tracking**: Report and manage water infrastructure incidents
 - **Provider Management**: Handle maintenance providers and services
 
 ### User Roles
@@ -168,8 +168,8 @@ Water infrastructure management including:
 - Provider management
 
 #### Registers (`@pda/registers`)
-Issue tracking and water analysis management including:
-- Issue reporting and resolution tracking
+Incident tracking and water analysis management including:
+- Incident reporting and resolution tracking
 - Water quality analysis and monitoring
 - Service pattern implementations (Creator/Updater services)
 

@@ -9,34 +9,34 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
-import AddIssueModal from './_components/add-issue-modal'
-import IssueCard from './_components/issue-card'
+import AddIncidentModal from './_components/add-incident-modal'
+import IncidentCard from './_components/incident-card'
 
-export default function IssuesPage() {
+export default function IncidentsPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
   const router = useRouter()
   const searchParams = useSearchParams()
 
   // Check if modal should be opened by default based on URL parameter
-  const shouldOpenModal = searchParams.get('create-issue') === 'true'
-  const [isAddIssueModalOpen, setIsAddIssueModalOpen] = useState(shouldOpenModal)
+  const shouldOpenModal = searchParams.get('create-incident') === 'true'
+  const [isAddIncidentModalOpen, setIsAddIncidentModalOpen] = useState(shouldOpenModal)
 
   const {
-    data: issues,
+    data: incidents,
     isLoading,
     error
-  } = api.issues.getIssuesByCommunityId.useQuery(
+  } = api.incidents.getIncidentsByCommunityId.useQuery(
     { id: communityId || '' },
     { enabled: !!communityId }
   )
 
   // Function to handle modal close and clean URL
   const handleModalClose = () => {
-    setIsAddIssueModalOpen(false)
+    setIsAddIncidentModalOpen(false)
     // Clean the URL parameter when modal is closed
-    if (searchParams.get('create-issue') === 'true') {
-      router.replace('/issue')
+    if (searchParams.get('create-incident') === 'true') {
+      router.replace('/incident')
     }
   }
 
@@ -70,8 +70,8 @@ export default function IssuesPage() {
     )
   }
 
-  const openIssues = issues?.filter((issue) => issue.status === 'open') || []
-  const closedIssues = issues?.filter((issue) => issue.status === 'closed') || []
+  const openIncidents = incidents?.filter((incident) => incident.status === 'open') || []
+  const closedIncidents = incidents?.filter((incident) => incident.status === 'closed') || []
 
   return (
     <PageContainer>
@@ -84,7 +84,7 @@ export default function IssuesPage() {
               Gestiona y rastrea las incidencias en la infraestructura de agua de tu comunidad
             </p>
           </div>
-          <Button onClick={() => setIsAddIssueModalOpen(true)} className="w-full sm:w-auto">
+          <Button onClick={() => setIsAddIncidentModalOpen(true)} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Nueva Incidencia
           </Button>
@@ -98,7 +98,7 @@ export default function IssuesPage() {
               <AlertTriangle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{issues?.length || 0}</div>
+              <div className="text-2xl font-bold">{incidents?.length || 0}</div>
             </CardContent>
           </Card>
 
@@ -108,7 +108,7 @@ export default function IssuesPage() {
               <Badge variant="destructive" className="h-4 w-4 rounded-full" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-destructive">{openIssues.length}</div>
+              <div className="text-2xl font-bold text-destructive">{openIncidents.length}</div>
             </CardContent>
           </Card>
 
@@ -118,37 +118,39 @@ export default function IssuesPage() {
               <Badge variant="secondary" className="h-4 w-4 rounded-full" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-muted-foreground">{closedIssues.length}</div>
+              <div className="text-2xl font-bold text-muted-foreground">
+                {closedIncidents.length}
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Open Issues */}
-        {openIssues.length > 0 && (
+        {/* Open Incidents */}
+        {openIncidents.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Incidencias Abiertas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {openIssues.map((issue) => (
-                <IssueCard key={issue.id} issue={issue} />
+              {openIncidents.map((incident) => (
+                <IncidentCard key={incident.id} incident={incident} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Closed Issues */}
-        {closedIssues.length > 0 && (
+        {/* Closed Incidents */}
+        {closedIncidents.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Incidencias Cerradas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {closedIssues.map((issue) => (
-                <IssueCard key={issue.id} issue={issue} />
+              {closedIncidents.map((incident) => (
+                <IncidentCard key={incident.id} incident={incident} />
               ))}
             </div>
           </div>
         )}
 
         {/* Empty State */}
-        {issues?.length === 0 && (
+        {incidents?.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
@@ -158,7 +160,7 @@ export default function IssuesPage() {
               <p className="text-muted-foreground text-center mb-4">
                 Aún no se han reportado incidencias en tu comunidad.
               </p>
-              <Button onClick={() => setIsAddIssueModalOpen(true)}>
+              <Button onClick={() => setIsAddIncidentModalOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Reportar Primera Incidencia de tu comunidad
               </Button>
@@ -167,9 +169,9 @@ export default function IssuesPage() {
         )}
       </div>
 
-      {/* Add Issue Modal */}
-      <AddIssueModal
-        isOpen={isAddIssueModalOpen}
+      {/* Add Incident Modal */}
+      <AddIncidentModal
+        isOpen={isAddIncidentModalOpen}
         onClose={handleModalClose}
         communityId={communityId}
       />

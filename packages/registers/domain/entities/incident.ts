@@ -1,15 +1,15 @@
 import { Id } from '@pda/common/domain'
-import { IssueStatusType } from '../value-objects/issue-status-type'
-import type { IssueDto } from './issue.dto'
-import { issueSchema } from './issue.dto'
+import { IncidentStatusType } from '../value-objects/incident-status-type'
+import type { IncidentDto } from './incident.dto'
+import { incidentSchema } from './incident.dto'
 
-export class Issue {
+export class Incident {
   private constructor(
     public readonly id: Id,
     public readonly title: string,
     public readonly reporterName: string,
     public readonly startAt: Date,
-    public readonly status: IssueStatusType,
+    public readonly status: IncidentStatusType,
     public readonly communityId: Id,
     public readonly waterZoneId?: Id,
     public readonly waterDepositId?: Id,
@@ -18,9 +18,9 @@ export class Issue {
     public readonly endAt?: Date
   ) {}
 
-  static create(issueData: Omit<IssueDto, 'id'>) {
+  static create(incidentData: Omit<IncidentDto, 'id'>) {
     // Validate using Zod schema (includes description length validation)
-    const validatedData = issueSchema.omit({ id: true }).parse(issueData)
+    const validatedData = incidentSchema.omit({ id: true }).parse(incidentData)
 
     // Add business logic validation
     if (validatedData.endAt && validatedData.endAt < validatedData.startAt) {
@@ -28,15 +28,15 @@ export class Issue {
     }
 
     if (validatedData.status === 'closed' && !validatedData.endAt) {
-      throw new Error('Closed issues must have an end date')
+      throw new Error('Closed incidents must have an end date')
     }
 
-    return new Issue(
+    return new Incident(
       Id.generateUniqueId(),
       validatedData.title,
       validatedData.reporterName,
       validatedData.startAt,
-      IssueStatusType.fromString(validatedData.status),
+      IncidentStatusType.fromString(validatedData.status),
       Id.fromString(validatedData.communityId),
       validatedData.waterZoneId ? Id.fromString(validatedData.waterZoneId) : undefined,
       validatedData.waterDepositId ? Id.fromString(validatedData.waterDepositId) : undefined,
@@ -46,13 +46,13 @@ export class Issue {
     )
   }
 
-  static fromDto(dto: IssueDto): Issue {
-    return new Issue(
+  static fromDto(dto: IncidentDto): Incident {
+    return new Incident(
       Id.fromString(dto.id),
       dto.title,
       dto.reporterName,
       dto.startAt,
-      IssueStatusType.fromString(dto.status),
+      IncidentStatusType.fromString(dto.status),
       Id.fromString(dto.communityId),
       dto.waterZoneId ? Id.fromString(dto.waterZoneId) : undefined,
       dto.waterDepositId ? Id.fromString(dto.waterDepositId) : undefined,
@@ -62,7 +62,7 @@ export class Issue {
     )
   }
 
-  toDto(): IssueDto {
+  toDto(): IncidentDto {
     return {
       id: this.id.toString(),
       waterZoneId: this.waterZoneId?.toString(),

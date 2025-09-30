@@ -1,8 +1,8 @@
 import type { TableConfig } from '@pda/common/domain'
-import type { Issue } from '../../domain/entities/issue'
+import type { Incident } from '../../domain/entities/incident'
 
-export const issueTableConfig: TableConfig<Issue> = {
-  model: 'issue',
+export const incidentTableConfig: TableConfig<Incident> = {
+  model: 'incident',
   columns: [
     {
       key: 'title',

@@ -33,8 +33,8 @@ async function main() {
   // Create analyses for both communities
   await seedAnalyses(anceuCommunityId, ponteCaldelasCommunityId)
 
-  // Create issues for both communities
-  await seedIssues(anceuCommunityId, ponteCaldelasCommunityId)
+  // Create incidents for both communities
+  await seedIncidents(anceuCommunityId, ponteCaldelasCommunityId)
   // await seedHolders()
   // await seedWaterMeterReadings()
   // await seedMaintenances(anceuCommunityId, ponteCaldelasCommunityId)
@@ -58,7 +58,7 @@ async function deleteAll() {
   await prisma.waterPoint.deleteMany({})
   await prisma.waterDeposit.deleteMany({})
   await prisma.analysis.deleteMany({}) // Delete analyses before communities
-  await prisma.issue.deleteMany({}) // Delete issues before communities
+  await prisma.incident.deleteMany({}) // Delete incidents before communities
   await prisma.communityZone.deleteMany({})
   await prisma.community.deleteMany({})
   // await prisma.plan.deleteMany({})
@@ -660,8 +660,8 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
   console.log('- Realistic water quality parameters')
 }
 
-async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
-  console.log('Creating water issues...')
+async function seedIncidents(anceuCommunityId: string, ponteCaldelasCommunityId: string) {
+  console.log('Creating water incidents...')
 
   // Get water zones, deposits, and points for both communities
   const anceuZones = await prisma.communityZone.findMany({
@@ -682,10 +682,10 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
     where: { communityId: ponteCaldelasCommunityId }
   })
 
-  const issues = []
+  const incidents = []
 
-  // Create issues for Anceu community
-  const anceuIssues = [
+  // Create incidents for Anceu community
+  const anceuIncidents = [
     {
       communityId: anceuCommunityId,
       waterZoneId: anceuZones[0]?.id, // Anceu zone
@@ -743,8 +743,8 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
     }
   ]
 
-  // Create issues for Ponte Caldelas community
-  const ponteCaldelasIssues = [
+  // Create incidents for Ponte Caldelas community
+  const ponteCaldelasIncidents = [
     {
       communityId: ponteCaldelasCommunityId,
       waterDepositId: ponteCaldelasDeposits[0]?.id, // Principal deposit
@@ -789,19 +789,21 @@ async function seedIssues(anceuCommunityId: string, ponteCaldelasCommunityId: st
     }
   ]
 
-  // Combine all issues
-  issues.push(...anceuIssues, ...ponteCaldelasIssues)
+  // Combine all incidents
+  incidents.push(...anceuIncidents, ...ponteCaldelasIncidents)
 
-  // Create issues in database
-  await prisma.issue.createMany({
-    data: issues
+  // Create incidents in database
+  await prisma.incident.createMany({
+    data: incidents
   })
 
-  console.log('Created water issues:')
-  console.log(`- Total: ${issues.length} issues`)
-  console.log(`- Anceu: ${anceuIssues.length} issues`)
-  console.log(`- Ponte Caldelas: ${ponteCaldelasIssues.length} issues`)
-  console.log('- Issue types: leaks, pressure problems, contamination, maintenance, installations')
+  console.log('Created water incidents:')
+  console.log(`- Total: ${incidents.length} incidents`)
+  console.log(`- Anceu: ${anceuIncidents.length} incidents`)
+  console.log(`- Ponte Caldelas: ${ponteCaldelasIncidents.length} incidents`)
+  console.log(
+    '- Incident types: leaks, pressure problems, contamination, maintenance, installations'
+  )
   console.log('- Statuses: open, in_progress, resolved, urgent, scheduled, planned')
   console.log('- Date range: January-March 2024')
   console.log('- Realistic water infrastructure problems and maintenance tasks')

@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import { IssueUpdater } from '../../application/issue-updater.service'
-import { Issue } from '../../domain/entities/issue'
-import type { IssueRepository } from '../../domain/repositories/issue.repository'
+import { IncidentUpdater } from '../../application/incident-updater.service'
+import { Incident } from '../../domain/entities/incident'
+import type { IncidentRepository } from '../../domain/repositories/incident.repository'
 
-describe('IssueUpdater Service', () => {
-  let mockRepository: IssueRepository
-  let issueUpdater: IssueUpdater
+describe('IncidentUpdater Service', () => {
+  let mockRepository: IncidentRepository
+  let incidentUpdater: IncidentUpdater
 
   beforeEach(() => {
     mockRepository = {
@@ -16,15 +16,15 @@ describe('IssueUpdater Service', () => {
       findByCommunityId: mock(),
       delete: mock(),
       findForTable: mock()
-    } as unknown as IssueRepository
+    } as unknown as IncidentRepository
 
-    issueUpdater = new IssueUpdater(mockRepository)
+    incidentUpdater = new IncidentUpdater(mockRepository)
   })
 
   describe('run', () => {
-    it('should update an existing issue', async () => {
-      const issueId = Id.generateUniqueId()
-      const existingIssue = Issue.create({
+    it('should update an existing incident', async () => {
+      const incidentId = Id.generateUniqueId()
+      const existingIncident = Incident.create({
         title: 'Original Title',
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
@@ -34,7 +34,7 @@ describe('IssueUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIssue = Issue.create({
+      const updatedIncident = Incident.create({
         title: 'Updated Title',
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
@@ -45,22 +45,22 @@ describe('IssueUpdater Service', () => {
         endAt: new Date('2024-01-16T12:00:00Z')
       })
 
-      mockRepository.findById = mock().mockResolvedValue(existingIssue)
+      mockRepository.findById = mock().mockResolvedValue(existingIncident)
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueUpdater.run({ id: issueId, updatedIssue })
+      const result = await incidentUpdater.run({ id: incidentId, updatedIncident })
 
-      expect(mockRepository.findById).toHaveBeenCalledWith(issueId)
-      expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Issue))
+      expect(mockRepository.findById).toHaveBeenCalledWith(incidentId)
+      expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Incident))
       expect(result.title).toBe('Updated Title')
       expect(result.reporterName).toBe('Jane Doe')
       expect(result.status.toString()).toBe('closed')
-      expect(result.communityId.toString()).toBe(existingIssue.communityId.toString()) // Should keep original community
+      expect(result.communityId.toString()).toBe(existingIncident.communityId.toString()) // Should keep original community
     })
 
     it('should merge updated fields with existing fields', async () => {
-      const issueId = Id.generateUniqueId()
-      const existingIssue = Issue.create({
+      const incidentId = Id.generateUniqueId()
+      const existingIncident = Incident.create({
         title: 'Original Title',
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
@@ -71,7 +71,7 @@ describe('IssueUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIssue = Issue.create({
+      const updatedIncident = Incident.create({
         title: 'Updated Title',
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
@@ -83,23 +83,23 @@ describe('IssueUpdater Service', () => {
         endAt: new Date('2024-01-16T12:00:00Z')
       })
 
-      mockRepository.findById = mock().mockResolvedValue(existingIssue)
+      mockRepository.findById = mock().mockResolvedValue(existingIncident)
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueUpdater.run({ id: issueId, updatedIssue })
+      const result = await incidentUpdater.run({ id: incidentId, updatedIncident })
 
       expect(result.title).toBe('Updated Title')
       expect(result.reporterName).toBe('Jane Doe')
       expect(result.status.toString()).toBe('closed')
-      expect(result.waterZoneId?.toString()).toBe(existingIssue.waterZoneId?.toString()) // Should keep existing
-      expect(result.waterDepositId?.toString()).toBe(existingIssue.waterDepositId?.toString()) // Should keep existing
-      expect(result.description).toBe(existingIssue.description) // Should keep existing
-      expect(result.communityId.toString()).toBe(existingIssue.communityId.toString()) // Should keep existing
+      expect(result.waterZoneId?.toString()).toBe(existingIncident.waterZoneId?.toString()) // Should keep existing
+      expect(result.waterDepositId?.toString()).toBe(existingIncident.waterDepositId?.toString()) // Should keep existing
+      expect(result.description).toBe(existingIncident.description) // Should keep existing
+      expect(result.communityId.toString()).toBe(existingIncident.communityId.toString()) // Should keep existing
     })
 
-    it('should throw error when issue is not found', async () => {
-      const issueId = Id.generateUniqueId()
-      const updatedIssue = Issue.create({
+    it('should throw error when incident is not found', async () => {
+      const incidentId = Id.generateUniqueId()
+      const updatedIncident = Incident.create({
         title: 'Updated Title',
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
@@ -110,16 +110,16 @@ describe('IssueUpdater Service', () => {
 
       mockRepository.findById = mock().mockResolvedValue(undefined)
 
-      await expect(issueUpdater.run({ id: issueId, updatedIssue })).rejects.toThrow(
-        `Issue with id ${issueId.toString()} not found`
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
+        `Incident with id ${incidentId.toString()} not found`
       )
 
       expect(mockRepository.save).not.toHaveBeenCalled()
     })
 
     it('should handle repository errors during save', async () => {
-      const issueId = Id.generateUniqueId()
-      const existingIssue = Issue.create({
+      const incidentId = Id.generateUniqueId()
+      const existingIncident = Incident.create({
         title: 'Original Title',
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
@@ -127,7 +127,7 @@ describe('IssueUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIssue = Issue.create({
+      const updatedIncident = Incident.create({
         title: 'Updated Title',
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
@@ -136,18 +136,18 @@ describe('IssueUpdater Service', () => {
         endAt: new Date('2024-01-16T12:00:00Z')
       })
 
-      mockRepository.findById = mock().mockResolvedValue(existingIssue)
+      mockRepository.findById = mock().mockResolvedValue(existingIncident)
       const error = new Error('Database connection failed')
       mockRepository.save = mock().mockRejectedValue(error)
 
-      await expect(issueUpdater.run({ id: issueId, updatedIssue })).rejects.toThrow(
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
         'Database connection failed'
       )
     })
 
     it('should handle repository errors during find', async () => {
-      const issueId = Id.generateUniqueId()
-      const updatedIssue = Issue.create({
+      const incidentId = Id.generateUniqueId()
+      const updatedIncident = Incident.create({
         title: 'Updated Title',
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
@@ -159,7 +159,7 @@ describe('IssueUpdater Service', () => {
       const error = new Error('Database connection failed')
       mockRepository.findById = mock().mockRejectedValue(error)
 
-      await expect(issueUpdater.run({ id: issueId, updatedIssue })).rejects.toThrow(
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
         'Database connection failed'
       )
 

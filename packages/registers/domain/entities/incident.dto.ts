@@ -1,16 +1,16 @@
 import { idSchema } from '@pda/common/domain'
 import { z } from 'zod'
-import { IssueStatusType } from '../value-objects/issue-status-type'
+import { IncidentStatusType } from '../value-objects/incident-status-type'
 
-export type IssueDto = z.infer<typeof issueSchema>
+export type IncidentDto = z.infer<typeof incidentSchema>
 
-export const issueSchema = z.object({
+export const incidentSchema = z.object({
   id: idSchema,
   title: z.string(),
   reporterName: z.string(),
   startAt: z.date(),
   communityId: idSchema,
-  status: z.enum(IssueStatusType.values() as [string, ...string[]]),
+  status: z.enum(IncidentStatusType.values() as [string, ...string[]]),
   waterZoneId: idSchema.optional(),
   waterDepositId: idSchema.optional(),
   waterPointId: idSchema.optional(),

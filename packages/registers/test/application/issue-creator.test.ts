@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import { IssueCreator } from '../../application/issue-creator.service'
-import { Issue } from '../../domain/entities/issue'
-import type { IssueRepository } from '../../domain/repositories/issue.repository'
+import { IncidentCreator } from '../../application/incident-creator.service'
+import { Incident } from '../../domain/entities/incident'
+import type { IncidentRepository } from '../../domain/repositories/incident.repository'
 
-describe('IssueCreator Service', () => {
-  let mockRepository: IssueRepository
-  let issueCreator: IssueCreator
+describe('IncidentCreator Service', () => {
+  let mockRepository: IncidentRepository
+  let incidentCreator: IncidentCreator
 
   beforeEach(() => {
     mockRepository = {
@@ -16,14 +16,14 @@ describe('IssueCreator Service', () => {
       findByCommunityId: mock(),
       delete: mock(),
       findForTable: mock()
-    } as unknown as IssueRepository
+    } as unknown as IncidentRepository
 
-    issueCreator = new IssueCreator(mockRepository)
+    incidentCreator = new IncidentCreator(mockRepository)
   })
 
   describe('run', () => {
-    it('should save an issue', async () => {
-      const issue = Issue.create({
+    it('should save an incident', async () => {
+      const incident = Incident.create({
         title: 'Water leak in main pipe',
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
@@ -35,19 +35,19 @@ describe('IssueCreator Service', () => {
 
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueCreator.run({ issue })
+      const result = await incidentCreator.run({ incident })
 
-      expect(mockRepository.save).toHaveBeenCalledWith(issue)
-      expect(result).toBe(issue)
+      expect(mockRepository.save).toHaveBeenCalledWith(incident)
+      expect(result).toBe(incident)
       expect(result.title).toBe('Water leak in main pipe')
       expect(result.reporterName).toBe('John Doe')
       expect(result.status.toString()).toBe('open')
       expect(result.id).toBeDefined()
     })
 
-    it('should save an issue with minimal required fields', async () => {
-      const issue = Issue.create({
-        title: 'Test Issue',
+    it('should save an incident with minimal required fields', async () => {
+      const incident = Incident.create({
+        title: 'Test Incident',
         reporterName: 'Jane Doe',
         startAt: new Date(),
         communityId: Id.generateUniqueId().toString(),
@@ -56,11 +56,11 @@ describe('IssueCreator Service', () => {
 
       mockRepository.save = mock().mockResolvedValue(undefined)
 
-      const result = await issueCreator.run({ issue })
+      const result = await incidentCreator.run({ incident })
 
-      expect(mockRepository.save).toHaveBeenCalledWith(issue)
-      expect(result).toBe(issue)
-      expect(result.title).toBe('Test Issue')
+      expect(mockRepository.save).toHaveBeenCalledWith(incident)
+      expect(result).toBe(incident)
+      expect(result.title).toBe('Test Incident')
       expect(result.reporterName).toBe('Jane Doe')
       expect(result.waterZoneId).toBeUndefined()
       expect(result.waterDepositId).toBeUndefined()
@@ -69,8 +69,8 @@ describe('IssueCreator Service', () => {
     })
 
     it('should handle repository errors', async () => {
-      const issue = Issue.create({
-        title: 'Test Issue',
+      const incident = Incident.create({
+        title: 'Test Incident',
         reporterName: 'Jane Doe',
         startAt: new Date(),
         communityId: Id.generateUniqueId().toString(),
@@ -80,7 +80,7 @@ describe('IssueCreator Service', () => {
       const error = new Error('Database connection failed')
       mockRepository.save = mock().mockRejectedValue(error)
 
-      await expect(issueCreator.run({ issue })).rejects.toThrow('Database connection failed')
+      await expect(incidentCreator.run({ incident })).rejects.toThrow('Database connection failed')
     })
   })
 })

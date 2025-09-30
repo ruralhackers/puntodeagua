@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import { IncidentUpdater } from '../../application/incident-updater.service'
 import { Incident } from '../../domain/entities/incident'
+import type { IncidentUpdateDto } from '../../domain/entities/incident.dto'
 import { IncidentNotFoundError } from '../../domain/errors/incident-errors'
 import type { IncidentRepository } from '../../domain/repositories/incident.repository'
 
@@ -35,8 +36,8 @@ describe('IncidentUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIncident = {
-        description: 'Updated description',
+      const updatedIncident: IncidentUpdateDto = {
+        closingDescription: 'Updated description',
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
       }
@@ -51,7 +52,7 @@ describe('IncidentUpdater Service', () => {
 
       expect(mockRepository.findById).toHaveBeenCalledWith(incidentId)
       expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Incident))
-      expect(result.description).toBe('Updated description')
+      expect(result.closingDescription).toBe('Updated description')
       expect(result.status.toString()).toBe('closed')
     })
 
@@ -68,8 +69,8 @@ describe('IncidentUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIncident = {
-        description: undefined, // This should fall back to existing
+      const updatedIncident: IncidentUpdateDto = {
+        closingDescription: undefined, // This should fall back to existing
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
       }
@@ -83,8 +84,7 @@ describe('IncidentUpdater Service', () => {
       })
 
       expect(result.status.toString()).toBe('closed')
-      console.log({ result })
-      expect(result.description).toBe(existingIncident.description) // Should keep existing
+      expect(result.closingDescription).toBeUndefined()
     })
 
     it('should throw error when incident is not found', async () => {
@@ -117,39 +117,33 @@ describe('IncidentUpdater Service', () => {
         status: 'open'
       })
 
-      const updatedIncident = Incident.create({
-        title: 'Updated Title',
-        reporterName: 'Jane Doe',
-        startAt: new Date('2024-01-16T10:00:00Z'),
-        communityId: Id.generateUniqueId().toString(),
+      const updatedIncident: IncidentUpdateDto = {
         status: 'closed',
-        endAt: new Date('2024-01-16T12:00:00Z')
-      })
+        endAt: new Date('2024-01-16T12:00:00Z'),
+        closingDescription: undefined
+      }
 
       mockRepository.findById = mock().mockResolvedValue(existingIncident)
       const error = new Error('Database connection failed')
       mockRepository.save = mock().mockRejectedValue(error)
 
-      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
-        'Database connection failed'
-      )
+      await expect(
+        incidentUpdater.run({ id: incidentId, updatedIncidentData: updatedIncident })
+      ).rejects.toThrow('Database connection failed')
     })
 
     it('should handle repository errors during find', async () => {
       const incidentId = Id.generateUniqueId()
-      const updatedIncident = Incident.create({
-        title: 'Updated Title',
-        reporterName: 'Jane Doe',
-        startAt: new Date('2024-01-16T10:00:00Z'),
-        communityId: Id.generateUniqueId().toString(),
+      const updatedIncidentData = {
         status: 'closed',
-        endAt: new Date('2024-01-16T12:00:00Z')
-      })
+        endAt: new Date('2024-01-16T12:00:00Z'),
+        closingDescription: undefined
+      }
 
       const error = new Error('Database connection failed')
       mockRepository.findById = mock().mockRejectedValue(error)
 
-      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncidentData })).rejects.toThrow(
         'Database connection failed'
       )
 

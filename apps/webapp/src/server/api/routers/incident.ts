@@ -67,27 +67,13 @@ export const incidentsRouter = createTRPCRouter({
     try {
       const service = RegistersFactory.incidentUpdaterService()
 
-      // we receive id and fields to update
-      // then, so service does checks, finds the incident, and updates the fields
-      // we create a incidentUpdateSchema that is the same as incidentSchema, but with the fields to update
-
-      const updatedIncident = Incident.fromDto({
-        id: input.id,
-        title: input.title,
-        reporterName: input.reporterName,
-        startAt: input.startAt,
-        communityId: input.communityId,
-        communityZoneId: input.communityZoneId,
-        waterDepositId: input.waterDepositId,
-        waterPointId: input.waterPointId,
-        description: input.description,
-        status: input.status,
-        endAt: input.endAt
-      })
-
       const savedIncident = await service.run({
         id: Id.fromString(input.id),
-        updatedIncident
+        updatedIncidentData: {
+          status: input.status,
+          endAt: input.endAt,
+          description: input.description
+        }
       })
       return savedIncident.toDto()
     } catch (error) {

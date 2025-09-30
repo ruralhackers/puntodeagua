@@ -4,7 +4,7 @@ import {
   IncidentEndDateBeforeStartDateError
 } from '../errors/incident-errors'
 import { IncidentStatusType } from '../value-objects/incident-status-type'
-import type { IncidentDto } from './incident.dto'
+import type { IncidentDto, IncidentUpdateDto } from './incident.dto'
 import { incidentSchema } from './incident.dto'
 
 export class Incident {
@@ -13,13 +13,13 @@ export class Incident {
     public readonly title: string,
     public readonly reporterName: string,
     public readonly startAt: Date,
-    public readonly status: IncidentStatusType,
+    public status: IncidentStatusType,
     public readonly communityId: Id,
     public readonly communityZoneId?: Id,
     public readonly waterDepositId?: Id,
     public readonly waterPointId?: Id,
-    public readonly description?: string,
-    public readonly endAt?: Date
+    public description?: string,
+    public endAt?: Date
   ) {}
 
   static create(incidentData: Omit<IncidentDto, 'id'>) {
@@ -64,6 +64,13 @@ export class Incident {
       dto.description,
       dto.endAt
     )
+  }
+
+  public update(incidentData: IncidentUpdateDto): Incident {
+    this.status = IncidentStatusType.fromString(incidentData.status)
+    this.endAt = incidentData.endAt
+    this.description = incidentData.description
+    return this
   }
 
   toDto(): IncidentDto {

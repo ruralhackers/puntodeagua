@@ -30,7 +30,7 @@ export default async function Home() {
             </Card>
           </Link>
 
-          <Link href="/analysis?create-analysis=true" className="group">
+          <Link href="/analysis/new" className="group">
             <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:border-blue-300 dark:from-blue-950 dark:to-blue-900 dark:border-blue-800">
               <CardContent className="flex items-center justify-center h-full p-6">
                 <div className="flex flex-col items-center gap-3 text-center">
@@ -66,7 +66,7 @@ export default async function Home() {
           </Card>
           {/* </Link> */}
 
-          <Link href="/incident?create-incident=true" className="group">
+          <Link href="/incident/new" className="group">
             <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:border-orange-300 dark:from-orange-950 dark:to-orange-900 dark:border-orange-800">
               <CardContent className="flex items-center justify-center h-full p-6">
                 <div className="flex flex-col items-center gap-3 text-center">

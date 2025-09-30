@@ -1,25 +1,17 @@
 'use client'
 
 import { Plus, TestTube } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import Link from 'next/link'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
-import AddAnalysisModal from './_components/add-analysis-modal'
 import AnalysisCard from './_components/analysis-card'
 
 export default function AnalysisPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // Check if modal should be opened by default based on URL parameter
-  const shouldOpenModal = searchParams.get('create-analysis') === 'true'
-  const [isAddAnalysisModalOpen, setIsAddAnalysisModalOpen] = useState(shouldOpenModal)
 
   const {
     data: analyses,
@@ -29,15 +21,6 @@ export default function AnalysisPage() {
     { id: communityId || '' },
     { enabled: !!communityId }
   )
-
-  // Function to handle modal close and clean URL
-  const handleModalClose = () => {
-    setIsAddAnalysisModalOpen(false)
-    // Clean the URL parameter when modal is closed
-    if (searchParams.get('create-analysis') === 'true') {
-      router.replace('/analysis')
-    }
-  }
 
   if (!communityId) {
     return (
@@ -60,9 +43,11 @@ export default function AnalysisPage() {
               Gestiona los análisis de calidad del agua de tu comunidad
             </p>
           </div>
-          <Button onClick={() => setIsAddAnalysisModalOpen(true)} className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Análisis
+          <Button asChild className="w-full sm:w-auto">
+            <Link href="/analysis/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Nuevo Análisis
+            </Link>
           </Button>
         </div>
 
@@ -106,15 +91,6 @@ export default function AnalysisPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Add Analysis Modal */}
-        {communityId && (
-          <AddAnalysisModal
-            isOpen={isAddAnalysisModalOpen}
-            onClose={handleModalClose}
-            communityId={communityId}
-          />
-        )}
       </div>
     </PageContainer>
   )

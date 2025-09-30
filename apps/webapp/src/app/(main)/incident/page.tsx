@@ -1,26 +1,18 @@
 'use client'
 
 import { AlertTriangle, Plus } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import Link from 'next/link'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
-import AddIncidentModal from './_components/add-incident-modal'
 import IncidentCard from './_components/incident-card'
 
 export default function IncidentsPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
-  const router = useRouter()
-  const searchParams = useSearchParams()
-
-  // Check if modal should be opened by default based on URL parameter
-  const shouldOpenModal = searchParams.get('create-incident') === 'true'
-  const [isAddIncidentModalOpen, setIsAddIncidentModalOpen] = useState(shouldOpenModal)
 
   const {
     data: incidents,
@@ -30,15 +22,6 @@ export default function IncidentsPage() {
     { id: communityId || '' },
     { enabled: !!communityId }
   )
-
-  // Function to handle modal close and clean URL
-  const handleModalClose = () => {
-    setIsAddIncidentModalOpen(false)
-    // Clean the URL parameter when modal is closed
-    if (searchParams.get('create-incident') === 'true') {
-      router.replace('/incident')
-    }
-  }
 
   if (!communityId) {
     return (
@@ -84,9 +67,11 @@ export default function IncidentsPage() {
               Gestiona y rastrea las incidencias en la infraestructura de agua de tu comunidad
             </p>
           </div>
-          <Button onClick={() => setIsAddIncidentModalOpen(true)} className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Nueva Incidencia
+          <Button asChild className="w-full sm:w-auto">
+            <Link href="/incident/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Nueva Incidencia
+            </Link>
           </Button>
         </div>
 
@@ -168,13 +153,6 @@ export default function IncidentsPage() {
           </Card>
         )}
       </div>
-
-      {/* Add Incident Modal */}
-      <AddIncidentModal
-        isOpen={isAddIncidentModalOpen}
-        onClose={handleModalClose}
-        communityId={communityId}
-      />
     </PageContainer>
   )
 }

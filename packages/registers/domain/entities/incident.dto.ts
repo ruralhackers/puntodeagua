@@ -11,7 +11,7 @@ export const incidentSchema = z.object({
   startAt: z.date(),
   communityId: idSchema,
   status: z.enum(IncidentStatusType.values() as [string, ...string[]]),
-  waterZoneId: idSchema.optional(),
+  communityZoneId: idSchema.optional(),
   waterDepositId: idSchema.optional(),
   waterPointId: idSchema.optional(),
   endAt: z.date().optional(),

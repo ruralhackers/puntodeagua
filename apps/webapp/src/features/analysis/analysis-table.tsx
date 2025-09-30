@@ -71,14 +71,14 @@ export default function AnalysisTable(searchParams: SearchParams) {
           }
         },
         {
-          accessorKey: 'waterZoneId',
+          accessorKey: 'communityZoneId',
           header: 'Water Zone',
           cell: ({ row }) => {
-            const waterZoneId = row.getValue('waterZoneId') as string | null
-            if (!waterZoneId) return '-'
-            return waterZoneId.length > 8
-              ? `${waterZoneId.substring(0, 4)}...${waterZoneId.slice(-4)}`
-              : waterZoneId
+            const communityZoneId = row.getValue('communityZoneId') as string | null
+            if (!communityZoneId) return '-'
+            return communityZoneId.length > 8
+              ? `${communityZoneId.substring(0, 4)}...${communityZoneId.slice(-4)}`
+              : communityZoneId
           }
         },
         {

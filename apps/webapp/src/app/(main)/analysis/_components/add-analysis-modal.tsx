@@ -25,6 +25,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { ANALYSIS_TYPE_OPTIONS, type AnalysisType } from '@/constants/analysis-types'
 import { useAnalysisForm } from '@/hooks/use-analysis-form'
+import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
 interface AddAnalysisModalProps {
@@ -39,7 +40,7 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
   const utils = api.useUtils()
 
   // Fetch data
-  const { data: waterZones = [], isLoading: isLoadingZones } =
+  const { data: communityZones = [], isLoading: isLoadingZones } =
     api.community.getCommunityZones.useQuery(
       { id: communityId },
       { enabled: !!communityId && isOpen }
@@ -59,7 +60,7 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
       toast.success('Análisis añadido con éxito')
     },
     onError: (error) => {
-      toast.error(`Error al añadir análisis: ${error.message}`)
+      handleDomainError(error)
     }
   })
 
@@ -80,7 +81,7 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
       analysisType: formData.analysisType as AnalysisType,
       analyst: formData.analyst.trim(),
       analyzedAt: new Date(analyzedAt),
-      waterZoneId: formData.waterZoneId || undefined,
+      communityZoneId: formData.communityZoneId || undefined,
       waterDepositId: formData.waterDepositId || undefined,
       ph: formData.ph ? Number(formData.ph) : undefined,
       turbidity: formData.turbidity ? Number(formData.turbidity) : undefined,
@@ -215,7 +216,7 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Water Zone */}
                   <div className="space-y-2">
-                    <Label htmlFor="waterZoneId" className="text-sm font-medium text-green-700">
+                    <Label htmlFor="communityZoneId" className="text-sm font-medium text-green-700">
                       Zona de Agua
                     </Label>
                     {isLoadingZones ? (
@@ -224,14 +225,14 @@ export default function AddAnalysisModal({ isOpen, onClose, communityId }: AddAn
                       </div>
                     ) : (
                       <Select
-                        value={formData.waterZoneId}
-                        onValueChange={(value) => updateFormData('waterZoneId', value)}
+                        value={formData.communityZoneId}
+                        onValueChange={(value) => updateFormData('communityZoneId', value)}
                       >
                         <SelectTrigger className="border-green-200">
                           <SelectValue placeholder="Selecciona una zona (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          {waterZones.map((zone) => (
+                          {communityZones.map((zone) => (
                             <SelectItem key={zone.id} value={zone.id}>
                               <div className="flex items-center gap-2">
                                 <MapPin className="h-3 w-3 text-green-600" />

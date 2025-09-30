@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import { IncidentUpdater } from '../../application/incident-updater.service'
 import { Incident } from '../../domain/entities/incident'
+import { IncidentNotFoundError } from '../../domain/errors/incident-errors'
 import type { IncidentRepository } from '../../domain/repositories/incident.repository'
 
 describe('IncidentUpdater Service', () => {
@@ -29,7 +30,7 @@ describe('IncidentUpdater Service', () => {
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
         communityId: Id.generateUniqueId().toString(),
-        waterZoneId: Id.generateUniqueId().toString(),
+        communityZoneId: Id.generateUniqueId().toString(),
         description: 'Original description',
         status: 'open'
       })
@@ -39,7 +40,7 @@ describe('IncidentUpdater Service', () => {
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
         communityId: Id.generateUniqueId().toString(),
-        waterZoneId: Id.generateUniqueId().toString(),
+        communityZoneId: Id.generateUniqueId().toString(),
         description: 'Updated description',
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
@@ -65,7 +66,7 @@ describe('IncidentUpdater Service', () => {
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
         communityId: Id.generateUniqueId().toString(),
-        waterZoneId: Id.generateUniqueId().toString(),
+        communityZoneId: Id.generateUniqueId().toString(),
         waterDepositId: Id.generateUniqueId().toString(),
         description: 'Original description',
         status: 'open'
@@ -76,7 +77,7 @@ describe('IncidentUpdater Service', () => {
         reporterName: 'Jane Doe',
         startAt: new Date('2024-01-16T10:00:00Z'),
         communityId: Id.generateUniqueId().toString(),
-        waterZoneId: undefined, // This should fall back to existing
+        communityZoneId: undefined, // This should fall back to existing
         waterDepositId: undefined, // This should fall back to existing
         description: undefined, // This should fall back to existing
         status: 'closed',
@@ -91,7 +92,7 @@ describe('IncidentUpdater Service', () => {
       expect(result.title).toBe('Updated Title')
       expect(result.reporterName).toBe('Jane Doe')
       expect(result.status.toString()).toBe('closed')
-      expect(result.waterZoneId?.toString()).toBe(existingIncident.waterZoneId?.toString()) // Should keep existing
+      expect(result.communityZoneId?.toString()).toBe(existingIncident.communityZoneId?.toString()) // Should keep existing
       expect(result.waterDepositId?.toString()).toBe(existingIncident.waterDepositId?.toString()) // Should keep existing
       expect(result.description).toBe(existingIncident.description) // Should keep existing
       expect(result.communityId.toString()).toBe(existingIncident.communityId.toString()) // Should keep existing
@@ -111,7 +112,7 @@ describe('IncidentUpdater Service', () => {
       mockRepository.findById = mock().mockResolvedValue(undefined)
 
       await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
-        `Incident with id ${incidentId.toString()} not found`
+        IncidentNotFoundError
       )
 
       expect(mockRepository.save).not.toHaveBeenCalled()

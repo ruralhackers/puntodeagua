@@ -28,7 +28,7 @@ describe('IncidentCreator Service', () => {
         reporterName: 'John Doe',
         startAt: new Date('2024-01-15T10:00:00Z'),
         communityId: Id.generateUniqueId().toString(),
-        waterZoneId: Id.generateUniqueId().toString(),
+        communityZoneId: Id.generateUniqueId().toString(),
         description: 'There is a significant water leak in the main pipe.',
         status: 'open'
       })
@@ -62,7 +62,7 @@ describe('IncidentCreator Service', () => {
       expect(result).toBe(incident)
       expect(result.title).toBe('Test Incident')
       expect(result.reporterName).toBe('Jane Doe')
-      expect(result.waterZoneId).toBeUndefined()
+      expect(result.communityZoneId).toBeUndefined()
       expect(result.waterDepositId).toBeUndefined()
       expect(result.waterPointId).toBeUndefined()
       expect(result.description).toBeUndefined()

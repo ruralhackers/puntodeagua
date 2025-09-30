@@ -66,7 +66,7 @@ export default function AnalysisCard({ analysis }: AnalysisCardProps) {
             <div>
               <p className="font-medium text-muted-foreground">Ubicación</p>
               <p className="text-xs">
-                {analysis.waterZoneId || analysis.waterDepositId
+                {analysis.communityZoneId || analysis.waterDepositId
                   ? 'Zona/Depósito específico'
                   : 'Comunidad general'}
               </p>

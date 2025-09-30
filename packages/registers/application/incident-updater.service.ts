@@ -1,5 +1,6 @@
 import type { Id } from '@pda/common/domain'
 import { Incident } from '../domain/entities/incident'
+import { IncidentNotFoundError } from '../domain/errors/incident-errors'
 import type { IncidentRepository } from '../domain/repositories/incident.repository'
 
 export class IncidentUpdater {
@@ -10,7 +11,7 @@ export class IncidentUpdater {
 
     const existingIncident = await this.incidentRepository.findById(id)
     if (!existingIncident) {
-      throw new Error(`Incident with id ${id.toString()} not found`)
+      throw new IncidentNotFoundError()
     }
 
     // here we can do incident.update , that returns a new incident with the updated fields
@@ -22,8 +23,8 @@ export class IncidentUpdater {
       reporterName: updatedIncident.reporterName,
       startAt: updatedIncident.startAt,
       communityId: existingIncident.communityId.toString(), // Keep existing community
-      waterZoneId:
-        updatedIncident.waterZoneId?.toString() ?? existingIncident.waterZoneId?.toString(),
+      communityZoneId:
+        updatedIncident.communityZoneId?.toString() ?? existingIncident.communityZoneId?.toString(),
       waterDepositId:
         updatedIncident.waterDepositId?.toString() ?? existingIncident.waterDepositId?.toString(),
       waterPointId:

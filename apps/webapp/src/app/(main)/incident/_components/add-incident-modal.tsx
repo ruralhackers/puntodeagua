@@ -23,6 +23,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
 interface AddIncidentModalProps {
@@ -36,7 +37,7 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
     title: '',
     reporterName: '',
     description: '',
-    waterZoneId: '',
+    communityZoneId: '',
     waterDepositId: '',
     waterPointId: ''
   })
@@ -61,7 +62,7 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
       toast.success('Incidencia creada con éxito')
     },
     onError: (error) => {
-      toast.error('Error al crear la incidencia: ' + error.message)
+      handleDomainError(error)
     }
   })
 
@@ -70,7 +71,7 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
       title: '',
       reporterName: '',
       description: '',
-      waterZoneId: '',
+      communityZoneId: '',
       waterDepositId: '',
       waterPointId: ''
     })
@@ -90,7 +91,7 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
       reporterName: formData.reporterName,
       description: formData.description || undefined,
       communityId,
-      waterZoneId: formData.waterZoneId || undefined,
+      communityZoneId: formData.communityZoneId || undefined,
       waterDepositId: formData.waterDepositId || undefined,
       waterPointId: formData.waterPointId || undefined,
       startAt: new Date(),
@@ -192,7 +193,7 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Water Zone */}
                   <div className="space-y-2">
-                    <Label htmlFor="waterZone" className="text-sm font-medium text-green-700">
+                    <Label htmlFor="communityZone" className="text-sm font-medium text-green-700">
                       Zona de Agua
                     </Label>
                     {isLoadingZones ? (
@@ -201,8 +202,8 @@ export default function AddIncidentModal({ isOpen, onClose, communityId }: AddIn
                       </div>
                     ) : (
                       <Select
-                        value={formData.waterZoneId}
-                        onValueChange={(value) => handleInputChange('waterZoneId', value)}
+                        value={formData.communityZoneId}
+                        onValueChange={(value) => handleInputChange('communityZoneId', value)}
                       >
                         <SelectTrigger className="border-green-200">
                           <SelectValue placeholder="Selecciona una zona (opcional)" />

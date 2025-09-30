@@ -1,4 +1,8 @@
 import { Id } from '@pda/common/domain'
+import {
+  IncidentClosedWithoutEndDateError,
+  IncidentEndDateBeforeStartDateError
+} from '../errors/incident-errors'
 import { IncidentStatusType } from '../value-objects/incident-status-type'
 import type { IncidentDto } from './incident.dto'
 import { incidentSchema } from './incident.dto'
@@ -11,7 +15,7 @@ export class Incident {
     public readonly startAt: Date,
     public readonly status: IncidentStatusType,
     public readonly communityId: Id,
-    public readonly waterZoneId?: Id,
+    public readonly communityZoneId?: Id,
     public readonly waterDepositId?: Id,
     public readonly waterPointId?: Id,
     public readonly description?: string,
@@ -24,11 +28,11 @@ export class Incident {
 
     // Add business logic validation
     if (validatedData.endAt && validatedData.endAt < validatedData.startAt) {
-      throw new Error('End date cannot be before start date')
+      throw new IncidentEndDateBeforeStartDateError()
     }
 
     if (validatedData.status === 'closed' && !validatedData.endAt) {
-      throw new Error('Closed incidents must have an end date')
+      throw new IncidentClosedWithoutEndDateError()
     }
 
     return new Incident(
@@ -38,7 +42,7 @@ export class Incident {
       validatedData.startAt,
       IncidentStatusType.fromString(validatedData.status),
       Id.fromString(validatedData.communityId),
-      validatedData.waterZoneId ? Id.fromString(validatedData.waterZoneId) : undefined,
+      validatedData.communityZoneId ? Id.fromString(validatedData.communityZoneId) : undefined,
       validatedData.waterDepositId ? Id.fromString(validatedData.waterDepositId) : undefined,
       validatedData.waterPointId ? Id.fromString(validatedData.waterPointId) : undefined,
       validatedData.description,
@@ -54,7 +58,7 @@ export class Incident {
       dto.startAt,
       IncidentStatusType.fromString(dto.status),
       Id.fromString(dto.communityId),
-      dto.waterZoneId ? Id.fromString(dto.waterZoneId) : undefined,
+      dto.communityZoneId ? Id.fromString(dto.communityZoneId) : undefined,
       dto.waterDepositId ? Id.fromString(dto.waterDepositId) : undefined,
       dto.waterPointId ? Id.fromString(dto.waterPointId) : undefined,
       dto.description,
@@ -65,7 +69,7 @@ export class Incident {
   toDto(): IncidentDto {
     return {
       id: this.id.toString(),
-      waterZoneId: this.waterZoneId?.toString(),
+      communityZoneId: this.communityZoneId?.toString(),
       waterDepositId: this.waterDepositId?.toString(),
       communityId: this.communityId.toString(),
       title: this.title,

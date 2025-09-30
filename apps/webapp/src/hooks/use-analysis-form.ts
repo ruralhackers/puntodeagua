@@ -5,7 +5,7 @@ export interface AnalysisFormData {
   analysisType: AnalysisType | ''
   analyst: string
   analyzedAt: string
-  waterZoneId: string
+  communityZoneId: string
   waterDepositId: string
   ph: string
   turbidity: string
@@ -22,7 +22,7 @@ export function useAnalysisForm() {
     analysisType: '',
     analyst: '',
     analyzedAt: new Date().toISOString().split('T')[0],
-    waterZoneId: '',
+    communityZoneId: '',
     waterDepositId: '',
     ph: '',
     turbidity: '',
@@ -91,7 +91,7 @@ export function useAnalysisForm() {
       analysisType: '',
       analyst: '',
       analyzedAt: new Date().toISOString().split('T')[0],
-      waterZoneId: '',
+      communityZoneId: '',
       waterDepositId: '',
       ph: '',
       turbidity: '',

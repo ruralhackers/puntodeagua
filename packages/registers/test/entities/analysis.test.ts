@@ -2,11 +2,17 @@ import { describe, expect, it } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import { Analysis } from '../../domain/entities/analysis'
 import type { AnalysisDto } from '../../domain/entities/analysis.dto'
+import {
+  AnalysisCompleteMeasurementsRequiredError,
+  AnalysisHardnessPhRequiredError,
+  AnalysisPhRequiredError,
+  AnalysisTurbidityRequiredError
+} from '../../domain/errors/analysis-errors'
 import { AnalysisType } from '../../domain/value-objects/analysis-type'
 
 describe('Analysis', () => {
   const validCommunityId = 'clx12345678901234567890123'
-  const validWaterZoneId = 'clx98765432109876543210987'
+  const validCommunityZoneId = 'clx98765432109876543210987'
   const validWaterDepositId = 'clx11111111111111111111111'
   const validAnalyst = 'John Doe'
   const validAnalyzedAt = new Date('2024-01-15T10:30:00Z')
@@ -94,14 +100,14 @@ describe('Analysis', () => {
           analyst: validAnalyst,
           analyzedAt: validAnalyzedAt,
           ph: 7.2,
-          waterZoneId: validWaterZoneId,
+          communityZoneId: validCommunityZoneId,
           waterDepositId: validWaterDepositId,
           description: 'Test analysis description'
         }
 
         const analysis = Analysis.create(dto)
 
-        expect(analysis.waterZoneId?.toString()).toBe(validWaterZoneId)
+        expect(analysis.communityZoneId?.toString()).toBe(validCommunityZoneId)
         expect(analysis.waterDepositId?.toString()).toBe(validWaterDepositId)
         expect(analysis.description).toBe('Test analysis description')
       })
@@ -116,7 +122,7 @@ describe('Analysis', () => {
           analyzedAt: validAnalyzedAt
         }
 
-        expect(() => Analysis.create(dto)).toThrow('Ph is required for chlorine_ph analysis')
+        expect(() => Analysis.create(dto)).toThrow(AnalysisPhRequiredError)
       })
 
       it('throws error for turbidity analysis without turbidity', () => {
@@ -127,7 +133,7 @@ describe('Analysis', () => {
           analyzedAt: validAnalyzedAt
         }
 
-        expect(() => Analysis.create(dto)).toThrow('Turbidity is required for turbidity analysis')
+        expect(() => Analysis.create(dto)).toThrow(AnalysisTurbidityRequiredError)
       })
 
       it('throws error for hardness analysis without ph', () => {
@@ -138,7 +144,7 @@ describe('Analysis', () => {
           analyzedAt: validAnalyzedAt
         }
 
-        expect(() => Analysis.create(dto)).toThrow('Ph is required for hardness analysis')
+        expect(() => Analysis.create(dto)).toThrow(AnalysisHardnessPhRequiredError)
       })
 
       it('throws error for complete analysis without ph', () => {
@@ -151,9 +157,7 @@ describe('Analysis', () => {
           turbidity: 1.2
         }
 
-        expect(() => Analysis.create(dto)).toThrow(
-          'Ph, chlorine and turbidity are required for complete analysis'
-        )
+        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
       })
 
       it('throws error for complete analysis without chlorine', () => {
@@ -166,9 +170,7 @@ describe('Analysis', () => {
           turbidity: 1.2
         }
 
-        expect(() => Analysis.create(dto)).toThrow(
-          'Ph, chlorine and turbidity are required for complete analysis'
-        )
+        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
       })
 
       it('throws error for complete analysis without turbidity', () => {
@@ -181,9 +183,7 @@ describe('Analysis', () => {
           chlorine: 0.5
         }
 
-        expect(() => Analysis.create(dto)).toThrow(
-          'Ph, chlorine and turbidity are required for complete analysis'
-        )
+        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
       })
 
       it('throws error for complete analysis without any measurement values', () => {
@@ -194,9 +194,7 @@ describe('Analysis', () => {
           analyzedAt: validAnalyzedAt
         }
 
-        expect(() => Analysis.create(dto)).toThrow(
-          'Ph, chlorine and turbidity are required for complete analysis'
-        )
+        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
       })
     })
   })
@@ -209,7 +207,7 @@ describe('Analysis', () => {
         analysisType: 'complete',
         analyst: validAnalyst,
         analyzedAt: validAnalyzedAt,
-        waterZoneId: validWaterZoneId,
+        communityZoneId: validCommunityZoneId,
         waterDepositId: validWaterDepositId,
         ph: 7.0,
         chlorine: 0.5,
@@ -224,7 +222,7 @@ describe('Analysis', () => {
       expect(analysis.analysisType.equals(AnalysisType.COMPLETE)).toBe(true)
       expect(analysis.analyst).toBe(validAnalyst)
       expect(analysis.analyzedAt).toBe(validAnalyzedAt)
-      expect(analysis.waterZoneId?.toString()).toBe(validWaterZoneId)
+      expect(analysis.communityZoneId?.toString()).toBe(validCommunityZoneId)
       expect(analysis.waterDepositId?.toString()).toBe(validWaterDepositId)
       expect(analysis.ph).toBe(7.0)
       expect(analysis.chlorine).toBe(0.5)
@@ -244,7 +242,7 @@ describe('Analysis', () => {
 
       const analysis = Analysis.fromDto(dto)
 
-      expect(analysis.waterZoneId).toBeUndefined()
+      expect(analysis.communityZoneId).toBeUndefined()
       expect(analysis.waterDepositId).toBeUndefined()
       expect(analysis.turbidity).toBeUndefined()
       expect(analysis.chlorine).toBeUndefined()
@@ -260,7 +258,7 @@ describe('Analysis', () => {
         analysisType: 'complete',
         analyst: validAnalyst,
         analyzedAt: validAnalyzedAt,
-        waterZoneId: validWaterZoneId,
+        communityZoneId: validCommunityZoneId,
         waterDepositId: validWaterDepositId,
         ph: 7.0,
         chlorine: 0.5,
@@ -313,7 +311,7 @@ describe('Analysis', () => {
         analysisType: 'complete' as const,
         analyst: validAnalyst,
         analyzedAt: validAnalyzedAt,
-        waterZoneId: validWaterZoneId,
+        communityZoneId: validCommunityZoneId,
         waterDepositId: validWaterDepositId,
         ph: 7.0,
         chlorine: 0.5,
@@ -329,7 +327,7 @@ describe('Analysis', () => {
       expect(reconstructedAnalysis.analysisType.toString()).toBe(originalDto.analysisType)
       expect(reconstructedAnalysis.analyst).toBe(originalDto.analyst)
       expect(reconstructedAnalysis.analyzedAt.getTime()).toBe(originalDto.analyzedAt.getTime())
-      expect(reconstructedAnalysis.waterZoneId?.toString()).toBe(originalDto.waterZoneId)
+      expect(reconstructedAnalysis.communityZoneId?.toString()).toBe(originalDto.communityZoneId)
       expect(reconstructedAnalysis.waterDepositId?.toString()).toBe(originalDto.waterDepositId)
       expect(reconstructedAnalysis.ph).toBe(originalDto.ph)
       expect(reconstructedAnalysis.chlorine).toBe(originalDto.chlorine)
@@ -396,7 +394,7 @@ describe('Analysis', () => {
         ph: 7.2
       })
 
-      expect(analysis.waterZoneId).toBeUndefined()
+      expect(analysis.communityZoneId).toBeUndefined()
       expect(analysis.waterDepositId).toBeUndefined()
       expect(analysis.description).toBeUndefined()
     })

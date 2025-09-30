@@ -1,4 +1,11 @@
 import { Id } from '@pda/common/domain'
+import {
+  AnalysisChlorineRequiredError,
+  AnalysisCompleteMeasurementsRequiredError,
+  AnalysisHardnessPhRequiredError,
+  AnalysisPhRequiredError,
+  AnalysisTurbidityRequiredError
+} from '../errors/analysis-errors'
 import { AnalysisType } from '../value-objects/analysis-type'
 import { type AnalysisDto, analysisSchema } from './analysis.dto'
 
@@ -9,7 +16,7 @@ export class Analysis {
     public readonly analysisType: AnalysisType,
     public readonly analyst: string,
     public readonly analyzedAt: Date,
-    public readonly waterZoneId?: Id,
+    public readonly communityZoneId?: Id,
     public readonly waterDepositId?: Id,
     public readonly ph?: number,
     public readonly turbidity?: number,
@@ -26,13 +33,13 @@ export class Analysis {
 
     const analysisType = AnalysisType.fromString(validatedData.analysisType)
     if (analysisType.equals(AnalysisType.CHLORINE_PH) && validatedData.ph === undefined) {
-      throw new Error('Ph is required for chlorine_ph analysis')
+      throw new AnalysisPhRequiredError()
     }
     if (analysisType.equals(AnalysisType.TURBIDITY) && validatedData.turbidity === undefined) {
-      throw new Error('Turbidity is required for turbidity analysis')
+      throw new AnalysisTurbidityRequiredError()
     }
     if (analysisType.equals(AnalysisType.HARDNESS) && validatedData.ph === undefined) {
-      throw new Error('Ph is required for hardness analysis')
+      throw new AnalysisHardnessPhRequiredError()
     }
     if (
       analysisType.equals(AnalysisType.COMPLETE) &&
@@ -40,7 +47,7 @@ export class Analysis {
         validatedData.chlorine === undefined ||
         validatedData.turbidity === undefined)
     ) {
-      throw new Error('Ph, chlorine and turbidity are required for complete analysis')
+      throw new AnalysisCompleteMeasurementsRequiredError()
     }
 
     return new Analysis(
@@ -49,7 +56,7 @@ export class Analysis {
       analysisType,
       validatedData.analyst,
       validatedData.analyzedAt,
-      validatedData.waterZoneId ? Id.fromString(validatedData.waterZoneId) : undefined,
+      validatedData.communityZoneId ? Id.fromString(validatedData.communityZoneId) : undefined,
       validatedData.waterDepositId ? Id.fromString(validatedData.waterDepositId) : undefined,
       validatedData.ph,
       validatedData.turbidity,
@@ -65,7 +72,7 @@ export class Analysis {
       AnalysisType.fromString(dto.analysisType),
       dto.analyst,
       dto.analyzedAt,
-      dto.waterZoneId ? Id.fromString(dto.waterZoneId) : undefined,
+      dto.communityZoneId ? Id.fromString(dto.communityZoneId) : undefined,
       dto.waterDepositId ? Id.fromString(dto.waterDepositId) : undefined,
       dto.ph,
       dto.turbidity,
@@ -81,7 +88,7 @@ export class Analysis {
       analysisType: this.analysisType.toString(),
       analyst: this.analyst,
       analyzedAt: this.analyzedAt,
-      waterZoneId: this.waterZoneId?.toString(),
+      communityZoneId: this.communityZoneId?.toString(),
       waterDepositId: this.waterDepositId?.toString(),
       ph: this.ph,
       turbidity: this.turbidity,

@@ -33,7 +33,7 @@ export default function IncidentCard({ incident }: IncidentCardProps) {
   const getLocationText = () => {
     if (incident.waterPointId) return 'Punto de Agua'
     if (incident.waterDepositId) return 'Depósito de Agua'
-    if (incident.waterZoneId) return 'Zona de Agua'
+    if (incident.communityZoneId) return 'Zona de Agua'
     return 'Comunidad'
   }
 

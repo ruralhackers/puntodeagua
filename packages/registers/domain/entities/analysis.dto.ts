@@ -7,7 +7,7 @@ export type AnalysisDto = z.infer<typeof analysisSchema>
 export const analysisSchema = z.object({
   id: idSchema,
   communityId: idSchema,
-  waterZoneId: idSchema.optional(),
+  communityZoneId: idSchema.optional(),
   waterDepositId: idSchema.optional(),
   analysisType: z.enum(AnalysisType.values() as [string, ...string[]]), // TODO - review this
   analyst: z.string(),

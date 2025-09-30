@@ -63,7 +63,7 @@ async function deleteAll() {
   await prisma.community.deleteMany({})
   // await prisma.plan.deleteMany({})
   // await prisma.file.deleteMany({})
-  // await prisma.waterZone.deleteMany({})
+  // await prisma.communityZone.deleteMany({})
   // await prisma.holder.deleteMany({})
   // await prisma.maintenance.deleteMany({})
   // await prisma.provider.deleteMany({})
@@ -560,7 +560,7 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
   const anceuAnalyses = [
     {
       communityId: anceuCommunityId,
-      waterZoneId: anceuZones[0]?.id, // First zone
+      communityZoneId: anceuZones[0]?.id, // First zone
       analysisType: 'complete',
       analyst: 'Dr. María González',
       analyzedAt: new Date('2024-01-15'),
@@ -572,7 +572,7 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
     },
     {
       communityId: anceuCommunityId,
-      waterZoneId: anceuZones[1]?.id, // Second zone
+      communityZoneId: anceuZones[1]?.id, // Second zone
       analysisType: 'chlorine_ph',
       analyst: 'Ing. Carlos Ruiz',
       analyzedAt: new Date('2024-01-20'),
@@ -599,7 +599,7 @@ async function seedAnalyses(anceuCommunityId: string, ponteCaldelasCommunityId: 
     },
     {
       communityId: anceuCommunityId,
-      waterZoneId: anceuZones[0]?.id,
+      communityZoneId: anceuZones[0]?.id,
       analysisType: 'complete',
       analyst: 'Dr. María González',
       analyzedAt: new Date('2024-02-10'),
@@ -688,7 +688,7 @@ async function seedIncidents(anceuCommunityId: string, ponteCaldelasCommunityId:
   const anceuIncidents = [
     {
       communityId: anceuCommunityId,
-      waterZoneId: anceuZones[0]?.id, // Anceu zone
+      communityZoneId: anceuZones[0]?.id, // Anceu zone
       title: 'Fuga de agua en punto principal',
       description:
         'Se detectó una fuga significativa en el punto principal de distribución. El agua se está filtrando hacia la calle principal.',
@@ -721,7 +721,7 @@ async function seedIncidents(anceuCommunityId: string, ponteCaldelasCommunityId:
     },
     {
       communityId: anceuCommunityId,
-      waterZoneId: anceuZones[1]?.id, // O Ramis zone
+      communityZoneId: anceuZones[1]?.id, // O Ramis zone
       title: 'Sabor extraño en el agua',
       description:
         'Los residentes de O Ramis reportan un sabor metálico en el agua potable. Necesita investigación urgente.',

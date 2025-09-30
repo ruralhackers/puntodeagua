@@ -203,10 +203,10 @@ model Analysis {
   analyst      String
   analyzedAt   DateTime
 
-  waterZoneId    String?        @map("water_zone_id")
-  waterZone      CommunityZone? @relation(fields: [waterZoneId], references: [id])
-  waterDepositId String?        @map("water_deposit_id")
-  waterDeposit   WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
+  communityZoneId String?        @map("water_zone_id")
+  communityZone   CommunityZone? @relation(fields: [communityZoneId], references: [id])
+  waterDepositId  String?        @map("water_deposit_id")
+  waterDeposit    WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
 
   ph          String?
   turbidity   String?
@@ -217,21 +217,21 @@ model Analysis {
   updatedAt DateTime @updatedAt
 
   @@index([communityId])
-  @@index([waterZoneId])
+  @@index([communityZoneId])
   @@index([waterDepositId])
 }
 
 model Incident {
   id String @id @default(cuid())
 
-  community      Community      @relation(fields: [communityId], references: [id])
-  communityId    String         @map("community_id")
-  waterZoneId    String?        @map("water_zone_id")
-  waterZone      CommunityZone? @relation(fields: [waterZoneId], references: [id])
-  waterDepositId String?        @map("water_deposit_id")
-  waterDeposit   WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
-  waterPointId   String?        @map("water_point_id")
-  waterPoint     WaterPoint?    @relation(fields: [waterPointId], references: [id])
+  community       Community      @relation(fields: [communityId], references: [id])
+  communityId     String         @map("community_id")
+  communityZoneId String?        @map("water_zone_id")
+  communityZone   CommunityZone? @relation(fields: [communityZoneId], references: [id])
+  waterDepositId  String?        @map("water_deposit_id")
+  waterDeposit    WaterDeposit?  @relation(fields: [waterDepositId], references: [id])
+  waterPointId    String?        @map("water_point_id")
+  waterPoint      WaterPoint?    @relation(fields: [waterPointId], references: [id])
 
   title        String
   description  String?
@@ -245,7 +245,7 @@ model Incident {
   updatedAt DateTime @updatedAt
 
   @@index([communityId])
-  @@index([waterZoneId])
+  @@index([communityZoneId])
   @@index([waterDepositId])
   @@index([waterPointId])
 }

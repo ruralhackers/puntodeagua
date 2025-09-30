@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
 export default function IncidentDetailPage() {
@@ -31,7 +32,7 @@ export default function IncidentDetailPage() {
       setIsUpdating(false)
     },
     onError: (error) => {
-      toast.error('Error al actualizar la incidencia: ' + error.message)
+      handleDomainError(error)
       setIsUpdating(false)
     }
   })
@@ -91,7 +92,7 @@ export default function IncidentDetailPage() {
   const getLocationText = () => {
     if (incident.waterPointId) return 'Punto de Agua'
     if (incident.waterDepositId) return 'Depósito de Agua'
-    if (incident.waterZoneId) return 'Zona de Agua'
+    if (incident.communityZoneId) return 'Zona de Agua'
     return 'Comunidad'
   }
 

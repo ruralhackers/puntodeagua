@@ -113,7 +113,7 @@ Represents a water system incident
  was resolved (optional)
 - `status`: Current status ('open' or 'closed')
 - `communityId`: Associated community
-- `waterZoneId`, `waterDepositId`, `waterPointId`: Associated water infrastructure (optional)
+- `communityZoneId`, `waterDepositId`, `waterPointId`: Associated water infrastructure (optional)
 - `description`: Detailed description (optional)
 
 **Business Rules:**
@@ -129,7 +129,7 @@ Represents water quality analysis results.
 - `id`: Unique identifier
 - `type`: Analysis type (chlorine_ph, turbidity, hardness, complete)
 - `communityId`: Associated community
-- `waterZoneId`, `waterDepositId`, `waterPointId`: Associated water infrastructure (optional)
+- `communityZoneId`, `waterDepositId`, `waterPointId`: Associated water infrastructure (optional)
 - `measurements`: Analysis measurements (ph, chlorine, turbidity, hardness)
 - `description`: Additional notes (optional)
 - `createdAt`: When the analysis was performed
@@ -237,7 +237,7 @@ const incident
   reporterName: 'John Doe',
   startAt: new Date(),
   communityId: 'community-123',
-  waterZoneId: 'zone-456',
+  communityZoneId: 'zone-456',
   description: 'Significant leak detected',
   status: 'open'
 })
@@ -285,7 +285,7 @@ import { Analysis } from '@pda/registers/domain/entities/analysis'
 const analysis = Analysis.create({
   type: 'chlorine_ph',
   communityId: 'community-123',
-  waterZoneId: 'zone-456',
+  communityZoneId: 'zone-456',
   measurements: {
     ph: 7.2,
     chlorine: 0.5

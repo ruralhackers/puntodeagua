@@ -2,6 +2,7 @@ import { Id } from '@pda/common/domain'
 import { RegistersFactory } from '@pda/registers'
 import { Incident } from '@pda/registers/domain/entities/incident'
 import { incidentSchema } from '@pda/registers/domain/entities/incident.dto'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
@@ -31,51 +32,76 @@ export const incidentsRouter = createTRPCRouter({
   addIncident: protectedProcedure
     .input(incidentSchema.omit({ id: true }))
     .mutation(async ({ input }) => {
-      const service = RegistersFactory.incidentCreatorService()
+      try {
+        const service = RegistersFactory.incidentCreatorService()
 
-      const incident = Incident.create({
+        const incident = Incident.create({
+          title: input.title,
+          reporterName: input.reporterName,
+          startAt: input.startAt,
+          communityId: input.communityId,
+          communityZoneId: input.communityZoneId,
+          waterDepositId: input.waterDepositId,
+          waterPointId: input.waterPointId,
+          description: input.description,
+          endAt: input.endAt,
+          status: 'open'
+        })
+
+        const savedIncident = await service.run({ incident })
+        return savedIncident.toDto()
+      } catch (error) {
+        // Handle domain errors with Spanish messages
+        if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
+          const domainError = error as { defaultMessageEs: string; statusCode?: number }
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: domainError.defaultMessageEs
+          })
+        }
+        throw error
+      }
+    }),
+
+  updateIncident: protectedProcedure.input(incidentSchema).mutation(async ({ input }) => {
+    try {
+      const service = RegistersFactory.incidentUpdaterService()
+
+      // we receive id and fields to update
+      // then, so service does checks, finds the incident, and updates the fields
+      // we create a incidentUpdateSchema that is the same as incidentSchema, but with the fields to update
+
+      const updatedIncident = Incident.fromDto({
+        id: input.id,
         title: input.title,
         reporterName: input.reporterName,
         startAt: input.startAt,
         communityId: input.communityId,
-        waterZoneId: input.waterZoneId,
+        communityZoneId: input.communityZoneId,
         waterDepositId: input.waterDepositId,
         waterPointId: input.waterPointId,
         description: input.description,
-        endAt: input.endAt,
-        status: 'open'
+        status: input.status,
+        endAt: input.endAt
       })
 
-      const savedIncident = await service.run({ incident })
+      const savedIncident = await service.run({
+        id: Id.fromString(input.id),
+        updatedIncident
+      })
       return savedIncident.toDto()
-    }),
-
-  updateIncident: protectedProcedure.input(incidentSchema).mutation(async ({ input }) => {
-    const service = RegistersFactory.incidentUpdaterService()
-
-    // we receive id and fields to update
-    // then, so service does checks, finds the incident, and updates the fields
-    // we create a incidentUpdateSchema that is the same as incidentSchema, but with the fields to update
-
-    const updatedIncident = Incident.fromDto({
-      id: input.id,
-      title: input.title,
-      reporterName: input.reporterName,
-      startAt: input.startAt,
-      communityId: input.communityId,
-      waterZoneId: input.waterZoneId,
-      waterDepositId: input.waterDepositId,
-      waterPointId: input.waterPointId,
-      description: input.description,
-      status: input.status,
-      endAt: input.endAt
-    })
-
-    const savedIncident = await service.run({
-      id: Id.fromString(input.id),
-      updatedIncident
-    })
-    return savedIncident.toDto()
+    } catch (error) {
+      // Handle domain errors with Spanish messages
+      if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
+        const domainError = error as { defaultMessageEs: string; statusCode?: number }
+        const errorCode = domainError.statusCode === 404 ? 'NOT_FOUND' : 'BAD_REQUEST'
+        throw new TRPCError({
+          code: errorCode,
+          message: domainError.defaultMessageEs
+        })
+      }
+      throw error
+    }
   }),
 
   deleteIncident: protectedProcedure

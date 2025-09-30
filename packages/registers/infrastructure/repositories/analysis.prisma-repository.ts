@@ -81,7 +81,7 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
   private fromPrismaPayload(payload: Prisma.AnalysisGetPayload<null>) {
     return {
       ...payload,
-      waterZoneId: payload.waterZoneId ?? undefined,
+      communityZoneId: payload.communityZoneId ?? undefined,
       waterDepositId: payload.waterDepositId ?? undefined,
       ph: payload.ph ? Number(payload.ph) : undefined,
       turbidity: payload.turbidity ? Number(payload.turbidity) : undefined,

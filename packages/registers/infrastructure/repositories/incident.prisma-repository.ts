@@ -50,7 +50,7 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
     const update = {
       title: incident.title,
       reporterName: incident.reporterName,
-      waterZoneId: incident.waterZoneId?.toString(),
+      communityZoneId: incident.communityZoneId?.toString(),
       waterDepositId: incident.waterDepositId?.toString(),
       waterPointId: incident.waterPointId?.toString(),
       description: incident.description ?? undefined,
@@ -82,7 +82,7 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
   private fromPrismaPayload(payload: Prisma.IncidentGetPayload<null>) {
     return {
       ...payload,
-      waterZoneId: payload.waterZoneId ?? undefined,
+      communityZoneId: payload.communityZoneId ?? undefined,
       waterDepositId: payload.waterDepositId ?? undefined,
       waterPointId: payload.waterPointId ?? undefined,
       endAt: payload.endAt ? payload.endAt : undefined,

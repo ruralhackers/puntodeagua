@@ -1,10 +1,7 @@
 'use client'
 
-import { FileText, MapPin, Users } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
 
@@ -40,20 +37,17 @@ export default function WaterPointList({ selectedZone, nameFilter }: WaterPointL
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {Array.from({ length: 3 }, (_, i) => (
-          <Card key={`loading-skeleton-${Date.now()}-${i}`} className="animate-pulse">
-            <CardHeader>
+      <div className="space-y-0">
+        {Array.from({ length: 5 }, (_, i) => (
+          <div
+            key={`loading-skeleton-${Date.now()}-${i}`}
+            className="py-3 px-4 border-b border-gray-200 animate-pulse last:border-b-0"
+          >
+            <div className="flex items-center justify-between">
               <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="h-3 bg-gray-200 rounded"></div>
-                <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-              </div>
-            </CardContent>
-          </Card>
+              <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+            </div>
+          </div>
         ))}
       </div>
     )
@@ -61,81 +55,34 @@ export default function WaterPointList({ selectedZone, nameFilter }: WaterPointL
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-destructive">
-            Error al cargar los puntos de agua: {error.message}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="py-4 px-3 text-center text-destructive">
+        Error al cargar los puntos de agua: {error.message}
+      </div>
     )
   }
 
   if (filteredWaterPoints.length === 0) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-muted-foreground">
-            {nameFilter
-              ? `No se encontraron puntos de agua que coincidan con "${nameFilter}"`
-              : 'No hay puntos de agua disponibles en la zona seleccionada'}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="py-4 px-3 text-center text-muted-foreground">
+        {nameFilter
+          ? `No se encontraron puntos de agua que coincidan con "${nameFilter}"`
+          : 'No hay puntos de agua disponibles en la zona seleccionada'}
+      </div>
     )
   }
 
   return (
     <div className="space-y-0">
       {filteredWaterPoints.map((waterPoint) => (
-        <Link key={waterPoint.id} href={`/water-point/${waterPoint.id}`} className="block mb-8">
-          <Card className="hover:shadow-lg hover:shadow-blue-100/50 transition-all duration-100 cursor-pointer hover:border-blue-200 hover:-translate-y-0.5">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg hover:text-blue-700 transition-colors">
-                    {waterPoint.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                    <MapPin className="h-3 w-3" />
-                    {waterPoint.location}
-                  </div>
-                </div>
-                <Badge variant="outline">{waterPoint.cadastralReference}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Population Info */}
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4 text-blue-500" />
-                  <span className="font-medium">Población fija:</span>
-                  <span>{waterPoint.fixedPopulation}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Users className="h-4 w-4 text-green-500" />
-                  <span className="font-medium">Población flotante:</span>
-                  <span>{waterPoint.floatingPopulation}</span>
-                </div>
-              </div>
-
-              {/* Notes */}
-              {waterPoint.notes && (
-                <div className="flex items-start gap-2 text-sm">
-                  <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                  <p className="text-muted-foreground">{waterPoint.notes}</p>
-                </div>
-              )}
-
-              {/* Action indicator */}
-              <div className="pt-2 flex items-center justify-between">
-                <span className="text-sm text-blue-600 font-medium">Click para ver contadores</span>
-                <div className="text-blue-500 opacity-70 group-hover:opacity-100 transition-opacity">
-                  →
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Link
+          key={waterPoint.id}
+          href={`/water-point/${waterPoint.id}`}
+          className="block py-3 px-4 border-b border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-800 hover:shadow-sm transition-all duration-200 last:border-b-0"
+        >
+          <div className="flex items-center justify-between">
+            <div className="font-medium">{waterPoint.name}</div>
+            <div className="text-sm text-muted-foreground">{waterPoint.location}</div>
+          </div>
         </Link>
       ))}
     </div>

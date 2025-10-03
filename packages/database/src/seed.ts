@@ -261,80 +261,80 @@ async function seedWaterPoints(zoneIds: {
   const waterPointsData = [
     // Anceu zone water points
     {
-      name: 'Punto Principal Anceu',
-      location: 'Centro de Anceu, junto a la iglesia',
+      name: 'Casa de Rosario do Coto',
+      location: 'Anceu 38',
       communityZoneId: zoneIds.anceuZoneId,
       fixedPopulation: 25,
       floatingPopulation: 5,
       cadastralReference: 'ANCEU-001',
-      notes: 'Punto principal de distribución de agua en el centro de Anceu'
+      notes: 'Punto de agua en la casa de Rosario do Coto'
     },
     {
-      name: 'Fuente de Anceu',
-      location: 'Fuente tradicional en la plaza',
+      name: 'Casa de Rogelio',
+      location: 'Anceu 42',
       communityZoneId: zoneIds.anceuZoneId,
       fixedPopulation: 15,
       floatingPopulation: 3,
       cadastralReference: 'ANCEU-002',
-      notes: 'Fuente histórica restaurada para uso comunitario'
+      notes: 'Punto de agua en la casa de Rogelio'
     },
     {
-      name: 'Depósito Anceu Norte',
-      location: 'Zona norte, cerca del campo de fútbol',
+      name: 'Casa de Teresa de Elena',
+      location: 'Anceu 15',
       communityZoneId: zoneIds.anceuZoneId,
       fixedPopulation: 20,
       floatingPopulation: 2,
       cadastralReference: 'ANCEU-003',
-      notes: 'Depósito de agua para la zona norte de Anceu'
+      notes: 'Punto de agua en la casa de Teresa de Elena'
     },
 
     // O Ramis zone water points
     {
-      name: 'Punto O Ramis Central',
-      location: 'Centro de O Ramis',
+      name: 'Casa de Rosabel',
+      location: 'O Ramis 8',
       communityZoneId: zoneIds.oRamisZoneId,
       fixedPopulation: 18,
       floatingPopulation: 4,
       cadastralReference: 'ORAMIS-001',
-      notes: 'Punto principal de distribución en O Ramis'
+      notes: 'Punto de agua en la casa de Rosabel'
     },
     {
-      name: 'Fuente O Ramis',
-      location: 'Fuente en la entrada del pueblo',
+      name: 'Casa de Manuel',
+      location: 'O Ramis 12',
       communityZoneId: zoneIds.oRamisZoneId,
       fixedPopulation: 12,
       floatingPopulation: 2,
       cadastralReference: 'ORAMIS-002',
-      notes: 'Fuente comunitaria en la entrada de O Ramis'
+      notes: 'Punto de agua en la casa de Manuel'
     },
 
     // Os Casas zone water points
     {
-      name: 'Punto Os Casas Principal',
-      location: 'Centro de Os Casas',
+      name: 'Casa de Carmen',
+      location: 'Os Casas 25',
       communityZoneId: zoneIds.osCasasZoneId,
       fixedPopulation: 22,
       floatingPopulation: 6,
       cadastralReference: 'OSCASAS-001',
-      notes: 'Punto principal de distribución en Os Casas'
+      notes: 'Punto de agua en la casa de Carmen'
     },
     {
-      name: 'Depósito Os Casas Sur',
-      location: 'Zona sur de Os Casas',
+      name: 'Casa de Antonio',
+      location: 'Os Casas 18',
       communityZoneId: zoneIds.osCasasZoneId,
       fixedPopulation: 16,
       floatingPopulation: 3,
       cadastralReference: 'OSCASAS-002',
-      notes: 'Depósito para la zona sur de Os Casas'
+      notes: 'Punto de agua en la casa de Antonio'
     },
     {
-      name: 'Fuente Os Casas',
-      location: 'Fuente junto al lavadero',
+      name: 'Casa de María',
+      location: 'Os Casas 33',
       communityZoneId: zoneIds.osCasasZoneId,
       fixedPopulation: 14,
       floatingPopulation: 2,
       cadastralReference: 'OSCASAS-003',
-      notes: 'Fuente tradicional junto al lavadero comunitario'
+      notes: 'Punto de agua en la casa de María'
     }
   ]
 

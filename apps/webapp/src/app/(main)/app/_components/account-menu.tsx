@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, Gauge, LogOut, Menu, ShieldUser, Truck, User, Users } from 'lucide-react'
+import { FileText, Gauge, LogOut, Menu, ShieldUser, Truck, Users } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -70,7 +70,7 @@ export function AccountMenu() {
           <DropdownMenuItem asChild>
             <Link href={`/water-point`} className="flex items-center gap-2 cursor-pointer">
               <Gauge />
-              Contadores
+              Puntos de Agua
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

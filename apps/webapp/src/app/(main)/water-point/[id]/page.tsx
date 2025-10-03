@@ -1,52 +1,25 @@
 'use client'
 
-import type { WaterMeterDto } from '@pda/water-account/domain'
-import { ArrowLeft, FileText, Gauge, MapPin } from 'lucide-react'
+import { ArrowLeft, FileText, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { api } from '@/trpc/react'
-import AddReadingModal from '../_components/add-reading-modal'
 import PopulationInfoSection from '../_components/population-info-section'
-import WaterMeterCard from '../_components/water-meter-card'
 
 export default function WaterPointDetailPage() {
   const params = useParams()
   const waterPointId = params.id as string
-
-  // Modal state - simplified
-  const [isReadingModalOpen, setIsReadingModalOpen] = useState(false)
-  const [selectedMeter, setSelectedMeter] = useState<WaterMeterDto | null>(null)
 
   const {
     data: waterPoint,
     isLoading,
     error
   } = api.community.getWaterPointById.useQuery({ id: waterPointId }, { enabled: !!waterPointId })
-
-  const {
-    data: waterMeters,
-    isLoading: isLoadingMeters,
-    error: metersError
-  } = api.waterAccount.getWaterMetersByWaterPointId.useQuery(
-    { id: waterPointId },
-    { enabled: !!waterPointId }
-  )
-
-  const handleOpenReadingModal = (meter: WaterMeterDto) => {
-    setSelectedMeter(meter)
-    setIsReadingModalOpen(true)
-  }
-
-  const handleCloseReadingModal = () => {
-    setIsReadingModalOpen(false)
-    setSelectedMeter(null)
-  }
 
   if (isLoading) {
     return (
@@ -140,7 +113,7 @@ export default function WaterPointDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{waterPoint.name}</h1>
-            <p className="text-muted-foreground">Detalle del punto de agua</p>
+            <p className="text-muted-foreground">Información y configuración del punto de agua</p>
           </div>
         </div>
 
@@ -207,67 +180,22 @@ export default function WaterPointDetailPage() {
               </div>
             </div>
 
-            {/* Water Meters Section */}
+            {/* Information about meter readings */}
             <Separator />
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Gauge className="h-5 w-5 text-muted-foreground" />
-                <h3 className="text-lg font-semibold">Contadores de Agua</h3>
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Contadores de Agua</h3>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <p className="text-blue-800 text-sm">
+                  Para registrar lecturas de contadores y gestionar los medidores de agua, utiliza
+                  la sección <strong>Lecturas</strong> en el menú principal.
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-3">
+                  <Link href="/water-meter">Ir a Lecturas de Contadores</Link>
+                </Button>
               </div>
-
-              {isLoadingMeters ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 2 }, (_, i) => (
-                    <Card key={`meter-skeleton-${Date.now()}-${i}`} className="animate-pulse">
-                      <CardContent className="pt-4">
-                        <div className="space-y-2">
-                          <div className="h-4 bg-gray-200 rounded w-1/3" />
-                          <div className="h-3 bg-gray-200 rounded w-2/3" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : metersError ? (
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center text-destructive">
-                      Error al cargar los contadores: {metersError.message}
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : !waterMeters || waterMeters.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="text-center text-muted-foreground">
-                      <Gauge className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                      <p>No hay contadores registrados para este punto de agua</p>
-                      <p className="text-sm mt-1">Añade el primer contador para comenzar</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-3">
-                  {waterMeters.map((meter) => (
-                    <WaterMeterCard
-                      key={meter.id}
-                      meter={meter}
-                      onAddReading={handleOpenReadingModal}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
-
-        {/* Reading Modal */}
-        <AddReadingModal
-          isOpen={isReadingModalOpen}
-          onClose={handleCloseReadingModal}
-          selectedMeter={selectedMeter}
-          waterPointId={waterPointId}
-        />
       </div>
     </PageContainer>
   )

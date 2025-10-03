@@ -30,9 +30,9 @@ export default function Page() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">Contadores - Lecturas</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Administrar Puntos de Agua</h1>
             <p className="text-muted-foreground">
-              Selecciona un contador para registrar una nueva lectura
+              Gestiona la información y configuración de los puntos de agua
             </p>
           </div>
           <Button
@@ -54,7 +54,7 @@ export default function Page() {
                 Filtros y Búsqueda
               </CardTitle>
               <CardDescription className="text-blue-600">
-                Encuentra rápidamente el contador que necesitas
+                Encuentra rápidamente el punto de agua que necesitas
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -67,7 +67,7 @@ export default function Page() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-4 w-4" />
                   <Input
                     id="search"
-                    placeholder="Buscar contador por nombre..."
+                    placeholder="Buscar punto de agua por nombre..."
                     value={nameFilter}
                     onChange={(e) => setNameFilter(e.target.value)}
                     className="pl-10 bg-white/90 border-blue-200 focus:border-blue-400 focus:ring-blue-200"

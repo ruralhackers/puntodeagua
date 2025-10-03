@@ -61,7 +61,7 @@ export const sidebarItems: NavGroup[] = [
     label: 'Registros',
     items: [
       {
-        title: 'Puntos de Agua',
+        title: 'Administrar puntos de agua',
         url: '/admin/water-points',
         icon: GlassWater
       },

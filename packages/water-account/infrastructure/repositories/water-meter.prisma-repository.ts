@@ -160,27 +160,6 @@ export class WaterMeterPrismaRepository
   }
 
   async findActiveByCommunityZonesIdOrderedByLastReading(zonesIds: Id[]): Promise<WaterMeter[]> {
-    // Debug: check all meters first
-    const allMeters = await this.getModel().findMany({
-      include: {
-        waterPoint: {
-          select: {
-            id: true,
-            name: true,
-            location: true,
-            fixedPopulation: true,
-            floatingPopulation: true,
-            cadastralReference: true,
-            communityZoneId: true,
-            notes: true
-          }
-        }
-      }
-    })
-    console.log('🔍 All meters in DB:', allMeters.length)
-    console.log('🔍 Active meters:', allMeters.filter((m) => m.isActive).length)
-    console.log('🔍 Sample meter:', allMeters[0])
-
     const whereClause =
       zonesIds.length === 0
         ? { isActive: true }

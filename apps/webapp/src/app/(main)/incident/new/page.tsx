@@ -29,7 +29,7 @@ export default function NewIncidentPage() {
 
   const [formData, setFormData] = useState({
     title: '',
-    reporterName: '',
+    reporterName: user?.name || '',
     description: '',
     communityZoneId: '',
     waterDepositId: '',
@@ -64,7 +64,7 @@ export default function NewIncidentPage() {
     e.preventDefault()
 
     if (!formData.title || !formData.reporterName) {
-      toast.error('El título y el nombre del reportero son obligatorios')
+      toast.error('El título y el nombre de la persona que reporta son obligatorios')
       return
     }
 
@@ -137,7 +137,7 @@ export default function NewIncidentPage() {
                     className="flex items-center gap-2 text-sm font-medium"
                   >
                     <User className="h-4 w-4 text-gray-600" />
-                    Nombre del Reportero *
+                    Nombre de la persona que reporta *
                   </Label>
                   <Input
                     id="reporterName"

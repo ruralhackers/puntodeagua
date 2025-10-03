@@ -11,5 +11,6 @@ export const waterMeterSchema = z.object({
   measurementUnit: z.string(),
   lastReadingNormalizedValue: z.number().nullable(),
   lastReadingDate: z.date().nullable(),
-  lastReadingExcessConsumption: z.boolean().nullable()
+  lastReadingExcessConsumption: z.boolean().nullable(),
+  isActive: z.boolean()
 })

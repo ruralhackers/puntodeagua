@@ -11,7 +11,8 @@ export class WaterMeter {
     public measurementUnit: MeasurementUnit,
     public lastReadingNormalizedValue?: number | null,
     public lastReadingDate?: Date | null,
-    public lastReadingExcessConsumption?: boolean | null
+    public lastReadingExcessConsumption?: boolean | null,
+    public isActive: boolean = true
   ) {}
 
   static create(dto: Omit<WaterMeterDto, 'id'>) {
@@ -23,7 +24,8 @@ export class WaterMeter {
       MeasurementUnit.fromString(dto.measurementUnit),
       dto.lastReadingNormalizedValue,
       dto.lastReadingDate,
-      dto.lastReadingExcessConsumption
+      dto.lastReadingExcessConsumption,
+      dto.isActive
     )
   }
 
@@ -36,7 +38,8 @@ export class WaterMeter {
       MeasurementUnit.fromString(dto.measurementUnit),
       dto.lastReadingNormalizedValue,
       dto.lastReadingDate,
-      dto.lastReadingExcessConsumption
+      dto.lastReadingExcessConsumption,
+      dto.isActive
     )
   }
 
@@ -49,7 +52,8 @@ export class WaterMeter {
       measurementUnit: this.measurementUnit.toString(),
       lastReadingNormalizedValue: this.lastReadingNormalizedValue ?? null,
       lastReadingDate: this.lastReadingDate ?? null,
-      lastReadingExcessConsumption: this.lastReadingExcessConsumption ?? null
+      lastReadingExcessConsumption: this.lastReadingExcessConsumption ?? null,
+      isActive: this.isActive
     }
   }
 

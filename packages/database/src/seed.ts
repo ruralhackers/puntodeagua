@@ -450,7 +450,8 @@ async function seedWaterMeters(waterPointIds: string[], waterAccountIds: string[
       lastReadingNormalizedValue:
         measurementUnit === 'L' ? Math.floor(initialReading / 1000) : initialReading,
       lastReadingDate: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000), // Random date within last 30 days
-      lastReadingExcessConsumption: Math.random() > 0.7 // 30% chance of excess consumption
+      lastReadingExcessConsumption: Math.random() > 0.7, // 30% chance of excess consumption
+      isActive: true // All seed meters are active by default
     }
   })
 

@@ -166,6 +166,7 @@ model WaterMeter {
   lastReadingNormalizedValue   Int?      @map("last_reading_normalized_value")
   lastReadingDate              DateTime? @map("last_reading_date")
   lastReadingExcessConsumption Boolean?  @map("last_reading_excess_consumption")
+  isActive                     Boolean   @default(true) @map("is_active")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -174,6 +175,7 @@ model WaterMeter {
 
   @@index([waterAccountId])
   @@index([waterPointId])
+  @@index([isActive])
 }
 
 model WaterMeterReading {

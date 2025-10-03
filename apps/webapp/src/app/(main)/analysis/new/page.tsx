@@ -1,7 +1,17 @@
 'use client'
 
-import { Calendar, Droplets, Loader2, MapPin, TestTube, User } from 'lucide-react'
+import {
+  Calendar,
+  ChevronDown,
+  ChevronRight,
+  Droplets,
+  Loader2,
+  MapPin,
+  TestTube,
+  User
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import MeasurementFields from '@/components/analysis/measurement-fields'
 import CreatePageHeader from '@/components/layout/create-page-header'
@@ -29,7 +39,8 @@ export default function NewAnalysisPage() {
   const communityId = user?.community?.id
   const router = useRouter()
 
-  const { formData, errors, updateFormData, validateForm } = useAnalysisForm()
+  const { formData, errors, updateFormData, validateForm } = useAnalysisForm(user?.name || '')
+  const [isLocationExpanded, setIsLocationExpanded] = useState(false)
 
   const utils = api.useUtils()
 
@@ -106,249 +117,258 @@ export default function NewAnalysisPage() {
         />
 
         {/* Form */}
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Analysis Type */}
-              <Card className="border-2 border-dashed border-blue-200 bg-blue-50/30">
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <TestTube className="h-4 w-4 text-blue-600" />
-                      <Label className="text-sm font-semibold text-blue-800">
-                        Tipo de Análisis *
-                      </Label>
-                    </div>
-                    <Select
-                      value={formData.analysisType}
-                      onValueChange={(value) => updateFormData('analysisType', value)}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Analysis Type */}
+          <Card className="border-2 border-dashed border-blue-200 bg-blue-50/30">
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <TestTube className="h-4 w-4 text-blue-600" />
+                  <Label className="text-sm font-semibold text-blue-800">Tipo de Análisis *</Label>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {ANALYSIS_TYPE_OPTIONS.map((option) => (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      variant={formData.analysisType === option.value ? 'default' : 'outline'}
+                      className={`
+                            h-auto p-3 sm:p-4 flex flex-col items-center sm:items-start gap-2 sm:gap-3 text-center sm:text-left
+                            min-h-[80px] sm:min-h-[100px] w-full overflow-hidden
+                            ${
+                              formData.analysisType === option.value
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'
+                                : 'border-blue-200 hover:border-blue-300 hover:bg-blue-50'
+                            }
+                            ${errors.analysisType ? 'border-destructive' : ''}
+                          `}
+                      onClick={() => updateFormData('analysisType', option.value)}
                     >
-                      <SelectTrigger
-                        className={errors.analysisType ? 'border-destructive' : 'border-blue-200'}
-                      >
-                        <SelectValue placeholder="Selecciona el tipo de análisis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ANALYSIS_TYPE_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">{option.icon}</span>
-                              <div>
-                                <div className="font-medium">{option.label}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {option.description}
-                                </div>
-                              </div>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.analysisType && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="text-red-500">⚠</span>
-                        {errors.analysisType}
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Analyst */}
-                <div className="space-y-2">
-                  <Label htmlFor="analyst" className="flex items-center gap-2 text-sm font-medium">
-                    <User className="h-4 w-4 text-gray-600" />
-                    Analista *
-                  </Label>
-                  <Input
-                    id="analyst"
-                    placeholder="Nombre del analista"
-                    value={formData.analyst}
-                    onChange={(e) => updateFormData('analyst', e.target.value)}
-                    className={errors.analyst ? 'border-destructive' : ''}
-                  />
-                  {errors.analyst && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                      <span className="text-red-500">⚠</span>
-                      {errors.analyst}
-                    </p>
-                  )}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 w-full h-full">
+                        <span className="text-2xl flex-shrink-0">{option.icon}</span>
+                        <div className="flex-1 min-w-0 flex flex-col gap-1 text-center sm:text-left">
+                          <div className="font-semibold text-sm leading-tight">{option.label}</div>
+                          <div className="text-xs opacity-75 leading-relaxed hyphens-auto hidden sm:block">
+                            {option.description}
+                          </div>
+                        </div>
+                      </div>
+                    </Button>
+                  ))}
                 </div>
 
-                {/* Analysis Date */}
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="analyzedAt"
-                    className="flex items-center gap-2 text-sm font-medium"
-                  >
-                    <Calendar className="h-4 w-4 text-gray-600" />
-                    Fecha de Análisis *
-                  </Label>
-                  <Input
-                    id="analyzedAt"
-                    type="date"
-                    value={formData.analyzedAt}
-                    max={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => updateFormData('analyzedAt', e.target.value)}
-                    className={errors.analyzedAt ? 'border-destructive' : ''}
-                  />
-                  {errors.analyzedAt && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                      <span className="text-red-500">⚠</span>
-                      {errors.analyzedAt}
-                    </p>
-                  )}
-                </div>
+                {errors.analysisType && (
+                  <p className="text-sm text-destructive flex items-center gap-1">
+                    <span className="text-red-500">⚠</span>
+                    {errors.analysisType}
+                  </p>
+                )}
               </div>
+            </CardContent>
+          </Card>
 
-              {/* Location Information */}
-              <Card className="border-green-200 bg-green-50/30">
-                <CardContent className="p-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-green-600" />
-                      <Label className="text-sm font-semibold text-green-800">
-                        Ubicación del Análisis
-                      </Label>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Water Zone */}
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="communityZoneId"
-                          className="text-sm font-medium text-green-700"
-                        >
-                          Zona de Agua
-                        </Label>
-                        {isLoadingZones ? (
-                          <div className="h-10 w-full rounded-md border border-green-200 bg-muted animate-pulse flex items-center justify-center">
-                            <Loader2 className="h-4 w-4 animate-spin text-green-600" />
-                          </div>
-                        ) : (
-                          <Select
-                            value={formData.communityZoneId}
-                            onValueChange={(value) => updateFormData('communityZoneId', value)}
-                          >
-                            <SelectTrigger className="border-green-200">
-                              <SelectValue placeholder="Selecciona una zona (opcional)" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {communityZones.map((zone) => (
-                                <SelectItem key={zone.id} value={zone.id}>
-                                  <div className="flex items-center gap-2">
-                                    <MapPin className="h-3 w-3 text-green-600" />
-                                    {zone.name}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
-
-                      {/* Water Deposit */}
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor="waterDepositId"
-                          className="text-sm font-medium text-green-700"
-                        >
-                          Depósito de Agua
-                        </Label>
-                        {isLoadingDeposits ? (
-                          <div className="h-10 w-full rounded-md border border-green-200 bg-muted animate-pulse flex items-center justify-center">
-                            <Loader2 className="h-4 w-4 animate-spin text-green-600" />
-                          </div>
-                        ) : (
-                          <Select
-                            value={formData.waterDepositId}
-                            onValueChange={(value) => updateFormData('waterDepositId', value)}
-                          >
-                            <SelectTrigger className="border-green-200">
-                              <SelectValue placeholder="Selecciona un depósito (opcional)" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {waterDeposits.map((deposit) => (
-                                <SelectItem key={deposit.id} value={deposit.id}>
-                                  <div className="flex items-center gap-2">
-                                    <Droplets className="h-3 w-3 text-blue-600" />
-                                    {deposit.name}
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Measurement Fields - Conditional */}
-              <MeasurementFields
-                analysisType={formData.analysisType}
-                formData={formData}
-                errors={errors}
-                updateFormData={updateFormData}
+          {/* Basic Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Analyst */}
+            <div className="space-y-2">
+              <Label htmlFor="analyst" className="flex items-center gap-2 text-sm font-medium">
+                <User className="h-4 w-4 text-gray-600" />
+                Analista *
+              </Label>
+              <Input
+                id="analyst"
+                placeholder="Nombre del analista"
+                value={formData.analyst}
+                onChange={(e) => updateFormData('analyst', e.target.value)}
+                className={errors.analyst ? 'border-destructive' : ''}
               />
+              {errors.analyst && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <span className="text-red-500">⚠</span>
+                  {errors.analyst}
+                </p>
+              )}
+            </div>
 
-              {/* Description */}
-              <Card className="border-gray-200 bg-gray-50/30">
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <Label htmlFor="description" className="text-sm font-semibold text-gray-800">
-                      Observaciones Adicionales
-                    </Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Añade cualquier observación relevante sobre el análisis, condiciones del agua, o notas del analista..."
-                      rows={3}
-                      value={formData.description}
-                      onChange={(e) => updateFormData('description', e.target.value)}
-                      className="border-gray-200"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Este campo es opcional pero puede ser útil para futuras referencias
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Analysis Date */}
+            <div className="space-y-2">
+              <Label htmlFor="analyzedAt" className="flex items-center gap-2 text-sm font-medium">
+                <Calendar className="h-4 w-4 text-gray-600" />
+                Fecha de Análisis *
+              </Label>
+              <Input
+                id="analyzedAt"
+                type="date"
+                value={formData.analyzedAt}
+                max={new Date().toISOString().split('T')[0]}
+                onChange={(e) => updateFormData('analyzedAt', e.target.value)}
+                className={errors.analyzedAt ? 'border-destructive' : ''}
+              />
+              {errors.analyzedAt && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <span className="text-red-500">⚠</span>
+                  {errors.analyzedAt}
+                </p>
+              )}
+            </div>
+          </div>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCancel}
-                  disabled={addAnalysisMutation.isPending}
-                  className="flex-1"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={addAnalysisMutation.isPending || !formData.analysisType}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                >
-                  {addAnalysisMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <TestTube className="mr-2 h-4 w-4" />
-                      Guardar Análisis
-                    </>
-                  )}
-                </Button>
+          {/* Measurement Fields - Conditional */}
+          <MeasurementFields
+            analysisType={formData.analysisType}
+            formData={formData}
+            errors={errors}
+            updateFormData={updateFormData}
+          />
+
+          {/* Description */}
+          <Card className="border-gray-200 bg-gray-50/30">
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <Label htmlFor="description" className="text-sm font-semibold text-gray-800">
+                  Observaciones Adicionales
+                </Label>
+                <Textarea
+                  id="description"
+                  placeholder="Añade cualquier observación relevante sobre el análisis, condiciones del agua, o notas del analista..."
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => updateFormData('description', e.target.value)}
+                  className="border-gray-200"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Este campo es opcional pero puede ser útil para futuras referencias
+                </p>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Location Information */}
+          <Card className="border-green-200 bg-green-50/30">
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={() => setIsLocationExpanded(!isLocationExpanded)}
+                  className="flex items-center gap-2 w-full text-left hover:bg-green-100/50 rounded-md p-2 -m-2 transition-colors"
+                >
+                  {isLocationExpanded ? (
+                    <ChevronDown className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-green-600" />
+                  )}
+                  <MapPin className="h-4 w-4 text-green-600" />
+                  <Label className="text-sm font-semibold text-green-800 cursor-pointer">
+                    Ubicación del Análisis (Opcional)
+                  </Label>
+                </button>
+
+                {isLocationExpanded && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    {/* Water Zone */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="communityZoneId"
+                        className="text-sm font-medium text-green-700"
+                      >
+                        Zona de Agua
+                      </Label>
+                      {isLoadingZones ? (
+                        <div className="h-10 w-full rounded-md border border-green-200 bg-muted animate-pulse flex items-center justify-center">
+                          <Loader2 className="h-4 w-4 animate-spin text-green-600" />
+                        </div>
+                      ) : (
+                        <Select
+                          value={formData.communityZoneId}
+                          onValueChange={(value) => updateFormData('communityZoneId', value)}
+                        >
+                          <SelectTrigger className="border-green-200">
+                            <SelectValue placeholder="Selecciona una zona (opcional)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {communityZones.map((zone) => (
+                              <SelectItem key={zone.id} value={zone.id}>
+                                <div className="flex items-center gap-2">
+                                  <MapPin className="h-3 w-3 text-green-600" />
+                                  {zone.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+
+                    {/* Water Deposit */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="waterDepositId"
+                        className="text-sm font-medium text-green-700"
+                      >
+                        Depósito de Agua
+                      </Label>
+                      {isLoadingDeposits ? (
+                        <div className="h-10 w-full rounded-md border border-green-200 bg-muted animate-pulse flex items-center justify-center">
+                          <Loader2 className="h-4 w-4 animate-spin text-green-600" />
+                        </div>
+                      ) : (
+                        <Select
+                          value={formData.waterDepositId}
+                          onValueChange={(value) => updateFormData('waterDepositId', value)}
+                        >
+                          <SelectTrigger className="border-green-200">
+                            <SelectValue placeholder="Selecciona un depósito (opcional)" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {waterDeposits.map((deposit) => (
+                              <SelectItem key={deposit.id} value={deposit.id}>
+                                <div className="flex items-center gap-2">
+                                  <Droplets className="h-3 w-3 text-blue-600" />
+                                  {deposit.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleCancel}
+              disabled={addAnalysisMutation.isPending}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={addAnalysisMutation.isPending || !formData.analysisType}
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+            >
+              {addAnalysisMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <TestTube className="mr-2 h-4 w-4" />
+                  Guardar Análisis
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
       </div>
     </PageContainer>
   )

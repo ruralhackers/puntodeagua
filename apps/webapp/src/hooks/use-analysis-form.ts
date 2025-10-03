@@ -17,10 +17,10 @@ export interface AnalysisFormErrors {
   [key: string]: string
 }
 
-export function useAnalysisForm() {
+export function useAnalysisForm(initialAnalyst: string = '') {
   const [formData, setFormData] = useState<AnalysisFormData>({
     analysisType: '',
-    analyst: '',
+    analyst: initialAnalyst,
     analyzedAt: new Date().toISOString().split('T')[0],
     communityZoneId: '',
     waterDepositId: '',
@@ -89,7 +89,7 @@ export function useAnalysisForm() {
   const resetForm = () => {
     setFormData({
       analysisType: '',
-      analyst: '',
+      analyst: initialAnalyst,
       analyzedAt: new Date().toISOString().split('T')[0],
       communityZoneId: '',
       waterDepositId: '',

@@ -1,8 +1,8 @@
 import { Id } from '@pda/common/domain'
 import { Analysis, RegistersFactory } from '@pda/registers'
 import { analysisSchema } from '@pda/registers/domain/entities/analysis.dto'
-import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
 export const registersRouter = createTRPCRouter({
@@ -52,15 +52,7 @@ export const registersRouter = createTRPCRouter({
         await service.run({ analysis })
         return analysis.toDto()
       } catch (error) {
-        // Handle domain errors with Spanish messages
-        if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
-          const domainError = error as { defaultMessageEs: string; statusCode?: number }
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: domainError.defaultMessageEs
-          })
-        }
-        throw error
+        handleDomainError(error)
       }
     })
 })

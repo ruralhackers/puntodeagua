@@ -1,6 +1,7 @@
 import { Id } from '@pda/common/domain'
 import { WaterAccountFactory } from '@pda/water-account'
 import { z } from 'zod'
+import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
 export const waterAccountRouter = createTRPCRouter({
@@ -10,6 +11,16 @@ export const waterAccountRouter = createTRPCRouter({
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const meters = await repo.findByWaterPointId(Id.fromString(input.id))
       return meters.map((meter) => meter.toDto())
+    }),
+
+  getActiveWaterMetersOrderedByLastReading: protectedProcedure
+    .input(z.object({ zoneIds: z.array(z.string()) }))
+    .query(async ({ input }) => {
+      const repo = WaterAccountFactory.waterMeterPrismaRepository()
+      const zoneIds = input.zoneIds.map(Id.fromString)
+      const meters = await repo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
+      const dtos = meters.map((meter) => meter.toDto())
+      return dtos
     }),
 
   addWaterMeterReading: protectedProcedure
@@ -22,16 +33,20 @@ export const waterAccountRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const service = WaterAccountFactory.waterMeterReadingCreatorService()
+      try {
+        const service = WaterAccountFactory.waterMeterReadingCreatorService()
 
-      const params = {
-        waterMeterId: Id.fromString(input.waterMeterId),
-        reading: input.reading,
-        date: input.readingDate,
-        notes: input.notes ?? undefined
+        const params = {
+          waterMeterId: Id.fromString(input.waterMeterId),
+          reading: input.reading,
+          date: input.readingDate,
+          notes: input.notes ?? undefined
+        }
+
+        const reading = await service.run(params)
+        return reading.toDto()
+      } catch (error) {
+        handleDomainError(error)
       }
-
-      const reading = await service.run(params)
-      return reading.toDto()
     })
 })

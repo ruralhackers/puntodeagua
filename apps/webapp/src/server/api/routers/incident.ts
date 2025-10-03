@@ -2,8 +2,8 @@ import { Id } from '@pda/common/domain'
 import { RegistersFactory } from '@pda/registers'
 import { Incident } from '@pda/registers/domain/entities/incident'
 import { incidentSchema } from '@pda/registers/domain/entities/incident.dto'
-import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
 export const incidentsRouter = createTRPCRouter({
@@ -52,14 +52,7 @@ export const incidentsRouter = createTRPCRouter({
         return savedIncident.toDto()
       } catch (error) {
         // Handle domain errors with Spanish messages
-        if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
-          const domainError = error as { defaultMessageEs: string; statusCode?: number }
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: domainError.defaultMessageEs
-          })
-        }
-        throw error
+        handleDomainError(error)
       }
     }),
 
@@ -77,16 +70,7 @@ export const incidentsRouter = createTRPCRouter({
       })
       return savedIncident.toDto()
     } catch (error) {
-      // Handle domain errors with Spanish messages
-      if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
-        const domainError = error as { defaultMessageEs: string; statusCode?: number }
-        const errorCode = domainError.statusCode === 404 ? 'NOT_FOUND' : 'BAD_REQUEST'
-        throw new TRPCError({
-          code: errorCode,
-          message: domainError.defaultMessageEs
-        })
-      }
-      throw error
+      handleDomainError(error)
     }
   }),
 

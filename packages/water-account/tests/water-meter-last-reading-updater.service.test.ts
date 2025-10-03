@@ -1,12 +1,11 @@
-import { beforeEach, describe, expect, it, mock, xit } from 'bun:test'
+import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import {
   Community,
   type CommunityRepository,
   CommunityZone,
   type CommunityZoneRepository,
-  WaterPoint,
-  type WaterPointRepository
+  WaterPoint
 } from '@pda/community'
 import { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeter, WaterMeterReading } from '../domain'
@@ -17,7 +16,6 @@ describe('ReadingCreatorService', () => {
   let mockWaterMeterRepository: WaterMeterRepository
   let mockCommunityRepository: CommunityRepository
   let mockCommunityZoneRepository: CommunityZoneRepository
-  let mockWaterPointRepository: WaterPointRepository
 
   // Default test entities
   const defaultWaterPoint = WaterPoint.fromDto({
@@ -50,11 +48,21 @@ describe('ReadingCreatorService', () => {
     id: Id.generateUniqueId().toString(),
     name: 'Test Water Meter',
     waterAccountId: Id.generateUniqueId().toString(),
-    waterPointId: Id.generateUniqueId().toString(),
     measurementUnit: 'L',
     lastReadingNormalizedValue: 1000,
     lastReadingDate: new Date(),
-    lastReadingExcessConsumption: true
+    lastReadingExcessConsumption: true,
+    isActive: true,
+    waterPoint: {
+      id: defaultWaterPoint.id.toString(),
+      name: defaultWaterPoint.name,
+      location: defaultWaterPoint.location,
+      fixedPopulation: defaultWaterPoint.fixedPopulation,
+      floatingPopulation: defaultWaterPoint.floatingPopulation,
+      cadastralReference: defaultWaterPoint.cadastralReference,
+      communityZoneId: defaultWaterPoint.communityZoneId.toString(),
+      notes: defaultWaterPoint.notes
+    }
   })
 
   const now = new Date()
@@ -86,26 +94,16 @@ describe('ReadingCreatorService', () => {
       findForTable: mock()
     } as unknown as CommunityZoneRepository
 
-    mockWaterPointRepository = {
-      findById: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as WaterPointRepository
-
     service = new WaterMeterLastReadingUpdater(
       mockWaterMeterRepository,
       mockCommunityRepository,
-      mockCommunityZoneRepository,
-      mockWaterPointRepository
+      mockCommunityZoneRepository
     )
   })
 
   it('should update the last reading with excess consumption true with person based water limit rule', async () => {
     // Arrange
     const waterMeter = defaultWaterMeter
-    const waterPoint = defaultWaterPoint //15 people, 100 liters per person per day -> 1500 liters per day
     const communityZone = defaultCommunityZone
     const community = defaultCommunity
 
@@ -129,7 +127,6 @@ describe('ReadingCreatorService', () => {
     ]
 
     // Update mocks with default entities
-    mockWaterPointRepository.findById = mock().mockResolvedValue(waterPoint)
     mockCommunityZoneRepository.findById = mock().mockResolvedValue(communityZone)
     mockCommunityRepository.findById = mock().mockResolvedValue(community)
     mockWaterMeterRepository.save = mock().mockResolvedValue(waterMeter)
@@ -140,14 +137,13 @@ describe('ReadingCreatorService', () => {
     // Assert
     expect(resultWaterMeter).toBe(waterMeter)
     expect(resultWaterMeter.lastReadingNormalizedValue).toBe(18000)
-    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings?.[0]?.readingDate)
+    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings[0]?.readingDate)
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(true)
   })
 
   it('should update the last reading with excess consumption false with person based water limit rule', async () => {
     // Arrange
     const waterMeter = defaultWaterMeter
-    const waterPoint = defaultWaterPoint //15 people, 100 liters per person per day -> 1500 liters per day
     const communityZone = defaultCommunityZone
     const community = defaultCommunity
 
@@ -171,7 +167,6 @@ describe('ReadingCreatorService', () => {
     ]
 
     // Update mocks with default entities
-    mockWaterPointRepository.findById = mock().mockResolvedValue(waterPoint)
     mockCommunityZoneRepository.findById = mock().mockResolvedValue(communityZone)
     mockCommunityRepository.findById = mock().mockResolvedValue(community)
     mockWaterMeterRepository.save = mock().mockResolvedValue(waterMeter)
@@ -182,14 +177,13 @@ describe('ReadingCreatorService', () => {
     // Assert
     expect(resultWaterMeter).toBe(waterMeter)
     expect(resultWaterMeter.lastReadingNormalizedValue).toBe(15000)
-    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings?.[0]?.readingDate)
+    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings[0]?.readingDate)
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(false)
   })
 
   it('should update the last reading with excess consumption true with household based water limit rule', async () => {
     // Arrange
     const waterMeter = defaultWaterMeter
-    const waterPoint = defaultWaterPoint
     const communityZone = defaultCommunityZone
     const community = Community.fromDto({
       id: Id.generateUniqueId().toString(),
@@ -219,7 +213,6 @@ describe('ReadingCreatorService', () => {
       })
     ]
     // Update mocks with default entities
-    mockWaterPointRepository.findById = mock().mockResolvedValue(waterPoint)
     mockCommunityZoneRepository.findById = mock().mockResolvedValue(communityZone)
     mockCommunityRepository.findById = mock().mockResolvedValue(community)
     mockWaterMeterRepository.save = mock().mockResolvedValue(waterMeter)
@@ -230,14 +223,13 @@ describe('ReadingCreatorService', () => {
     // Assert
     expect(resultWaterMeter).toBe(waterMeter)
     expect(resultWaterMeter.lastReadingNormalizedValue).toBe(12000)
-    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings?.[0]?.readingDate)
+    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings[0]?.readingDate)
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(true)
   })
 
   it('should update the last reading with excess consumption true with household based water limit rule', async () => {
     // Arrange
     const waterMeter = defaultWaterMeter
-    const waterPoint = defaultWaterPoint
     const communityZone = defaultCommunityZone
     const community = Community.fromDto({
       id: Id.generateUniqueId().toString(),
@@ -267,7 +259,6 @@ describe('ReadingCreatorService', () => {
       })
     ]
     // Update mocks with default entities
-    mockWaterPointRepository.findById = mock().mockResolvedValue(waterPoint)
     mockCommunityZoneRepository.findById = mock().mockResolvedValue(communityZone)
     mockCommunityRepository.findById = mock().mockResolvedValue(community)
     mockWaterMeterRepository.save = mock().mockResolvedValue(waterMeter)
@@ -278,7 +269,7 @@ describe('ReadingCreatorService', () => {
     // Assert
     expect(resultWaterMeter).toBe(waterMeter)
     expect(resultWaterMeter.lastReadingNormalizedValue).toBe(10000)
-    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings?.[0]?.readingDate)
+    expect(resultWaterMeter.lastReadingDate).toBe(lastReadings[0]?.readingDate)
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(false)
   })
 })

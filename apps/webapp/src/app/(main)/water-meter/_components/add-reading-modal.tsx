@@ -1,6 +1,5 @@
 'use client'
 
-import type { WaterMeterDto } from '@pda/water-account/domain'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -19,17 +18,17 @@ import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
 interface AddReadingModalProps {
-  isOpen: boolean
+  waterMeterId: string
+  waterPointName: string
+  measurementUnit: string
   onClose: () => void
-  selectedMeter: WaterMeterDto | null
-  waterPointId: string
 }
 
-export default function AddReadingModal({
-  isOpen,
-  onClose,
-  selectedMeter,
-  waterPointId
+export function AddReadingModal({
+  waterMeterId,
+  waterPointName,
+  measurementUnit,
+  onClose
 }: AddReadingModalProps) {
   const [readingForm, setReadingForm] = useState({
     reading: '',
@@ -43,7 +42,7 @@ export default function AddReadingModal({
   const addReadingMutation = api.waterAccount.addWaterMeterReading.useMutation({
     onSuccess: async () => {
       // Invalidate and refetch water meters data
-      await utils.waterAccount.getWaterMetersByWaterPointId.invalidate({ id: waterPointId })
+      await utils.waterAccount.getActiveWaterMetersOrderedByLastReading.invalidate()
       onClose()
       setReadingForm({
         reading: '',
@@ -58,10 +57,10 @@ export default function AddReadingModal({
   })
 
   const handleSubmitReading = () => {
-    if (!selectedMeter || !readingForm.reading || !readingForm.readingDate) return
+    if (!readingForm.reading || !readingForm.readingDate) return
 
     addReadingMutation.mutate({
-      waterMeterId: selectedMeter.id,
+      waterMeterId: waterMeterId,
       reading: readingForm.reading,
       readingDate: new Date(readingForm.readingDate),
       notes: readingForm.notes || null
@@ -79,12 +78,17 @@ export default function AddReadingModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={true} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Nueva Lectura</DialogTitle>
           <DialogDescription>
-            Añadir una nueva lectura para el contador: {selectedMeter?.name}
+            Añadir una nueva lectura para: <strong>{waterPointName}</strong>
+            <br />
+            <span className="text-sm text-muted-foreground">
+              Unidad de medida:{' '}
+              <strong>{measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}</strong>
+            </span>
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +101,7 @@ export default function AddReadingModal({
               id="reading"
               type="number"
               step="0.01"
-              placeholder="0.00"
+              placeholder={`0.00 ${measurementUnit}`}
               className="col-span-3"
               value={readingForm.reading}
               onChange={(e) => setReadingForm((prev) => ({ ...prev, reading: e.target.value }))}

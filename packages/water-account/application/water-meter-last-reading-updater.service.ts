@@ -1,8 +1,4 @@
-import type {
-  CommunityRepository,
-  CommunityZoneRepository,
-  WaterPointRepository
-} from '@pda/community'
+import type { CommunityRepository, CommunityZoneRepository } from '@pda/community'
 import { differenceInDays } from 'date-fns'
 import type { WaterMeter } from '../domain'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
@@ -12,8 +8,7 @@ export class WaterMeterLastReadingUpdater {
   constructor(
     private readonly waterMeterRepository: WaterMeterRepository,
     private readonly communityRepository: CommunityRepository,
-    private readonly communityZoneRepository: CommunityZoneRepository,
-    private readonly waterPointRepository: WaterPointRepository
+    private readonly communityZoneRepository: CommunityZoneRepository
   ) {}
 
   async run(waterMeter: WaterMeter, lastReadings: WaterMeterReading[]) {
@@ -27,10 +22,7 @@ export class WaterMeterLastReadingUpdater {
       )
     }
 
-    const waterPoint = await this.waterPointRepository.findById(waterMeter.waterPointId)
-    if (!waterPoint) {
-      throw new Error('Water point not found')
-    }
+    const waterPoint = waterMeter.waterPoint
 
     const communityZone = await this.communityZoneRepository.findById(waterPoint.communityZoneId)
     if (!communityZone) {

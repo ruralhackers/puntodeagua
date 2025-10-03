@@ -14,26 +14,39 @@ describe('WaterMeterReadingCreator', () => {
   let mockWaterMeterLastReadingUpdater: WaterMeterLastReadingUpdater
 
   // Default test entities
+  const defaultWaterPoint = {
+    id: Id.generateUniqueId().toString(),
+    name: 'Test Water Point',
+    location: 'Test Location',
+    fixedPopulation: 4,
+    floatingPopulation: 2,
+    cadastralReference: 'TEST-001',
+    communityZoneId: Id.generateUniqueId().toString(),
+    notes: 'Test water point'
+  }
+
   const defaultWaterMeterLiters = WaterMeter.fromDto({
     id: Id.generateUniqueId().toString(),
     name: 'Test Water Meter (L)',
     waterAccountId: Id.generateUniqueId().toString(),
-    waterPointId: Id.generateUniqueId().toString(),
     measurementUnit: 'L',
     lastReadingNormalizedValue: 1000,
     lastReadingDate: new Date(),
-    lastReadingExcessConsumption: true
+    lastReadingExcessConsumption: true,
+    isActive: true,
+    waterPoint: defaultWaterPoint
   })
 
   const defaultWaterMeterCubicMeters = WaterMeter.fromDto({
     id: Id.generateUniqueId().toString(),
     name: 'Test Water Meter (M3)',
     waterAccountId: Id.generateUniqueId().toString(),
-    waterPointId: Id.generateUniqueId().toString(),
     measurementUnit: 'M3',
     lastReadingNormalizedValue: 1000,
     lastReadingDate: new Date(),
-    lastReadingExcessConsumption: true
+    lastReadingExcessConsumption: true,
+    isActive: true,
+    waterPoint: defaultWaterPoint
   })
 
   const defaultLastReading = WaterMeterReading.fromDto({

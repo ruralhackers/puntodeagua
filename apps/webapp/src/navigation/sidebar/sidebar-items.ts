@@ -71,6 +71,12 @@ export const sidebarItems: NavGroup[] = [
         icon: Fingerprint
       },
       {
+        title: 'Lecturas',
+        url: '/water-meter',
+        icon: Fingerprint,
+        isNew: true
+      },
+      {
         title: 'Análisis',
         url: '/admin/analysis',
         icon: TestTube

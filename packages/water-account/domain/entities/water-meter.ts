@@ -1,4 +1,5 @@
 import { Id } from '@pda/common/domain'
+import { WaterPoint } from '@pda/community/domain'
 import { MeasurementUnit } from '../value-objects/measurement-unit'
 import type { WaterMeterDto } from './water-meter.dto'
 
@@ -7,8 +8,8 @@ export class WaterMeter {
     public readonly id: Id,
     public name: string,
     public waterAccountId: Id,
-    public waterPointId: Id,
     public measurementUnit: MeasurementUnit,
+    public waterPoint: WaterPoint,
     public lastReadingNormalizedValue?: number | null,
     public lastReadingDate?: Date | null,
     public lastReadingExcessConsumption?: boolean | null,
@@ -20,8 +21,8 @@ export class WaterMeter {
       Id.generateUniqueId(),
       dto.name,
       Id.fromString(dto.waterAccountId),
-      Id.fromString(dto.waterPointId),
       MeasurementUnit.fromString(dto.measurementUnit),
+      WaterPoint.fromDto(dto.waterPoint),
       dto.lastReadingNormalizedValue,
       dto.lastReadingDate,
       dto.lastReadingExcessConsumption,
@@ -34,8 +35,8 @@ export class WaterMeter {
       Id.fromString(dto.id),
       dto.name,
       Id.fromString(dto.waterAccountId),
-      Id.fromString(dto.waterPointId),
       MeasurementUnit.fromString(dto.measurementUnit),
+      WaterPoint.fromDto(dto.waterPoint),
       dto.lastReadingNormalizedValue,
       dto.lastReadingDate,
       dto.lastReadingExcessConsumption,
@@ -48,12 +49,12 @@ export class WaterMeter {
       id: this.id.toString(),
       name: this.name,
       waterAccountId: this.waterAccountId.toString(),
-      waterPointId: this.waterPointId.toString(),
       measurementUnit: this.measurementUnit.toString(),
       lastReadingNormalizedValue: this.lastReadingNormalizedValue ?? null,
       lastReadingDate: this.lastReadingDate ?? null,
       lastReadingExcessConsumption: this.lastReadingExcessConsumption ?? null,
-      isActive: this.isActive
+      isActive: this.isActive,
+      waterPoint: this.waterPoint.toDto()
     }
   }
 

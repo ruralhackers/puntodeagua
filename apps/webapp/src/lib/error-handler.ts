@@ -4,6 +4,20 @@ import { toast } from 'sonner'
  * Handles domain errors and shows appropriate Spanish messages to the user
  */
 export function handleDomainError(error: unknown): void {
+  // Check if it's a TRPC error with Spanish message (from our backend conversion)
+  if (error && typeof error === 'object' && 'message' in error) {
+    const trpcError = error as { message: string }
+    // If the message is in Spanish, it's likely from our backend conversion
+    if (
+      trpcError.message.includes('lectura') ||
+      trpcError.message.includes('contador') ||
+      trpcError.message.includes('fecha')
+    ) {
+      toast.error(trpcError.message)
+      return
+    }
+  }
+
   // Check if it's a domain error with defaultMessageEs
   if (error && typeof error === 'object' && 'defaultMessageEs' in error) {
     const domainError = error as { defaultMessageEs: string; name: string }

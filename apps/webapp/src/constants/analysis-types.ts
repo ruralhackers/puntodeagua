@@ -1,4 +1,6 @@
-export type AnalysisType = 'chlorine_ph' | 'turbidity' | 'hardness' | 'complete'
+// export type AnalysisType = 'chlorine_ph' | 'turbidity' | 'hardness' | 'complete'
+
+import type { AnalysisType } from '@pda/registers/domain'
 
 export const ANALYSIS_TYPE_OPTIONS: {
   value: AnalysisType

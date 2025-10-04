@@ -17,3 +17,4 @@ export {
 } from './errors/incident-errors'
 export type { AnalysisRepository } from './repositories/analysis.repository'
 export type { IncidentRepository } from './repositories/incident.repository'
+export { AnalysisType } from './value-objects/analysis-type'

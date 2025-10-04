@@ -46,6 +46,64 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
     return analyses.map((analysis) => Analysis.fromDto(this.fromPrismaPayload(analysis)))
   }
 
+  async findByFilters(filters: {
+    communityId?: Id
+    analysisTypes?: string[]
+    startDate?: Date
+    endDate?: Date
+  }) {
+    const where: Prisma.AnalysisWhereInput = {}
+
+    if (filters.communityId) {
+      where.communityId = filters.communityId.toString()
+    }
+
+    if (filters.analysisTypes && filters.analysisTypes.length > 0) {
+      where.analysisType = {
+        in: filters.analysisTypes
+      }
+    }
+
+    if (filters.startDate || filters.endDate) {
+      where.analyzedAt = {}
+      if (filters.startDate) {
+        where.analyzedAt.gte = filters.startDate
+      }
+      if (filters.endDate) {
+        where.analyzedAt.lte = filters.endDate
+      }
+    }
+
+    const analyses = await this.getModel().findMany({
+      where,
+      orderBy: { analyzedAt: 'desc' },
+      include: {
+        community: {
+          select: {
+            name: true
+          }
+        },
+        communityZone: {
+          select: {
+            name: true
+          }
+        },
+        waterDeposit: {
+          select: {
+            name: true
+          }
+        }
+      }
+    })
+
+    return analyses.map((analysis) => ({
+      ...Analysis.fromDto(this.fromPrismaPayload(analysis)).toDto(),
+      communityName: analysis.community?.name || 'N/A',
+      zoneName: analysis.communityZone?.name,
+      depositName: analysis.waterDeposit?.name
+    }))
+  }
+
   async save(analysis: Analysis) {
     const update = {
       communityId: analysis.communityId.toString(),

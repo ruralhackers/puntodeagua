@@ -54,5 +54,40 @@ export const registersRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  exportAnalyses: protectedProcedure
+    .input(z.object({
+      analysisTypes: z.array(z.enum(['chlorine_ph', 'turbidity', 'hardness', 'complete'])),
+      startDate: z.date(),
+      endDate: z.date(),
+      communityId: z.string().optional()
+    }))
+    .query(async ({ input, ctx }) => {
+      try {
+        const repo = RegistersFactory.analysisPrismaRepository()
+        
+        // Si no se proporciona communityId, usar la del usuario autenticado
+        const communityId = input.communityId 
+          ? Id.fromString(input.communityId)
+          : ctx.session?.user?.community?.id 
+            ? Id.fromString(ctx.session.user.community.id)
+            : undefined
+
+        if (!communityId) {
+          throw new Error('No se pudo determinar la comunidad para la exportación')
+        }
+
+        const analyses = await repo.findByFilters({
+          communityId,
+          analysisTypes: input.analysisTypes,
+          startDate: input.startDate,
+          endDate: input.endDate
+        })
+
+        return analyses
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

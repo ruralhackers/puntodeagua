@@ -29,7 +29,7 @@ export default function AnalysisTypeSelectorPage() {
     }).toString()
 
     // Navegar al siguiente paso con los parámetros
-    router.push(`/exports/analysis/dates?${queryString}`)
+    router.push(`/export/analysis/dates?${queryString}`)
   }
 
   return (
@@ -37,7 +37,7 @@ export default function AnalysisTypeSelectorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link href="/exports" className="hover:text-foreground">
+          <Link href="/export" className="hover:text-foreground">
             Exportar Datos
           </Link>
           <span>/</span>

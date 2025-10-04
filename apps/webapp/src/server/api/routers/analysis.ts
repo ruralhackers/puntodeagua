@@ -1,5 +1,5 @@
 import { Id } from '@pda/common/domain'
-import { Analysis, RegistersFactory } from '@pda/registers'
+import { Analysis, AnalysisType, RegistersFactory } from '@pda/registers'
 import { analysisSchema } from '@pda/registers/domain/entities/analysis.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
@@ -57,20 +57,22 @@ export const registersRouter = createTRPCRouter({
     }),
 
   exportAnalyses: protectedProcedure
-    .input(z.object({
-      analysisTypes: z.array(z.enum(['chlorine_ph', 'turbidity', 'hardness', 'complete'])),
-      startDate: z.date(),
-      endDate: z.date(),
-      communityId: z.string().optional()
-    }))
+    .input(
+      z.object({
+        analysisTypes: z.array(z.enum(AnalysisType.values() as [string, ...string[]])),
+        startDate: z.date(),
+        endDate: z.date(),
+        communityId: z.string().optional()
+      })
+    )
     .query(async ({ input, ctx }) => {
       try {
         const repo = RegistersFactory.analysisPrismaRepository()
-        
+
         // Si no se proporciona communityId, usar la del usuario autenticado
-        const communityId = input.communityId 
+        const communityId = input.communityId
           ? Id.fromString(input.communityId)
-          : ctx.session?.user?.community?.id 
+          : ctx.session?.user?.community?.id
             ? Id.fromString(ctx.session.user.community.id)
             : undefined
 

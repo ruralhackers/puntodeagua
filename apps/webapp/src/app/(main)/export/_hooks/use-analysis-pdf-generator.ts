@@ -1,30 +1,41 @@
 import { useState } from 'react'
+import { api } from '@/trpc/react'
 import { generateAnalysisPDF } from '../_utils/generate-pdf'
 
-interface AnalysisData {
-  id: string
-  analysisType: string
-  analyst: string
-  analyzedAt: string
-  communityName: string
-  zoneName?: string
-  depositName?: string
-  ph?: number
-  chlorine?: number
-  turbidity?: number
-  description?: string
-}
+/**
+ * Hook específico para generar PDFs de análisis de calidad del agua
+ * Maneja la obtención de datos de la API y la generación del PDF
+ */
 
-interface UsePDFGeneratorProps {
-  data: AnalysisData[]
+interface UseAnalysisPDFGeneratorProps {
   selectedTypes: string[]
   startDate: string
   endDate: string
 }
 
-export function usePDFGenerator({ data, selectedTypes, startDate, endDate }: UsePDFGeneratorProps) {
+export function useAnalysisPDFGenerator({
+  selectedTypes,
+  startDate,
+  endDate
+}: UseAnalysisPDFGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Query para obtener datos reales de la API
+  const {
+    data: realData,
+    isLoading,
+    error: apiError
+  } = api.registers.exportAnalyses.useQuery(
+    {
+      analysisTypes: selectedTypes,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate)
+    },
+    {
+      enabled: selectedTypes.length > 0 && !!startDate && !!endDate
+    }
+  )
 
   const generatePDF = async () => {
     try {
@@ -39,9 +50,12 @@ export function usePDFGenerator({ data, selectedTypes, startDate, endDate }: Use
         minute: '2-digit'
       })
 
-      // Crear el PDF con los datos proporcionados
+      // Usar solo datos reales de la API
+      const dataToUse = realData || []
+
+      // Crear el PDF con los datos
       const blob = await generateAnalysisPDF({
-        data,
+        data: dataToUse,
         selectedTypes,
         startDate,
         endDate,
@@ -71,6 +85,8 @@ export function usePDFGenerator({ data, selectedTypes, startDate, endDate }: Use
   return {
     generatePDF,
     isGenerating,
-    error
+    error: error || apiError?.message,
+    realData,
+    isLoading: isLoading || isGenerating
   }
 }

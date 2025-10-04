@@ -55,7 +55,7 @@ export default function DateRangeSelectorPage() {
     }).toString()
 
     // Navegar al siguiente paso
-    router.push(`/exports/analysis/results?${queryString}`)
+    router.push(`/export/analysis/results?${queryString}`)
   }
 
   const selectedTypesOptions = selectedTypes
@@ -67,11 +67,11 @@ export default function DateRangeSelectorPage() {
       <div className="max-w-4xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link href="/exports" className="hover:text-foreground">
+          <Link href="/export" className="hover:text-foreground">
             Exportar Datos
           </Link>
           <span>/</span>
-          <Link href="/exports/analysis" className="hover:text-foreground">
+          <Link href="/export/analysis" className="hover:text-foreground">
             Análisis
           </Link>
           <span>/</span>
@@ -169,7 +169,7 @@ export default function DateRangeSelectorPage() {
         {/* Navigation */}
         <div className="flex justify-between">
           <Button variant="outline" asChild>
-            <Link href="/exports/analysis">
+            <Link href="/export/analysis">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver
             </Link>

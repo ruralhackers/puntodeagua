@@ -43,10 +43,8 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
           >
             <Header session={session} />
             <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
-              <div className="min-h-0 flex-1 p-4 md:p-6 overflow-y-auto">
-                {children}
-                <Footer />
-              </div>
+              <div className="min-h-0 flex-1 p-4 md:p-6 overflow-y-auto">{children}</div>
+              <Footer />
             </CommunityZonesStoreProvider>
           </SidebarInset>
         </SidebarProvider>

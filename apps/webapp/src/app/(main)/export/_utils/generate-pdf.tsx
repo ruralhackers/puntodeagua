@@ -1,12 +1,11 @@
 import { pdf } from '@react-pdf/renderer'
-import type { AnalysisType } from '@/constants/analysis-types'
 import { AnalysisPDF } from '../_components/analysis-pdf'
 
 interface AnalysisData {
   id: string
   analysisType: string
   analyst: string
-  analyzedAt: string
+  analyzedAt: string | Date
   communityName: string
   zoneName?: string
   depositName?: string
@@ -18,7 +17,7 @@ interface AnalysisData {
 
 interface GeneratePDFProps {
   data: AnalysisData[]
-  selectedTypes: AnalysisType[]
+  selectedTypes: string[]
   startDate: string
   endDate: string
   generatedAt: string

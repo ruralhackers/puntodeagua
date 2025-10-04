@@ -22,7 +22,7 @@ export default function ExportDataPage() {
       description: 'Exportar análisis de calidad del agua',
       icon: TestTube,
       enabled: true,
-      href: '/exports/analysis'
+      href: '/export/analysis'
     },
     {
       id: 'incidents',
@@ -85,11 +85,7 @@ export default function ExportDataPage() {
                         )}
                       </div>
                     </div>
-                    {isDisabled ? (
-                      <Lock className="h-5 w-5 text-muted-foreground" />
-                    ) : (
-                      <ArrowRight className="h-5 w-5 text-primary" />
-                    )}
+                    {isDisabled ? <Lock className="h-5 w-5 text-muted-foreground" /> : null}
                   </div>
                 </CardHeader>
 

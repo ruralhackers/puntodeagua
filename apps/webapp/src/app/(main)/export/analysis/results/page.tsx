@@ -8,50 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ANALYSIS_TYPE_OPTIONS } from '@/constants/analysis-types'
-import { usePDFGenerator } from '../../_hooks/use-pdf-generator'
-
-// Mock data para desarrollo - será reemplazado por datos reales de la API
-const mockAnalysisData = [
-  {
-    id: '1',
-    analysisType: 'chlorine_ph',
-    analyst: 'Juan Pérez',
-    analyzedAt: '2024-01-15T10:30:00Z',
-    communityName: 'Comunidad Anceu',
-    zoneName: 'Zona Norte',
-    depositName: 'Depósito Principal',
-    ph: 7.2,
-    chlorine: 0.5,
-    turbidity: undefined,
-    description: 'Análisis rutinario de calidad'
-  },
-  {
-    id: '2',
-    analysisType: 'turbidity',
-    analyst: 'María García',
-    analyzedAt: '2024-01-20T14:15:00Z',
-    communityName: 'Comunidad Anceu',
-    zoneName: 'Zona Sur',
-    depositName: undefined,
-    ph: undefined,
-    chlorine: undefined,
-    turbidity: 2.1,
-    description: 'Verificación de turbidez post-lluvia'
-  },
-  {
-    id: '3',
-    analysisType: 'complete',
-    analyst: 'Carlos López',
-    analyzedAt: '2024-02-01T09:45:00Z',
-    communityName: 'Comunidad Anceu',
-    zoneName: 'Zona Centro',
-    depositName: 'Depósito Secundario',
-    ph: 6.8,
-    chlorine: 0.3,
-    turbidity: 1.5,
-    description: 'Análisis completo mensual'
-  }
-]
+import { useAnalysisPDFGenerator } from '../../_hooks/use-analysis-pdf-generator'
 
 export default function ExportResultsPage() {
   const searchParams = useSearchParams()
@@ -62,19 +19,23 @@ export default function ExportResultsPage() {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [analysisData] = useState(mockAnalysisData)
 
   // Hook para generar PDF
   const {
     generatePDF,
     isGenerating,
-    error: pdfError
-  } = usePDFGenerator({
-    data: analysisData,
+    error: pdfError,
+    realData,
+    isLoading: apiLoading
+  } = useAnalysisPDFGenerator({
     selectedTypes,
     startDate,
     endDate
   })
+
+  // Usar solo datos reales de la API
+  const displayData = realData || []
+  const isDataLoading = apiLoading
 
   // Parsear parámetros desde URL
   useEffect(() => {
@@ -91,15 +52,16 @@ export default function ExportResultsPage() {
   }
 
   const handleNewExport = () => {
-    window.location.href = '/exports'
+    window.location.href = '/export'
   }
 
   const selectedTypesOptions = selectedTypes
     .map((type) => ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value.toString() === type))
     .filter(Boolean)
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
+  const formatDate = (dateString: string | Date) => {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+    return date.toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -118,15 +80,15 @@ export default function ExportResultsPage() {
       <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link href="/exports" className="hover:text-foreground">
+          <Link href="/export" className="hover:text-foreground">
             Exportar Datos
           </Link>
           <span>/</span>
-          <Link href="/exports/analysis" className="hover:text-foreground">
+          <Link href="/export/analysis" className="hover:text-foreground">
             Análisis
           </Link>
           <span>/</span>
-          <Link href="/exports/analysis/dates" className="hover:text-foreground">
+          <Link href="/export/analysis/dates" className="hover:text-foreground">
             Fechas
           </Link>
           <span>/</span>
@@ -176,7 +138,9 @@ export default function ExportResultsPage() {
 
               <div>
                 <h4 className="font-semibold mb-2">Total de Registros</h4>
-                <p className="text-2xl font-bold text-primary">{analysisData.length}</p>
+                <p className="text-2xl font-bold text-primary">
+                  {isDataLoading ? '...' : displayData.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -193,7 +157,7 @@ export default function ExportResultsPage() {
               <div className="flex gap-2">
                 <Button
                   onClick={handleGeneratePDF}
-                  disabled={isGenerating || analysisData.length === 0}
+                  disabled={isGenerating || displayData.length === 0}
                   variant="outline"
                 >
                   <FileText className="mr-2 h-4 w-4" />
@@ -203,7 +167,12 @@ export default function ExportResultsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {analysisData.length === 0 ? (
+            {isDataLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <p>Cargando datos...</p>
+              </div>
+            ) : displayData.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">
                   No se encontraron análisis para los criterios seleccionados
@@ -228,7 +197,7 @@ export default function ExportResultsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {analysisData.map((analysis) => (
+                    {displayData.map((analysis) => (
                       <tr key={analysis.id} className="border-b">
                         <td className="p-2 text-sm">{analysis.id}</td>
                         <td className="p-2 text-sm">
@@ -264,7 +233,7 @@ export default function ExportResultsPage() {
         {/* Navigation */}
         <div className="flex justify-between">
           <Button variant="outline" asChild>
-            <Link href="/exports/analysis/dates">
+            <Link href="/export/analysis/dates">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver
             </Link>

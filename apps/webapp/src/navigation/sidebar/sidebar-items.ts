@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ChartBar,
+  Download,
   Fingerprint,
   GlassWater,
   LayoutDashboard,
@@ -85,6 +86,17 @@ export const sidebarItems: NavGroup[] = [
         title: 'Incidencias',
         url: '/incidents',
         icon: AlertTriangle
+      }
+    ]
+  },
+  {
+    id: 3,
+    label: 'Herramientas',
+    items: [
+      {
+        title: 'Exportar Datos',
+        url: '/export',
+        icon: Download
       }
     ]
   }

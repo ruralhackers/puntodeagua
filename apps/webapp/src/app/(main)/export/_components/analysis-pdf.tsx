@@ -1,4 +1,3 @@
-import type { AnalysisType } from '@pda/registers/domain'
 import { Document, Page, StyleSheet, Text, View } from '@react-pdf/renderer'
 import { ANALYSIS_TYPE_OPTIONS } from '@/constants/analysis-types'
 
@@ -103,23 +102,22 @@ const styles = StyleSheet.create({
 
 // Definir anchos de columnas (en porcentaje)
 const columnWidths = {
-  id: '8%',
-  type: '12%',
-  analyst: '12%',
-  date: '12%',
-  community: '15%',
-  zone: '10%',
-  deposit: '10%',
-  ph: '6%',
-  chlorine: '7%',
-  turbidity: '8%'
+  type: '15%',
+  analyst: '15%',
+  date: '15%',
+  community: '18%',
+  zone: '12%',
+  deposit: '15%',
+  ph: '8%',
+  chlorine: '8%',
+  turbidity: '10%'
 }
 
 interface AnalysisData {
   id: string
   analysisType: string
   analyst: string
-  analyzedAt: string
+  analyzedAt: string | Date
   communityName: string
   zoneName?: string
   depositName?: string
@@ -131,7 +129,7 @@ interface AnalysisData {
 
 interface AnalysisPDFProps {
   data: AnalysisData[]
-  selectedTypes: AnalysisType[]
+  selectedTypes: string[]
   startDate: string
   endDate: string
   generatedAt: string
@@ -145,21 +143,20 @@ export function AnalysisPDF({
   generatedAt
 }: AnalysisPDFProps) {
   const selectedTypesOptions = selectedTypes
-    .map((type) => ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value === type))
+    .map((type) => ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value.toString() === type))
     .filter(Boolean)
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
+  const formatDate = (dateString: string | Date) => {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString
+    return date.toLocaleDateString('es-ES', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     })
   }
 
   const getAnalysisTypeLabel = (type: string) => {
-    const option = ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value === type)
+    const option = ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value.toString() === type)
     return option ? option.label : type
   }
 
@@ -211,7 +208,6 @@ export function AnalysisPDF({
         <View style={styles.table}>
           {/* Table Header */}
           <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.id }]}>ID</Text>
             <Text style={[styles.tableHeaderCell, { width: columnWidths.type }]}>Tipo</Text>
             <Text style={[styles.tableHeaderCell, { width: columnWidths.analyst }]}>Analista</Text>
             <Text style={[styles.tableHeaderCell, { width: columnWidths.date }]}>Fecha</Text>
@@ -233,7 +229,6 @@ export function AnalysisPDF({
               key={analysis.id}
               style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : {}]}
             >
-              <Text style={[styles.tableCell, { width: columnWidths.id }]}>{analysis.id}</Text>
               <Text style={[styles.tableCell, { width: columnWidths.type }]}>
                 {getAnalysisTypeLabel(analysis.analysisType)}
               </Text>

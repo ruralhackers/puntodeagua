@@ -1,40 +1,87 @@
 import { useState } from 'react'
-
-/**
- * Hook específico para generar PDFs de incidencias
- * TODO: Implementar cuando se desarrolle la funcionalidad de incidencias
- */
+import { api } from '@/trpc/react'
+import { generateIncidentsPDF } from '../_utils/generate-incidents-pdf'
 
 interface UseIncidentsPDFGeneratorProps {
-  // TODO: Definir filtros específicos para incidencias
   startDate: string
   endDate: string
-  communityId?: string
-  severity?: string[]
+  status: 'all' | 'open' | 'closed'
 }
 
 export function useIncidentsPDFGenerator({
   startDate,
   endDate,
-  communityId,
-  severity
+  status
 }: UseIncidentsPDFGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // TODO: Implementar query para obtener datos de incidencias
-  // const { data: realData, isLoading, error: apiError } = api.registers.exportIncidents.useQuery(...)
+  // Query para obtener datos reales de la API
+  const {
+    data: realData,
+    isLoading,
+    error: apiError
+  } = api.incidents.exportIncidents.useQuery(
+    {
+      startDate,
+      endDate,
+      status
+    },
+    {
+      enabled: !!startDate && !!endDate
+    }
+  )
 
   const generatePDF = async () => {
-    // TODO: Implementar generación de PDF para incidencias
-    console.log('Generating incidents PDF...')
+    try {
+      setIsGenerating(true)
+      setError(null)
+
+      const generatedAt = new Date().toLocaleString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+
+      // Usar solo datos reales de la API
+      const dataToUse = realData || []
+
+      // Crear el PDF con los datos
+      const blob = await generateIncidentsPDF({
+        data: dataToUse,
+        startDate,
+        endDate,
+        status,
+        generatedAt
+      })
+
+      // Crear nombre de archivo con fecha
+      const fileName = `incidencias-export-${new Date().toISOString().split('T')[0]}.pdf`
+
+      // Descargar el archivo
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('Error generando PDF:', err)
+      setError('Error al generar el PDF. Por favor, inténtalo de nuevo.')
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   return {
     generatePDF,
     isGenerating,
-    error,
-    realData: [], // TODO: Retornar datos reales
-    isLoading: false // TODO: Retornar estado real de loading
+    error: error || apiError?.message,
+    realData,
+    isLoading: isLoading || isGenerating
   }
 }

@@ -29,8 +29,8 @@ export default function ExportDataPage() {
       title: 'Incidencias',
       description: 'Exportar reportes de incidencias',
       icon: AlertTriangle,
-      enabled: false,
-      comingSoon: true
+      enabled: true,
+      href: '/export/incidents'
     },
     {
       id: 'maintenance',

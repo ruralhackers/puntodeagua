@@ -46,6 +46,41 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
     return incidents.map((incident) => Incident.fromDto(this.fromPrismaPayload(incident)))
   }
 
+  async findByFilters(filters: {
+    communityId: Id
+    startDate?: Date
+    endDate?: Date
+    status?: 'open' | 'closed'
+  }) {
+    const where: Prisma.IncidentWhereInput = {
+      communityId: filters.communityId.toString()
+    }
+
+    // Add date range filter
+    if (filters.startDate || filters.endDate) {
+      where.startAt = {}
+      if (filters.startDate) {
+        where.startAt.gte = filters.startDate
+      }
+      if (filters.endDate) {
+        where.startAt.lte = filters.endDate
+      }
+    }
+
+    // Add status filter
+    if (filters.status) {
+      where.status = filters.status
+    }
+
+    const incidents = await this.getModel().findMany({
+      where,
+      orderBy: { startAt: 'desc' }
+    })
+    console.log({ incidents, where })
+
+    return incidents.map((incident) => Incident.fromDto(this.fromPrismaPayload(incident)))
+  }
+
   async save(incident: Incident) {
     const update = {
       title: incident.title,
@@ -80,7 +115,7 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
     })
   }
 
-  private fromPrismaPayload(payload: Prisma.IncidentGetPayload<null>) {
+  private fromPrismaPayload(payload: Prisma.IncidentGetPayload<Record<string, never>>) {
     return {
       ...payload,
       communityZoneId: payload.communityZoneId ?? undefined,

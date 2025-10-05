@@ -80,5 +80,53 @@ export const incidentsRouter = createTRPCRouter({
       const repo = RegistersFactory.incidentPrismaRepository()
       await repo.delete(Id.fromString(input.id))
       return { success: true }
+    }),
+
+  exportIncidents: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.string().transform((str) => new Date(str)),
+        endDate: z.string().transform((str) => new Date(str)),
+        status: z.enum(['open', 'closed', 'all']).optional().default('all'),
+        communityId: z.string().optional()
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const repo = RegistersFactory.incidentPrismaRepository()
+
+        // Si no se proporciona communityId, usar la del usuario autenticado
+        const communityId = input.communityId
+          ? Id.fromString(input.communityId)
+          : ctx.session?.user?.community?.id
+            ? Id.fromString(ctx.session.user.community.id)
+            : undefined
+
+        if (!communityId) {
+          throw new Error('No se pudo determinar la comunidad para la exportación')
+        }
+
+        const filters: {
+          communityId: Id
+          startDate?: Date
+          endDate?: Date
+          status?: 'open' | 'closed'
+        } = {
+          communityId,
+          startDate: input.startDate,
+          endDate: input.endDate
+        }
+
+        // Only add status filter if not 'all'
+        if (input.status !== 'all') {
+          filters.status = input.status
+        }
+
+        const incidents = await repo.findByFilters(filters)
+
+        return incidents.map((incident) => incident.toDto())
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

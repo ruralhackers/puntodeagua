@@ -8,4 +8,10 @@ export interface IncidentRepository
     FindableForTable<Incident> {
   findById(id: Id): Promise<Incident | undefined>
   findByCommunityId(communityId: Id): Promise<Incident[]>
+  findByFilters(filters: {
+    communityId: Id
+    startDate?: Date
+    endDate?: Date
+    status?: 'open' | 'closed'
+  }): Promise<Incident[]>
 }

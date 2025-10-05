@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, Download, FileText } from 'lucide-react'
+import { ArrowLeft, Download, FileText, TestTube } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -55,10 +55,6 @@ export default function ExportResultsPage() {
     window.location.href = '/export'
   }
 
-  const selectedTypesOptions = selectedTypes
-    .map((type) => ANALYSIS_TYPE_OPTIONS.find((opt) => opt.value.toString() === type))
-    .filter(Boolean)
-
   const formatDate = (dateString: string | Date) => {
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString
     return date.toLocaleDateString('es-ES', {
@@ -75,76 +71,95 @@ export default function ExportResultsPage() {
     return option ? `${option.icon} ${option.label}` : type
   }
 
+  // Calcular estadí  sticas por tipo de análisis
+  const chlorinePhCount = displayData.filter(
+    (analysis) => analysis.analysisType === 'chlorine_ph'
+  ).length
+  const turbidityCount = displayData.filter(
+    (analysis) => analysis.analysisType === 'turbidity'
+  ).length
+  const hardnessCount = displayData.filter(
+    (analysis) => analysis.analysisType === 'hardness'
+  ).length
+  const completeCount = displayData.filter(
+    (analysis) => analysis.analysisType === 'complete'
+  ).length
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link href="/export" className="hover:text-foreground">
-            Exportar Datos
-          </Link>
-          <span>/</span>
-          <Link href="/export/analysis" className="hover:text-foreground">
-            Análisis
-          </Link>
-          <span>/</span>
-          <Link href="/export/analysis/dates" className="hover:text-foreground">
-            Fechas
-          </Link>
-          <span>/</span>
-          <span className="text-foreground">Resultados</span>
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/export/analysis/dates">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Resultados de Exportación</h1>
+            <p className="text-muted-foreground">Vista previa de los análisis a exportar</p>
+          </div>
         </div>
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Resultados de Exportación</h1>
-          <p className="text-muted-foreground">
-            Análisis encontrados según los criterios seleccionados
-          </p>
-        </div>
-
-        {/* Export Summary */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Resumen de la Exportación</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <h4 className="font-semibold mb-2">Tipos de Análisis</h4>
-                <div className="flex flex-wrap gap-1">
-                  {selectedTypesOptions.map((option) => (
-                    <Badge
-                      key={option?.value?.toString() || 'unknown'}
-                      variant="secondary"
-                      className="text-xs"
-                    >
-                      {option?.icon} {option?.label}
-                    </Badge>
-                  ))}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-blue-600" />
+                <div>
+                  <p className="text-sm font-medium">Total Análisis</p>
+                  <p className="text-2xl font-bold">{displayData.length}</p>
                 </div>
               </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Período</h4>
-                <p className="text-sm text-muted-foreground">
-                  {startDate && endDate && (
-                    <>
-                      {new Date(startDate).toLocaleDateString('es-ES')} -{' '}
-                      {new Date(endDate).toLocaleDateString('es-ES')}
-                    </>
-                  )}
-                </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-green-600" />
+                <div>
+                  <p className="text-sm font-medium">Cloro y pH</p>
+                  <p className="text-2xl font-bold text-green-600">{chlorinePhCount}</p>
+                </div>
               </div>
-
-              <div>
-                <h4 className="font-semibold mb-2">Total de Registros</h4>
-                <p className="text-2xl font-bold text-primary">
-                  {isDataLoading ? '...' : displayData.length}
-                </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium">Turbidez</p>
+                  <p className="text-2xl font-bold text-blue-500">{turbidityCount}</p>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-purple-600" />
+                <div>
+                  <p className="text-sm font-medium">Dureza</p>
+                  <p className="text-2xl font-bold text-purple-600">{hardnessCount}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <TestTube className="h-4 w-4 text-orange-600" />
+                <div>
+                  <p className="text-sm font-medium">Completos</p>
+                  <p className="text-2xl font-bold text-orange-600">{completeCount}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Results Table */}
         <Card className="mb-8">
@@ -152,7 +167,9 @@ export default function ExportResultsPage() {
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle>Datos Exportados</CardTitle>
-                <CardDescription>Datos exportados listos para descargar en PDF</CardDescription>
+                <CardDescription>
+                  {displayData.length} análisis encontrados para el período seleccionado
+                </CardDescription>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -179,43 +196,75 @@ export default function ExportResultsPage() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse export-results-table">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2 font-semibold">ID</th>
-                      <th className="text-left p-2 font-semibold">Tipo</th>
-                      <th className="text-left p-2 font-semibold">Analista</th>
-                      <th className="text-left p-2 font-semibold">Fecha</th>
-                      <th className="text-left p-2 font-semibold">Comunidad</th>
-                      <th className="text-left p-2 font-semibold">Zona</th>
-                      <th className="text-left p-2 font-semibold">Depósito</th>
-                      <th className="text-left p-2 font-semibold">pH</th>
-                      <th className="text-left p-2 font-semibold">Cloro</th>
-                      <th className="text-left p-2 font-semibold">Turbidez</th>
-                      <th className="text-left p-2 font-semibold">Descripción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {displayData.map((analysis) => (
-                      <tr key={analysis.id} className="border-b">
-                        <td className="p-2 text-sm">{analysis.id}</td>
-                        <td className="p-2 text-sm">
-                          {getAnalysisTypeLabel(analysis.analysisType)}
-                        </td>
-                        <td className="p-2 text-sm">{analysis.analyst}</td>
-                        <td className="p-2 text-sm">{formatDate(analysis.analyzedAt)}</td>
-                        <td className="p-2 text-sm">{analysis.communityName}</td>
-                        <td className="p-2 text-sm">{analysis.zoneName || '-'}</td>
-                        <td className="p-2 text-sm">{analysis.depositName || '-'}</td>
-                        <td className="p-2 text-sm">{analysis.ph || '-'}</td>
-                        <td className="p-2 text-sm">{analysis.chlorine || '-'}</td>
-                        <td className="p-2 text-sm">{analysis.turbidity || '-'}</td>
-                        <td className="p-2 text-sm">{analysis.description || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-4">
+                {displayData.slice(0, 10).map((analysis) => (
+                  <div
+                    key={analysis.id}
+                    className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-medium text-gray-900">Análisis </h3>
+                          <Badge variant="secondary" className="text-xs">
+                            {getAnalysisTypeLabel(analysis.analysisType)}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm text-gray-600 mb-2">
+                          <span>
+                            <strong>Analista:</strong> {analysis.analyst}
+                          </span>
+                          <span>
+                            <strong>Fecha:</strong> {formatDate(analysis.analyzedAt)}
+                          </span>
+                          <span>
+                            <strong>Comunidad:</strong> {analysis.communityName}
+                          </span>
+                          {analysis.zoneName && (
+                            <span>
+                              <strong>Zona:</strong> {analysis.zoneName}
+                            </span>
+                          )}
+                          {analysis.depositName && (
+                            <span>
+                              <strong>Depósito:</strong> {analysis.depositName}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                          {analysis.ph && (
+                            <span>
+                              <strong>pH:</strong> {analysis.ph}
+                            </span>
+                          )}
+                          {analysis.chlorine && (
+                            <span>
+                              <strong>Cloro:</strong> {analysis.chlorine}
+                            </span>
+                          )}
+                          {analysis.turbidity && (
+                            <span>
+                              <strong>Turbidez:</strong> {analysis.turbidity}
+                            </span>
+                          )}
+                        </div>
+                        {analysis.description && (
+                          <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                            {analysis.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {displayData.length > 10 && (
+                  <div className="text-center py-4">
+                    <p className="text-sm text-gray-500">
+                      Mostrando 10 de {displayData.length} análisis. El PDF completo incluirá todos
+                      los análisis.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

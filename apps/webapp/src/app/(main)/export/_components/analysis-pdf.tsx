@@ -50,35 +50,100 @@ const styles = StyleSheet.create({
   summaryValue: {
     color: '#6b7280'
   },
-  table: {
+  analysesContainer: {
     marginTop: 10
   },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#e5e7eb',
-    padding: 8,
-    borderBottom: '1 solid #d1d5db'
+  analysisCard: {
+    border: '1 solid #dbeafe',
+    borderRadius: 8,
+    marginBottom: 15,
+    backgroundColor: '#fefefe',
+    padding: 12
   },
-  tableHeaderCell: {
-    fontSize: 9,
+  analysisHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8
+  },
+  analysisTitle: {
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#374151',
-    textAlign: 'center'
+    color: '#1f2937',
+    flex: 1,
+    marginRight: 10
   },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottom: '1 solid #e5e7eb',
-    padding: 6,
-    minHeight: 25
-  },
-  tableRowEven: {
-    backgroundColor: '#f9fafb'
-  },
-  tableCell: {
+  typeBadge: {
+    padding: 4,
+    borderRadius: 4,
     fontSize: 8,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    minWidth: 80,
+    backgroundColor: '#dbeafe',
+    color: '#1e40af'
+  },
+  analysisDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    flexWrap: 'wrap'
+  },
+  detailItem: {
+    flexDirection: 'row',
+    marginBottom: 4,
+    minWidth: '30%'
+  },
+  detailLabel: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#6b7280',
+    marginRight: 4
+  },
+  detailValue: {
+    fontSize: 8,
+    color: '#374151'
+  },
+  measurementsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 8,
+    padding: 8,
+    backgroundColor: '#f8fafc',
+    borderRadius: 4,
+    border: '1 solid #e2e8f0'
+  },
+  measurementItem: {
+    alignItems: 'center'
+  },
+  measurementLabel: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#64748b',
+    marginBottom: 2
+  },
+  measurementValue: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#1e40af'
+  },
+  analysisDescription: {
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: '#f9fafb',
+    borderRadius: 4,
+    border: '1 solid #e5e7eb'
+  },
+  descriptionLabel: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#6b7280',
+    marginBottom: 4
+  },
+  descriptionText: {
+    fontSize: 9,
     color: '#374151',
-    textAlign: 'left',
-    paddingHorizontal: 2
+    lineHeight: 1.3
   },
   footer: {
     position: 'absolute',
@@ -99,19 +164,6 @@ const styles = StyleSheet.create({
     color: '#9ca3af'
   }
 })
-
-// Definir anchos de columnas (en porcentaje)
-const columnWidths = {
-  type: '15%',
-  analyst: '15%',
-  date: '15%',
-  community: '18%',
-  zone: '12%',
-  deposit: '15%',
-  ph: '8%',
-  chlorine: '8%',
-  turbidity: '10%'
-}
 
 interface AnalysisData {
   id: string
@@ -160,9 +212,11 @@ export function AnalysisPDF({
     return option ? option.label : type
   }
 
-  const formatValue = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return '-'
-    return value.toString()
+  const getLocationText = (analysis: AnalysisData) => {
+    const parts = []
+    if (analysis.zoneName) parts.push(analysis.zoneName)
+    if (analysis.depositName) parts.push(analysis.depositName)
+    return parts.length > 0 ? parts.join(' - ') : 'No especificada'
   }
 
   return (
@@ -204,60 +258,82 @@ export function AnalysisPDF({
           </View>
         </View>
 
-        {/* Table */}
-        <View style={styles.table}>
-          {/* Table Header */}
-          <View style={styles.tableHeader}>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.type }]}>Tipo</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.analyst }]}>Analista</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.date }]}>Fecha</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.community }]}>
-              Comunidad
-            </Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.zone }]}>Zona</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.deposit }]}>Depósito</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.ph }]}>pH</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.chlorine }]}>Cloro</Text>
-            <Text style={[styles.tableHeaderCell, { width: columnWidths.turbidity }]}>
-              Turbidez
-            </Text>
-          </View>
-
-          {/* Table Rows */}
-          {data.map((analysis, index) => (
-            <View
-              key={analysis.id}
-              style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : {}]}
-            >
-              <Text style={[styles.tableCell, { width: columnWidths.type }]}>
-                {getAnalysisTypeLabel(analysis.analysisType)}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.analyst }]}>
-                {analysis.analyst}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.date }]}>
-                {formatDate(analysis.analyzedAt)}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.community }]}>
-                {analysis.communityName}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.zone }]}>
-                {analysis.zoneName || '-'}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.deposit }]}>
-                {analysis.depositName || '-'}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.ph }]}>
-                {formatValue(analysis.ph)}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.chlorine }]}>
-                {formatValue(analysis.chlorine)}
-              </Text>
-              <Text style={[styles.tableCell, { width: columnWidths.turbidity }]}>
-                {formatValue(analysis.turbidity)}
+        {/* Analysis Cards */}
+        <View style={styles.analysesContainer}>
+          {data.length === 0 ? (
+            <View style={styles.analysisCard}>
+              <Text style={styles.analysisTitle}>No se encontraron análisis</Text>
+              <Text style={styles.detailValue}>
+                No hay análisis que coincidan con los filtros seleccionados para el período{' '}
+                {new Date(startDate).toLocaleDateString('es-ES')} -{' '}
+                {new Date(endDate).toLocaleDateString('es-ES')}.
               </Text>
             </View>
-          ))}
+          ) : (
+            data.map((analysis) => (
+              <View key={analysis.id} style={styles.analysisCard}>
+                {/* Card Header */}
+                <View style={styles.analysisHeader}>
+                  <Text style={styles.analysisTitle}>Análisis #{analysis.id}</Text>
+                  <Text style={styles.typeBadge}>
+                    {getAnalysisTypeLabel(analysis.analysisType)}
+                  </Text>
+                </View>
+
+                {/* Card Details */}
+                <View style={styles.analysisDetails}>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Analista:</Text>
+                    <Text style={styles.detailValue}>{analysis.analyst}</Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Fecha:</Text>
+                    <Text style={styles.detailValue}>{formatDate(analysis.analyzedAt)}</Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Comunidad:</Text>
+                    <Text style={styles.detailValue}>{analysis.communityName}</Text>
+                  </View>
+                  <View style={styles.detailItem}>
+                    <Text style={styles.detailLabel}>Ubicación:</Text>
+                    <Text style={styles.detailValue}>{getLocationText(analysis)}</Text>
+                  </View>
+                </View>
+
+                {/* Measurements Section */}
+                {(analysis.ph || analysis.chlorine || analysis.turbidity) && (
+                  <View style={styles.measurementsContainer}>
+                    {analysis.ph && (
+                      <View style={styles.measurementItem}>
+                        <Text style={styles.measurementLabel}>pH</Text>
+                        <Text style={styles.measurementValue}>{analysis.ph}</Text>
+                      </View>
+                    )}
+                    {analysis.chlorine && (
+                      <View style={styles.measurementItem}>
+                        <Text style={styles.measurementLabel}>Cloro</Text>
+                        <Text style={styles.measurementValue}>{analysis.chlorine}</Text>
+                      </View>
+                    )}
+                    {analysis.turbidity && (
+                      <View style={styles.measurementItem}>
+                        <Text style={styles.measurementLabel}>Turbidez</Text>
+                        <Text style={styles.measurementValue}>{analysis.turbidity}</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* Description Section */}
+                {analysis.description && (
+                  <View style={styles.analysisDescription}>
+                    <Text style={styles.descriptionLabel}>Descripción:</Text>
+                    <Text style={styles.descriptionText}>{analysis.description}</Text>
+                  </View>
+                )}
+              </View>
+            ))
+          )}
         </View>
 
         {/* Footer */}

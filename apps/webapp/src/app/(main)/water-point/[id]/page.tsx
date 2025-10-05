@@ -190,7 +190,7 @@ export default function WaterPointDetailPage() {
                   la sección <strong>Lecturas</strong> en el menú principal.
                 </p>
                 <Button asChild variant="outline" size="sm" className="mt-3">
-                  <Link href="/water-meter">Ir a Lecturas de Contadores</Link>
+                  <Link href="/water-meter/new">Ir a Lecturas de Contadores</Link>
                 </Button>
               </div>
             </div>

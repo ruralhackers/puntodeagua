@@ -5,6 +5,36 @@ import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
 
 export const waterAccountRouter = createTRPCRouter({
+  getWaterMeterById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const repo = WaterAccountFactory.waterMeterPrismaRepository()
+      const meter = await repo.findById(Id.fromString(input.id))
+      return meter?.toDto()
+    }),
+
+  getWaterMeterReadings: protectedProcedure
+    .input(z.object({ waterMeterId: z.string() }))
+    .query(async ({ input }) => {
+      const repo = WaterAccountFactory.waterMeterReadingPrismaRepository()
+      const result = await repo.findForTable({
+        page: 1,
+        limit: 100,
+        filters: [
+          {
+            field: 'waterMeterId',
+            value: input.waterMeterId,
+            operator: 'equals'
+          }
+        ],
+        orderBy: {
+          field: 'readingDate',
+          direction: 'desc'
+        }
+      })
+      return result.items.map((reading) => reading.toDto())
+    }),
+
   getWaterMetersByWaterPointId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {

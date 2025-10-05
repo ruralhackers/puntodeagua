@@ -73,7 +73,7 @@ export const sidebarItems: NavGroup[] = [
       },
       {
         title: 'Lecturas',
-        url: '/water-meter',
+        url: '/water-meter/new',
         icon: Fingerprint,
         isNew: true
       },

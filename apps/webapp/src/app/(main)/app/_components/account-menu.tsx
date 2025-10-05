@@ -74,15 +74,9 @@ export function AccountMenu() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={`/providers`} className="flex items-center gap-2 cursor-pointer">
-              <Truck />
-              Proveedores
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/records`} className="flex items-center gap-2 cursor-pointer">
-              <FileText />
-              Registros
+            <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
+              <Gauge />
+              Lecturas
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

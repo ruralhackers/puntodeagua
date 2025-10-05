@@ -1,4 +1,4 @@
-import { ForbiddenError } from '@pda/common/domain'
+import { BadRequestError, ForbiddenError } from '@pda/common/domain'
 
 export class AnalysisPhRequiredError extends ForbiddenError {
   constructor(message: string = AnalysisPhRequiredError.defaultMessage) {
@@ -48,4 +48,14 @@ export class AnalysisHardnessPhRequiredError extends ForbiddenError {
 
   static override defaultMessage = 'Ph is required for hardness analysis'
   static override defaultMessageEs = 'El pH es requerido para análisis de dureza'
+}
+
+export class AnalysisCommunityNotDeterminedError extends BadRequestError {
+  constructor(message: string = AnalysisCommunityNotDeterminedError.defaultMessage) {
+    super(message)
+    this.name = 'AnalysisCommunityNotDeterminedError'
+  }
+
+  static override defaultMessage = 'Community could not be determined for export'
+  static override defaultMessageEs = 'No se pudo determinar la comunidad para la exportación'
 }

@@ -1,5 +1,10 @@
 import { Id } from '@pda/common/domain'
-import { Analysis, AnalysisType, RegistersFactory } from '@pda/registers'
+import {
+  Analysis,
+  AnalysisCommunityNotDeterminedError,
+  AnalysisType,
+  RegistersFactory
+} from '@pda/registers'
 import { analysisSchema } from '@pda/registers/domain/entities/analysis.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
@@ -77,7 +82,7 @@ export const registersRouter = createTRPCRouter({
             : undefined
 
         if (!communityId) {
-          throw new Error('No se pudo determinar la comunidad para la exportación')
+          throw new AnalysisCommunityNotDeterminedError()
         }
 
         const analyses = await repo.findByFilters({

@@ -4,6 +4,7 @@ export { Incident } from './entities/incident'
 export type { IncidentDto } from './entities/incident.dto'
 export {
   AnalysisChlorineRequiredError,
+  AnalysisCommunityNotDeterminedError,
   AnalysisCompleteMeasurementsRequiredError,
   AnalysisHardnessPhRequiredError,
   AnalysisPhRequiredError,

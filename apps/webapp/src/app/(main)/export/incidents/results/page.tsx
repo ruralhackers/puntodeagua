@@ -66,10 +66,6 @@ export default function IncidentsExportResultsPage() {
     generatePDF()
   }
 
-  const handleNewExport = () => {
-    window.location.href = '/export/incidents'
-  }
-
   const formatDate = (dateString: string | Date) => {
     if (!dateString) return 'Fecha no válida'
     const date = new Date(dateString)
@@ -106,18 +102,22 @@ export default function IncidentsExportResultsPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/export/incidents">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Resultados de Exportación</h1>
-            <p className="text-muted-foreground">Vista previa de las incidencias a exportar</p>
-          </div>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Link href="/export" className="hover:text-foreground">
+            Exportar Datos
+          </Link>
+          <span>/</span>
+          <Link href="/export/incidents" className="hover:text-foreground">
+            Incidencias
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">Resultados</span>
+        </div>
+
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Resultados de Exportación</h1>
+          <p className="text-muted-foreground">Vista previa de las incidencias a exportar</p>
         </div>
 
         {/* Summary Cards */}
@@ -184,11 +184,17 @@ export default function IncidentsExportResultsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4">
+            <div className="flex justify-between">
+              <Button variant="outline" asChild>
+                <Link href="/export/incidents">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Volver
+                </Link>
+              </Button>
+
               <Button
                 onClick={handleGeneratePDF}
                 disabled={isGenerating || isDataLoading || displayData.length === 0}
-                className="flex-1"
                 size="lg"
               >
                 {isGenerating ? (
@@ -202,9 +208,6 @@ export default function IncidentsExportResultsPage() {
                     Descargar PDF
                   </>
                 )}
-              </Button>
-              <Button variant="outline" onClick={handleNewExport}>
-                Nueva Exportación
               </Button>
             </div>
             {pdfError && (

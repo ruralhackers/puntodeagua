@@ -1,6 +1,7 @@
 'use client'
 
-import { ArrowLeft, Calendar, Filter } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Calendar, Filter } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -52,73 +53,98 @@ export default function IncidentsExportPage() {
     router.push(`/export/incidents/results?${params.toString()}`)
   }
 
-  const handleBack = () => {
-    router.push('/export')
-  }
-
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="sm" onClick={handleBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Exportar Incidencias</h1>
-            <p className="text-muted-foreground">
-              Configura los filtros para exportar las incidencias
-            </p>
-          </div>
+      <div className="max-w-4xl mx-auto">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Link href="/export" className="hover:text-foreground">
+            Exportar Datos
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">Incidencias</span>
         </div>
 
-        {/* Filters Card */}
-        <Card>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Filtros de Incidencias</h1>
+          <p className="text-muted-foreground">
+            Configura los filtros para exportar las incidencias
+          </p>
+        </div>
+
+        {/* Date Range Selection */}
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filtros de Exportación
+              <Calendar className="h-5 w-5" />
+              Período de Tiempo
             </CardTitle>
             <CardDescription>
-              Por defecto se selecciona el último año. Puedes modificar estas fechas y el estado
-              según tus necesidades.
+              Por defecto se selecciona el último año. Puedes modificar estas fechas según tus
+              necesidades.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Date Range */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <Label className="text-base font-medium">Rango de Fechas</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="startDate">Fecha de Inicio</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full"
+                />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startDate">Fecha de Inicio</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="endDate">Fecha de Fin</Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    required
-                  />
-                </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="endDate">Fecha de Fin</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full"
+                />
               </div>
             </div>
 
-            {/* Status Filter */}
+            {/* Date Range Info */}
+            {startDate && endDate && (
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Período seleccionado:</strong> Desde el{' '}
+                  {new Date(startDate).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}{' '}
+                  hasta el{' '}
+                  {new Date(endDate).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Status Filter */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="h-5 w-5" />
+              Estado de las Incidencias
+            </CardTitle>
+            <CardDescription>
+              Selecciona qué tipo de incidencias deseas incluir en la exportación.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-2">
-              <Label htmlFor="status">Estado de las Incidencias</Label>
+              <Label htmlFor="status">Estado</Label>
               <Select
                 value={status}
                 onValueChange={(value: 'all' | 'open' | 'closed') => setStatus(value)}
@@ -133,19 +159,33 @@ export default function IncidentsExportPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Export Button */}
-            <div className="pt-4">
-              <Button onClick={handleExport} className="w-full" size="lg">
-                <Filter className="h-4 w-4 mr-2" />
-                Generar Exportación
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
+        {/* Navigation */}
+        <div className="flex justify-between">
+          <Button variant="outline" asChild>
+            <Link href="/export">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver
+            </Link>
+          </Button>
+
+          <Button onClick={handleExport} disabled={!startDate || !endDate}>
+            Generar Exportación
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Validation Message */}
+        {(!startDate || !endDate) && (
+          <div className="text-center mt-4">
+            <p className="text-sm text-muted-foreground">Selecciona ambas fechas para continuar</p>
+          </div>
+        )}
+
         {/* Info Card */}
-        <Card className="mt-6">
+        <Card className="mt-8">
           <CardHeader>
             <CardTitle className="text-lg">Información de la Exportación</CardTitle>
           </CardHeader>

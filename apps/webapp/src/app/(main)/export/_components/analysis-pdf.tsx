@@ -274,7 +274,7 @@ export function AnalysisPDF({
               <View key={analysis.id} style={styles.analysisCard}>
                 {/* Card Header */}
                 <View style={styles.analysisHeader}>
-                  <Text style={styles.analysisTitle}>Análisis #{analysis.id}</Text>
+                  <Text style={styles.analysisTitle}>Análisis</Text>
                   <Text style={styles.typeBadge}>
                     {getAnalysisTypeLabel(analysis.analysisType)}
                   </Text>

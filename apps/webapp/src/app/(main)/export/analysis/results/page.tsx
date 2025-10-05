@@ -88,18 +88,26 @@ export default function ExportResultsPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/export/analysis/dates">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Resultados de Exportación</h1>
-            <p className="text-muted-foreground">Vista previa de los análisis a exportar</p>
-          </div>
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+          <Link href="/export" className="hover:text-foreground">
+            Exportar Datos
+          </Link>
+          <span>/</span>
+          <Link href="/export/analysis" className="hover:text-foreground">
+            Análisis
+          </Link>
+          <span>/</span>
+          <Link href="/export/analysis/dates" className="hover:text-foreground">
+            Fechas
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">Resultados</span>
+        </div>
+
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">Resultados de Exportación</h1>
+          <p className="text-muted-foreground">Vista previa de los análisis a exportar</p>
         </div>
 
         {/* Summary Cards */}
@@ -161,27 +169,58 @@ export default function ExportResultsPage() {
           </Card>
         </div>
 
+        {/* Export Actions */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Generar Exportación</CardTitle>
+            <CardDescription>
+              {selectedTypes.length > 0 && startDate && endDate
+                ? `Tipos: ${selectedTypes.map(getAnalysisTypeLabel).join(', ')} del ${formatDate(startDate)} al ${formatDate(endDate)}`
+                : 'Cargando configuración...'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between">
+              <Button variant="outline" asChild>
+                <Link href="/export/analysis/dates">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Volver
+                </Link>
+              </Button>
+
+              <Button
+                onClick={handleGeneratePDF}
+                disabled={isGenerating || isDataLoading || displayData.length === 0}
+                size="lg"
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Generando PDF...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Descargar PDF
+                  </>
+                )}
+              </Button>
+            </div>
+            {pdfError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{pdfError}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Results Table */}
         <Card className="mb-8">
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle>Datos Exportados</CardTitle>
-                <CardDescription>
-                  {displayData.length} análisis encontrados para el período seleccionado
-                </CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleGeneratePDF}
-                  disabled={isGenerating || displayData.length === 0}
-                  variant="outline"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  {isGenerating ? 'Generando PDF...' : 'Descargar PDF'}
-                </Button>
-              </div>
-            </div>
+            <CardTitle>Datos Exportados</CardTitle>
+            <CardDescription>
+              {displayData.length} análisis encontrados para el período seleccionado
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {isDataLoading ? (

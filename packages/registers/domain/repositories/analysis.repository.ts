@@ -13,19 +13,5 @@ export interface AnalysisRepository
     analysisTypes?: string[]
     startDate?: Date
     endDate?: Date
-  }): Promise<
-    Array<{
-      id: string
-      analysisType: string
-      analyst: string
-      analyzedAt: Date
-      communityName: string
-      zoneName?: string
-      depositName?: string
-      ph?: number
-      chlorine?: number
-      turbidity?: number
-      description?: string
-    }>
-  >
+  }): Promise<Analysis[]>
 }

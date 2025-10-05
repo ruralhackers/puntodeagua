@@ -76,32 +76,10 @@ export class AnalysisPrismaRepository extends BasePrismaRepository implements An
 
     const analyses = await this.getModel().findMany({
       where,
-      orderBy: { analyzedAt: 'desc' },
-      include: {
-        community: {
-          select: {
-            name: true
-          }
-        },
-        communityZone: {
-          select: {
-            name: true
-          }
-        },
-        waterDeposit: {
-          select: {
-            name: true
-          }
-        }
-      }
+      orderBy: { analyzedAt: 'desc' }
     })
 
-    return analyses.map((analysis) => ({
-      ...Analysis.fromDto(this.fromPrismaPayload(analysis)).toDto(),
-      communityName: analysis.community?.name || 'N/A',
-      zoneName: analysis.communityZone?.name,
-      depositName: analysis.waterDeposit?.name
-    }))
+    return analyses.map((analysis) => Analysis.fromDto(this.fromPrismaPayload(analysis)))
   }
 
   async save(analysis: Analysis) {

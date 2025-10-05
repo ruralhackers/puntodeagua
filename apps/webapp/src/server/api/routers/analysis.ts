@@ -87,7 +87,7 @@ export const registersRouter = createTRPCRouter({
           endDate: input.endDate
         })
 
-        return analyses
+        return analyses.map((analysis) => analysis.toDto())
       } catch (error) {
         handleDomainError(error)
       }

@@ -10,6 +10,7 @@ export class WaterPoint {
     public floatingPopulation: number,
     public cadastralReference: string,
     public readonly communityZoneId: Id,
+    public waterDepositIds: Id[],
     public notes?: string
   ) {}
 
@@ -22,6 +23,7 @@ export class WaterPoint {
       dto.floatingPopulation,
       dto.cadastralReference,
       Id.fromString(dto.communityZoneId),
+      (dto.waterDepositIds ?? []).map(Id.fromString),
       dto.notes
     )
   }
@@ -35,6 +37,7 @@ export class WaterPoint {
       dto.floatingPopulation,
       dto.cadastralReference,
       Id.fromString(dto.communityZoneId),
+      (dto.waterDepositIds ?? []).map(Id.fromString),
       dto.notes
     )
   }
@@ -48,7 +51,8 @@ export class WaterPoint {
       fixedPopulation: this.fixedPopulation,
       floatingPopulation: this.floatingPopulation,
       cadastralReference: this.cadastralReference,
-      communityZoneId: this.communityZoneId.toString()
+      communityZoneId: this.communityZoneId.toString(),
+      waterDepositIds: this.waterDepositIds.map((id) => id.toString())
     }
   }
 }

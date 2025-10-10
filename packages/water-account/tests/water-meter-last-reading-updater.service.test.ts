@@ -25,7 +25,8 @@ describe('ReadingCreatorService', () => {
     location: 'Test location',
     cadastralReference: 'Test cadastral reference',
     fixedPopulation: 10,
-    floatingPopulation: 5
+    floatingPopulation: 5,
+    waterDepositIds: []
   })
 
   const defaultCommunityZone = CommunityZone.fromDto({

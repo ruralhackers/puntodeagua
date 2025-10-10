@@ -127,6 +127,8 @@ model WaterPoint {
   floatingPopulation Int    @default(0) @map("floating_population")
   cadastralReference String @map("cadastral_reference")
 
+  waterDepositIds String[] @default([]) @map("water_deposit_ids")
+
   communityZone   CommunityZone @relation(fields: [communityZoneId], references: [id])
   communityZoneId String        @map("community_zone_id")
 
@@ -137,6 +139,7 @@ model WaterPoint {
   incidents   Incident[]
 
   @@index([communityZoneId])
+  @@index([waterDepositIds])
 }
 
 model WaterAccount {

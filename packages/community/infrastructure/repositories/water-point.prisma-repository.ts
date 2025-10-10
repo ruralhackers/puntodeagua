@@ -50,7 +50,8 @@ export class WaterPointPrismaRepository
       notes: waterPoint.notes,
       fixedPopulation: waterPoint.fixedPopulation,
       floatingPopulation: waterPoint.floatingPopulation,
-      cadastralReference: waterPoint.cadastralReference
+      cadastralReference: waterPoint.cadastralReference,
+      waterDepositIds: waterPoint.waterDepositIds.map((id) => id.toString())
     }
 
     await this.getModel().upsert({
@@ -74,7 +75,8 @@ export class WaterPointPrismaRepository
 
   private fromPrismaPayload(payload: Prisma.WaterPointGetPayload<null>) {
     return {
-      ...payload
+      ...payload,
+      waterDepositIds: payload.waterDepositIds ?? []
     }
   }
 }

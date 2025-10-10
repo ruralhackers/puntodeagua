@@ -258,8 +258,27 @@ async function seedWaterPoints(zoneIds: {
   oRamisZoneId: string
   osCasasZoneId: string
 }) {
+  // Get Anceu deposits to associate with water points
+  const anceuDeposits = await prisma.waterDeposit.findMany({
+    where: {
+      name: {
+        in: [
+          'Depósito Principal Anceu',
+          'Depósito de Reserva Anceu',
+          'Depósito O Ramis',
+          'Depósito Os Casas'
+        ]
+      }
+    }
+  })
+
+  const principalDepositId = anceuDeposits.find((d) => d.name === 'Depósito Principal Anceu')?.id
+  const reservaDepositId = anceuDeposits.find((d) => d.name === 'Depósito de Reserva Anceu')?.id
+  const ramisDepositId = anceuDeposits.find((d) => d.name === 'Depósito O Ramis')?.id
+  const casasDepositId = anceuDeposits.find((d) => d.name === 'Depósito Os Casas')?.id
+
   const waterPointsData = [
-    // Anceu zone water points
+    // Anceu zone water points - supplied by Principal and Reserva deposits
     {
       name: 'Casa de Rosario do Coto',
       location: 'Anceu 38',
@@ -267,6 +286,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 25,
       floatingPopulation: 5,
       cadastralReference: 'ANCEU-001',
+      waterDepositIds: [principalDepositId, reservaDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Rosario do Coto'
     },
     {
@@ -276,6 +296,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 15,
       floatingPopulation: 3,
       cadastralReference: 'ANCEU-002',
+      waterDepositIds: [principalDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Rogelio'
     },
     {
@@ -285,10 +306,11 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 20,
       floatingPopulation: 2,
       cadastralReference: 'ANCEU-003',
+      waterDepositIds: [principalDepositId, reservaDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Teresa de Elena'
     },
 
-    // O Ramis zone water points
+    // O Ramis zone water points - supplied by O Ramis deposit
     {
       name: 'Casa de Rosabel',
       location: 'O Ramis 8',
@@ -296,6 +318,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 18,
       floatingPopulation: 4,
       cadastralReference: 'ORAMIS-001',
+      waterDepositIds: [ramisDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Rosabel'
     },
     {
@@ -305,10 +328,11 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 12,
       floatingPopulation: 2,
       cadastralReference: 'ORAMIS-002',
+      waterDepositIds: [ramisDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Manuel'
     },
 
-    // Os Casas zone water points
+    // Os Casas zone water points - supplied by Os Casas deposit
     {
       name: 'Casa de Carmen',
       location: 'Os Casas 25',
@@ -316,6 +340,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 22,
       floatingPopulation: 6,
       cadastralReference: 'OSCASAS-001',
+      waterDepositIds: [casasDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Carmen'
     },
     {
@@ -325,6 +350,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 16,
       floatingPopulation: 3,
       cadastralReference: 'OSCASAS-002',
+      waterDepositIds: [casasDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de Antonio'
     },
     {
@@ -334,6 +360,7 @@ async function seedWaterPoints(zoneIds: {
       fixedPopulation: 14,
       floatingPopulation: 2,
       cadastralReference: 'OSCASAS-003',
+      waterDepositIds: [casasDepositId].filter(Boolean) as string[],
       notes: 'Punto de agua en la casa de María'
     }
   ]
@@ -343,10 +370,10 @@ async function seedWaterPoints(zoneIds: {
   })
 
   console.log('Created water points:')
-  console.log('- Anceu zone: 3 water points')
-  console.log('- O Ramis zone: 2 water points')
-  console.log('- Os Casas zone: 3 water points')
-  console.log('- Total: 8 water points')
+  console.log('- Anceu zone: 3 water points (Principal + Reserva deposits)')
+  console.log('- O Ramis zone: 2 water points (O Ramis deposit)')
+  console.log('- Os Casas zone: 3 water points (Os Casas deposit)')
+  console.log('- Total: 8 water points with associated deposits')
 
   // Return water point IDs for water meter creation
   const createdWaterPoints = await prisma.waterPoint.findMany({

@@ -22,6 +22,7 @@ describe('WaterMeterReadingCreator', () => {
     floatingPopulation: 2,
     cadastralReference: 'TEST-001',
     communityZoneId: Id.generateUniqueId().toString(),
+    waterDepositIds: [],
     notes: 'Test water point'
   }
 

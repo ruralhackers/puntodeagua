@@ -1,25 +1,81 @@
 'use client'
 
-import { ArrowLeft, FileText, MapPin } from 'lucide-react'
+import { ArrowLeft, Droplet, FileText, MapPin, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 import PopulationInfoSection from '../_components/population-info-section'
 
 export default function WaterPointDetailPage() {
   const params = useParams()
   const waterPointId = params.id as string
+  const user = useUserStore((state) => state.user)
+  const communityId = user?.community?.id
+
+  const [isEditingDeposits, setIsEditingDeposits] = useState(false)
+  const [selectedDepositIds, setSelectedDepositIds] = useState<string[]>([])
+
+  const utils = api.useUtils()
 
   const {
     data: waterPoint,
     isLoading,
     error
   } = api.community.getWaterPointById.useQuery({ id: waterPointId }, { enabled: !!waterPointId })
+
+  const { data: availableDeposits = [] } = api.community.getWaterDepositsByCommunityId.useQuery(
+    { id: communityId || '' },
+    { enabled: !!communityId }
+  )
+
+  const { data: currentDeposits = [] } = api.community.getDepositsByWaterPointId.useQuery(
+    { id: waterPointId },
+    { enabled: !!waterPointId }
+  )
+
+  const updateDepositsMutation = api.community.updateWaterPointDeposits.useMutation({
+    onSuccess: async () => {
+      await utils.community.getWaterPointById.invalidate({ id: waterPointId })
+      await utils.community.getDepositsByWaterPointId.invalidate({ id: waterPointId })
+      toast.success('Depósitos actualizados con éxito')
+      setIsEditingDeposits(false)
+    },
+    onError: (error) => {
+      toast.error(`Error al actualizar depósitos: ${error.message}`)
+    }
+  })
+
+  const handleStartEditing = () => {
+    setSelectedDepositIds(waterPoint?.waterDepositIds ?? [])
+    setIsEditingDeposits(true)
+  }
+
+  const handleCancelEditing = () => {
+    setIsEditingDeposits(false)
+    setSelectedDepositIds([])
+  }
+
+  const handleToggleDeposit = (depositId: string) => {
+    setSelectedDepositIds((prev) =>
+      prev.includes(depositId) ? prev.filter((id) => id !== depositId) : [...prev, depositId]
+    )
+  }
+
+  const handleSaveDeposits = () => {
+    updateDepositsMutation.mutate({
+      waterPointId,
+      depositIds: selectedDepositIds
+    })
+  }
 
   if (isLoading) {
     return (
@@ -153,6 +209,85 @@ export default function WaterPointDetailPage() {
                 </div>
               </>
             )}
+
+            {/* Water Deposits Section */}
+            <Separator />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Droplet className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold">Depósitos de Agua</h3>
+                </div>
+                {!isEditingDeposits && (
+                  <Button onClick={handleStartEditing} variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Gestionar Depósitos
+                  </Button>
+                )}
+              </div>
+
+              {isEditingDeposits ? (
+                <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Selecciona los depósitos que abastecen a este punto de agua:
+                  </p>
+                  <div className="space-y-2">
+                    {availableDeposits.map((deposit) => (
+                      <div key={deposit.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`deposit-${deposit.id}`}
+                          checked={selectedDepositIds.includes(deposit.id)}
+                          onCheckedChange={() => handleToggleDeposit(deposit.id)}
+                        />
+                        <label
+                          htmlFor={`deposit-${deposit.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {deposit.name} {deposit.location && `- ${deposit.location}`}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={handleSaveDeposits}
+                      size="sm"
+                      disabled={updateDepositsMutation.isPending}
+                    >
+                      {updateDepositsMutation.isPending ? 'Guardando...' : 'Guardar'}
+                    </Button>
+                    <Button
+                      onClick={handleCancelEditing}
+                      variant="outline"
+                      size="sm"
+                      disabled={updateDepositsMutation.isPending}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {currentDeposits.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {currentDeposits.map((deposit) => (
+                        <Badge key={deposit.id} variant="secondary" className="text-sm">
+                          <Droplet className="h-3 w-3 mr-1" />
+                          {deposit.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                      <p className="text-yellow-800 text-sm">
+                        Este punto de agua no tiene depósitos asociados. Haz clic en{' '}
+                        <strong>Gestionar Depósitos</strong> para asignar depósitos.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Additional Information */}
             <Separator />

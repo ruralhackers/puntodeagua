@@ -52,6 +52,15 @@ export class WaterDepositPrismaRepository
     )
   }
 
+  async findByIds(ids: Id[]) {
+    const waterDeposits = await this.getModel().findMany({
+      where: { id: { in: ids.map((id) => id.toString()) } }
+    })
+    return waterDeposits.map((waterDeposit) =>
+      WaterDeposit.fromDto(this.fromPrismaPayload(waterDeposit))
+    )
+  }
+
   async save(waterDeposit: WaterDeposit) {
     const update = {
       name: waterDeposit.name,

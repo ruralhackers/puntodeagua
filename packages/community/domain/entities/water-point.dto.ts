@@ -11,5 +11,6 @@ export const waterPointSchema = z.object({
   fixedPopulation: z.number().int().min(0),
   floatingPopulation: z.number().int().min(0),
   cadastralReference: z.string(),
-  communityZoneId: idSchema
+  communityZoneId: idSchema,
+  waterDepositIds: z.array(idSchema).optional().default([])
 })

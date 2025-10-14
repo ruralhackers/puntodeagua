@@ -28,7 +28,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { ANALYSIS_TYPE_OPTIONS, type AnalysisType } from '@/constants/analysis-types'
+import { ANALYSIS_TYPE_OPTIONS } from '@/constants/analysis-types'
 import { useAnalysisForm } from '@/hooks/use-analysis-form'
 import { handleDomainError } from '@/lib/error-handler'
 import { useUserStore } from '@/stores/user/user-provider'
@@ -77,7 +77,7 @@ export default function NewAnalysisPage() {
 
     addAnalysisMutation.mutate({
       communityId: communityId || '',
-      analysisType: formData.analysisType as AnalysisType,
+      analysisType: formData.analysisType.toString(),
       analyst: formData.analyst.trim(),
       analyzedAt: new Date(analyzedAt),
       communityZoneId: formData.communityZoneId || undefined,
@@ -130,7 +130,7 @@ export default function NewAnalysisPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {ANALYSIS_TYPE_OPTIONS.map((option) => (
                     <Button
-                      key={option.value}
+                      key={option.value.toString()}
                       type="button"
                       variant={formData.analysisType === option.value ? 'default' : 'outline'}
                       className={`
@@ -143,7 +143,7 @@ export default function NewAnalysisPage() {
                             }
                             ${errors.analysisType ? 'border-destructive' : ''}
                           `}
-                      onClick={() => updateFormData('analysisType', option.value)}
+                      onClick={() => updateFormData('analysisType', option.value.toString())}
                     >
                       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-3 w-full h-full">
                         <span className="text-2xl flex-shrink-0">{option.icon}</span>

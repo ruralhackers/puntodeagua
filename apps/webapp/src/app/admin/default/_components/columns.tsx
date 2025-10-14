@@ -23,7 +23,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-import { DataTableColumnHeader } from '../../../../../components/data-table/data-table-column-header'
+import { DataTableColumnHeader } from '../../../../components/data-table/data-table-column-header'
 
 import type { sectionSchema } from './schema'
 import { TableCellViewer } from './table-cell-viewer'

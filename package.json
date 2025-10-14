@@ -9,7 +9,7 @@
     "dbs": "docker-compose -f docker-compose.yml up -d",
     "db:sync": "bun run -F @pta/database db:sync",
     "format": "bunx biome format --write .",
-    "check": "biome check .",
+    "check": "bun x biome format --write  && bun x biome ci --diagnostic-level=error",
     "check:unsafe": "biome check --write --unsafe .",
     "check:write": "biome check --write --max-diagnostics=20000 .",
     "check:errors": "bunx biome check --max-diagnostics=20000 --diagnostic-level=error ."

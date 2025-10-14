@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, FileText, Gauge, LogOut, Menu, ShieldUser, Truck, Users } from 'lucide-react'
+import { Download, Gauge, LogOut, Menu, ShieldUser, Users } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -39,8 +39,10 @@ export function AccountMenu() {
         <DropdownMenuItem className="cursor-default focus:bg-transparent hover:bg-transparent">
           <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
             <Avatar className="size-9 rounded-lg">
-              <AvatarImage src={user.avatar || '/favicon/32x32.png'} />
-              <AvatarFallback className="rounded-lg">{getInitials(user.email)}</AvatarFallback>
+              <AvatarImage src={'/favicon/32x32.png'} />
+              <AvatarFallback className="rounded-lg">
+                {getInitials(user.email || '')}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{user.name}</span>

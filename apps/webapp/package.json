@@ -8,7 +8,8 @@
     "build": "bun x prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
     "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
     "preview": "next build && next start",
-    "generate:presets": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/generate-theme-presets.ts"
+    "generate:presets": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/generate-theme-presets.ts",
+    "start": "next start"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",

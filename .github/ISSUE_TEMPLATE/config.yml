@@ -1,0 +1,9 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and Discussions
+    url: https://github.com/ruralhackers/puntodeagua/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: Security Vulnerability
+    url: https://github.com/ruralhackers/puntodeagua/security/advisories/new
+    about: Report a security vulnerability privately
+

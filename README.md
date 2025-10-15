@@ -187,13 +187,31 @@ Incident tracking and water analysis management including:
 
 ## 🤝 Contributing
 
-This project follows strict Domain-Driven Design principles for water management systems. Please ensure:
+We welcome contributions to Punto de Agua! This project follows strict Domain-Driven Design principles for water management systems.
+
+### Quick Start for Contributors
+
+1. **Read our [Contributing Guidelines](CONTRIBUTING.md)** - Complete guide for contributors
+2. **Check our [Code of Conduct](CODE_OF_CONDUCT.md)** - Community standards and expectations
+3. **Look for issues** labeled `good first issue` or `help wanted`
+4. **Fork, branch, and submit a PR** following our guidelines
+
+### Development Principles
+
+When contributing, please ensure:
 
 1. New features respect the bounded context boundaries
 2. Water-related domain logic stays in the appropriate domain layer
 3. Infrastructure concerns are properly separated
 4. Services follow single responsibility principle
 5. Water management business rules are properly encapsulated
+
+### Getting Help
+
+- 📖 [Contributing Guide](CONTRIBUTING.md) - Detailed contribution instructions
+- 💬 [GitHub Discussions](https://github.com/ruralhackers/puntodeagua/discussions) - Ask questions and discuss ideas
+- 🐛 [Report Issues](https://github.com/ruralhackers/puntodeagua/issues) - Bug reports and feature requests
+- 🔒 [Security Issues](SECURITY.md) - Report security vulnerabilities privately
 
 ## 📄 License
 

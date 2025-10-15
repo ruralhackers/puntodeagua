@@ -195,6 +195,26 @@ This project follows strict Domain-Driven Design principles for water management
 4. Services follow single responsibility principle
 5. Water management business rules are properly encapsulated
 
+## 📄 License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+### What this means:
+
+- ✅ **Commercial use allowed**: You can use this software for commercial purposes
+- ✅ **Modification allowed**: You can modify the code to fit your needs
+- ✅ **Distribution allowed**: You can share the software with others
+- 🔒 **Copyleft protection**: If you modify and distribute the software, you must share your changes under the same license
+- 🌐 **Network use protection**: If you run a modified version as a web service, you must make the source code available to users
+
+### Key benefits for the community:
+
+- **Prevents proprietary forks**: No one can take this code, close it, and sell it without sharing improvements
+- **Ensures continued openness**: All improvements benefit the entire community
+- **Protects the social mission**: Maintains the open, community-focused nature of water management
+
+For the full license text, see [LICENSE](LICENSE) file.
+
 ## 💧 About Punto de Agua
 
 Punto de Agua is a comprehensive water management platform designed to help rural and urban communities efficiently manage their water resources, infrastructure, and consumption monitoring.

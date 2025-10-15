@@ -2,7 +2,8 @@
   "name": "puntodeagua",
   "module": "index.ts",
   "type": "module",
-  "private": true,
+  "private": false,
+  "license": "AGPL-3.0",
   "scripts": {
     "start": "concurrently -k --prefix-colors 'red,green,blue,yellow' --names 'admin,webapp' --prefix '[{name}]' 'bun run admin' 'bun run webapp'",
     "webapp": "bun run --elide-lines=100 -F webapp dev --port 3000",

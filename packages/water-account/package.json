@@ -6,6 +6,13 @@
   "devDependencies": {
     "@types/bun": "latest"
   },
+  "dependencies": {
+    "@pda/common": "workspace:*",
+    "@pda/database": "workspace:*",
+    "@pda/community": "workspace:*",
+    "date-fns": "^4.1.0",
+    "zod": "catalog:"
+  },
   "peerDependencies": {
     "typescript": "^5"
   }

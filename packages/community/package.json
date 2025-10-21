@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@pda/common": "workspace:*",
+    "@pda/database": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

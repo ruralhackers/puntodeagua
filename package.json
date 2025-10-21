@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "start": "concurrently -k --prefix-colors 'red,green,blue,yellow' --names 'admin,webapp' --prefix '[{name}]' 'bun run admin' 'bun run webapp'",
-    "webapp": "bun run --elide-lines=100 -F webapp dev --port 3000",
+    "webapp": "bun run -F webapp dev --port 3000",
     "dbs": "docker-compose -f docker-compose.yml up -d",
     "db:sync": "bun run -F @pta/database db:sync",
     "format": "bunx biome format --write .",

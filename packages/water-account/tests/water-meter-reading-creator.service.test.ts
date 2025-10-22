@@ -6,6 +6,11 @@ import { WaterMeter, WaterMeterReading } from '../domain'
 import { WaterMeterReadingDateNotAllowedError } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
+import {
+  createMockWaterMeterLastReadingUpdater,
+  createMockWaterMeterReadingRepository,
+  createMockWaterMeterRepository
+} from './helpers/mocks'
 
 describe('WaterMeterReadingCreator', () => {
   let service: WaterMeterReadingCreator
@@ -60,25 +65,9 @@ describe('WaterMeterReadingCreator', () => {
   })
 
   beforeEach(() => {
-    mockWaterMeterRepository = {
-      findById: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as WaterMeterRepository
-
-    mockWaterMeterReadingRepository = {
-      findLastReading: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as WaterMeterReadingRepository
-
-    mockWaterMeterLastReadingUpdater = {
-      run: mock()
-    } as unknown as WaterMeterLastReadingUpdater
+    mockWaterMeterRepository = createMockWaterMeterRepository()
+    mockWaterMeterReadingRepository = createMockWaterMeterReadingRepository()
+    mockWaterMeterLastReadingUpdater = createMockWaterMeterLastReadingUpdater()
 
     service = new WaterMeterReadingCreator(
       mockWaterMeterLastReadingUpdater,

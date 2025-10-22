@@ -19,20 +19,50 @@ describe('Incident Entity', () => {
   }
 
   describe('create', () => {
-    it('should create a valid incident with all required fields', () => {
-      const incident = Incident.create(validIncidentData)
+    it('should throw error when end date is before start date', () => {
+      // Arrange
+      const invalidData = {
+        ...validIncidentData,
+        startAt: new Date('2024-01-15T10:00:00Z'),
+        endAt: new Date('2024-01-14T10:00:00Z')
+      }
 
-      expect(incident.title).toBe(validIncidentData.title)
-      expect(incident.reporterName).toBe(validIncidentData.reporterName)
-      expect(incident.startAt).toEqual(validIncidentData.startAt)
-      expect(incident.communityId.toString()).toBe(validIncidentData.communityId)
-      expect(incident.communityZoneId?.toString()).toBe(validIncidentData.communityZoneId)
-      expect(incident.description).toBe(validIncidentData.description)
+      // Act & Assert
+      expect(() => Incident.create(invalidData)).toThrow(IncidentEndDateBeforeStartDateError)
+    })
+
+    it('should throw error when closed incident has no end date', () => {
+      // Arrange
+      const invalidData = {
+        ...validIncidentData,
+        status: 'closed' as const,
+        endAt: undefined
+      }
+
+      // Act & Assert
+      expect(() => Incident.create(invalidData)).toThrow(IncidentClosedWithoutEndDateError)
+    })
+
+    it('should create a valid incident with all required fields', () => {
+      // Arrange
+      const incidentData = validIncidentData
+
+      // Act
+      const incident = Incident.create(incidentData)
+
+      // Assert
+      expect(incident.title).toBe(incidentData.title)
+      expect(incident.reporterName).toBe(incidentData.reporterName)
+      expect(incident.startAt).toEqual(incidentData.startAt)
+      expect(incident.communityId.toString()).toBe(incidentData.communityId)
+      expect(incident.communityZoneId?.toString()).toBe(incidentData.communityZoneId)
+      expect(incident.description).toBe(incidentData.description)
       expect(incident.status.toString()).toBe('open')
       expect(incident.id).toBeDefined()
     })
 
     it('should create an incident with minimal required fields', () => {
+      // Arrange
       const minimalData = {
         title: 'Test Incident',
         reporterName: 'Jane Doe',
@@ -41,8 +71,10 @@ describe('Incident Entity', () => {
         status: 'open' as const
       }
 
+      // Act
       const incident = Incident.create(minimalData)
 
+      // Assert
       expect(incident.title).toBe(minimalData.title)
       expect(incident.reporterName).toBe(minimalData.reporterName)
       expect(incident.communityId.toString()).toBe(minimalData.communityId)
@@ -51,30 +83,11 @@ describe('Incident Entity', () => {
       expect(incident.waterPointId).toBeUndefined()
       expect(incident.description).toBeUndefined()
     })
-
-    it('should throw error when end date is before start date', () => {
-      const invalidData = {
-        ...validIncidentData,
-        startAt: new Date('2024-01-15T10:00:00Z'),
-        endAt: new Date('2024-01-14T10:00:00Z')
-      }
-
-      expect(() => Incident.create(invalidData)).toThrow(IncidentEndDateBeforeStartDateError)
-    })
-
-    it('should throw error when closed incident has no end date', () => {
-      const invalidData = {
-        ...validIncidentData,
-        status: 'closed' as const,
-        endAt: undefined
-      }
-
-      expect(() => Incident.create(invalidData)).toThrow(IncidentClosedWithoutEndDateError)
-    })
   })
 
   describe('fromDto', () => {
     it('should create incident from DTO', () => {
+      // Arrange
       const dto = {
         id: Id.generateUniqueId().toString(),
         title: 'Test Incident',
@@ -87,8 +100,10 @@ describe('Incident Entity', () => {
         endAt: undefined
       }
 
+      // Act
       const incident = Incident.fromDto(dto)
 
+      // Assert
       expect(incident.id.toString()).toBe(dto.id)
       expect(incident.title).toBe(dto.title)
       expect(incident.reporterName).toBe(dto.reporterName)
@@ -102,9 +117,13 @@ describe('Incident Entity', () => {
 
   describe('toDto', () => {
     it('should convert incident to DTO', () => {
+      // Arrange
       const incident = Incident.create(validIncidentData)
+
+      // Act
       const dto = incident.toDto()
 
+      // Assert
       expect(dto.id).toBe(incident.id.toString())
       expect(dto.title).toBe(incident.title)
       expect(dto.reporterName).toBe(incident.reporterName)

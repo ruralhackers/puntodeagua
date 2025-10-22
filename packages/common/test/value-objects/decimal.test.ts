@@ -3,57 +3,99 @@ import { Decimal } from '../../domain/value-objects/decimal'
 
 describe('Decimal', () => {
   describe('creation', () => {
-    it('creates from string without scientific notation now', () => {
-      const d = Decimal.fromString('100')
+    it('should create from string without scientific notation', () => {
+      // Arrange
+      const value = '100'
+
+      // Act
+      const d = Decimal.fromString(value)
+
+      // Assert
       expect(d.toString()).toBe('100')
     })
 
-    it('creates from number', () => {
-      const d = Decimal.fromNumber(42)
+    it('should create from number', () => {
+      // Arrange
+      const value = 42
+
+      // Act
+      const d = Decimal.fromNumber(value)
+
+      // Assert
       expect(d.toNumber()).toBe(42)
       expect(d.toString()).toBe('42')
     })
 
-    it('normalizes leading zeros', () => {
-      const d = Decimal.fromString('00100')
+    it('should normalize leading zeros', () => {
+      // Arrange
+      const value = '00100'
+
+      // Act
+      const d = Decimal.fromString(value)
+
+      // Assert
       expect(d.toString()).toBe('100')
     })
 
-    it('preserves long decimal precision (no trimming)', () => {
-      const d = Decimal.fromString('100.12345678901234567890')
+    it('should preserve long decimal precision without trimming', () => {
+      // Arrange
+      const value = '100.12345678901234567890'
+
+      // Act
+      const d = Decimal.fromString(value)
+
+      // Assert
       expect(d.toString()).toBe('100.1234567890123456789')
     })
   })
 
   describe('validation', () => {
-    it('rejects negative', () => {
-      expect(() => Decimal.fromString('-1')).toThrow('Decimal cannot be negative')
+    it('should reject negative values', () => {
+      // Arrange
+      const negativeValue = '-1'
+
+      // Act & Assert
+      expect(() => Decimal.fromString(negativeValue)).toThrow('Decimal cannot be negative')
     })
 
-    it('rejects NaN', () => {
-      expect(() => Decimal.fromString('NaN')).toThrow()
+    it('should reject NaN', () => {
+      // Arrange
+      const nanValue = 'NaN'
+
+      // Act & Assert
+      expect(() => Decimal.fromString(nanValue)).toThrow()
     })
 
-    it('rejects Infinity', () => {
-      expect(() => Decimal.fromString('Infinity')).toThrow()
+    it('should reject Infinity', () => {
+      // Arrange
+      const infinityValue = 'Infinity'
+
+      // Act & Assert
+      expect(() => Decimal.fromString(infinityValue)).toThrow()
     })
   })
 
   describe('constants', () => {
-    it('ZERO is zero', () => {
+    it('should have ZERO constant equal to zero', () => {
+      // Act & Assert
       expect(Decimal.ZERO.isZero()).toBe(true)
       expect(Decimal.ZERO.toString()).toBe('0')
     })
-    it('ONE is one', () => {
+
+    it('should have ONE constant equal to one', () => {
+      // Act & Assert
       expect(Decimal.ONE.isOne()).toBe(true)
       expect(Decimal.ONE.toString()).toBe('1')
     })
   })
 
   describe('comparisons', () => {
-    it('less/greater checks', () => {
+    it('should perform less than and greater than comparisons correctly', () => {
+      // Arrange
       const a = Decimal.fromString('1')
       const b = Decimal.fromString('2')
+
+      // Act & Assert
       expect(a.isLessThan(b)).toBe(true)
       expect(b.isGreaterThan(a)).toBe(true)
       expect(a.isGreaterThanOrEqualTo(a)).toBe(true)
@@ -62,110 +104,189 @@ describe('Decimal', () => {
   })
 
   describe('arithmetic', () => {
-    it('adds exact', () => {
-      const a = Decimal.fromString('1.00000000000000000001')
-      const b = Decimal.fromString('2.5')
-      expect(a.add(b).toString()).toBe('3.50000001')
-    })
-
-    it('subtracts (non negative result)', () => {
-      const a = Decimal.fromString('5')
-      const b = Decimal.fromString('2')
-      expect(a.subtract(b).toString()).toBe('3')
-    })
-
-    it('subtract throws when negative result', () => {
+    it('should throw when subtract results in negative', () => {
+      // Arrange
       const a = Decimal.fromString('2')
       const b = Decimal.fromString('5')
+
+      // Act & Assert
       expect(() => a.subtract(b)).toThrow('Result would be negative')
     })
 
-    it('multiply by number', () => {
+    it('should add decimals with exact precision', () => {
+      // Arrange
+      const a = Decimal.fromString('1.00000000000000000001')
+      const b = Decimal.fromString('2.5')
+
+      // Act
+      const result = a.add(b)
+
+      // Assert
+      expect(result.toString()).toBe('3.50000001')
+    })
+
+    it('should subtract with non-negative result', () => {
+      // Arrange
+      const a = Decimal.fromString('5')
+      const b = Decimal.fromString('2')
+
+      // Act
+      const result = a.subtract(b)
+
+      // Assert
+      expect(result.toString()).toBe('3')
+    })
+
+    it('should multiply by number', () => {
+      // Arrange
       const a = Decimal.fromString('1.23')
+
+      // Act
       const m = a.multiplyBy(2)
+
+      // Assert
       expect(m.toString()).toBe('2.46')
     })
 
-    it('divide by number', () => {
+    it('should divide by number', () => {
+      // Arrange
       const a = Decimal.fromString('10')
+
+      // Act
       const r = a.divideBy(4)
+
+      // Assert
       expect(r.toString()).toBe('2.5')
     })
 
-    it('divide by decimal', () => {
+    it('should divide by decimal', () => {
+      // Arrange
       const a = Decimal.fromString('10')
       const b = Decimal.fromString('2')
-      expect(a.divideByDecimal(b).toString()).toBe('5')
+
+      // Act
+      const result = a.divideByDecimal(b)
+
+      // Assert
+      expect(result.toString()).toBe('5')
     })
 
-    it('multiply by decimal', () => {
+    it('should multiply by decimal', () => {
+      // Arrange
       const a = Decimal.fromString('1.5')
       const b = Decimal.fromString('2')
-      expect(a.multiplyByDecimal(b).toString()).toBe('3')
+
+      // Act
+      const result = a.multiplyByDecimal(b)
+
+      // Assert
+      expect(result.toString()).toBe('3')
     })
   })
 
   describe('min max', () => {
-    it('min returns smaller', () => {
+    it('should return smaller value with min', () => {
+      // Arrange
       const a = Decimal.fromString('1')
       const b = Decimal.fromString('2')
-      expect(a.min(b).toString()).toBe('1')
+
+      // Act
+      const result = a.min(b)
+
+      // Assert
+      expect(result.toString()).toBe('1')
     })
 
-    it('max returns larger', () => {
+    it('should return larger value with max', () => {
+      // Arrange
       const a = Decimal.fromString('1')
       const b = Decimal.fromString('2')
-      expect(a.max(b).toString()).toBe('2')
+
+      // Act
+      const result = a.max(b)
+
+      // Assert
+      expect(result.toString()).toBe('2')
     })
   })
 
   describe('decimals rounding (ceil)', () => {
-    it('rounds up last kept decimal', () => {
+    it('should round up last kept decimal', () => {
+      // Arrange
       const original = Decimal.fromString('1.2101')
+
+      // Act
       const rounded = original.decimals(2)
+
+      // Assert
       expect(rounded.toString()).toBe('1.22')
     })
 
-    it('no change when already exact', () => {
+    it('should not change when already exact', () => {
+      // Arrange
       const original = Decimal.fromString('1.2300')
+
+      // Act
       const rounded = original.decimals(2)
+
+      // Assert
       expect(rounded.toString()).toBe('1.23')
     })
   })
 
   describe('toUnits/fromUnits', () => {
-    it('fromUnits scales down preserving precision', () => {
+    it('should scale down preserving precision with fromUnits', () => {
+      // Arrange & Act
       const d = Decimal.fromUnits('123456', 3) // 123.456
+
+      // Assert
       expect(d.toString()).toBe('123.456')
     })
 
-    it('toUnits scales up preserving precision', () => {
+    it('should scale up preserving precision with toUnits', () => {
+      // Arrange
       const d = Decimal.fromString('123.456')
+
+      // Act
       const units = d.toUnits(3)
+
+      // Assert
       expect(units.toString()).toBe('123456')
     })
   })
 
   describe('error cases', () => {
-    it('divide by zero number', () => {
+    it('should throw when dividing by zero number', () => {
+      // Arrange
       const d = Decimal.fromString('1')
+
+      // Act & Assert
       expect(() => d.divideBy(0)).toThrow('Divisor must be > 0')
     })
 
-    it('divide by zero decimal', () => {
+    it('should throw when dividing by zero decimal', () => {
+      // Arrange
       const d = Decimal.fromString('1')
+
+      // Act & Assert
       expect(() => d.divideByDecimal(Decimal.ZERO)).toThrow('Division by zero')
     })
 
-    it('multiply by negative factor', () => {
+    it('should throw when multiplying by negative factor', () => {
+      // Arrange
       const d = Decimal.fromString('1')
+
+      // Act & Assert
       expect(() => d.multiplyBy(-1)).toThrow('Negative factor')
     })
   })
 
   describe('formatting (avoid scientific notation)', () => {
-    it('does not use scientific notation for typical small numbers', () => {
+    it('should not use scientific notation for typical small numbers', () => {
+      // Arrange
       const samples = ['0.1', '0.01', '0.001', '0.00000001']
+
+      // Act & Assert
       for (const s of samples) {
         const d = Decimal.fromString(s)
         expect(d.toString()).toBe(s)

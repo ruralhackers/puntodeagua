@@ -10,6 +10,11 @@ import {
 import { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeter, WaterMeterReading } from '../domain'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
+import {
+  createMockCommunityRepository,
+  createMockCommunityZoneRepository,
+  createMockWaterMeterRepository
+} from './helpers/mocks'
 
 describe('ReadingCreatorService', () => {
   let service: WaterMeterLastReadingUpdater
@@ -71,29 +76,9 @@ describe('ReadingCreatorService', () => {
   tenDaysAgo.setDate(tenDaysAgo.getDate() - 10)
 
   beforeEach(() => {
-    mockWaterMeterRepository = {
-      findById: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as WaterMeterRepository
-
-    mockCommunityRepository = {
-      findById: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as CommunityRepository
-
-    mockCommunityZoneRepository = {
-      findById: mock(),
-      save: mock(),
-      findAll: mock(),
-      delete: mock(),
-      findForTable: mock()
-    } as unknown as CommunityZoneRepository
+    mockWaterMeterRepository = createMockWaterMeterRepository()
+    mockCommunityRepository = createMockCommunityRepository()
+    mockCommunityZoneRepository = createMockCommunityZoneRepository()
 
     service = new WaterMeterLastReadingUpdater(
       mockWaterMeterRepository,

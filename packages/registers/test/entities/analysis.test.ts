@@ -18,189 +18,215 @@ describe('Analysis', () => {
   const validAnalyzedAt = new Date('2024-01-15T10:30:00Z')
 
   describe('create()', () => {
-    describe('valid creation scenarios', () => {
-      it('creates chlorine_ph analysis with required ph', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'chlorine_ph',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 7.2
-        }
+    it('should throw error for chlorine_ph analysis without ph', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'chlorine_ph' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt
+      }
 
-        const analysis = Analysis.create(dto)
-
-        expect(analysis.id).toBeInstanceOf(Id)
-        expect(analysis.communityId.toString()).toBe(validCommunityId)
-        expect(analysis.analysisType.equals(AnalysisType.CHLORINE_PH)).toBe(true)
-        expect(analysis.analyst).toBe(validAnalyst)
-        expect(analysis.analyzedAt.getTime()).toBe(validAnalyzedAt.getTime())
-        expect(analysis.ph).toBe(7.2)
-        expect(analysis.turbidity).toBeUndefined()
-        expect(analysis.chlorine).toBeUndefined()
-      })
-
-      it('creates turbidity analysis with required turbidity', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'turbidity',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          turbidity: 2.5
-        }
-
-        const analysis = Analysis.create(dto)
-
-        expect(analysis.analysisType.equals(AnalysisType.TURBIDITY)).toBe(true)
-        expect(analysis.turbidity).toBe(2.5)
-        expect(analysis.ph).toBeUndefined()
-        expect(analysis.chlorine).toBeUndefined()
-      })
-
-      it('creates hardness analysis with required ph', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'hardness',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 6.8
-        }
-
-        const analysis = Analysis.create(dto)
-
-        expect(analysis.analysisType.equals(AnalysisType.HARDNESS)).toBe(true)
-        expect(analysis.ph).toBe(6.8)
-        expect(analysis.turbidity).toBeUndefined()
-        expect(analysis.chlorine).toBeUndefined()
-      })
-
-      it('creates complete analysis with all required values', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'complete',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 7.0,
-          chlorine: 0.5,
-          turbidity: 1.2
-        }
-
-        const analysis = Analysis.create(dto)
-
-        expect(analysis.analysisType.equals(AnalysisType.COMPLETE)).toBe(true)
-        expect(analysis.ph).toBe(7.0)
-        expect(analysis.chlorine).toBe(0.5)
-        expect(analysis.turbidity).toBe(1.2)
-      })
-
-      it('creates analysis with optional fields', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'chlorine_ph',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 7.2,
-          communityZoneId: validCommunityZoneId,
-          waterDepositId: validWaterDepositId,
-          description: 'Test analysis description'
-        }
-
-        const analysis = Analysis.create(dto)
-
-        expect(analysis.communityZoneId?.toString()).toBe(validCommunityZoneId)
-        expect(analysis.waterDepositId?.toString()).toBe(validWaterDepositId)
-        expect(analysis.description).toBe('Test analysis description')
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisPhRequiredError)
     })
 
-    describe('validation error scenarios', () => {
-      it('throws error for chlorine_ph analysis without ph', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'chlorine_ph',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt
-        }
+    it('should throw error for turbidity analysis without turbidity', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'turbidity' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisPhRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisTurbidityRequiredError)
+    })
 
-      it('throws error for turbidity analysis without turbidity', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'turbidity',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt
-        }
+    it('should throw error for hardness analysis without ph', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'hardness' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisTurbidityRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisHardnessPhRequiredError)
+    })
 
-      it('throws error for hardness analysis without ph', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'hardness',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt
-        }
+    it('should throw error for complete analysis without ph', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'complete' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        chlorine: 0.5,
+        turbidity: 1.2
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisHardnessPhRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
+    })
 
-      it('throws error for complete analysis without ph', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'complete',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          chlorine: 0.5,
-          turbidity: 1.2
-        }
+    it('should throw error for complete analysis without chlorine', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'complete' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.0,
+        turbidity: 1.2
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
+    })
 
-      it('throws error for complete analysis without chlorine', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'complete',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 7.0,
-          turbidity: 1.2
-        }
+    it('should throw error for complete analysis without turbidity', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'complete' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.0,
+        chlorine: 0.5
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
+    })
 
-      it('throws error for complete analysis without turbidity', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'complete',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt,
-          ph: 7.0,
-          chlorine: 0.5
-        }
+    it('should throw error for complete analysis without any measurement values', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'complete' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
-      })
+      // Act & Assert
+      expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
+    })
 
-      it('throws error for complete analysis without any measurement values', () => {
-        const dto = {
-          communityId: validCommunityId,
-          analysisType: 'complete',
-          analyst: validAnalyst,
-          analyzedAt: validAnalyzedAt
-        }
+    it('should create chlorine_ph analysis with required ph', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'chlorine_ph' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.2
+      }
 
-        expect(() => Analysis.create(dto)).toThrow(AnalysisCompleteMeasurementsRequiredError)
-      })
+      // Act
+      const analysis = Analysis.create(dto)
+
+      // Assert
+      expect(analysis.id).toBeInstanceOf(Id)
+      expect(analysis.communityId.toString()).toBe(validCommunityId)
+      expect(analysis.analysisType.equals(AnalysisType.CHLORINE_PH)).toBe(true)
+      expect(analysis.analyst).toBe(validAnalyst)
+      expect(analysis.analyzedAt.getTime()).toBe(validAnalyzedAt.getTime())
+      expect(analysis.ph).toBe(7.2)
+      expect(analysis.turbidity).toBeUndefined()
+      expect(analysis.chlorine).toBeUndefined()
+    })
+
+    it('should create turbidity analysis with required turbidity', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'turbidity' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        turbidity: 2.5
+      }
+
+      // Act
+      const analysis = Analysis.create(dto)
+
+      // Assert
+      expect(analysis.analysisType.equals(AnalysisType.TURBIDITY)).toBe(true)
+      expect(analysis.turbidity).toBe(2.5)
+      expect(analysis.ph).toBeUndefined()
+      expect(analysis.chlorine).toBeUndefined()
+    })
+
+    it('should create hardness analysis with required ph', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'hardness' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 6.8
+      }
+
+      // Act
+      const analysis = Analysis.create(dto)
+
+      // Assert
+      expect(analysis.analysisType.equals(AnalysisType.HARDNESS)).toBe(true)
+      expect(analysis.ph).toBe(6.8)
+      expect(analysis.turbidity).toBeUndefined()
+      expect(analysis.chlorine).toBeUndefined()
+    })
+
+    it('should create complete analysis with all required values', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'complete' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.0,
+        chlorine: 0.5,
+        turbidity: 1.2
+      }
+
+      // Act
+      const analysis = Analysis.create(dto)
+
+      // Assert
+      expect(analysis.analysisType.equals(AnalysisType.COMPLETE)).toBe(true)
+      expect(analysis.ph).toBe(7.0)
+      expect(analysis.chlorine).toBe(0.5)
+      expect(analysis.turbidity).toBe(1.2)
+    })
+
+    it('should create analysis with optional fields', () => {
+      // Arrange
+      const dto = {
+        communityId: validCommunityId,
+        analysisType: 'chlorine_ph' as const,
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.2,
+        communityZoneId: validCommunityZoneId,
+        waterDepositId: validWaterDepositId,
+        description: 'Test analysis description'
+      }
+
+      // Act
+      const analysis = Analysis.create(dto)
+
+      // Assert
+      expect(analysis.communityZoneId?.toString()).toBe(validCommunityZoneId)
+      expect(analysis.waterDepositId?.toString()).toBe(validWaterDepositId)
+      expect(analysis.description).toBe('Test analysis description')
     })
   })
 
   describe('fromDto()', () => {
-    it('creates analysis from complete DTO', () => {
+    it('should create analysis from complete DTO', () => {
+      // Arrange
       const dto: AnalysisDto = {
         id: 'clx22222222222222222222222',
         communityId: validCommunityId,
@@ -215,8 +241,10 @@ describe('Analysis', () => {
         description: 'Complete analysis'
       }
 
+      // Act
       const analysis = Analysis.fromDto(dto)
 
+      // Assert
       expect(analysis.id.toString()).toBe('clx22222222222222222222222')
       expect(analysis.communityId.toString()).toBe(validCommunityId)
       expect(analysis.analysisType.equals(AnalysisType.COMPLETE)).toBe(true)
@@ -230,7 +258,8 @@ describe('Analysis', () => {
       expect(analysis.description).toBe('Complete analysis')
     })
 
-    it('creates analysis from DTO with optional fields as undefined', () => {
+    it('should create analysis from DTO with optional fields as undefined', () => {
+      // Arrange
       const dto: AnalysisDto = {
         id: 'clx33333333333333333333333',
         communityId: validCommunityId,
@@ -240,8 +269,10 @@ describe('Analysis', () => {
         ph: 7.2
       }
 
+      // Act
       const analysis = Analysis.fromDto(dto)
 
+      // Assert
       expect(analysis.communityZoneId).toBeUndefined()
       expect(analysis.waterDepositId).toBeUndefined()
       expect(analysis.turbidity).toBeUndefined()
@@ -251,7 +282,8 @@ describe('Analysis', () => {
   })
 
   describe('toDto()', () => {
-    it('converts entity to DTO with all fields', () => {
+    it('should convert entity to DTO with all fields', () => {
+      // Arrange
       const dto: AnalysisDto = {
         id: 'clx44444444444444444444444',
         communityId: validCommunityId,
@@ -265,14 +297,17 @@ describe('Analysis', () => {
         turbidity: 1.2,
         description: 'Test description'
       }
-
       const analysis = Analysis.fromDto(dto)
+
+      // Act
       const resultDto = analysis.toDto()
 
+      // Assert
       expect(resultDto).toEqual(dto)
     })
 
-    it('converts entity to DTO with optional fields as undefined', () => {
+    it('should convert entity to DTO with optional fields as undefined', () => {
+      // Arrange
       const dto: AnalysisDto = {
         id: 'clx55555555555555555555555',
         communityId: validCommunityId,
@@ -281,14 +316,17 @@ describe('Analysis', () => {
         analyzedAt: validAnalyzedAt,
         turbidity: 2.5
       }
-
       const analysis = Analysis.fromDto(dto)
+
+      // Act
       const resultDto = analysis.toDto()
 
+      // Assert
       expect(resultDto).toEqual(dto)
     })
 
-    it('preserves Date objects in DTO conversion', () => {
+    it('should preserve Date objects in DTO conversion', () => {
+      // Arrange
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'chlorine_ph',
@@ -297,15 +335,18 @@ describe('Analysis', () => {
         ph: 7.2
       })
 
+      // Act
       const dto = analysis.toDto()
 
+      // Assert
       expect(dto.analyzedAt).toBeInstanceOf(Date)
       expect(dto.analyzedAt.getTime()).toBe(validAnalyzedAt.getTime())
     })
   })
 
   describe('data integrity', () => {
-    it('preserves data through create -> toDto -> fromDto round trip', () => {
+    it('should preserve data through create -> toDto -> fromDto round trip', () => {
+      // Arrange
       const originalDto = {
         communityId: validCommunityId,
         analysisType: 'complete' as const,
@@ -319,10 +360,12 @@ describe('Analysis', () => {
         description: 'Round trip test'
       }
 
+      // Act
       const analysis = Analysis.create(originalDto)
       const dto = analysis.toDto()
       const reconstructedAnalysis = Analysis.fromDto(dto)
 
+      // Assert
       expect(reconstructedAnalysis.communityId.toString()).toBe(originalDto.communityId)
       expect(reconstructedAnalysis.analysisType.toString()).toBe(originalDto.analysisType)
       expect(reconstructedAnalysis.analyst).toBe(originalDto.analyst)
@@ -335,7 +378,8 @@ describe('Analysis', () => {
       expect(reconstructedAnalysis.description).toBe(originalDto.description)
     })
 
-    it('generates unique IDs across multiple creations', () => {
+    it('should generate unique IDs across multiple creations', () => {
+      // Arrange
       const dto1 = {
         communityId: validCommunityId,
         analysisType: 'chlorine_ph' as const,
@@ -343,7 +387,6 @@ describe('Analysis', () => {
         analyzedAt: validAnalyzedAt,
         ph: 7.2
       }
-
       const dto2 = {
         communityId: validCommunityId,
         analysisType: 'turbidity' as const,
@@ -352,15 +395,18 @@ describe('Analysis', () => {
         turbidity: 2.5
       }
 
+      // Act
       const analysis1 = Analysis.create(dto1)
       const analysis2 = Analysis.create(dto2)
 
+      // Assert
       expect(analysis1.id.toString()).not.toBe(analysis2.id.toString())
     })
   })
 
   describe('property access', () => {
-    it('provides read-only access to all properties', () => {
+    it('should provide read-only access to all properties', () => {
+      // Arrange
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'complete',
@@ -371,6 +417,7 @@ describe('Analysis', () => {
         turbidity: 1.2
       })
 
+      // Act & Assert
       // All properties should be accessible
       expect(analysis.id).toBeDefined()
       expect(analysis.communityId).toBeDefined()
@@ -385,7 +432,8 @@ describe('Analysis', () => {
       // This test verifies the properties exist and are accessible
     })
 
-    it('handles optional properties correctly', () => {
+    it('should handle optional properties correctly', () => {
+      // Arrange
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'chlorine_ph',
@@ -394,6 +442,7 @@ describe('Analysis', () => {
         ph: 7.2
       })
 
+      // Act & Assert
       expect(analysis.communityZoneId).toBeUndefined()
       expect(analysis.waterDepositId).toBeUndefined()
       expect(analysis.description).toBeUndefined()
@@ -401,7 +450,8 @@ describe('Analysis', () => {
   })
 
   describe('edge cases', () => {
-    it('handles zero values for measurements', () => {
+    it('should handle zero values for measurements', () => {
+      // Arrange
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'complete',
@@ -412,12 +462,14 @@ describe('Analysis', () => {
         turbidity: 0
       })
 
+      // Act & Assert
       expect(analysis.ph).toBe(0)
       expect(analysis.chlorine).toBe(0)
       expect(analysis.turbidity).toBe(0)
     })
 
-    it('handles decimal values for measurements', () => {
+    it('should handle decimal values for measurements', () => {
+      // Arrange
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'complete',
@@ -428,14 +480,15 @@ describe('Analysis', () => {
         turbidity: 1.987654
       })
 
+      // Act & Assert
       expect(analysis.ph).toBe(7.123456)
       expect(analysis.chlorine).toBe(0.123456)
       expect(analysis.turbidity).toBe(1.987654)
     })
 
-    it('handles long description text', () => {
+    it('should handle long description text', () => {
+      // Arrange
       const longDescription = 'A'.repeat(2000) // Max length according to schema
-
       const analysis = Analysis.create({
         communityId: validCommunityId,
         analysisType: 'chlorine_ph',
@@ -445,41 +498,14 @@ describe('Analysis', () => {
         description: longDescription
       })
 
+      // Act & Assert
       expect(analysis.description).toBe(longDescription)
     })
   })
 
   describe('integration with dependencies', () => {
-    it('integrates correctly with Id class', () => {
-      const analysis = Analysis.create({
-        communityId: validCommunityId,
-        analysisType: 'chlorine_ph',
-        analyst: validAnalyst,
-        analyzedAt: validAnalyzedAt,
-        ph: 7.2
-      })
-
-      expect(analysis.id).toBeInstanceOf(Id)
-      expect(analysis.communityId).toBeInstanceOf(Id)
-      expect(Id.isValidIdentifier(analysis.id.toString())).toBe(true)
-      expect(Id.isValidIdentifier(analysis.communityId.toString())).toBe(true)
-    })
-
-    it('integrates correctly with AnalysisType class', () => {
-      const analysis = Analysis.create({
-        communityId: validCommunityId,
-        analysisType: 'turbidity',
-        analyst: validAnalyst,
-        analyzedAt: validAnalyzedAt,
-        turbidity: 2.5
-      })
-
-      expect(analysis.analysisType).toBeInstanceOf(AnalysisType)
-      expect(analysis.analysisType.equals(AnalysisType.TURBIDITY)).toBe(true)
-      expect(analysis.analysisType.toString()).toBe('turbidity')
-    })
-
-    it('propagates errors from invalid Id format', () => {
+    it('should propagate errors from invalid Id format', () => {
+      // Arrange
       const dto = {
         communityId: 'invalid-id',
         analysisType: 'chlorine_ph' as const,
@@ -488,10 +514,12 @@ describe('Analysis', () => {
         ph: 7.2
       }
 
+      // Act & Assert
       expect(() => Analysis.create(dto)).toThrow()
     })
 
-    it('propagates errors from invalid AnalysisType', () => {
+    it('should propagate errors from invalid AnalysisType', () => {
+      // Arrange
       const dto = {
         communityId: validCommunityId,
         analysisType: 'invalid_type' as never,
@@ -500,7 +528,41 @@ describe('Analysis', () => {
         ph: 7.2
       }
 
+      // Act & Assert
       expect(() => Analysis.create(dto)).toThrow()
+    })
+
+    it('should integrate correctly with Id class', () => {
+      // Arrange
+      const analysis = Analysis.create({
+        communityId: validCommunityId,
+        analysisType: 'chlorine_ph',
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        ph: 7.2
+      })
+
+      // Act & Assert
+      expect(analysis.id).toBeInstanceOf(Id)
+      expect(analysis.communityId).toBeInstanceOf(Id)
+      expect(Id.isValidIdentifier(analysis.id.toString())).toBe(true)
+      expect(Id.isValidIdentifier(analysis.communityId.toString())).toBe(true)
+    })
+
+    it('should integrate correctly with AnalysisType class', () => {
+      // Arrange
+      const analysis = Analysis.create({
+        communityId: validCommunityId,
+        analysisType: 'turbidity',
+        analyst: validAnalyst,
+        analyzedAt: validAnalyzedAt,
+        turbidity: 2.5
+      })
+
+      // Act & Assert
+      expect(analysis.analysisType).toBeInstanceOf(AnalysisType)
+      expect(analysis.analysisType.equals(AnalysisType.TURBIDITY)).toBe(true)
+      expect(analysis.analysisType.toString()).toBe('turbidity')
     })
   })
 })

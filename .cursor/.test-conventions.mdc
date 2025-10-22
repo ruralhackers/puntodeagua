@@ -1,0 +1,517 @@
+# Test Conventions & Standards
+
+> **Last Updated**: October 2025  
+> **Status**: Active - All new tests must follow these conventions
+
+## Overview
+
+This document defines the testing standards for the Auctional project. All tests must follow these conventions to ensure consistency, readability, and maintainability across the codebase.
+
+---
+
+## Core Principles
+
+### 1. ✅ AAA Pattern (Arrange-Act-Assert)
+
+**Every test must explicitly use AAA comments to structure the test logic.**
+
+```typescript
+it('should create a user successfully', async () => {
+  // Arrange
+  const userData = { name: 'John Doe', email: 'john@example.com' }
+  mockUserRepository.findByEmail.mockResolvedValue(null)
+  
+  // Act
+  const result = await service.createUser(userData)
+  
+  // Assert
+  expect(result).toBeDefined()
+  expect(result.name).toBe('John Doe')
+  expect(mockUserRepository.save).toHaveBeenCalledWith(expect.any(User))
+})
+```
+
+**Why?** The AAA pattern makes test flow immediately clear and helps identify incomplete or poorly structured tests.
+
+---
+
+### 2. ❌ No Nested Describe Blocks for Test Categories
+
+**Do NOT nest tests in describe blocks like `'Success Cases'`, `'Error Cases'`, `'Edge Cases'`.**
+
+```typescript
+// ❌ BAD - Don't do this
+describe('UserService', () => {
+  describe('Success Cases', () => {
+    it('should create user', () => {})
+    it('should update user', () => {})
+  })
+  
+  describe('Error Cases', () => {
+    it('should throw when invalid', () => {})
+  })
+})
+
+// ✅ GOOD - Do this instead
+describe('UserService', () => {
+  // Error cases first
+  it('should throw when invalid', () => {})
+  
+  // Success cases
+  it('should create user', () => {})
+  it('should update user', () => {})
+})
+```
+
+**Why?** Flat structure is easier to scan, reduces indentation, and test ordering makes categories implicit.
+
+**Allowed nested describes**: Only for testing different methods/classes within the same file.
+
+```typescript
+// ✅ ALLOWED - Testing different entities
+describe('User', () => {
+  it('should create user', () => {})
+})
+
+describe('UserProfile', () => {
+  it('should create profile', () => {})
+})
+```
+
+---
+
+### 3. 🔧 Use Helper Functions for Mocks
+
+**All mock repositories, services, and ports must use centralized helper functions.**
+
+```typescript
+// ❌ BAD - Inline mock creation
+beforeEach(() => {
+  mockUserRepository = {
+    findById: mock(),
+    save: mock(),
+    delete: mock(),
+    // ... more methods
+  } as UserRepository
+})
+
+// ✅ GOOD - Use helper functions
+import { createMockUserRepository } from '../helpers/mocks'
+
+beforeEach(() => {
+  mockUserRepository = createMockUserRepository()
+})
+```
+
+**Helper Location**: `packages/{package-name}/test/helpers/mocks.ts`
+
+**Helper Template**:
+```typescript
+import { mock } from 'bun:test'
+import type { UserRepository } from '../../domain/repositories/user.repository'
+
+export const createMockUserRepository = (): UserRepository => {
+  return {
+    findById: mock(),
+    save: mock(),
+    delete: mock(),
+    findAll: mock(),
+    count: mock()
+  } as unknown as UserRepository
+}
+```
+
+**Why?** Reduces duplication, ensures consistency, makes tests more maintainable.
+
+---
+
+### 4. 📋 Test Ordering: Errors First
+
+**Tests must be ordered: Error cases → Success cases → Edge cases**
+
+```typescript
+describe('AuctionService', () => {
+  // 1. Error cases first
+  it('should throw AuctionNotFoundError when auction does not exist', async () => {})
+  it('should throw ValidationError when bid is too low', async () => {})
+  it('should handle repository errors gracefully', async () => {})
+  
+  // 2. Success cases
+  it('should create auction successfully', async () => {})
+  it('should place bid successfully', async () => {})
+  
+  // 3. Edge cases
+  it('should handle auction at exactly start time', async () => {})
+  it('should handle maximum bid amount', async () => {})
+  
+  // 4. Integration/Event tests (if applicable)
+  it('should publish AuctionCreatedEvent', async () => {})
+})
+```
+
+**Why?** Error cases are most important for debugging. This ordering helps developers quickly find what they're looking for.
+
+---
+
+### 5. 📝 Descriptive Test Names
+
+**All test names must start with "should" and clearly describe the expected behavior.**
+
+```typescript
+// ❌ BAD
+it('user creation', () => {})
+it('test bid validation', () => {})
+it('error', () => {})
+
+// ✅ GOOD
+it('should create user with valid data', () => {})
+it('should throw ValidationError when bid is below minimum', () => {})
+it('should return empty array when no auctions exist', () => {})
+```
+
+**Pattern**: `should [action/behavior] when/with [condition]`
+
+---
+
+## File Organization
+
+### Test File Structure
+
+```typescript
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { Id } from '@auc/common/domain'
+// 1. Import services/entities being tested
+import { UserService } from '../../application/user.service'
+// 2. Import types
+import type { UserRepository } from '../../domain/repositories/user.repository'
+// 3. Import errors
+import { UserNotFoundError } from '../../domain/errors/user-errors'
+// 4. Import helpers
+import { createMockUserRepository } from '../helpers/mocks'
+import { createTestUser } from '../helpers/test-data'
+
+describe('UserService', () => {
+  let service: UserService
+  let mockUserRepository: UserRepository
+
+  beforeEach(() => {
+    // Initialize mocks using helpers
+    mockUserRepository = createMockUserRepository()
+    service = new UserService(mockUserRepository)
+  })
+
+  // Tests here (errors first, then success)
+})
+```
+
+---
+
+## Specific Patterns
+
+### Testing Entity Creation
+
+```typescript
+it('should create entity from DTO', () => {
+  // Arrange
+  const dto = createMockEntityDto()
+
+  // Act
+  const entity = Entity.fromDto(dto)
+
+  // Assert
+  expect(entity.id.toString()).toBe(dto.id)
+  expect(entity.name).toBe(dto.name)
+})
+```
+
+### Testing Service Methods
+
+```typescript
+it('should execute service operation successfully', async () => {
+  // Arrange
+  const params = { userId: 'user-123', amount: 1000 }
+  mockRepository.findById.mockResolvedValue(testEntity)
+  mockRepository.save.mockResolvedValue(undefined)
+
+  // Act
+  const result = await service.run(params)
+
+  // Assert
+  expect(mockRepository.findById).toHaveBeenCalledWith(Id.fromString(params.userId))
+  expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Entity))
+  expect(result).toBeDefined()
+})
+```
+
+### Testing Error Cases
+
+```typescript
+it('should throw EntityNotFoundError when entity does not exist', async () => {
+  // Arrange
+  const entityId = Id.generateUniqueId()
+  mockRepository.findById.mockResolvedValue(null)
+
+  // Act & Assert
+  await expect(service.run({ entityId })).rejects.toThrow(EntityNotFoundError)
+  expect(mockRepository.findById).toHaveBeenCalledWith(entityId)
+  expect(mockRepository.save).not.toHaveBeenCalled()
+})
+```
+
+### Testing Value Objects
+
+```typescript
+it('should create value object with valid data', () => {
+  // Arrange
+  const value = 'test@example.com'
+
+  // Act
+  const email = Email.from(value)
+
+  // Assert
+  expect(email.toString()).toBe(value)
+  expect(email.isValid()).toBe(true)
+})
+
+it('should throw error when value is invalid', () => {
+  // Arrange
+  const invalidValue = 'not-an-email'
+
+  // Act & Assert
+  expect(() => Email.from(invalidValue)).toThrow('Invalid email format')
+})
+```
+
+### Testing Event Subscribers
+
+```typescript
+it('should handle event and perform action', async () => {
+  // Arrange
+  const event = new EntityCreatedEvent('entity-id')
+  mockService.performAction.mockResolvedValue(undefined)
+
+  // Act
+  await subscriber.handle(event)
+
+  // Assert
+  expect(mockService.performAction).toHaveBeenCalledWith('entity-id')
+})
+```
+
+---
+
+## Helper Files
+
+### mocks.ts - Repository & Service Mocks
+
+Location: `packages/{package}/test/helpers/mocks.ts`
+
+```typescript
+import { mock } from 'bun:test'
+import type { EntityRepository } from '../../domain/repositories/entity.repository'
+
+export const createMockEntityRepository = (): EntityRepository => {
+  return {
+    findById: mock(),
+    save: mock(),
+    delete: mock(),
+    findAll: mock(),
+    count: mock()
+  } as unknown as EntityRepository
+}
+```
+
+### test-data.ts - Test Data Builders
+
+Location: `packages/{package}/test/helpers/test-data.ts`
+
+```typescript
+import { Id } from '@auc/common/domain'
+import { Entity } from '../../domain/entities/entity'
+
+export const createTestEntity = (overrides = {}): Entity => {
+  return Entity.create({
+    name: 'Test Entity',
+    status: 'ACTIVE',
+    ...overrides
+  })
+}
+```
+
+---
+
+## Common Mistakes to Avoid
+
+### ❌ Missing AAA Comments
+
+```typescript
+// BAD
+it('should create user', async () => {
+  const userData = { name: 'John' }
+  const result = await service.createUser(userData)
+  expect(result).toBeDefined()
+})
+
+// GOOD
+it('should create user', async () => {
+  // Arrange
+  const userData = { name: 'John' }
+  
+  // Act
+  const result = await service.createUser(userData)
+  
+  // Assert
+  expect(result).toBeDefined()
+})
+```
+
+### ❌ Inline Mock Creation
+
+```typescript
+// BAD
+mockRepository = {
+  findById: mock(),
+  save: mock()
+}
+
+// GOOD
+mockRepository = createMockRepository()
+```
+
+### ❌ Success Cases Before Errors
+
+```typescript
+// BAD
+it('should create successfully', () => {})
+it('should throw error', () => {})
+
+// GOOD
+it('should throw error', () => {})
+it('should create successfully', () => {})
+```
+
+### ❌ Vague Test Names
+
+```typescript
+// BAD
+it('works', () => {})
+it('test user', () => {})
+
+// GOOD
+it('should create user with valid email', () => {})
+it('should throw when email is invalid', () => {})
+```
+
+---
+
+## Testing Checklist
+
+Before submitting tests, ensure:
+
+- [ ] All tests have AAA comments (Arrange, Act, Assert)
+- [ ] No nested describe blocks for test categories
+- [ ] Helper functions used for all mocks
+- [ ] Tests ordered: Errors → Success → Edge cases
+- [ ] All test names start with "should" and are descriptive
+- [ ] All tests pass (`bun test`)
+- [ ] No console.log statements left in tests
+- [ ] Proper imports (no unused imports)
+
+---
+
+## Examples by Package
+
+### Auction Package Example
+
+```typescript
+import { beforeEach, describe, expect, it } from 'bun:test'
+import { Id } from '@auc/common/domain'
+import { BidCreator } from '../../application/services/bid-creator.service'
+import { BidTooLowError } from '../../domain/errors/bid-errors'
+import type { BidRepository } from '../../domain/repositories/bid.repository'
+import type { AuctionRepository } from '../../domain/repositories/auction.repository'
+import { createMockBidRepository, createMockAuctionRepository } from '../helpers/mocks'
+import { createTestAuction, createTestBid } from '../helpers/test-data'
+
+describe('BidCreator', () => {
+  let service: BidCreator
+  let mockBidRepository: BidRepository
+  let mockAuctionRepository: AuctionRepository
+
+  beforeEach(() => {
+    mockBidRepository = createMockBidRepository()
+    mockAuctionRepository = createMockAuctionRepository()
+    service = new BidCreator(mockBidRepository, mockAuctionRepository)
+  })
+
+  it('should throw BidTooLowError when bid is below minimum', async () => {
+    // Arrange
+    const auction = createTestAuction({ reserve: 1000 })
+    const bidAmount = 500
+    mockAuctionRepository.findById.mockResolvedValue(auction)
+
+    // Act & Assert
+    await expect(service.run({ auctionId: auction.id, amount: bidAmount }))
+      .rejects.toThrow(BidTooLowError)
+  })
+
+  it('should create bid successfully when amount is valid', async () => {
+    // Arrange
+    const auction = createTestAuction({ reserve: 1000 })
+    const bidAmount = 1500
+    mockAuctionRepository.findById.mockResolvedValue(auction)
+    mockBidRepository.save.mockResolvedValue(undefined)
+
+    // Act
+    const result = await service.run({ 
+      auctionId: auction.id.toString(), 
+      userId: Id.generateUniqueId().toString(),
+      amount: bidAmount 
+    })
+
+    // Assert
+    expect(result).toBeDefined()
+    expect(result.amount.toNumber()).toBe(bidAmount)
+    expect(mockBidRepository.save).toHaveBeenCalledWith(expect.any(Object))
+  })
+})
+```
+
+---
+
+## Migration Guide
+
+### Converting Existing Tests
+
+If you're updating an old test file:
+
+1. **Add AAA comments** to every test
+2. **Remove nested describes** for test categories
+3. **Extract inline mocks** to helper functions
+4. **Reorder tests** (errors first)
+5. **Verify test names** start with "should"
+6. **Run tests** to ensure nothing broke
+
+---
+
+## Questions?
+
+If you have questions about these conventions or need clarification, please:
+
+1. Check the examples in this document
+2. Look at recently standardized test files in the codebase
+3. Ask the team in #engineering
+
+## Enforcement
+
+- All new PRs with tests must follow these conventions
+- Linter rules may be added to enforce some conventions automatically
+- Code reviews will check for compliance
+
+---
+
+**Remember**: These conventions exist to make our test suite more maintainable and readable. Consistent tests are easier to understand, debug, and maintain! 🎯
+
+---
+alwaysApply: true
+---

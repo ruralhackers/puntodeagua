@@ -1,0 +1,21 @@
+{
+  "name": "seed-data",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "bun --env-file ../../.env.local run src/index.ts"
+  },
+  "dependencies": {
+    "@pda/common": "workspace:*",
+    "@pda/community": "workspace:*",
+    "@pda/database": "workspace:*",
+    "@pda/registers": "workspace:*",
+    "@pda/user": "workspace:*",
+    "@pda/water-account": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.8.2"
+  }
+}

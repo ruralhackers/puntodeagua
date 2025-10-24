@@ -9,8 +9,8 @@ export const waterAccountRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
-      const meter = await repo.findById(Id.fromString(input.id))
-      return meter?.toDto()
+      const displayDto = await repo.findByIdForDisplay(Id.fromString(input.id))
+      return displayDto
     }),
 
   getWaterMeterReadings: protectedProcedure
@@ -39,8 +39,8 @@ export const waterAccountRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
-      const meters = await repo.findByWaterPointId(Id.fromString(input.id))
-      return meters.map((meter) => meter.toDto())
+      const displayDtos = await repo.findByWaterPointIdForDisplay(Id.fromString(input.id))
+      return displayDtos
     }),
 
   getActiveWaterMetersOrderedByLastReading: protectedProcedure
@@ -48,9 +48,8 @@ export const waterAccountRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const zoneIds = input.zoneIds.map(Id.fromString)
-      const meters = await repo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
-      const dtos = meters.map((meter) => meter.toDto())
-      return dtos
+      const displayDtos = await repo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
+      return displayDtos
     }),
 
   addWaterMeterReading: protectedProcedure

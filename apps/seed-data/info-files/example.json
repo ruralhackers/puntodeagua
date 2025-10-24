@@ -1,0 +1,110 @@
+{
+  "community": {
+    "name": "Example Community",
+    "waterLimitRule": {
+      "type": "PERSON_BASED",
+      "value": 150
+    }
+  },
+  "deposits": [
+    {
+      "name": "Main Deposit",
+      "location": "North sector, near the reservoir",
+      "notes": "Primary water storage facility"
+    }
+  ],
+  "zones": [
+    {
+      "name": "Zone A",
+      "notes": "Northern residential area"
+    },
+    {
+      "name": "Zone B",
+      "notes": "Southern residential area"
+    }
+  ],
+  "users": [
+    {
+      "email": "admin@example.com",
+      "name": "Community Administrator",
+      "password": "change-me-123",
+      "roles": ["COMMUNITY_ADMIN"]
+    }
+  ],
+  "waterAccounts": [
+    {
+      "tempId": "WA001",
+      "name": "John Doe",
+      "nationalId": "12345678A",
+      "notes": ""
+    },
+    {
+      "tempId": "WA002",
+      "name": "Jane Smith",
+      "nationalId": "87654321B",
+      "notes": ""
+    }
+  ],
+  "waterPoints": [
+    {
+      "tempId": "WP001",
+      "name": "Main Street 10",
+      "location": "Main Street 10",
+      "zone": "Zone A",
+      "cadastralReference": "EXAMPLE001",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP002",
+      "name": "Oak Avenue 25",
+      "location": "Oak Avenue 25",
+      "zone": "Zone B",
+      "cadastralReference": "EXAMPLE002",
+      "fixedPopulation": 3,
+      "floatingPopulation": 2,
+      "notes": ""
+    }
+  ],
+  "waterMeters": [
+    {
+      "name": "Meter Main Street 10",
+      "waterAccountId": "WA001",
+      "waterPointId": "WP001",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        {
+          "reading": 100,
+          "readingDate": "2024-01-15",
+          "notes": "Initial reading"
+        },
+        {
+          "reading": 125,
+          "readingDate": "2024-02-15",
+          "notes": "Monthly reading"
+        }
+      ]
+    },
+    {
+      "name": "Meter Oak Avenue 25",
+      "waterAccountId": "WA002",
+      "waterPointId": "WP002",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        {
+          "reading": 50.5,
+          "readingDate": "2024-01-15",
+          "notes": "Initial reading"
+        },
+        {
+          "reading": 68.3,
+          "readingDate": "2024-02-15",
+          "notes": "Monthly reading"
+        }
+      ]
+    }
+  ]
+}

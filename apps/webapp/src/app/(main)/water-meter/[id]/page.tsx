@@ -158,7 +158,7 @@ export default function WaterMeterDetailPage() {
               </Link>
             </Button>
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">{waterMeter.name}</h1>
+              <h1 className="text-2xl font-bold tracking-tight">{waterMeter.waterAccountName}</h1>
               <p className="text-muted-foreground">
                 {waterMeter.waterPoint.name} • {getStatusBadge()}
               </p>

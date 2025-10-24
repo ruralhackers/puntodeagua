@@ -30,6 +30,7 @@ export function WaterMeterList({ selectedZones, nameFilter, showOnlyExcess }: Wa
       const searchTerm = nameFilter.toLowerCase().trim()
       filtered = filtered.filter(
         (meter) =>
+          meter.waterAccountName.toLowerCase().includes(searchTerm) ||
           meter.waterPoint.name.toLowerCase().includes(searchTerm) ||
           meter.waterPoint.location.toLowerCase().includes(searchTerm)
       )

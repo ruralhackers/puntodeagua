@@ -1,12 +1,12 @@
 'use client'
 
-import type { WaterMeterDto } from '@pda/water-account/domain'
+import type { WaterMeterDisplayDto } from '@pda/water-account/domain'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { AddReadingModal } from './add-reading-modal'
 
 interface WaterMeterItemProps {
-  waterMeter: WaterMeterDto
+  waterMeter: WaterMeterDisplayDto
 }
 
 export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
@@ -35,8 +35,7 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
       return 'Sin lectura'
     }
 
-    const unit = waterMeter.measurementUnit === 'L' ? 'L' : 'm³'
-    return `${waterMeter.lastReadingNormalizedValue.toLocaleString()} ${unit}`
+    return `${waterMeter.lastReadingNormalizedValue.toLocaleString()} L`
   }
 
   const getExcessBadge = () => {
@@ -66,11 +65,13 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <div className="font-medium text-lg">{waterMeter.waterPoint.name}</div>
+              <div className="font-medium text-lg">{waterMeter.waterAccountName}</div>
               {getExcessBadge()}
             </div>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="font-medium">Punto: {waterMeter.waterPoint.name}</span>
+              <span>•</span>
               <span>{waterMeter.waterPoint.location}</span>
               <span>•</span>
               <span>Última lectura: {formatLastReading()}</span>
@@ -96,7 +97,7 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
       {showAddReadingModal && (
         <AddReadingModal
           waterMeterId={waterMeter.id}
-          waterPointName={waterMeter.waterPoint.name}
+          waterPointName={waterMeter.waterAccountName}
           measurementUnit={waterMeter.measurementUnit}
           onClose={() => setShowAddReadingModal(false)}
         />

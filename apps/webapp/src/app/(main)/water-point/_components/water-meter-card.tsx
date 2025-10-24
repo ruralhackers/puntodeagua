@@ -19,7 +19,7 @@ export default function WaterMeterCard({ meter, onAddReading }: WaterMeterCardPr
           <div className="space-y-3 flex-1">
             <div className="flex items-center gap-2">
               <Gauge className="h-4 w-4 text-blue-500" />
-              <h4 className="font-semibold">{meter.name}</h4>
+              <h4 className="font-semibold">{meter.waterAccountName}</h4>
               <Badge variant="outline" className="text-xs">
                 {meter.measurementUnit}
               </Badge>

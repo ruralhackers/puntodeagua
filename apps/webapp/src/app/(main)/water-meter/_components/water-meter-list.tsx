@@ -38,7 +38,7 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
 
     return waterMeters.filter(
       (waterMeter) =>
-        waterMeter.name.toLowerCase().includes(nameFilter.toLowerCase()) ||
+        waterMeter.waterAccountName.toLowerCase().includes(nameFilter.toLowerCase()) ||
         waterMeter.waterPoint.name.toLowerCase().includes(nameFilter.toLowerCase())
     )
   }, [waterMeters, nameFilter])
@@ -174,7 +174,7 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
               href={`/water-meter/${waterMeter.id}`}
               className="font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors"
             >
-              {waterMeter.name}
+              {waterMeter.waterAccountName}
             </Link>
             <div className="text-xs text-gray-500">ID: {waterMeter.id.slice(-8)}</div>
           </div>

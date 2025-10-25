@@ -190,7 +190,7 @@ export default function WaterMeterDetailPage() {
                 {waterMeter.lastReadingDate ? (
                   <div className="space-y-2">
                     <div className="text-2xl font-bold text-blue-600">
-                      {waterMeter.lastReadingNormalizedValue?.toLocaleString()} L
+                      {waterMeter.lastReadingNormalizedValue?.toLocaleString('es-ES')} L
                     </div>
                     <div className="text-sm text-gray-600">
                       {format(new Date(waterMeter.lastReadingDate), 'dd/MM/yyyy', { locale: es })}
@@ -336,7 +336,7 @@ export default function WaterMeterDetailPage() {
                     </div>
                     <div className="text-sm font-mono">{reading.reading}</div>
                     <div className="text-sm font-semibold text-blue-600">
-                      {reading.normalizedReading.toLocaleString()} L
+                      {reading.normalizedReading.toLocaleString('es-ES')} L
                     </div>
                     <div className="text-sm text-gray-600">{reading.notes || '-'}</div>
                   </div>

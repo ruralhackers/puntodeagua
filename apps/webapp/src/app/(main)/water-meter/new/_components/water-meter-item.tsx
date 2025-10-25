@@ -35,7 +35,7 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
       return 'Sin lectura'
     }
 
-    return `${waterMeter.lastReadingNormalizedValue.toLocaleString()} L`
+    return `${waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L`
   }
 
   const getExcessBadge = () => {
@@ -99,6 +99,8 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
           waterMeterId={waterMeter.id}
           waterPointName={waterMeter.waterAccountName}
           measurementUnit={waterMeter.measurementUnit}
+          lastReadingValue={waterMeter.lastReadingNormalizedValue}
+          lastReadingDate={waterMeter.lastReadingDate}
           onClose={() => setShowAddReadingModal(false)}
         />
       )}

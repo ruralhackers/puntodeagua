@@ -208,7 +208,7 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
           <div className="flex items-center">
             {waterMeter.lastReadingNormalizedValue ? (
               <div className="text-lg font-bold text-blue-600">
-                {waterMeter.lastReadingNormalizedValue.toLocaleString()} L
+                {waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L
               </div>
             ) : (
               <div className="text-sm text-gray-500 italic">N/A</div>

@@ -5,5 +5,5 @@ dayjs.extend(relativeTime)
 
 export const RelativeDate = (value: Date) => {
   const date = new Date(value)
-  return { local: date.toLocaleString(), relative: dayjs(date).fromNow() }
+  return { local: date.toLocaleString('es-ES'), relative: dayjs(date).fromNow() }
 }

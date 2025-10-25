@@ -73,7 +73,7 @@ export function InsightCards() {
                             y={viewBox.cy}
                             className="fill-foreground text-3xl font-bold tabular-nums"
                           >
-                            {totalLeads.toLocaleString()}
+                            {totalLeads.toLocaleString('es-ES')}
                           </tspan>
                           <tspan
                             x={viewBox.cx}

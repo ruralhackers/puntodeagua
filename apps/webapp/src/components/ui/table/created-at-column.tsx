@@ -17,7 +17,7 @@ export const createdAtColumn: ColumnDef<unknown> = {
       <>
         <span className="text-sm">{dayjs(date).fromNow()}</span>
         <br />
-        <small>{date ? new Date(date).toLocaleString() : '-'}</small>
+        <small>{date ? new Date(date).toLocaleString('es-ES') : '-'}</small>
       </>
     )
   }

@@ -36,8 +36,41 @@ export default function AddReadingModal({
     readingDate: new Date().toISOString().split('T')[0], // Today's date
     notes: ''
   })
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   const utils = api.useUtils()
+
+  // Helper function to parse Spanish number format to standard format
+  // Converts "1.234,56" or "1234,56" → 1234.56
+  const parseSpanishNumber = (value: string): number => {
+    if (!value || value.trim() === '') return 0
+
+    // Remove spaces
+    const cleaned = value.trim()
+    // Remove dots (thousands separators)
+    const withoutThousands = cleaned.replace(/\./g, '')
+    // Replace comma with dot (decimal separator)
+    const normalized = withoutThousands.replace(',', '.')
+
+    const parsed = parseFloat(normalized)
+    return Number.isNaN(parsed) ? 0 : parsed
+  }
+
+  // Helper function to normalize reading based on measurement unit
+  const normalizeReading = (reading: string, measurementUnit: string): number => {
+    const value = parseSpanishNumber(reading)
+    // If measurement unit is m³, convert to liters (1 m³ = 1000 L)
+    return measurementUnit === 'm3' ? value * 1000 : value
+  }
+
+  // Helper function to format date
+  const formatDate = (date: Date): string => {
+    return new Date(date).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+  }
 
   // Mutation for adding new reading
   const addReadingMutation = api.waterAccount.addWaterMeterReading.useMutation({
@@ -60,16 +93,44 @@ export default function AddReadingModal({
   const handleSubmitReading = () => {
     if (!selectedMeter || !readingForm.reading || !readingForm.readingDate) return
 
+    // Client-side validation: check if new reading is less than last reading
+    if (selectedMeter.lastReadingNormalizedValue !== null) {
+      const newNormalizedReading = normalizeReading(
+        readingForm.reading,
+        selectedMeter.measurementUnit
+      )
+      if (newNormalizedReading < selectedMeter.lastReadingNormalizedValue) {
+        setValidationError('La nueva lectura no puede ser menor que la última lectura')
+        return
+      }
+    }
+
+    setValidationError(null)
+    // Convert Spanish format to standard format before sending to backend
+    const standardReading = parseSpanishNumber(readingForm.reading).toString()
     addReadingMutation.mutate({
       waterMeterId: selectedMeter.id,
-      reading: readingForm.reading,
+      reading: standardReading,
       readingDate: new Date(readingForm.readingDate),
       notes: readingForm.notes || null
     })
   }
 
+  const handleReadingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+
+    // Allow only: digits, comma (one only), dots, and empty string
+    const validPattern = /^[0-9]*[.,]?[0-9]*$/
+
+    if (validPattern.test(value) || value === '') {
+      setReadingForm((prev) => ({ ...prev, reading: value }))
+      setValidationError(null)
+    }
+  }
+
   const handleClose = () => {
     onClose()
+    setValidationError(null)
     // Reset form when closing
     setReadingForm({
       reading: '',
@@ -85,6 +146,32 @@ export default function AddReadingModal({
           <DialogTitle>Nueva Lectura</DialogTitle>
           <DialogDescription>
             Añadir una nueva lectura para el contador: {selectedMeter?.name}
+            {selectedMeter && (
+              <>
+                <br />
+                <span className="text-sm text-muted-foreground">
+                  Unidad de medida:{' '}
+                  <strong>
+                    {selectedMeter.measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}
+                  </strong>
+                </span>
+                {selectedMeter.lastReadingNormalizedValue !== null && (
+                  <>
+                    <br />
+                    <span className="text-sm text-muted-foreground">
+                      Última lectura:{' '}
+                      <strong>
+                        {selectedMeter.measurementUnit === 'L'
+                          ? `${selectedMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L`
+                          : `${(selectedMeter.lastReadingNormalizedValue / 1000).toLocaleString('es-ES')} m³`}
+                      </strong>
+                      {selectedMeter.lastReadingDate &&
+                        ` (${formatDate(selectedMeter.lastReadingDate)})`}
+                    </span>
+                  </>
+                )}
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -93,15 +180,18 @@ export default function AddReadingModal({
             <Label htmlFor="reading" className="text-right">
               Lectura
             </Label>
-            <Input
-              id="reading"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              className="col-span-3"
-              value={readingForm.reading}
-              onChange={(e) => setReadingForm((prev) => ({ ...prev, reading: e.target.value }))}
-            />
+            <div className="col-span-3">
+              <Input
+                id="reading"
+                type="text"
+                inputMode="decimal"
+                placeholder={`0,00 ${selectedMeter?.measurementUnit || ''}`}
+                className={validationError ? 'border-red-500' : ''}
+                value={readingForm.reading}
+                onChange={handleReadingChange}
+              />
+              {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
+            </div>
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -145,7 +235,7 @@ export default function AddReadingModal({
           <Button
             type="button"
             onClick={handleSubmitReading}
-            disabled={!readingForm.reading || addReadingMutation.isPending}
+            disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
           >
             {addReadingMutation.isPending ? 'Guardando...' : 'Guardar Lectura'}
           </Button>

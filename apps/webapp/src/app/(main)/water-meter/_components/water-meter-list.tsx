@@ -5,15 +5,21 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
 
 interface WaterMeterListProps {
   selectedZone: string
   nameFilter: string
+  showOnlyExcess: boolean
 }
 
-export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterListProps) {
+export default function WaterMeterList({
+  selectedZone,
+  nameFilter,
+  showOnlyExcess
+}: WaterMeterListProps) {
   const zones = useCommunityZonesStore((state) => state.zones)
 
   const zoneIds = useMemo(() => {
@@ -32,16 +38,30 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
     { enabled: zoneIds.length > 0 }
   )
 
-  // Filtrar por nombre si hay filtro de texto
+  // Filtrar por nombre y exceso
   const filteredWaterMeters = useMemo(() => {
     if (!waterMeters) return []
 
-    return waterMeters.filter(
-      (waterMeter) =>
-        waterMeter.waterAccountName.toLowerCase().includes(nameFilter.toLowerCase()) ||
-        waterMeter.waterPoint.name.toLowerCase().includes(nameFilter.toLowerCase())
-    )
-  }, [waterMeters, nameFilter])
+    let filtered = waterMeters
+
+    // Filter by name
+    if (nameFilter.trim()) {
+      const searchTerm = nameFilter.toLowerCase().trim()
+      filtered = filtered.filter(
+        (meter) =>
+          meter.waterAccountName.toLowerCase().includes(searchTerm) ||
+          meter.waterPoint.name.toLowerCase().includes(searchTerm) ||
+          meter.waterPoint.location.toLowerCase().includes(searchTerm)
+      )
+    }
+
+    // Filter by excess
+    if (showOnlyExcess) {
+      filtered = filtered.filter((meter) => meter.lastReadingExcessConsumption === true)
+    }
+
+    return filtered
+  }, [waterMeters, nameFilter, showOnlyExcess])
 
   const getStatusBadge = (waterMeter: {
     lastReadingDate: Date | null
@@ -73,31 +93,24 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
     )
   }
 
+  const formatLastReading = (date: Date | null) => {
+    if (!date) return 'Sin lecturas'
+
+    const daysAgo = Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24))
+
+    if (daysAgo === 0) return 'Hoy'
+    if (daysAgo === 1) return 'Ayer'
+    return `Hace ${daysAgo} días`
+  }
+
   if (isLoading) {
     return (
-      <div className="space-y-0">
-        {/* Header skeleton */}
-        <div className="grid grid-cols-6 gap-4 py-3 px-4 bg-gray-50 border-b border-gray-200 animate-pulse">
-          <div className="h-4 bg-gray-300 rounded"></div>
-          <div className="h-4 bg-gray-300 rounded"></div>
-          <div className="h-4 bg-gray-300 rounded"></div>
-          <div className="h-4 bg-gray-300 rounded"></div>
-          <div className="h-4 bg-gray-300 rounded"></div>
-          <div className="h-4 bg-gray-300 rounded"></div>
-        </div>
-        {/* Rows skeleton */}
-        {Array.from({ length: 5 }, (_, i) => (
-          <div
-            key={`loading-skeleton-${Date.now()}-${i}`}
-            className="grid grid-cols-6 gap-4 py-3 px-4 border-b border-gray-200 animate-pulse last:border-b-0"
-          >
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded"></div>
-          </div>
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Card key={`loading-skeleton-${Date.now()}-${i}`} className="p-4 animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          </Card>
         ))}
       </div>
     )
@@ -125,8 +138,8 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-gray-700">No se encontraron contadores</h3>
             <p className="text-gray-500">
-              {nameFilter
-                ? `No hay contadores que coincidan con "${nameFilter}"`
+              {nameFilter || showOnlyExcess
+                ? 'No hay contadores que coincidan con los filtros aplicados'
                 : 'No hay contadores disponibles en la zona seleccionada'}
             </p>
           </div>
@@ -136,104 +149,66 @@ export default function WaterMeterList({ selectedZone, nameFilter }: WaterMeterL
   }
 
   return (
-    <div className="space-y-0">
-      {/* Header */}
-      <div className="grid grid-cols-6 gap-4 py-3 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 font-semibold text-blue-800">
-        <div className="flex items-center gap-2">
-          <Droplets className="h-4 w-4" />
-          Contador
-        </div>
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4" />
-          Punto de Agua
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          Última Lectura
-        </div>
-        <div className="flex items-center gap-2">
-          <Droplets className="h-4 w-4" />
-          Valor (L)
-        </div>
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4" />
-          Estado
-        </div>
-        <div className="text-center">Acciones</div>
-      </div>
-
-      {/* Rows */}
+    <div className="space-y-2">
       {filteredWaterMeters.map((waterMeter) => (
-        <div
+        <Card
           key={waterMeter.id}
-          className="grid grid-cols-6 gap-4 py-4 px-4 border-b border-gray-200 hover:bg-gray-50 transition-colors last:border-b-0"
+          className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200"
         >
-          {/* Contador */}
-          <div className="flex flex-col">
-            <Link
-              href={`/water-meter/${waterMeter.id}`}
-              className="font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors"
-            >
-              {waterMeter.waterAccountName}
-            </Link>
-            <div className="text-xs text-gray-500">ID: {waterMeter.id.slice(-8)}</div>
-          </div>
-
-          {/* Punto de Agua */}
-          <div className="flex flex-col">
-            <div className="font-medium text-gray-900">{waterMeter.waterPoint.name}</div>
-            <div className="text-sm text-gray-600">{waterMeter.waterPoint.location}</div>
-          </div>
-
-          {/* Última Lectura */}
-          <div className="flex flex-col">
-            {waterMeter.lastReadingDate ? (
-              <>
-                <div className="text-sm font-medium text-gray-900">
-                  {new Date(waterMeter.lastReadingDate).toLocaleDateString('es-ES')}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {new Date(waterMeter.lastReadingDate).toLocaleTimeString('es-ES', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </div>
-              </>
-            ) : (
-              <div className="text-sm text-gray-500 italic">Sin lecturas</div>
-            )}
-          </div>
-
-          {/* Valor */}
-          <div className="flex items-center">
-            {waterMeter.lastReadingNormalizedValue ? (
-              <div className="text-lg font-bold text-blue-600">
-                {waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            {/* Información principal */}
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <Link
+                  href={`/water-meter/${waterMeter.id}`}
+                  className="font-semibold text-lg hover:text-blue-600 hover:underline transition-colors"
+                >
+                  {waterMeter.waterAccountName}
+                </Link>
+                {getStatusBadge(waterMeter)}
               </div>
-            ) : (
-              <div className="text-sm text-gray-500 italic">N/A</div>
-            )}
-          </div>
 
-          {/* Estado */}
-          <div className="flex items-center">{getStatusBadge(waterMeter)}</div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  <span className="font-medium">{waterMeter.waterPoint.name}</span>
+                  {waterMeter.lastReadingNormalizedValue && (
+                    <>
+                      <span className="sm:inline">•</span>
+                      <Droplets className="h-3 w-3" />
+                      <span className="font-semibold text-blue-600">
+                        {waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
 
-          {/* Acciones */}
-          <div className="flex items-center justify-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href={`/water-point/${waterMeter.waterPoint.id}`}>
-                <MapPin className="h-3 w-3 mr-1" />
-                Punto de agua
-              </Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href={`/water-meter/${waterMeter.id}`}>
-                <Eye className="h-3 w-3 mr-1" />
-                Ver detalle
-              </Link>
-            </Button>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>Ultima lectura: {formatLastReading(waterMeter.lastReadingDate)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botones de acción */}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
+                <Link href={`/water-point/${waterMeter.waterPoint.id}`}>
+                  <MapPin className="h-3 w-3 mr-1" />
+                  <span className="sm:inline">Punto de agua</span>
+                </Link>
+              </Button>
+              <Button size="sm" asChild className="flex-1 sm:flex-none">
+                <Link href={`/water-meter/${waterMeter.id}`}>
+                  <Eye className="h-3 w-3 mr-1" />
+                  Ver detalle
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   )

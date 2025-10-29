@@ -1,17 +1,13 @@
 'use client'
 
-import { Filter, Search } from 'lucide-react'
+import { Filter } from 'lucide-react'
 import { useId, useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
+import { SearchInput } from '@/components/ui/search-input'
 import { Button } from '../../../components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '../../../components/ui/card'
-import { Input } from '../../../components/ui/input'
+import { Card } from '../../../components/ui/card'
+import { Checkbox } from '../../../components/ui/checkbox'
+import { Label } from '../../../components/ui/label'
 import {
   Select,
   SelectContent,
@@ -26,6 +22,7 @@ export default function WaterMeterListPage() {
   const zoneFilterId = useId()
   const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
+  const [showOnlyExcess, setShowOnlyExcess] = useState<boolean>(false)
   const [showFilters, setShowFilters] = useState<boolean>(false)
 
   const zones = useCommunityZonesStore((state) => state.zones)
@@ -50,65 +47,67 @@ export default function WaterMeterListPage() {
           </Button>
         </div>
 
-        {/* Filters and Search */}
+        {/* Barra de búsqueda siempre visible */}
+        <div className="w-full max-w-md">
+          <SearchInput
+            value={nameFilter}
+            onChange={setNameFilter}
+            placeholder="Buscar por nombre o ubicación..."
+            minChars={3}
+          />
+        </div>
+
+        {/* Filtros colapsables */}
         {showFilters && (
           <Card className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200 shadow-lg shadow-blue-100/50">
-            <CardHeader>
-              <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
-                <Search className="h-5 w-5 text-blue-600" />
-                Filtros y Búsqueda
-              </CardTitle>
-              <CardDescription className="text-blue-600">
-                Encuentra rápidamente el punto de agua que necesitas
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Search Input */}
-              <div className="space-y-2">
-                <label htmlFor="search" className="text-sm font-semibold text-blue-700">
-                  Buscar por nombre
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-4 w-4" />
-                  <Input
-                    id="search"
-                    placeholder="Buscar punto de agua por nombre..."
-                    value={nameFilter}
-                    onChange={(e) => setNameFilter(e.target.value)}
-                    className="pl-10 bg-white/90 border-blue-200 focus:border-blue-400 focus:ring-blue-200"
-                  />
+            <div className="p-6 space-y-6">
+              <h3 className="text-lg font-semibold">Filtros</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Zone Filter */}
+                <div className="space-y-2">
+                  <Label htmlFor={zoneFilterId} className="text-sm font-medium">
+                    Zona
+                  </Label>
+                  <Select onValueChange={setSelectedZone} value={selectedZone}>
+                    <SelectTrigger id={zoneFilterId} className="w-full">
+                      <SelectValue placeholder="Todas las zonas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas las zonas</SelectItem>
+                      {zones.map((zone) => (
+                        <SelectItem key={zone.id} value={zone.id}>
+                          {zone.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Excess Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Estado</Label>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="excess-only"
+                      checked={showOnlyExcess}
+                      onCheckedChange={(checked) => setShowOnlyExcess(checked === true)}
+                    />
+                    <Label htmlFor="excess-only" className="text-sm font-normal cursor-pointer">
+                      Solo contadores con exceso
+                    </Label>
+                  </div>
                 </div>
               </div>
-
-              {/* Zone Filter */}
-              <div className="space-y-2">
-                <label htmlFor={zoneFilterId} className="text-sm font-semibold text-blue-700">
-                  Filtrar por zona de agua
-                </label>
-                <Select onValueChange={setSelectedZone} value={selectedZone}>
-                  <SelectTrigger
-                    id={zoneFilterId}
-                    className="w-full max-w-xs bg-white/90 border-blue-200 focus:border-blue-400 focus:ring-blue-200"
-                  >
-                    <SelectValue placeholder="Todas las zonas" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-blue-200">
-                    <SelectItem value="all" className="focus:bg-blue-50">
-                      Todas las zonas
-                    </SelectItem>
-                    {zones.map((zone) => (
-                      <SelectItem key={zone.id} value={zone.id} className="focus:bg-blue-50">
-                        {zone.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
+            </div>
           </Card>
         )}
 
-        <WaterMeterList selectedZone={selectedZone} nameFilter={nameFilter} />
+        <WaterMeterList
+          selectedZone={selectedZone}
+          nameFilter={nameFilter}
+          showOnlyExcess={showOnlyExcess}
+        />
       </div>
     </PageContainer>
   )

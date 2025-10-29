@@ -194,12 +194,6 @@ export default function WaterMeterList({
 
             {/* Botones de acción */}
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <Button variant="outline" size="sm" asChild className="flex-1 sm:flex-none">
-                <Link href={`/water-point/${waterMeter.waterPoint.id}`}>
-                  <MapPin className="h-3 w-3 mr-1" />
-                  <span className="sm:inline">Punto de agua</span>
-                </Link>
-              </Button>
               <Button size="sm" asChild className="flex-1 sm:flex-none">
                 <Link href={`/water-meter/${waterMeter.id}`}>
                   <Eye className="h-3 w-3 mr-1" />

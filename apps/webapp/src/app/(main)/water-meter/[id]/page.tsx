@@ -4,15 +4,13 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import {
   AlertTriangle,
-  ArrowLeft,
   Calendar,
   CheckCircle,
   Clock,
   Droplets,
   FileText,
   MapPin,
-  Plus,
-  User
+  Plus
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -70,15 +68,6 @@ export default function WaterMeterDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/water-meter">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-              </Link>
-            </Button>
-          </div>
-
           <Card>
             <CardContent className="pt-6">
               <div className="text-center text-destructive">
@@ -96,15 +85,6 @@ export default function WaterMeterDetailPage() {
     return (
       <PageContainer>
         <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/water-meter">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-              </Link>
-            </Button>
-          </div>
-
           <Card>
             <CardContent className="pt-6">
               <div className="text-center text-muted-foreground">
@@ -148,23 +128,22 @@ export default function WaterMeterDetailPage() {
   return (
     <PageContainer>
       <div className="flex flex-col w-full space-y-6">
-        {/* Header with back button */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/water-meter">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-              </Link>
-            </Button>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold tracking-tight">{waterMeter.waterAccountName}</h1>
-              <p className="text-muted-foreground">
-                {waterMeter.waterPoint.name} • {getStatusBadge()}
-              </p>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          {/* Left side: Info */}
+          <div className="space-y-1 min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              {waterMeter.waterAccountName}
+            </h1>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+              <span className="truncate">{waterMeter.waterPoint.name}</span>
+              <span>•</span>
+              {getStatusBadge()}
             </div>
           </div>
-          <Button asChild variant="outline" size="sm">
+
+          {/* Right side: Action button */}
+          <Button asChild variant="outline" size="sm" className="shrink-0 self-start">
             <Link href="/water-meter/new">
               <Plus className="h-4 w-4 mr-2" />
               Nueva Lectura
@@ -268,25 +247,12 @@ export default function WaterMeterDetailPage() {
           </CardHeader>
           <CardContent>
             {readingsLoading ? (
-              <div className="space-y-0">
-                {/* Header skeleton */}
-                <div className="grid grid-cols-4 gap-4 py-3 px-4 bg-gray-50 border-b border-gray-200 animate-pulse">
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                  <div className="h-4 bg-gray-300 rounded"></div>
-                </div>
-                {/* Rows skeleton */}
+              <div className="space-y-2">
                 {Array.from({ length: 3 }, (_, i) => (
-                  <div
-                    key={`reading-skeleton-${i}-${Date.now()}`}
-                    className="grid grid-cols-4 gap-4 py-3 px-4 border-b border-gray-200 animate-pulse last:border-b-0"
-                  >
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                  </div>
+                  <Card key={`loading-skeleton-${Date.now()}-${i}`} className="p-4 animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </Card>
                 ))}
               </div>
             ) : readingsError ? (
@@ -304,42 +270,50 @@ export default function WaterMeterDetailPage() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-0">
-                {/* Header */}
-                <div className="grid grid-cols-4 gap-4 py-3 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-200 font-semibold text-blue-800">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Fecha
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4" />
-                    Lectura
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4" />
-                    Valor (L)
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Notas
-                  </div>
-                </div>
-
-                {/* Readings */}
+              <div className="space-y-2">
                 {readings.map((reading) => (
-                  <div
+                  <Card
                     key={reading.id}
-                    className="grid grid-cols-4 gap-4 py-3 px-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50"
+                    className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200"
                   >
-                    <div className="text-sm">
-                      {format(new Date(reading.readingDate), 'dd/MM/yyyy HH:mm', { locale: es })}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      {/* Información principal */}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-blue-600" />
+                            <span className="font-semibold text-lg">
+                              {format(new Date(reading.readingDate), 'dd/MM/yyyy HH:mm', {
+                                locale: es
+                              })}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Droplets className="h-3 w-3" />
+                            <span className="font-medium">Lectura: </span>
+                            <span className="font-mono">{reading.reading}</span>
+                          </div>
+                          <span className="hidden sm:inline">•</span>
+                          <div className="flex items-center gap-1">
+                            <Droplets className="h-3 w-3 text-blue-600" />
+                            <span className="font-semibold text-blue-600">
+                              {reading.normalizedReading.toLocaleString('es-ES')} L
+                            </span>
+                          </div>
+                        </div>
+
+                        {reading.notes && (
+                          <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <FileText className="h-3 w-3 mt-0.5 shrink-0" />
+                            <span>{reading.notes}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-sm font-mono">{reading.reading}</div>
-                    <div className="text-sm font-semibold text-blue-600">
-                      {reading.normalizedReading.toLocaleString('es-ES')} L
-                    </div>
-                    <div className="text-sm text-gray-600">{reading.notes || '-'}</div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             )}

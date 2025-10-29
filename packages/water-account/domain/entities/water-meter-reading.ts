@@ -1,5 +1,6 @@
 import { Decimal, Id } from '@pda/common/domain'
-import type { WaterMeterReadingDto } from './water-meter-reading.dto'
+import type { MeasurementUnit } from '../value-objects/measurement-unit'
+import type { WaterMeterReadingDto, WaterMeterReadingUpdateDto } from './water-meter-reading.dto'
 
 export class WaterMeterReading {
   private constructor(
@@ -31,6 +32,17 @@ export class WaterMeterReading {
       dto.readingDate,
       dto.notes ?? null
     )
+  }
+
+  update(data: WaterMeterReadingUpdateDto, measurementUnit: MeasurementUnit): WaterMeterReading {
+    if (data.reading !== undefined) {
+      this.reading = Decimal.fromString(data.reading)
+      this.normalizedReading = measurementUnit.normalize(this.reading)
+    }
+    if (data.notes !== undefined) {
+      this.notes = data.notes
+    }
+    return this
   }
 
   toDto(): WaterMeterReadingDto {

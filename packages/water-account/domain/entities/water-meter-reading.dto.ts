@@ -11,3 +11,10 @@ export const waterMeterReadingSchema = z.object({
   readingDate: z.date(),
   notes: z.string().nullable().optional()
 })
+
+export const waterMeterReadingUpdateSchema = z.object({
+  reading: z.string().optional(),
+  notes: z.string().nullable().optional()
+})
+
+export type WaterMeterReadingUpdateDto = z.infer<typeof waterMeterReadingUpdateSchema>

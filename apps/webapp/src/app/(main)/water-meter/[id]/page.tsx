@@ -8,22 +8,31 @@ import {
   CheckCircle,
   Clock,
   Droplets,
+  Edit,
   FileText,
   MapPin,
   Plus
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
 import { IdCopy } from '@/components/id-copy'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { api } from '@/trpc/react'
+import { EditReadingModal } from './_components/edit-reading-modal'
 
 export default function WaterMeterDetailPage() {
   const params = useParams()
   const waterMeterId = params.id as string
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editingReading, setEditingReading] = useState<{
+    id: string
+    reading: string
+    notes: string | null
+  } | null>(null)
 
   const {
     data: waterMeter,
@@ -36,6 +45,19 @@ export default function WaterMeterDetailPage() {
     isLoading: readingsLoading,
     error: readingsError
   } = api.waterAccount.getWaterMeterReadings.useQuery({ waterMeterId }, { enabled: !!waterMeterId })
+
+  const utils = api.useUtils()
+
+  const handleEditReading = (reading: { id: string; reading: string; notes: string | null }) => {
+    setEditingReading(reading)
+    setEditModalOpen(true)
+  }
+
+  const handleEditSuccess = () => {
+    // Invalidate both queries to refresh the data
+    utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
+    utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+  }
 
   if (meterLoading) {
     return (
@@ -271,7 +293,7 @@ export default function WaterMeterDetailPage() {
               </div>
             ) : (
               <div className="space-y-2">
-                {readings.map((reading) => (
+                {readings.map((reading, index) => (
                   <Card
                     key={reading.id}
                     className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200"
@@ -283,7 +305,7 @@ export default function WaterMeterDetailPage() {
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-blue-600" />
                             <span className="font-semibold text-lg">
-                              {format(new Date(reading.readingDate), 'dd/MM/yyyy HH:mm', {
+                              {format(new Date(reading.readingDate), 'dd/MM/yyyy', {
                                 locale: es
                               })}
                             </span>
@@ -312,6 +334,27 @@ export default function WaterMeterDetailPage() {
                           </div>
                         )}
                       </div>
+
+                      {/* Botón de editar solo para la primera lectura (más reciente) */}
+                      {index === 0 && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              handleEditReading({
+                                id: reading.id,
+                                reading: reading.reading,
+                                notes: reading.notes ?? null
+                              })
+                            }
+                            className="shrink-0"
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Editar
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </Card>
                 ))}
@@ -320,6 +363,19 @@ export default function WaterMeterDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de edición */}
+      {editingReading && (
+        <EditReadingModal
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false)
+            setEditingReading(null)
+          }}
+          reading={editingReading}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </PageContainer>
   )
 }

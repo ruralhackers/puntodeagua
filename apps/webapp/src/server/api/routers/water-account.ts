@@ -77,5 +77,27 @@ export const waterAccountRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  updateWaterMeterReading: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        reading: z.string().optional(),
+        notes: z.string().nullable().optional()
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterReadingUpdaterService()
+
+        const reading = await service.run({
+          id: Id.fromString(input.id),
+          updatedData: { reading: input.reading, notes: input.notes }
+        })
+        return reading.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

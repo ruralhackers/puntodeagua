@@ -47,6 +47,15 @@ export class WaterMeterReadingPrismaRepository
     return WaterMeterReading.fromDto(this.fromPrismaPayload(reading))
   }
 
+  async findLastReadingsForWaterMeter(waterMeterId: Id, limit: number = 2) {
+    const readings = await this.getModel().findMany({
+      where: { waterMeterId: waterMeterId.toString() },
+      orderBy: { readingDate: 'desc' },
+      take: limit
+    })
+    return readings.map((reading) => WaterMeterReading.fromDto(this.fromPrismaPayload(reading)))
+  }
+
   async save(reading: WaterMeterReading) {
     const update = {
       waterMeterId: reading.waterMeterId.toString(),

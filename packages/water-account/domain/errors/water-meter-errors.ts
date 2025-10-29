@@ -29,3 +29,13 @@ export class WaterMeterReadingNotAllowedError extends ForbiddenError {
   static override defaultMessage = 'New reading is lower than last reading'
   static override defaultMessageEs = 'La nueva lectura es menor que la última lectura'
 }
+
+export class WaterMeterReadingNotLastError extends ForbiddenError {
+  constructor(message: string = WaterMeterReadingNotLastError.defaultMessage) {
+    super(message)
+    this.name = 'WaterMeterReadingNotLastError'
+  }
+
+  static override defaultMessage = 'Only the most recent reading can be edited'
+  static override defaultMessageEs = 'Solo se puede editar la lectura más reciente'
+}

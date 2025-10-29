@@ -7,4 +7,5 @@ export interface WaterMeterReadingRepository
     FindableForTable<WaterMeterReading> {
   findById(id: Id): Promise<WaterMeterReading | undefined>
   findLastReading(waterMeterId: Id): Promise<WaterMeterReading | undefined>
+  findLastReadingsForWaterMeter(waterMeterId: Id, limit?: number): Promise<WaterMeterReading[]>
 }

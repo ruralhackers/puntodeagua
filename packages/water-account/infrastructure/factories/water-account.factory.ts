@@ -2,6 +2,7 @@ import { CommunityFactory } from '@pda/community'
 import { client as prisma } from '@pda/database'
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingCreator } from '../../application/water-meter-reading-creator.service'
+import { WaterMeterReadingUpdater } from '../../application/water-meter-reading-updater.service'
 import { WaterMeterPrismaRepository } from '../repositories/water-meter.prisma-repository'
 import { WaterMeterReadingPrismaRepository } from '../repositories/water-meter-reading.prisma-repository'
 
@@ -18,12 +19,19 @@ export class WaterAccountFactory {
     )
   }
 
+  static waterMeterReadingUpdaterService() {
+    return new WaterMeterReadingUpdater(
+      WaterAccountFactory.waterMeterReadingPrismaRepository(),
+      WaterAccountFactory.waterMeterPrismaRepository(),
+      WaterAccountFactory.waterMeterLastReadingUpdaterService()
+    )
+  }
+
   private static waterMeterLastReadingUpdaterService() {
     return new WaterMeterLastReadingUpdater(
       WaterAccountFactory.waterMeterPrismaRepository(),
       CommunityFactory.communityPrismaRepository(),
-      CommunityFactory.communityZonePrismaRepository(),
-      CommunityFactory.waterPointPrismaRepository()
+      CommunityFactory.communityZonePrismaRepository()
     )
   }
 

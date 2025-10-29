@@ -63,22 +63,22 @@ export function AccountMenu() {
               <DropdownMenuSeparator />
             </>
           )}
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link href={`/users`} className="flex items-center gap-2 cursor-pointer">
               <Users />
               Usuarios
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem asChild>
             <Link href={`/water-point`} className="flex items-center gap-2 cursor-pointer">
               <Gauge />
-              Puntos de Agua
+              Casas
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
               <Gauge />
-              Lecturas
+              Contadores
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

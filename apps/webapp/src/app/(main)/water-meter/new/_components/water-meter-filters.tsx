@@ -1,10 +1,9 @@
 'use client'
 
-import { Search, X } from 'lucide-react'
-import { useId, useState } from 'react'
+import { X } from 'lucide-react'
+import { useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -18,8 +17,6 @@ import { useCommunityZonesStore } from '@/stores/community/community-zones-provi
 interface WaterMeterFiltersProps {
   selectedZones: string[]
   onZonesChange: (zones: string[]) => void
-  nameFilter: string
-  onNameFilterChange: (filter: string) => void
   showOnlyExcess: boolean
   onShowOnlyExcessChange: (show: boolean) => void
 }
@@ -27,27 +24,18 @@ interface WaterMeterFiltersProps {
 export function WaterMeterFilters({
   selectedZones,
   onZonesChange,
-  nameFilter,
-  onNameFilterChange,
   showOnlyExcess,
   onShowOnlyExcessChange
 }: WaterMeterFiltersProps) {
-  const [localNameFilter, setLocalNameFilter] = useState(nameFilter)
   const zoneFilterId = useId()
   const zones = useCommunityZonesStore((state) => state.zones)
 
-  const handleSearch = () => {
-    onNameFilterChange(localNameFilter)
-  }
-
   const handleClearFilters = () => {
-    setLocalNameFilter('')
-    onNameFilterChange('')
     onZonesChange([])
     onShowOnlyExcessChange(false)
   }
 
-  const hasActiveFilters = selectedZones.length > 0 || nameFilter.trim() || showOnlyExcess
+  const hasActiveFilters = selectedZones.length > 0 || showOnlyExcess
 
   return (
     <div className="p-6 space-y-6">
@@ -66,7 +54,7 @@ export function WaterMeterFilters({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Zone Filter */}
         <div className="space-y-2">
           <Label htmlFor={zoneFilterId} className="text-sm font-medium">
@@ -88,26 +76,6 @@ export function WaterMeterFilters({
               ))}
             </SelectContent>
           </Select>
-        </div>
-
-        {/* Name Search */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Buscar</Label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nombre o dirección..."
-                value={localNameFilter}
-                onChange={(e) => setLocalNameFilter(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10"
-              />
-            </div>
-            <Button onClick={handleSearch} size="sm">
-              Buscar
-            </Button>
-          </div>
         </div>
 
         {/* Excess Filter */}
@@ -134,9 +102,6 @@ export function WaterMeterFilters({
               <div className="text-sm text-muted-foreground">
                 Zonas: {selectedZones.length} seleccionada{selectedZones.length > 1 ? 's' : ''}
               </div>
-            )}
-            {nameFilter.trim() && (
-              <div className="text-sm text-muted-foreground">Búsqueda: "{nameFilter}"</div>
             )}
             {showOnlyExcess && <div className="text-sm text-muted-foreground">Solo con exceso</div>}
           </div>

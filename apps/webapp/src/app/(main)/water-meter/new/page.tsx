@@ -5,6 +5,7 @@ import { useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { SearchInput } from '@/components/ui/search-input'
 import { WaterMeterFilters } from './_components/water-meter-filters'
 import { WaterMeterList } from './_components/water-meter-list'
 
@@ -34,13 +35,21 @@ export default function WaterMeterPage() {
           </Button>
         </div>
 
+        {/* Barra de búsqueda siempre visible */}
+        <div className="w-full max-w-md">
+          <SearchInput
+            value={nameFilter}
+            onChange={setNameFilter}
+            placeholder="Buscar por nombre o dirección..."
+            minChars={3}
+          />
+        </div>
+
         {showFilters && (
           <Card className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200 shadow-lg shadow-blue-100/50">
             <WaterMeterFilters
               selectedZones={selectedZones}
               onZonesChange={setSelectedZones}
-              nameFilter={nameFilter}
-              onNameFilterChange={setNameFilter}
               showOnlyExcess={showOnlyExcess}
               onShowOnlyExcessChange={setShowOnlyExcess}
             />

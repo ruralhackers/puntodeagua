@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { api } from '@/trpc/react'
 
 const editReadingSchema = z.object({
@@ -45,10 +46,12 @@ interface EditReadingModalProps {
 }
 
 export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditReadingModalProps) {
+  const { parseSpanishNumber, formatToSpanish } = useSpanishNumberParser()
+
   const form = useForm<EditReadingFormData>({
     resolver: zodResolver(editReadingSchema),
     defaultValues: {
-      reading: reading.reading,
+      reading: formatToSpanish(parseFloat(reading.reading)),
       notes: reading.notes || ''
     }
   })
@@ -67,7 +70,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   const onSubmit = async (data: EditReadingFormData) => {
     updateReadingMutation.mutate({
       id: reading.id,
-      reading: data.reading,
+      reading: parseSpanishNumber(data.reading).toString(),
       notes: data.notes || null
     })
   }

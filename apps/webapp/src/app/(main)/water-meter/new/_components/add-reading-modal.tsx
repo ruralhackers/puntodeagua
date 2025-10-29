@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
@@ -42,22 +43,7 @@ export function AddReadingModal({
   const [validationError, setValidationError] = useState<string | null>(null)
 
   const utils = api.useUtils()
-
-  // Helper function to parse Spanish number format to standard format
-  // Converts "1.234,56" or "1234,56" → 1234.56
-  const parseSpanishNumber = (value: string): number => {
-    if (!value || value.trim() === '') return 0
-
-    // Remove spaces
-    const cleaned = value.trim()
-    // Remove dots (thousands separators)
-    const withoutThousands = cleaned.replace(/\./g, '')
-    // Replace comma with dot (decimal separator)
-    const normalized = withoutThousands.replace(',', '.')
-
-    const parsed = parseFloat(normalized)
-    return Number.isNaN(parsed) ? 0 : parsed
-  }
+  const { parseSpanishNumber } = useSpanishNumberParser()
 
   // Helper function to normalize reading based on measurement unit
   const normalizeReading = (reading: string): number => {

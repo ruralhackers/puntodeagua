@@ -81,6 +81,10 @@ export function AddReadingModal({
     onSuccess: async () => {
       // Invalidate and refetch water meters data
       await utils.waterAccount.getActiveWaterMetersOrderedByLastReading.invalidate()
+      // Invalidate water meter readings to update the history
+      await utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
+      // Invalidate water meter details to update last reading and excess consumption
+      await utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
       onClose()
       setReadingForm({
         reading: '',

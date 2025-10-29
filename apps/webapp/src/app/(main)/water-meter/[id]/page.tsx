@@ -22,12 +22,14 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { api } from '@/trpc/react'
+import { AddReadingModal } from '../new/_components/add-reading-modal'
 import { EditReadingModal } from './_components/edit-reading-modal'
 
 export default function WaterMeterDetailPage() {
   const params = useParams()
   const waterMeterId = params.id as string
   const [editModalOpen, setEditModalOpen] = useState(false)
+  const [addReadingModalOpen, setAddReadingModalOpen] = useState(false)
   const [editingReading, setEditingReading] = useState<{
     id: string
     reading: string
@@ -165,11 +167,14 @@ export default function WaterMeterDetailPage() {
           </div>
 
           {/* Right side: Action button */}
-          <Button asChild variant="outline" size="sm" className="shrink-0 self-start">
-            <Link href="/water-meter/new">
-              <Plus className="h-4 w-4 mr-2" />
-              Nueva Lectura
-            </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 self-start"
+            onClick={() => setAddReadingModalOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nueva Lectura
           </Button>
         </div>
 
@@ -374,6 +379,18 @@ export default function WaterMeterDetailPage() {
           }}
           reading={editingReading}
           onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Modal de nueva lectura */}
+      {addReadingModalOpen && waterMeter && (
+        <AddReadingModal
+          waterMeterId={waterMeter.id}
+          waterPointName={waterMeter.waterPoint.name}
+          measurementUnit={waterMeter.measurementUnit}
+          lastReadingValue={readings?.[0]?.normalizedReading || null}
+          lastReadingDate={readings?.[0]?.readingDate || null}
+          onClose={() => setAddReadingModalOpen(false)}
         />
       )}
     </PageContainer>

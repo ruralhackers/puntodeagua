@@ -1,7 +1,7 @@
 import type { Id } from '@pda/common/domain'
 import { WaterMeterNotFoundError } from '../domain/errors/water-meter-errors'
-import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
+import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export class WaterMeterExcessRecalculator {
@@ -33,4 +33,3 @@ export class WaterMeterExcessRecalculator {
     await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
   }
 }
-

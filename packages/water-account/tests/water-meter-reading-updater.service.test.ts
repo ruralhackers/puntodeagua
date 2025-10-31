@@ -371,6 +371,9 @@ describe('WaterMeterReadingUpdater', () => {
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
+      reading
+    ])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
 
@@ -381,8 +384,13 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(defaultWaterMeter, [
-      expect.any(WaterMeterReading)
-    ])
+    expect(mockWaterMeterReadingRepository.findLastReadingsForWaterMeter).toHaveBeenCalledWith(
+      defaultWaterMeter.id,
+      2
+    )
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.arrayContaining([expect.any(WaterMeterReading)])
+    )
   })
 })

@@ -55,7 +55,7 @@ export class WaterMeterReadingUpdater {
           Decimal.fromString(updatedData.reading)
         )
 
-        if (newNormalizedReading < previousReading.normalizedReading) {
+        if (previousReading && newNormalizedReading < previousReading.normalizedReading) {
           throw new WaterMeterReadingNotAllowedError()
         }
       }
@@ -67,9 +67,16 @@ export class WaterMeterReadingUpdater {
     // Save the updated reading
     await this.waterMeterReadingRepository.save(updatedReading)
 
+    // Get the last readings AFTER saving to ensure we have the updated reading
+    // This includes the updated reading and the previous one (if exists)
+    const lastReadings = await this.waterMeterReadingRepository.findLastReadingsForWaterMeter(
+      waterMeter.id,
+      2
+    )
+
     // Always trigger lastReadingUpdater to recalculate water meter data
     // This ensures lastReadingNormalizedValue, lastReadingExcessConsumption, etc. are correct
-    await this.waterMeterLastReadingUpdater.run(waterMeter, [updatedReading])
+    await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
 
     return updatedReading
   }

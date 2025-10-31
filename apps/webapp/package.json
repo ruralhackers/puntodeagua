@@ -5,7 +5,7 @@
   "license": "AGPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --env-file ../../.env.local next dev --port 3000",
+    "dev": "bun --env-file ../../.env.local next dev --port 3001",
     "build": "bun x prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
     "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
     "preview": "next build && next start",

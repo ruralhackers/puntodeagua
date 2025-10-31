@@ -1,7 +1,7 @@
 'use client'
 
 import type { UserClientDto } from '@pda/user/domain'
-import { createContext, useContext, useRef } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 import { type StoreApi, useStore } from 'zustand'
 import { createUserStore, type UserState } from './user-store'
 
@@ -16,7 +16,16 @@ export const UserStoreProvider = ({
 }) => {
   const storeRef = useRef<StoreApi<UserState> | null>(null)
 
-  storeRef.current ??= createUserStore({ user })
+  if (!storeRef.current) {
+    storeRef.current = createUserStore({ user })
+  }
+
+  // Sincronizar el store cuando cambie el prop user
+  useEffect(() => {
+    if (storeRef.current) {
+      storeRef.current.getState().setUser(user)
+    }
+  }, [user])
 
   return <UserStoreContext.Provider value={storeRef.current}>{children}</UserStoreContext.Provider>
 }

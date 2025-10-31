@@ -50,7 +50,7 @@ export class User {
       email: this.email.toString(),
       name: this.name,
       roles: this.roles.map((role) => role.toString()),
-      community: this.community ? this.community.toClientDto() : null
+      community: this.community ? this.community.toDto() : null
     }
   }
 

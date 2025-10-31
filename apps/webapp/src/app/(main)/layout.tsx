@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
+import { SessionRefresher } from '@/components/session-refresher'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
@@ -17,7 +18,6 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true'
 
   const session = await auth()
-
   if (!session?.user) {
     return redirect('/login')
   }
@@ -26,9 +26,13 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     getPreference<ContentLayout>('content_layout', CONTENT_LAYOUT_VALUES, 'full-width')
   ])
 
+  // Detect if session has old data structure (missing waterLimitRule in community)
+  const needsSessionRefresh = session.user.community && !session.user.community.waterLimitRule
+
   return (
     <HydrateClient>
       <UserStoreProvider user={session.user}>
+        {needsSessionRefresh && <SessionRefresher />}
         <SidebarProvider defaultOpen={defaultOpen}>
           <SidebarInset
             data-content-layout={contentLayout}

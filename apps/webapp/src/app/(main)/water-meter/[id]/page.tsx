@@ -18,12 +18,13 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { IdCopy } from '@/components/id-copy'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
+import { ConsumptionCalculation } from '../_components/consumption-calculation'
 import { AddReadingModal } from '../new/_components/add-reading-modal'
 import { EditReadingModal } from './_components/edit-reading-modal'
 
@@ -49,6 +50,10 @@ export default function WaterMeterDetailPage() {
     isLoading: readingsLoading,
     error: readingsError
   } = api.waterAccount.getWaterMeterReadings.useQuery({ waterMeterId }, { enabled: !!waterMeterId })
+
+  const user = useUserStore((state) => state.user)
+
+  const waterLimitRule = user?.community?.waterLimitRule
 
   const utils = api.useUtils()
 
@@ -272,10 +277,6 @@ export default function WaterMeterDetailPage() {
                 </h3>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-500">ID: </span>
-                    <IdCopy id={waterMeter.id} />
-                  </div>
-                  <div>
                     <span className="text-gray-500">Unidad: </span>
                     <span className="font-mono">{waterMeter.measurementUnit}</span>
                   </div>
@@ -293,6 +294,16 @@ export default function WaterMeterDetailPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Consumption Calculation */}
+        {readings && readings.length >= 2 && waterLimitRule && (
+          <ConsumptionCalculation
+            waterLimitRule={waterLimitRule}
+            pax={waterMeter.waterPoint.fixedPopulation + waterMeter.waterPoint.floatingPopulation}
+            lastReading={readings[0] ?? { normalizedReading: 0, readingDate: new Date() }}
+            previousReading={readings[1] ?? { normalizedReading: 0, readingDate: new Date() }}
+          />
+        )}
 
         {/* Readings History */}
         <Card>

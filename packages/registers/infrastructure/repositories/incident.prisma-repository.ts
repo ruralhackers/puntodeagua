@@ -76,7 +76,6 @@ export class IncidentPrismaRepository extends BasePrismaRepository implements In
       where,
       orderBy: { startAt: 'desc' }
     })
-    console.log({ incidents, where })
 
     return incidents.map((incident) => Incident.fromDto(this.fromPrismaPayload(incident)))
   }

@@ -27,7 +27,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   ])
 
   // Detect if session has old data structure (missing waterLimitRule in community)
-  const needsSessionRefresh = session.user.community && !session.user.community.waterLimitRule
+  const needsSessionRefresh = session?.user?.community && !session?.user?.community?.waterLimitRule
 
   return (
     <HydrateClient>

@@ -340,8 +340,8 @@ export default function WaterMeterDetailPage() {
                         )}
                       </div>
 
-                      {/* Botón de editar solo para la primera lectura (más reciente) */}
-                      {index === 0 && (
+                      {/* Botón de editar para las dos primeras lecturas (última y anterior) */}
+                      {(index === 0 || index === 1) && (
                         <div className="flex items-center gap-2">
                           <Button
                             variant="outline"

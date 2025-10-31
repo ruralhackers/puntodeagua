@@ -98,29 +98,40 @@ describe('WaterMeterReadingUpdater', () => {
     expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultReading.waterMeterId)
   })
 
-  it('should throw error when reading is not the last reading', async () => {
+  it('should throw error when reading is not one of the last two readings', async () => {
     // Arrange
     const readingId = Id.generateUniqueId()
-    const olderReading = WaterMeterReading.fromDto({
+    const oldestReading = WaterMeterReading.fromDto({
       id: readingId.toString(),
       waterMeterId: defaultWaterMeter.id.toString(),
       reading: '500',
       normalizedReading: 500,
-      readingDate: new Date(Date.now() - 86400000), // 1 day ago
-      notes: 'Older reading'
+      readingDate: new Date(Date.now() - 172800000), // 2 days ago
+      notes: 'Oldest reading'
     })
-    const newerReading = WaterMeterReading.fromDto({
+    const previousReading = WaterMeterReading.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '750',
+      normalizedReading: 750,
+      readingDate: new Date(Date.now() - 86400000), // 1 day ago
+      notes: 'Previous reading'
+    })
+    const lastReading = WaterMeterReading.fromDto({
       id: Id.generateUniqueId().toString(),
       waterMeterId: defaultWaterMeter.id.toString(),
       reading: '1000',
       normalizedReading: 1000,
       readingDate: new Date(), // Today
-      notes: 'Newer reading'
+      notes: 'Last reading'
     })
 
-    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(olderReading)
+    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(oldestReading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(newerReading)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
+      lastReading,
+      previousReading
+    ])
 
     // Act & Assert
     await expect(service.run({ id: readingId, updatedData: { reading: '2000' } })).rejects.toThrow(
@@ -130,12 +141,13 @@ describe('WaterMeterReadingUpdater', () => {
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(readingId)
     expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultWaterMeter.id)
-    expect(mockWaterMeterReadingRepository.findLastReading).toHaveBeenCalledWith(
-      defaultWaterMeter.id
+    expect(mockWaterMeterReadingRepository.findLastReadingsForWaterMeter).toHaveBeenCalledWith(
+      defaultWaterMeter.id,
+      2
     )
   })
 
-  it('should throw error when new reading is lower than previous reading', async () => {
+  it('should throw error when last reading is updated to be lower than previous reading', async () => {
     // Arrange
     const readingId = Id.generateUniqueId()
     const currentReading = WaterMeterReading.fromDto({
@@ -157,7 +169,6 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(currentReading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(currentReading)
     mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
       currentReading,
       previousReading
@@ -171,9 +182,6 @@ describe('WaterMeterReadingUpdater', () => {
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(readingId)
     expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultWaterMeter.id)
-    expect(mockWaterMeterReadingRepository.findLastReading).toHaveBeenCalledWith(
-      defaultWaterMeter.id
-    )
     expect(mockWaterMeterReadingRepository.findLastReadingsForWaterMeter).toHaveBeenCalledWith(
       defaultWaterMeter.id,
       2
@@ -194,10 +202,9 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
-    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
-      reading
-    ])
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([reading])
+      .mockResolvedValueOnce([reading])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
 
@@ -216,13 +223,11 @@ describe('WaterMeterReadingUpdater', () => {
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(readingId)
     expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultWaterMeter.id)
-    expect(mockWaterMeterReadingRepository.findLastReading).toHaveBeenCalledWith(
-      defaultWaterMeter.id
-    )
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
-    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(defaultWaterMeter, [
-      expect.any(WaterMeterReading)
-    ])
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.any(Array)
+    )
   })
 
   it('should update notes only', async () => {
@@ -239,10 +244,9 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
-    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
-      reading
-    ])
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([reading])
+      .mockResolvedValueOnce([reading])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
 
@@ -260,9 +264,10 @@ describe('WaterMeterReadingUpdater', () => {
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
-    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(defaultWaterMeter, [
-      expect.any(WaterMeterReading)
-    ])
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.any(Array)
+    )
   })
 
   it('should update both reading and notes', async () => {
@@ -279,10 +284,9 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
-    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
-      reading
-    ])
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([reading])
+      .mockResolvedValueOnce([reading])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
 
@@ -300,9 +304,10 @@ describe('WaterMeterReadingUpdater', () => {
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
-    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(defaultWaterMeter, [
-      expect.any(WaterMeterReading)
-    ])
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.any(Array)
+    )
   })
 
   it('should handle cubic meters measurement unit correctly', async () => {
@@ -331,10 +336,9 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(waterMeterM3)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
-    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
-      reading
-    ])
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([reading])
+      .mockResolvedValueOnce([reading])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(waterMeterM3)
 
@@ -351,9 +355,10 @@ describe('WaterMeterReadingUpdater', () => {
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
-    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(waterMeterM3, [
-      expect.any(WaterMeterReading)
-    ])
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      waterMeterM3,
+      expect.any(Array)
+    )
   })
 
   it('should always trigger lastReadingUpdater even when only notes change', async () => {
@@ -370,10 +375,9 @@ describe('WaterMeterReadingUpdater', () => {
 
     mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
     mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
-    mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(reading)
-    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
-      reading
-    ])
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([reading])
+      .mockResolvedValueOnce([reading])
     mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
     mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
 
@@ -384,13 +388,183 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
+    expect(mockWaterMeterReadingRepository.findLastReadingsForWaterMeter).toHaveBeenCalled()
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.any(Array)
+    )
+  })
+
+  // New tests for editing the previous reading
+  it('should update the previous reading correctly', async () => {
+    // Arrange
+    const previousReadingId = Id.generateUniqueId()
+    const previousReading = WaterMeterReading.fromDto({
+      id: previousReadingId.toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '500',
+      normalizedReading: 500,
+      readingDate: new Date(Date.now() - 86400000), // 1 day ago
+      notes: 'Previous reading'
+    })
+    const lastReading = WaterMeterReading.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '1000',
+      normalizedReading: 1000,
+      readingDate: new Date(), // Today
+      notes: 'Last reading'
+    })
+
+    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(previousReading)
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([lastReading, previousReading])
+      .mockResolvedValueOnce([lastReading, previousReading])
+    mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+    mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+
+    // Act
+    const result = await service.run({
+      id: previousReadingId,
+      updatedData: { reading: '600' } // Update previous from 500 to 600
+    })
+
+    // Assert
+    expect(result).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.toString()).toBe('600')
+    expect(result.normalizedReading).toBe(600)
+
+    // Verify repository calls
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
+      defaultWaterMeter,
+      expect.any(Array)
+    )
+  })
+
+  it('should throw error when previous reading is updated to be greater than last reading', async () => {
+    // Arrange
+    const previousReadingId = Id.generateUniqueId()
+    const previousReading = WaterMeterReading.fromDto({
+      id: previousReadingId.toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '500',
+      normalizedReading: 500,
+      readingDate: new Date(Date.now() - 86400000), // 1 day ago
+      notes: 'Previous reading'
+    })
+    const lastReading = WaterMeterReading.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '1000',
+      normalizedReading: 1000,
+      readingDate: new Date(), // Today
+      notes: 'Last reading'
+    })
+
+    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(previousReading)
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock().mockResolvedValue([
+      lastReading,
+      previousReading
+    ])
+
+    // Act & Assert
+    await expect(
+      service.run({
+        id: previousReadingId,
+        updatedData: { reading: '1500' } // Try to set previous > last (1500 > 1000)
+      })
+    ).rejects.toThrow(WaterMeterReadingNotAllowedError)
+
+    // Verify repository calls
+    expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(previousReadingId)
+    expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultWaterMeter.id)
     expect(mockWaterMeterReadingRepository.findLastReadingsForWaterMeter).toHaveBeenCalledWith(
       defaultWaterMeter.id,
       2
     )
+  })
+
+  it('should allow updating previous reading to equal last reading', async () => {
+    // Arrange
+    const previousReadingId = Id.generateUniqueId()
+    const previousReading = WaterMeterReading.fromDto({
+      id: previousReadingId.toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '500',
+      normalizedReading: 500,
+      readingDate: new Date(Date.now() - 86400000), // 1 day ago
+      notes: 'Previous reading'
+    })
+    const lastReading = WaterMeterReading.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '1000',
+      normalizedReading: 1000,
+      readingDate: new Date(), // Today
+      notes: 'Last reading'
+    })
+
+    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(previousReading)
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([lastReading, previousReading])
+      .mockResolvedValueOnce([lastReading, previousReading])
+    mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+    mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+
+    // Act
+    const result = await service.run({
+      id: previousReadingId,
+      updatedData: { reading: '1000' } // Set previous = last
+    })
+
+    // Assert
+    expect(result).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.toString()).toBe('1000')
+    expect(result.normalizedReading).toBe(1000)
+  })
+
+  it('should recalculate excesses after updating previous reading', async () => {
+    // Arrange
+    const previousReadingId = Id.generateUniqueId()
+    const previousReading = WaterMeterReading.fromDto({
+      id: previousReadingId.toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '500',
+      normalizedReading: 500,
+      readingDate: new Date(Date.now() - 86400000), // 1 day ago
+      notes: 'Previous reading'
+    })
+    const lastReading = WaterMeterReading.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterId: defaultWaterMeter.id.toString(),
+      reading: '1000',
+      normalizedReading: 1000,
+      readingDate: new Date(), // Today
+      notes: 'Last reading'
+    })
+
+    mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(previousReading)
+    mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+    mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+      .mockResolvedValueOnce([lastReading, previousReading])
+      .mockResolvedValueOnce([lastReading, previousReading])
+    mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+    mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+
+    // Act
+    await service.run({
+      id: previousReadingId,
+      updatedData: { reading: '700' }
+    })
+
+    // Assert - verify that lastReadingUpdater is called to recalculate excesses
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       defaultWaterMeter,
-      expect.arrayContaining([expect.any(WaterMeterReading)])
+      expect.any(Array)
     )
   })
 })

@@ -35,27 +35,35 @@ export class WaterMeterReadingUpdater {
       throw new WaterMeterNotFoundError()
     }
 
-    // Validate it's the last reading by date
-    const lastReading = await this.waterMeterReadingRepository.findLastReading(waterMeter.id)
-    if (!lastReading || lastReading.id.toString() !== id.toString()) {
+    // Validate it's one of the last two readings
+    const lastReadings = await this.waterMeterReadingRepository.findLastReadingsForWaterMeter(
+      waterMeter.id,
+      2
+    )
+
+    const isLastReading = lastReadings[0]?.id.toString() === id.toString()
+    const isPreviousReading = lastReadings[1]?.id.toString() === id.toString()
+
+    if (!isLastReading && !isPreviousReading) {
       throw new WaterMeterReadingNotLastError()
     }
 
-    // If reading value is being updated, validate it's not lower than the previous reading
+    // If reading value is being updated, validate according to which reading is being edited
     if (updatedData.reading !== undefined) {
-      // Get the last readings to compare with the previous one
-      const lastReadings = await this.waterMeterReadingRepository.findLastReadingsForWaterMeter(
-        waterMeter.id,
-        2
+      const newNormalizedReading = waterMeter.measurementUnit.normalize(
+        Decimal.fromString(updatedData.reading)
       )
 
-      if (lastReadings.length > 1) {
-        const previousReading = lastReadings[1] // Second most recent reading
-        const newNormalizedReading = waterMeter.measurementUnit.normalize(
-          Decimal.fromString(updatedData.reading)
-        )
-
+      if (isLastReading && lastReadings.length > 1) {
+        // Editing the last reading: must be >= previous reading
+        const previousReading = lastReadings[1]
         if (previousReading && newNormalizedReading < previousReading.normalizedReading) {
+          throw new WaterMeterReadingNotAllowedError()
+        }
+      } else if (isPreviousReading) {
+        // Editing the previous reading: must be <= last reading
+        const lastReading = lastReadings[0]
+        if (lastReading && newNormalizedReading > lastReading.normalizedReading) {
           throw new WaterMeterReadingNotAllowedError()
         }
       }
@@ -69,14 +77,12 @@ export class WaterMeterReadingUpdater {
 
     // Get the last readings AFTER saving to ensure we have the updated reading
     // This includes the updated reading and the previous one (if exists)
-    const lastReadings = await this.waterMeterReadingRepository.findLastReadingsForWaterMeter(
-      waterMeter.id,
-      2
-    )
+    const updatedLastReadings =
+      await this.waterMeterReadingRepository.findLastReadingsForWaterMeter(waterMeter.id, 2)
 
     // Always trigger lastReadingUpdater to recalculate water meter data
     // This ensures lastReadingNormalizedValue, lastReadingExcessConsumption, etc. are correct
-    await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
+    await this.waterMeterLastReadingUpdater.run(waterMeter, updatedLastReadings)
 
     return updatedReading
   }

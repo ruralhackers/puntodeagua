@@ -36,6 +36,6 @@ export class WaterMeterReadingNotLastError extends ForbiddenError {
     this.name = 'WaterMeterReadingNotLastError'
   }
 
-  static override defaultMessage = 'Only the most recent reading can be edited'
-  static override defaultMessageEs = 'Solo se puede editar la lectura más reciente'
+  static override defaultMessage = 'Only the last two readings can be edited'
+  static override defaultMessageEs = 'Solo se pueden editar las dos últimas lecturas'
 }

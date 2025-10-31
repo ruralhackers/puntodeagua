@@ -86,7 +86,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
         <DialogHeader>
           <DialogTitle>Editar Lectura</DialogTitle>
           <DialogDescription>
-            Modifica la lectura del contador. Solo se puede editar la lectura más reciente.
+            Modifica la lectura del contador. Se pueden editar las dos últimas lecturas.
           </DialogDescription>
         </DialogHeader>
 

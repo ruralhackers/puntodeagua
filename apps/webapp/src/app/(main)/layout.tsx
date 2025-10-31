@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
-import { SessionRefresher } from '@/components/session-refresher'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
@@ -29,7 +28,6 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   return (
     <HydrateClient>
       <UserStoreProvider user={session.user}>
-        <SessionRefresher />
         <SidebarProvider defaultOpen={defaultOpen}>
           <SidebarInset
             data-content-layout={contentLayout}

@@ -1,5 +1,4 @@
 import { Inter, Playfair_Display } from 'next/font/google'
-import { SessionProvider } from 'next-auth/react'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import type { ReactNode } from 'react'
 import { Toaster } from '@/components/ui/sonner'
@@ -41,14 +40,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       suppressHydrationWarning
     >
       <body className={`${inter.className} min-h-screen antialiased`}>
-        <SessionProvider>
-          <PreferencesStoreProvider themeMode={themeMode} themePreset={themePreset}>
-            <TRPCReactProvider>
-              <NuqsAdapter>{children}</NuqsAdapter>
-            </TRPCReactProvider>
-            <Toaster />
-          </PreferencesStoreProvider>
-        </SessionProvider>
+        <PreferencesStoreProvider themeMode={themeMode} themePreset={themePreset}>
+          <TRPCReactProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </TRPCReactProvider>
+          <Toaster />
+        </PreferencesStoreProvider>
       </body>
     </html>
   )

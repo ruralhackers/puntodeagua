@@ -99,5 +99,17 @@ export const waterAccountRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  recalculateWaterMeterExcess: protectedProcedure
+    .input(z.object({ waterMeterId: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterExcessRecalculatorService()
+        await service.run(Id.fromString(input.waterMeterId))
+        return { success: true }
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

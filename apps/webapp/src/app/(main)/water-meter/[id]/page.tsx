@@ -11,11 +11,13 @@ import {
   Edit,
   FileText,
   MapPin,
-  Plus
+  Plus,
+  RefreshCw
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { IdCopy } from '@/components/id-copy'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
@@ -50,6 +52,18 @@ export default function WaterMeterDetailPage() {
 
   const utils = api.useUtils()
 
+  const recalculateExcessMutation = api.waterAccount.recalculateWaterMeterExcess.useMutation({
+    onSuccess: () => {
+      toast.success('Exceso recalculado correctamente')
+      utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+    },
+    onError: (error) => {
+      toast.error('Error al recalcular el exceso', {
+        description: error.message
+      })
+    }
+  })
+
   const handleEditReading = (reading: { id: string; reading: string; notes: string | null }) => {
     setEditingReading(reading)
     setEditModalOpen(true)
@@ -59,6 +73,10 @@ export default function WaterMeterDetailPage() {
     // Invalidate both queries to refresh the data
     utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
     utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+  }
+
+  const handleRecalculateExcess = () => {
+    recalculateExcessMutation.mutate({ waterMeterId })
   }
 
   if (meterLoading) {
@@ -207,6 +225,18 @@ export default function WaterMeterDetailPage() {
                         Exceso
                       </Badge>
                     )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRecalculateExcess}
+                      disabled={recalculateExcessMutation.isPending}
+                      className="mt-2"
+                    >
+                      <RefreshCw
+                        className={`h-3 w-3 mr-1 ${recalculateExcessMutation.isPending ? 'animate-spin' : ''}`}
+                      />
+                      Recalcular Exceso
+                    </Button>
                   </div>
                 ) : (
                   <div className="text-sm text-gray-500 italic">Sin lecturas</div>

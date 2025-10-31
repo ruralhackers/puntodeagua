@@ -1,6 +1,7 @@
 import { Decimal, Id } from '@pda/common/domain'
 import type { MeasurementUnit } from '../value-objects/measurement-unit'
 import type { WaterMeterReadingDto, WaterMeterReadingUpdateDto } from './water-meter-reading.dto'
+import type { WaterMeterReadingImageDto } from './water-meter-reading-image.dto'
 
 export class WaterMeterReading {
   private constructor(
@@ -9,7 +10,8 @@ export class WaterMeterReading {
     public reading: Decimal,
     public normalizedReading: number, // this is the reading in Liters
     public readingDate: Date,
-    public notes?: string | null
+    public notes?: string | null,
+    public waterMeterReadingImage?: WaterMeterReadingImageDto | null
   ) {}
 
   static create(dto: Omit<WaterMeterReadingDto, 'id'>) {
@@ -19,7 +21,8 @@ export class WaterMeterReading {
       Decimal.fromString(dto.reading),
       dto.normalizedReading,
       dto.readingDate,
-      dto.notes ?? null
+      dto.notes ?? null,
+      dto.waterMeterReadingImage ?? null
     )
   }
 
@@ -30,7 +33,8 @@ export class WaterMeterReading {
       Decimal.fromString(dto.reading),
       dto.normalizedReading,
       dto.readingDate,
-      dto.notes ?? null
+      dto.notes ?? null,
+      dto.waterMeterReadingImage ?? null
     )
   }
 
@@ -52,7 +56,8 @@ export class WaterMeterReading {
       reading: this.reading.toString(),
       normalizedReading: this.normalizedReading,
       readingDate: this.readingDate,
-      notes: this.notes ?? null
+      notes: this.notes ?? null,
+      waterMeterReadingImage: this.waterMeterReadingImage ?? null
     }
   }
 }

@@ -1,7 +1,7 @@
 import type { Id } from '@pda/common/domain'
 import {
-  FileSizeExceededError,
   type FileMetadata,
+  FileSizeExceededError,
   type FileStorageRepository,
   InvalidFileTypeError,
   MAX_FILE_SIZE,
@@ -63,4 +63,3 @@ export class FileUploaderService {
     }
   }
 }
-

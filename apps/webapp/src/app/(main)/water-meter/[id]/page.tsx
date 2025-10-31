@@ -1,5 +1,6 @@
 'use client'
 
+import type { WaterMeterReadingImageDto } from '@pda/water-account'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import {
@@ -37,6 +38,7 @@ export default function WaterMeterDetailPage() {
     id: string
     reading: string
     notes: string | null
+    waterMeterReadingImage?: WaterMeterReadingImageDto | null
   } | null>(null)
 
   const {
@@ -69,7 +71,12 @@ export default function WaterMeterDetailPage() {
     }
   })
 
-  const handleEditReading = (reading: { id: string; reading: string; notes: string | null }) => {
+  const handleEditReading = (reading: {
+    id: string
+    reading: string
+    notes: string | null
+    waterMeterReadingImage?: WaterMeterReadingImageDto | null
+  }) => {
     setEditingReading(reading)
     setEditModalOpen(true)
   }
@@ -391,7 +398,8 @@ export default function WaterMeterDetailPage() {
                               handleEditReading({
                                 id: reading.id,
                                 reading: reading.reading,
-                                notes: reading.notes ?? null
+                                notes: reading.notes ?? null,
+                                waterMeterReadingImage: reading.waterMeterReadingImage ?? null
                               })
                             }
                             className="shrink-0"

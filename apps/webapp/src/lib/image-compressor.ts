@@ -21,7 +21,7 @@ export async function compressImage(file: File): Promise<File> {
 
   try {
     const compressedFile = await imageCompression(file, COMPRESSION_OPTIONS)
-    
+
     // If compression didn't help much, return original
     if (compressedFile.size > file.size * 0.9) {
       return file
@@ -37,4 +37,3 @@ export async function compressImage(file: File): Promise<File> {
     return file
   }
 }
-

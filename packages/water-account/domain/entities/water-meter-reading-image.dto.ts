@@ -22,4 +22,3 @@ export const waterMeterReadingNewImageSchema = z.object({
 
 export type WaterMeterReadingImageDto = z.infer<typeof waterMeterReadingImageSchema>
 export type WaterMeterReadingNewImageDto = z.infer<typeof waterMeterReadingNewImageSchema>
-

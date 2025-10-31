@@ -12,4 +12,3 @@ export const fileUploadResultSchema = z.object({
 })
 
 export type FileUploadResultDto = z.infer<typeof fileUploadResultSchema>
-

@@ -34,4 +34,3 @@ export class FileMetadata {
     return this.fileName.split('.').pop()?.toLowerCase() || ''
   }
 }
-

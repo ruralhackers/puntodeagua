@@ -85,8 +85,13 @@ export class WaterMeterReadingUpdater {
     await this.waterMeterReadingRepository.save(updatedReading)
 
     // Handle image operations
-    if (this.waterMeterReadingImageRepository && this.fileDeleterService && this.fileUploaderService) {
-      const existingImage = await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(id)
+    if (
+      this.waterMeterReadingImageRepository &&
+      this.fileDeleterService &&
+      this.fileUploaderService
+    ) {
+      const existingImage =
+        await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(id)
 
       // Delete existing image if requested or if replacing with new image
       if (existingImage && (deleteImage || image)) {

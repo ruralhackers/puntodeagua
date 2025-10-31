@@ -8,4 +8,3 @@ export const fileMetadataSchema = z.object({
 })
 
 export type FileMetadataDto = z.infer<typeof fileMetadataSchema>
-

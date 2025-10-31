@@ -5,8 +5,8 @@ import type { FileDeleterService } from '../../application/file-deleter.service'
 import type { FileUploaderService } from '../../application/file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
 import type { WaterMeterRepository } from '../../domain/repositories/water-meter.repository'
-import type { WaterMeterReadingImageRepository } from '../../domain/repositories/water-meter-reading-image.repository'
 import type { WaterMeterReadingRepository } from '../../domain/repositories/water-meter-reading.repository'
+import type { WaterMeterReadingImageRepository } from '../../domain/repositories/water-meter-reading-image.repository'
 
 export const createMockWaterMeterRepository = (): WaterMeterRepository => {
   return {

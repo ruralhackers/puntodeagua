@@ -39,4 +39,3 @@ export class FileNotFoundError extends FileStorageError {
     this.name = 'FileNotFoundError'
   }
 }
-

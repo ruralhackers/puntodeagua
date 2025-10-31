@@ -17,22 +17,8 @@ export const waterAccountRouter = createTRPCRouter({
     .input(z.object({ waterMeterId: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterReadingPrismaRepository()
-      const result = await repo.findForTable({
-        page: 1,
-        limit: 100,
-        filters: [
-          {
-            field: 'waterMeterId',
-            value: input.waterMeterId,
-            operator: 'equals'
-          }
-        ],
-        orderBy: {
-          field: 'readingDate',
-          direction: 'desc'
-        }
-      })
-      return result.items.map((reading) => reading.toDto())
+      const readings = await repo.findByWaterMeterId(Id.fromString(input.waterMeterId))
+      return readings.map((reading) => reading.toDto())
     }),
 
   getWaterMetersByWaterPointId: protectedProcedure
@@ -112,16 +98,46 @@ export const waterAccountRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         reading: z.string().optional(),
-        notes: z.string().nullable().optional()
+        notes: z.string().nullable().optional(),
+        image: z
+          .object({
+            file: z.instanceof(Uint8Array),
+            metadata: z.object({
+              fileSize: z.number(),
+              mimeType: z.string(),
+              originalName: z.string()
+            })
+          })
+          .optional(),
+        deleteImage: z.boolean().optional()
       })
     )
     .mutation(async ({ input }) => {
       try {
         const service = WaterAccountFactory.waterMeterReadingUpdaterService()
 
+        // Prepare image data if provided
+        let imageData:
+          | {
+              file: Buffer
+              metadata: ReturnType<typeof FileMetadataCreatorService.createFileMetadata>
+            }
+          | undefined
+        if (input.image) {
+          const buffer = Buffer.from(input.image.file)
+          const fileMetadata = FileMetadataCreatorService.createFileMetadata({
+            originalName: input.image.metadata.originalName,
+            fileSize: input.image.metadata.fileSize,
+            mimeType: input.image.metadata.mimeType
+          })
+          imageData = { file: buffer, metadata: fileMetadata }
+        }
+
         const reading = await service.run({
           id: Id.fromString(input.id),
-          updatedData: { reading: input.reading, notes: input.notes }
+          updatedData: { reading: input.reading, notes: input.notes },
+          image: imageData,
+          deleteImage: input.deleteImage
         })
         return reading.toDto()
       } catch (error) {

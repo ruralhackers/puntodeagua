@@ -38,4 +38,3 @@ export interface FileStorageRepository {
    */
   exists(externalKey: string): Promise<boolean>
 }
-

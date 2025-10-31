@@ -7,4 +7,3 @@ export interface WaterMeterReadingImageRepository
     Deletable<WaterMeterReadingImage> {
   findByWaterMeterReadingId(waterMeterReadingId: Id): Promise<WaterMeterReadingImage | undefined>
 }
-

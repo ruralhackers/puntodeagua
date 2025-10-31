@@ -22,4 +22,3 @@ export class FileDeleterService {
     await this.waterMeterReadingImageRepository.delete(imageId)
   }
 }
-

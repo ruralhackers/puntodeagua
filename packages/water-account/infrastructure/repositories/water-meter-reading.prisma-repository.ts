@@ -53,7 +53,20 @@ export class WaterMeterReadingPrismaRepository
       orderBy: { readingDate: 'desc' },
       take: limit
     })
-    return readings.map((reading) => WaterMeterReading.fromDto(this.fromPrismaPayload(reading)))
+    return readings.map((reading: Prisma.WaterMeterReadingGetPayload<null>) =>
+      WaterMeterReading.fromDto(this.fromPrismaPayload(reading))
+    )
+  }
+
+  async findByWaterMeterId(waterMeterId: Id): Promise<WaterMeterReading[]> {
+    const readings = await this.getModel().findMany({
+      where: { waterMeterId: waterMeterId.toString() },
+      orderBy: { readingDate: 'desc' },
+      include: { waterMeterReadingImage: true }
+    })
+    return readings.map((reading: Prisma.WaterMeterReadingGetPayload<null>) =>
+      WaterMeterReading.fromDto(this.fromPrismaPayload(reading))
+    )
   }
 
   async save(reading: WaterMeterReading) {
@@ -83,14 +96,31 @@ export class WaterMeterReadingPrismaRepository
     })
   }
 
-  private fromPrismaPayload(dto: Prisma.WaterMeterReadingGetPayload<null>): WaterMeterReadingDto {
+  private fromPrismaPayload(
+    dto: Prisma.WaterMeterReadingGetPayload<null> & {
+      waterMeterReadingImage?: Prisma.WaterMeterReadingImageGetPayload<null>
+    }
+  ): WaterMeterReadingDto {
+    const image = dto.waterMeterReadingImage
     return {
       id: dto.id,
       waterMeterId: dto.waterMeterId,
       reading: dto.reading.toString(), // Prisma.Decimal as string
       normalizedReading: dto.normalizedReading,
       readingDate: dto.readingDate,
-      notes: dto.notes
+      notes: dto.notes,
+      waterMeterReadingImage: image
+        ? {
+            id: image.id,
+            waterMeterReadingId: image.waterMeterReadingId,
+            url: image.url,
+            fileName: image.fileName,
+            fileSize: image.fileSize,
+            mimeType: image.mimeType,
+            uploadedAt: image.uploadedAt,
+            externalKey: image.externalKey
+          }
+        : null
     }
   }
 }

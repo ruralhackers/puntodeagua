@@ -45,4 +45,3 @@ export class FileUploadResult {
     return this.metadata.originalName
   }
 }
-

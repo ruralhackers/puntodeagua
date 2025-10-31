@@ -8,4 +8,5 @@ export interface WaterMeterReadingRepository
   findById(id: Id): Promise<WaterMeterReading | undefined>
   findLastReading(waterMeterId: Id): Promise<WaterMeterReading | undefined>
   findLastReadingsForWaterMeter(waterMeterId: Id, limit?: number): Promise<WaterMeterReading[]>
+  findByWaterMeterId(waterMeterId: Id): Promise<WaterMeterReading[]>
 }

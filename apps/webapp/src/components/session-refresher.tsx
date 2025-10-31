@@ -1,24 +1,31 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useEffect, useRef } from 'react'
 
 /**
- * Component that automatically refreshes the layout once if needed.
- * Used to update session with new data structure after migrations.
+ * Component that automatically refreshes the session if it detects old data structure.
+ * Used to update JWT tokens with new fields after migrations (e.g., adding waterLimitRule).
  */
 export function SessionRefresher() {
-  const router = useRouter()
+  const { data: session, update, status } = useSession()
   const hasRefreshed = useRef(false)
 
   useEffect(() => {
-    // Only refresh once per mount
-    if (!hasRefreshed.current) {
-      hasRefreshed.current = true
-      console.log('SessionRefresher: Refreshing layout to get fresh session data')
-      router.refresh()
+    // Only proceed if session is loaded and we haven't refreshed yet
+    if (status === 'loading' || hasRefreshed.current) {
+      return
     }
-  }, [router])
+
+    // Check if session has old data structure (missing waterLimitRule in community)
+    const needsRefresh = session?.user?.community && !session.user.community.waterLimitRule
+
+    if (needsRefresh) {
+      hasRefreshed.current = true
+      console.log('SessionRefresher: Detected old session structure, updating...')
+      update()
+    }
+  }, [session, status, update])
 
   return null // This component doesn't render anything
 }

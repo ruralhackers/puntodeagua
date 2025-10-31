@@ -26,13 +26,10 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     getPreference<ContentLayout>('content_layout', CONTENT_LAYOUT_VALUES, 'full-width')
   ])
 
-  // Detect if session has old data structure (missing waterLimitRule in community)
-  const needsSessionRefresh = session?.user?.community && !session?.user?.community?.waterLimitRule
-
   return (
     <HydrateClient>
       <UserStoreProvider user={session.user}>
-        {needsSessionRefresh && <SessionRefresher />}
+        <SessionRefresher />
         <SidebarProvider defaultOpen={defaultOpen}>
           <SidebarInset
             data-content-layout={contentLayout}

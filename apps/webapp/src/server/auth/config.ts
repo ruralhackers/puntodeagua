@@ -20,7 +20,6 @@ declare module 'next-auth' {
       id: string
       email: string | null
       name: string | null
-      image: string | null
       community: CommunityDto | null
       roles: string[]
     } & DefaultSession['user']
@@ -103,7 +102,6 @@ export const authConfig = {
         session.user.id = (token.id as string) ?? (token.sub as string)
         session.user.email = token.email as string
         session.user.name = token.name as string | null
-        session.user.image = token.image as string | null
         session.user.roles = (token.roles as string[]) ?? []
         session.user.community = token.community as CommunityDto | null
       }
@@ -116,7 +114,6 @@ export const authConfig = {
         token.id = user.id
         token.email = user.email
         token.name = user.name
-        token.image = user.image
         token.roles = user.roles
         token.community = user.community as CommunityDto | null
       }

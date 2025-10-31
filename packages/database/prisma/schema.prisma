@@ -195,7 +195,24 @@ model WaterMeterReading {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  waterMeterReadingImage WaterMeterReadingImage?
+
   @@index([waterMeterId])
+}
+
+model WaterMeterReadingImage {
+  id                  String   @id @default(cuid())
+  waterMeterReadingId String   @unique @map("water_meter_reading_id")
+  url                 String
+  fileName            String   @map("file_name")
+  fileSize            Int      @map("file_size")
+  mimeType            String   @map("mime_type")
+  uploadedAt          DateTime @default(now()) @map("uploaded_at")
+  externalKey         String   @map("external_key")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+
+  waterMeterReading WaterMeterReading @relation(fields: [waterMeterReadingId], references: [id], onDelete: Cascade)
 }
 
 model Analysis {

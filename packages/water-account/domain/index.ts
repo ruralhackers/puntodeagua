@@ -6,3 +6,8 @@ export type { WaterMeterDisplayDto } from './entities/water-meter-display.dto'
 export { waterMeterDisplaySchema } from './entities/water-meter-display.dto'
 export { WaterMeterReading } from './entities/water-meter-reading'
 export type { WaterMeterReadingDto } from './entities/water-meter-reading.dto'
+export { WaterMeterReadingImage } from './entities/water-meter-reading-image'
+export type {
+  WaterMeterReadingImageDto,
+  WaterMeterReadingNewImageDto
+} from './entities/water-meter-reading-image.dto'

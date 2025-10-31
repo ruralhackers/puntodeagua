@@ -41,6 +41,9 @@ export function AddReadingModal({
     notes: ''
   })
   const [validationError, setValidationError] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
 
   const utils = api.useUtils()
   const { parseSpanishNumber } = useSpanishNumberParser()
@@ -71,12 +74,16 @@ export function AddReadingModal({
       await utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
       // Invalidate water meter details to update last reading and excess consumption
       await utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
-      onClose()
+
+      // Reset form and image state
       setReadingForm({
         reading: '',
         readingDate: new Date().toISOString().split('T')[0],
         notes: ''
       })
+      handleRemoveImage()
+
+      onClose()
       toast.success('Lectura añadida con éxito')
     },
     onError: (error) => {
@@ -84,7 +91,7 @@ export function AddReadingModal({
     }
   })
 
-  const handleSubmitReading = () => {
+  const handleSubmitReading = async () => {
     if (!readingForm.reading || !readingForm.readingDate) return
 
     // Client-side validation: check if new reading is less than last reading
@@ -97,13 +104,43 @@ export function AddReadingModal({
     }
 
     setValidationError(null)
+
+    // Prepare image data if image is selected
+    let imageData:
+      | {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          file: any
+          metadata: {
+            fileSize: number
+            mimeType: string
+            originalName: string
+          }
+        }
+      | undefined
+    if (selectedImage) {
+      try {
+        imageData = {
+          file: new Uint8Array(await selectedImage.arrayBuffer()),
+          metadata: {
+            fileSize: selectedImage.size,
+            mimeType: selectedImage.type,
+            originalName: selectedImage.name
+          }
+        }
+      } catch {
+        toast.error('Error al procesar la imagen')
+        return
+      }
+    }
+
     // Convert Spanish format to standard format before sending to backend
     const standardReading = parseSpanishNumber(readingForm.reading).toString()
     addReadingMutation.mutate({
       waterMeterId: waterMeterId,
       reading: standardReading,
       readingDate: new Date(readingForm.readingDate),
-      notes: readingForm.notes || null
+      notes: readingForm.notes || null,
+      image: imageData
     })
   }
 
@@ -119,6 +156,46 @@ export function AddReadingModal({
     }
   }
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Reset error
+    setImageError(null)
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+      setImageError('Formato no válido. Use JPG, PNG o WEBP.')
+      return
+    }
+
+    // Validate file size (10MB max)
+    const maxSize = 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      setImageError('La imagen es demasiado grande (máximo 10MB).')
+      return
+    }
+
+    setSelectedImage(file)
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null)
+    setImagePreview(null)
+    setImageError(null)
+    // Reset file input
+    const fileInput = document.getElementById('image') as HTMLInputElement
+    if (fileInput) fileInput.value = ''
+  }
+
   const handleClose = () => {
     onClose()
     setValidationError(null)
@@ -128,6 +205,7 @@ export function AddReadingModal({
       readingDate: new Date().toISOString().split('T')[0],
       notes: ''
     })
+    handleRemoveImage()
   }
 
   return (
@@ -204,6 +282,37 @@ export function AddReadingModal({
               value={readingForm.notes}
               onChange={(e) => setReadingForm((prev) => ({ ...prev, notes: e.target.value }))}
             />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="image" className="text-right">
+              Foto
+            </Label>
+            <div className="col-span-3">
+              <Input
+                id="image"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleImageSelect}
+                disabled={addReadingMutation.isPending}
+              />
+              {imageError && <p className="text-sm text-red-500 mt-1">{imageError}</p>}
+              {imagePreview && (
+                <div className="mt-2 relative">
+                  <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    className="mt-2"
+                    onClick={handleRemoveImage}
+                    disabled={addReadingMutation.isPending}
+                  >
+                    Quitar foto
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

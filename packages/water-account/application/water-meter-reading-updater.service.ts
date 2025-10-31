@@ -1,4 +1,5 @@
 import { Decimal, type Id } from '@pda/common/domain'
+import type { FileMetadata } from '@pda/storage'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterReadingUpdateDto } from '../domain/entities/water-meter-reading.dto'
 import {
@@ -8,20 +9,28 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
+import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
+import type { FileDeleterService } from './file-deleter.service'
+import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export class WaterMeterReadingUpdater {
   constructor(
     private readonly waterMeterReadingRepository: WaterMeterReadingRepository,
     private readonly waterMeterRepository: WaterMeterRepository,
-    private readonly waterMeterLastReadingUpdater: WaterMeterLastReadingUpdater
+    private readonly waterMeterLastReadingUpdater: WaterMeterLastReadingUpdater,
+    private readonly waterMeterReadingImageRepository?: WaterMeterReadingImageRepository,
+    private readonly fileUploaderService?: FileUploaderService,
+    private readonly fileDeleterService?: FileDeleterService
   ) {}
 
   async run(params: {
     id: Id
     updatedData: WaterMeterReadingUpdateDto
+    image?: { file: Buffer; metadata: FileMetadata }
+    deleteImage?: boolean
   }): Promise<WaterMeterReading> {
-    const { id, updatedData } = params
+    const { id, updatedData, image, deleteImage } = params
 
     // Find the reading to update
     const existingReading = await this.waterMeterReadingRepository.findById(id)
@@ -74,6 +83,25 @@ export class WaterMeterReadingUpdater {
 
     // Save the updated reading
     await this.waterMeterReadingRepository.save(updatedReading)
+
+    // Handle image operations
+    if (this.waterMeterReadingImageRepository && this.fileDeleterService && this.fileUploaderService) {
+      const existingImage = await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(id)
+
+      // Delete existing image if requested or if replacing with new image
+      if (existingImage && (deleteImage || image)) {
+        await this.fileDeleterService.deleteWaterMeterReadingImage(existingImage.id)
+      }
+
+      // Upload new image if provided
+      if (image) {
+        await this.fileUploaderService.uploadWaterMeterReadingImage({
+          file: image.file,
+          waterMeterReadingId: id,
+          metadata: image.metadata
+        })
+      }
+    }
 
     // Get the last readings AFTER saving to ensure we have the updated reading
     // This includes the updated reading and the previous one (if exists)

@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
+import { FileMetadata } from '@pda/storage'
+import type { FileDeleterService } from '../application/file-deleter.service'
+import type { FileUploaderService } from '../application/file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingUpdater } from '../application/water-meter-reading-updater.service'
-import { WaterMeter, WaterMeterReading } from '../domain'
+import { WaterMeter, WaterMeterReading, WaterMeterReadingImage } from '../domain'
 import {
   WaterMeterNotFoundError,
   WaterMeterReadingNotAllowedError,
@@ -10,17 +13,25 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
+import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
 import {
+  createMockFileDeleterService,
+  createMockFileUploaderService,
   createMockWaterMeterLastReadingUpdater,
+  createMockWaterMeterReadingImageRepository,
   createMockWaterMeterReadingRepository,
   createMockWaterMeterRepository
 } from './helpers/mocks'
 
 describe('WaterMeterReadingUpdater', () => {
   let service: WaterMeterReadingUpdater
+  let serviceWithImageSupport: WaterMeterReadingUpdater
   let mockWaterMeterRepository: WaterMeterRepository
   let mockWaterMeterReadingRepository: WaterMeterReadingRepository
   let mockWaterMeterLastReadingUpdater: WaterMeterLastReadingUpdater
+  let mockWaterMeterReadingImageRepository: WaterMeterReadingImageRepository
+  let mockFileUploaderService: FileUploaderService
+  let mockFileDeleterService: FileDeleterService
 
   // Default test entities
   const defaultWaterPoint = {
@@ -60,11 +71,23 @@ describe('WaterMeterReadingUpdater', () => {
     mockWaterMeterRepository = createMockWaterMeterRepository()
     mockWaterMeterReadingRepository = createMockWaterMeterReadingRepository()
     mockWaterMeterLastReadingUpdater = createMockWaterMeterLastReadingUpdater()
+    mockWaterMeterReadingImageRepository = createMockWaterMeterReadingImageRepository()
+    mockFileUploaderService = createMockFileUploaderService()
+    mockFileDeleterService = createMockFileDeleterService()
 
     service = new WaterMeterReadingUpdater(
       mockWaterMeterReadingRepository,
       mockWaterMeterRepository,
       mockWaterMeterLastReadingUpdater
+    )
+
+    serviceWithImageSupport = new WaterMeterReadingUpdater(
+      mockWaterMeterReadingRepository,
+      mockWaterMeterRepository,
+      mockWaterMeterLastReadingUpdater,
+      mockWaterMeterReadingImageRepository,
+      mockFileUploaderService,
+      mockFileDeleterService
     )
   })
 
@@ -566,5 +589,312 @@ describe('WaterMeterReadingUpdater', () => {
       defaultWaterMeter,
       expect.any(Array)
     )
+  })
+
+  describe('Image management integration', () => {
+    const existingImage = WaterMeterReadingImage.fromDto({
+      id: Id.generateUniqueId().toString(),
+      waterMeterReadingId: defaultReading.id.toString(),
+      url: 'https://r2.example.com/old-image.jpg',
+      fileName: 'old-image.jpg',
+      fileSize: 1024 * 100,
+      mimeType: 'image/jpeg',
+      uploadedAt: new Date(),
+      externalKey: 'water-meter-readings/123/old-image.jpg'
+    })
+
+    it('should update reading without affecting image when no image operations requested', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Original notes'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(undefined)
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Updated notes' }
+      })
+
+      // Assert
+      expect(result.notes).toBe('Updated notes')
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+    })
+
+    it('should replace existing image when new image is provided', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading with image'
+      })
+
+      const newImageBuffer = Buffer.from('new-image-data')
+      const newImageMetadata = FileMetadata.create({
+        fileName: 'new-image.jpg',
+        fileSize: 1024 * 150,
+        mimeType: 'image/jpeg',
+        originalName: 'updated-meter.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(existingImage)
+      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
+        'https://r2.example.com/new-image.jpg'
+      )
+
+      // Act
+      await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Updated with new image' },
+        image: {
+          file: newImageBuffer,
+          metadata: newImageMetadata
+        }
+      })
+
+      // Assert - old image should be deleted, new image should be uploaded
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
+        existingImage.id
+      )
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalledWith({
+        file: newImageBuffer,
+        waterMeterReadingId: readingId,
+        metadata: newImageMetadata
+      })
+    })
+
+    it('should delete image when deleteImage flag is true', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading with image'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(existingImage)
+      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
+
+      // Act
+      await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Image removed' },
+        deleteImage: true
+      })
+
+      // Assert
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
+        existingImage.id
+      )
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+    })
+
+    it('should add image to reading that did not have one', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading without image'
+      })
+
+      const imageBuffer = Buffer.from('new-image-data')
+      const imageMetadata = FileMetadata.create({
+        fileName: 'first-image.jpg',
+        fileSize: 1024 * 80,
+        mimeType: 'image/jpeg',
+        originalName: 'first-meter-photo.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
+        'https://r2.example.com/first-image.jpg'
+      )
+
+      // Act
+      await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Now with image' },
+        image: {
+          file: imageBuffer,
+          metadata: imageMetadata
+        }
+      })
+
+      // Assert
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalledWith({
+        file: imageBuffer,
+        waterMeterReadingId: readingId,
+        metadata: imageMetadata
+      })
+    })
+
+    it('should not call image services when image support is not configured', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Original notes'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+
+      // Act
+      await service.run({
+        id: readingId,
+        updatedData: { notes: 'Updated notes' }
+      })
+
+      // Assert - service without image support should not call image methods
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+    })
+
+    it('should handle case where deleteImage is requested but no image exists', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading without image'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(undefined)
+
+      // Act
+      await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Try to delete non-existent image' },
+        deleteImage: true
+      })
+
+      // Assert - should not call delete if no image exists
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
+    })
+
+    it('should update reading value and image in single operation', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Original'
+      })
+
+      const newImageBuffer = Buffer.from('updated-image')
+      const newImageMetadata = FileMetadata.create({
+        fileName: 'updated.jpg',
+        fileSize: 1024 * 120,
+        mimeType: 'image/jpeg',
+        originalName: 'updated-photo.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(existingImage)
+      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
+        'https://r2.example.com/updated.jpg'
+      )
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { reading: '2000', notes: 'Updated both' },
+        image: {
+          file: newImageBuffer,
+          metadata: newImageMetadata
+        }
+      })
+
+      // Assert - both reading and image should be updated
+      expect(result.reading.toString()).toBe('2000')
+      expect(result.notes).toBe('Updated both')
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalled()
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalled()
+      expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalled()
+    })
   })
 })

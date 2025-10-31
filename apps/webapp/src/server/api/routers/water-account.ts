@@ -1,5 +1,5 @@
 import { Id } from '@pda/common/domain'
-import { WaterAccountFactory } from '@pda/water-account'
+import { FileMetadataCreatorService, WaterAccountFactory } from '@pda/water-account'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
@@ -58,18 +58,46 @@ export const waterAccountRouter = createTRPCRouter({
         waterMeterId: z.string(),
         reading: z.string(),
         readingDate: z.date(),
-        notes: z.string().nullable().optional()
+        notes: z.string().nullable().optional(),
+        image: z
+          .object({
+            file: z.instanceof(Uint8Array),
+            metadata: z.object({
+              fileSize: z.number(),
+              mimeType: z.string(),
+              originalName: z.string()
+            })
+          })
+          .optional()
       })
     )
     .mutation(async ({ input }) => {
       try {
         const service = WaterAccountFactory.waterMeterReadingCreatorService()
 
+        // Prepare image data if provided
+        let imageData:
+          | {
+              file: Buffer
+              metadata: ReturnType<typeof FileMetadataCreatorService.createFileMetadata>
+            }
+          | undefined
+        if (input.image) {
+          const buffer = Buffer.from(input.image.file)
+          const fileMetadata = FileMetadataCreatorService.createFileMetadata({
+            originalName: input.image.metadata.originalName,
+            fileSize: input.image.metadata.fileSize,
+            mimeType: input.image.metadata.mimeType
+          })
+          imageData = { file: buffer, metadata: fileMetadata }
+        }
+
         const params = {
           waterMeterId: Id.fromString(input.waterMeterId),
           reading: input.reading,
           date: input.readingDate,
-          notes: input.notes ?? undefined
+          notes: input.notes ?? undefined,
+          image: imageData
         }
 
         const reading = await service.run(params)

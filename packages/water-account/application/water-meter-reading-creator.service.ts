@@ -1,4 +1,5 @@
 import { Decimal, type Id } from '@pda/common/domain'
+import type { FileMetadata } from '@pda/storage'
 import { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import {
   WaterMeterNotFoundError,
@@ -7,17 +8,25 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
+import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export class WaterMeterReadingCreator {
   constructor(
     private readonly waterMeterLastReadingUpdater: WaterMeterLastReadingUpdater,
     private readonly waterMeterReadingRepository: WaterMeterReadingRepository,
-    private readonly waterMeterRepository: WaterMeterRepository
+    private readonly waterMeterRepository: WaterMeterRepository,
+    private readonly fileUploaderService?: FileUploaderService
   ) {}
 
-  async run(params: { waterMeterId: Id; reading: string; date?: Date; notes?: string }) {
-    const { waterMeterId, reading, date, notes } = params
+  async run(params: {
+    waterMeterId: Id
+    reading: string
+    date?: Date
+    notes?: string
+    image?: { file: Buffer; metadata: FileMetadata }
+  }) {
+    const { waterMeterId, reading, date, notes, image } = params
     const waterMeter = await this.waterMeterRepository.findById(waterMeterId)
     if (!waterMeter) {
       throw new WaterMeterNotFoundError()
@@ -50,6 +59,15 @@ export class WaterMeterReadingCreator {
 
     await this.waterMeterReadingRepository.save(newWaterReading)
     lastReadings.push(newWaterReading)
+
+    // Upload image if provided
+    if (image && this.fileUploaderService) {
+      await this.fileUploaderService.uploadWaterMeterReadingImage({
+        file: image.file,
+        waterMeterReadingId: newWaterReading.id,
+        metadata: image.metadata
+      })
+    }
 
     // Update last reading in water meter. If we would have events we would launch an event instead
     await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)

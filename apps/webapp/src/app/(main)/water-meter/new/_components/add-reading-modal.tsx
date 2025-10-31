@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
+import { compressImage } from '@/lib/image-compressor'
 import { api } from '@/trpc/react'
 
 interface AddReadingModalProps {
@@ -156,7 +157,7 @@ export function AddReadingModal({
     }
   }
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -166,25 +167,33 @@ export function AddReadingModal({
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
     if (!validTypes.includes(file.type)) {
-      setImageError('Formato no válido. Use JPG, PNG o WEBP.')
+      setImageError('Formato no válido. Solo se permiten archivos JPG, PNG o WebP.')
       return
     }
 
-    // Validate file size (10MB max)
+    // Validate file size (10MB max before compression)
     const maxSize = 10 * 1024 * 1024
     if (file.size > maxSize) {
-      setImageError('La imagen es demasiado grande (máximo 10MB).')
+      setImageError('La imagen es demasiado grande. Máximo 10MB.')
       return
     }
 
-    setSelectedImage(file)
+    try {
+      // Compress the image
+      const compressedFile = await compressImage(file)
 
-    // Create preview
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string)
+      setSelectedImage(compressedFile)
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(compressedFile)
+    } catch (error) {
+      console.error('Error processing image:', error)
+      setImageError('Error al procesar la imagen. Intenta con otra.')
     }
-    reader.readAsDataURL(file)
   }
 
   const handleRemoveImage = () => {

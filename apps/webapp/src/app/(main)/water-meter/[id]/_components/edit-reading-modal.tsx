@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { WaterMeterReadingImageDto } from '@pda/water-account'
-import { Loader2 } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useImageUpload } from '@/hooks/use-image-upload'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
@@ -53,6 +54,7 @@ interface EditReadingModalProps {
 
 export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditReadingModalProps) {
   const { parseSpanishNumber, formatToSpanish } = useSpanishNumberParser()
+  const isMobile = useIsMobile()
 
   // Image state management
   const {
@@ -138,111 +140,235 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Editar Lectura</DialogTitle>
-          <DialogDescription>
-            Modifica la lectura del contador. Se pueden editar las dos últimas lecturas.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="reading"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lectura</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ingresa la nueva lectura"
-                      {...field}
-                      disabled={updateReadingMutation.isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notas (opcional)</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Agrega notas sobre esta lectura..."
-                      className="resize-none"
-                      rows={3}
-                      {...field}
-                      value={field.value || ''}
-                      disabled={updateReadingMutation.isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Image upload section */}
-            <div className="space-y-2">
-              <Label htmlFor="edit-image">Foto (opcional)</Label>
-              <Input
-                id="edit-image"
-                type="file"
-                accept={ACCEPTED_FILE_TYPES}
-                onChange={handleImageSelect}
-                disabled={updateReadingMutation.isPending}
-              />
-              {imageError && <p className="text-sm text-red-500">{imageError}</p>}
-              {isLoadingImage && (
-                <div className="mt-2 space-y-2">
-                  <div className="h-40 rounded border bg-muted animate-pulse" />
-                  <p className="text-sm text-muted-foreground">Cargando imagen...</p>
-                </div>
-              )}
-              {imagePreview && !isLoadingImage && (
-                <div className="mt-2 space-y-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={imagePreview}
-                    alt="Vista previa"
-                    className="max-h-40 rounded border object-contain"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleRemoveImageWithFlag}
-                    disabled={updateReadingMutation.isPending}
-                  >
-                    Quitar foto
-                  </Button>
-                </div>
-              )}
-            </div>
-
-            <DialogFooter>
+      <DialogContent className={isMobile ? '' : 'sm:max-w-[425px]'} fullscreenOnMobile>
+        {isMobile ? (
+          // Mobile fullscreen layout
+          <>
+            <DialogTitle className="sr-only">Editar Lectura</DialogTitle>
+            {/* Sticky header with save and close buttons */}
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background px-4 py-2">
               <Button
-                type="button"
-                variant="outline"
-                onClick={handleClose}
+                type="submit"
+                onClick={form.handleSubmit(onSubmit)}
                 disabled={updateReadingMutation.isPending}
+                size="sm"
               >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={updateReadingMutation.isPending}>
                 {updateReadingMutation.isPending && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Actualizar Lectura
+                Guardar
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleClose}
+                disabled={updateReadingMutation.isPending}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold">Editar Lectura</h2>
+                <p className="text-sm text-muted-foreground">
+                  Modifica la lectura del contador. Se pueden editar las dos últimas lecturas.
+                </p>
+              </div>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="reading"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Lectura</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Ingresa la nueva lectura"
+                            {...field}
+                            disabled={updateReadingMutation.isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Image upload section */}
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-image">Foto (opcional)</Label>
+                    <Input
+                      id="edit-image"
+                      type="file"
+                      accept={ACCEPTED_FILE_TYPES}
+                      onChange={handleImageSelect}
+                      disabled={updateReadingMutation.isPending}
+                    />
+                    {imageError && <p className="text-sm text-red-500">{imageError}</p>}
+                    {isLoadingImage && (
+                      <div className="mt-2 space-y-2">
+                        <div className="h-40 rounded border bg-muted animate-pulse" />
+                        <p className="text-sm text-muted-foreground">Cargando imagen...</p>
+                      </div>
+                    )}
+                    {imagePreview && !isLoadingImage && (
+                      <div className="mt-2 space-y-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={imagePreview}
+                          alt="Vista previa"
+                          className="max-h-40 rounded border object-contain"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={handleRemoveImageWithFlag}
+                          disabled={updateReadingMutation.isPending}
+                        >
+                          Quitar foto
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Notas (opcional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Agrega notas sobre esta lectura..."
+                            className="resize-none"
+                            rows={3}
+                            {...field}
+                            value={field.value || ''}
+                            disabled={updateReadingMutation.isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+            </div>
+          </>
+        ) : (
+          // Desktop modal layout
+          <>
+            <DialogHeader>
+              <DialogTitle>Editar Lectura</DialogTitle>
+              <DialogDescription>
+                Modifica la lectura del contador. Se pueden editar las dos últimas lecturas.
+              </DialogDescription>
+            </DialogHeader>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="reading"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lectura</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ingresa la nueva lectura"
+                          {...field}
+                          disabled={updateReadingMutation.isPending}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notas (opcional)</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Agrega notas sobre esta lectura..."
+                          className="resize-none"
+                          rows={3}
+                          {...field}
+                          value={field.value || ''}
+                          disabled={updateReadingMutation.isPending}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Image upload section */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-image">Foto (opcional)</Label>
+                  <Input
+                    id="edit-image"
+                    type="file"
+                    accept={ACCEPTED_FILE_TYPES}
+                    onChange={handleImageSelect}
+                    disabled={updateReadingMutation.isPending}
+                  />
+                  {imageError && <p className="text-sm text-red-500">{imageError}</p>}
+                  {isLoadingImage && (
+                    <div className="mt-2 space-y-2">
+                      <div className="h-40 rounded border bg-muted animate-pulse" />
+                      <p className="text-sm text-muted-foreground">Cargando imagen...</p>
+                    </div>
+                  )}
+                  {imagePreview && !isLoadingImage && (
+                    <div className="mt-2 space-y-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imagePreview}
+                        alt="Vista previa"
+                        className="max-h-40 rounded border object-contain"
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleRemoveImageWithFlag}
+                        disabled={updateReadingMutation.isPending}
+                      >
+                        Quitar foto
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClose}
+                    disabled={updateReadingMutation.isPending}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={updateReadingMutation.isPending}>
+                    {updateReadingMutation.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Actualizar Lectura
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

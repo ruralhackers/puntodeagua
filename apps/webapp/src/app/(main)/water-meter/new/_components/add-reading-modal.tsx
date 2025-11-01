@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { X, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useImageUpload } from '@/hooks/use-image-upload'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
@@ -48,6 +50,7 @@ export function AddReadingModal({
   const { parseSpanishNumber } = useSpanishNumberParser()
   const { imagePreview, imageError, handleImageSelect, handleRemoveImage, getImageData } =
     useImageUpload('image')
+  const isMobile = useIsMobile()
 
   // Helper function to normalize reading based on measurement unit
   const normalizeReading = (reading: string): number => {
@@ -155,134 +158,268 @@ export function AddReadingModal({
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Nueva Lectura</DialogTitle>
-          <DialogDescription>
-            Añadir una nueva lectura para: <strong>{waterPointName}</strong>
-            <br />
-            <span className="text-sm text-muted-foreground">
-              Unidad de medida:{' '}
-              <strong>{measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}</strong>
-            </span>
-            {lastReadingValue !== null && (
-              <>
+      <DialogContent className={isMobile ? '' : 'sm:max-w-[425px]'} fullscreenOnMobile>
+        {isMobile ? (
+          // Mobile fullscreen layout
+          <>
+            <DialogTitle className="sr-only">Nueva Lectura</DialogTitle>
+            {/* Sticky header with save and close buttons */}
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background px-4 py-2">
+              <Button
+                type="button"
+                onClick={handleSubmitReading}
+                disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
+                size="sm"
+              >
+                {addReadingMutation.isPending && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Guardar
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleClose}
+                disabled={addReadingMutation.isPending}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto px-4 pb-4">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold">Nueva Lectura</h2>
+                <p className="text-sm text-muted-foreground">
+                  Añadir una nueva lectura para: <strong>{waterPointName}</strong>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Unidad de medida:{' '}
+                  <strong>{measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}</strong>
+                </p>
+                {lastReadingValue !== null && (
+                  <p className="text-sm text-muted-foreground">
+                    Última lectura:{' '}
+                    <strong>
+                      {measurementUnit === 'L'
+                        ? `${lastReadingValue.toLocaleString('es-ES')} L`
+                        : `${(lastReadingValue / 1000).toLocaleString('es-ES')} m³`}
+                    </strong>
+                    {lastReadingDate && ` (${formatDate(lastReadingDate)})`}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                {/* Lectura y Fecha en la misma fila */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="reading">Lectura</Label>
+                    <Input
+                      id="reading"
+                      type="text"
+                      inputMode="decimal"
+                      placeholder={`0,00 ${measurementUnit}`}
+                      className={validationError ? 'border-red-500' : ''}
+                      value={readingForm.reading}
+                      onChange={handleReadingChange}
+                    />
+                    {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="readingDate">Fecha</Label>
+                    <Input
+                      id="readingDate"
+                      type="date"
+                      value={readingForm.readingDate}
+                      max={new Date().toISOString().split('T')[0]}
+                      onChange={(e) =>
+                        setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="image">Foto</Label>
+                  <Input
+                    id="image"
+                    type="file"
+                    accept={ACCEPTED_FILE_TYPES}
+                    onChange={handleImageSelect}
+                    disabled={addReadingMutation.isPending}
+                  />
+                  {imageError && <p className="text-sm text-red-500 mt-1">{imageError}</p>}
+                  {imagePreview && (
+                    <div className="mt-2 space-y-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleRemoveImage}
+                        disabled={addReadingMutation.isPending}
+                      >
+                        Quitar foto
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="notes">Notas</Label>
+                  <Textarea
+                    id="notes"
+                    placeholder="Notas opcionales..."
+                    rows={3}
+                    value={readingForm.notes}
+                    onChange={(e) => setReadingForm((prev) => ({ ...prev, notes: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          // Desktop modal layout
+          <>
+            <DialogHeader>
+              <DialogTitle>Nueva Lectura</DialogTitle>
+              <DialogDescription>
+                Añadir una nueva lectura para: <strong>{waterPointName}</strong>
                 <br />
                 <span className="text-sm text-muted-foreground">
-                  Última lectura:{' '}
+                  Unidad de medida:{' '}
                   <strong>
-                    {measurementUnit === 'L'
-                      ? `${lastReadingValue.toLocaleString('es-ES')} L`
-                      : `${(lastReadingValue / 1000).toLocaleString('es-ES')} m³`}
+                    {measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}
                   </strong>
-                  {lastReadingDate && ` (${formatDate(lastReadingDate)})`}
                 </span>
-              </>
-            )}
-          </DialogDescription>
-        </DialogHeader>
+                {lastReadingValue !== null && (
+                  <>
+                    <br />
+                    <span className="text-sm text-muted-foreground">
+                      Última lectura:{' '}
+                      <strong>
+                        {measurementUnit === 'L'
+                          ? `${lastReadingValue.toLocaleString('es-ES')} L`
+                          : `${(lastReadingValue / 1000).toLocaleString('es-ES')} m³`}
+                      </strong>
+                      {lastReadingDate && ` (${formatDate(lastReadingDate)})`}
+                    </span>
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="reading" className="text-right">
-              Lectura
-            </Label>
-            <div className="col-span-3">
-              <Input
-                id="reading"
-                type="text"
-                inputMode="decimal"
-                placeholder={`0,00 ${measurementUnit}`}
-                className={validationError ? 'border-red-500' : ''}
-                value={readingForm.reading}
-                onChange={handleReadingChange}
-              />
-              {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="readingDate" className="text-right">
-              Fecha
-            </Label>
-            <Input
-              id="readingDate"
-              type="date"
-              className="col-span-3"
-              value={readingForm.readingDate}
-              max={new Date().toISOString().split('T')[0]}
-              onChange={(e) => setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))}
-            />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="notes" className="text-right">
-              Notas
-            </Label>
-            <Textarea
-              id="notes"
-              placeholder="Notas opcionales..."
-              className="col-span-3"
-              rows={3}
-              value={readingForm.notes}
-              onChange={(e) => setReadingForm((prev) => ({ ...prev, notes: e.target.value }))}
-            />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="image" className="text-right">
-              Foto
-            </Label>
-            <div className="col-span-3">
-              <Input
-                id="image"
-                type="file"
-                accept={ACCEPTED_FILE_TYPES}
-                onChange={handleImageSelect}
-                disabled={addReadingMutation.isPending}
-              />
-              {imageError && <p className="text-sm text-red-500 mt-1">{imageError}</p>}
-              {imagePreview && (
-                <div className="mt-2 relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="destructive"
-                    className="mt-2"
-                    onClick={handleRemoveImage}
-                    disabled={addReadingMutation.isPending}
-                  >
-                    Quitar foto
-                  </Button>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="reading" className="text-right">
+                  Lectura
+                </Label>
+                <div className="col-span-3">
+                  <Input
+                    id="reading"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder={`0,00 ${measurementUnit}`}
+                    className={validationError ? 'border-red-500' : ''}
+                    value={readingForm.reading}
+                    onChange={handleReadingChange}
+                  />
+                  {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
+              </div>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleClose}
-            disabled={addReadingMutation.isPending}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSubmitReading}
-            disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
-          >
-            {addReadingMutation.isPending
-              ? imagePreview
-                ? 'Guardando lectura y subiendo imagen...'
-                : 'Guardando lectura...'
-              : 'Guardar Lectura'}
-          </Button>
-        </DialogFooter>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="readingDate" className="text-right">
+                  Fecha
+                </Label>
+                <Input
+                  id="readingDate"
+                  type="date"
+                  className="col-span-3"
+                  value={readingForm.readingDate}
+                  max={new Date().toISOString().split('T')[0]}
+                  onChange={(e) =>
+                    setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="notes" className="text-right">
+                  Notas
+                </Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Notas opcionales..."
+                  className="col-span-3"
+                  rows={3}
+                  value={readingForm.notes}
+                  onChange={(e) => setReadingForm((prev) => ({ ...prev, notes: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="image" className="text-right">
+                  Foto
+                </Label>
+                <div className="col-span-3">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept={ACCEPTED_FILE_TYPES}
+                    onChange={handleImageSelect}
+                    disabled={addReadingMutation.isPending}
+                  />
+                  {imageError && <p className="text-sm text-red-500 mt-1">{imageError}</p>}
+                  {imagePreview && (
+                    <div className="mt-2 relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        className="mt-2"
+                        onClick={handleRemoveImage}
+                        disabled={addReadingMutation.isPending}
+                      >
+                        Quitar foto
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={addReadingMutation.isPending}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSubmitReading}
+                disabled={
+                  !readingForm.reading || addReadingMutation.isPending || !!validationError
+                }
+              >
+                {addReadingMutation.isPending
+                  ? imagePreview
+                    ? 'Guardando lectura y subiendo imagen...'
+                    : 'Guardando lectura...'
+                  : 'Guardar Lectura'}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

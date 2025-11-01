@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 import AnalysisCard from './_components/analysis-card'
+import { AnalysisCardSkeleton } from './_components/analysis-card-skeleton'
 
 export default function AnalysisPage() {
   const user = useUserStore((state) => state.user)
@@ -62,15 +63,9 @@ export default function AnalysisPage() {
           <CardContent>
             {isLoading ? (
               <div className="space-y-3">
-                <div className="animate-pulse">
-                  <div className="h-24 bg-gray-200 rounded-lg"></div>
-                </div>
-                <div className="animate-pulse">
-                  <div className="h-24 bg-gray-200 rounded-lg"></div>
-                </div>
-                <div className="animate-pulse">
-                  <div className="h-24 bg-gray-200 rounded-lg"></div>
-                </div>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <AnalysisCardSkeleton key={`analysis-skeleton-${i}`} />
+                ))}
               </div>
             ) : error ? (
               <div className="text-center text-destructive">

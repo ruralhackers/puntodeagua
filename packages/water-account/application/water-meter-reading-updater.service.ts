@@ -14,6 +14,13 @@ import type { FileDeleterService } from './file-deleter.service'
 import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
+export interface WaterMeterReadingUpdaterResult {
+  reading: WaterMeterReading
+  imageUploadFailed?: boolean
+  imageDeleteFailed?: boolean
+  imageError?: string
+}
+
 export class WaterMeterReadingUpdater {
   constructor(
     private readonly waterMeterReadingRepository: WaterMeterReadingRepository,
@@ -29,7 +36,7 @@ export class WaterMeterReadingUpdater {
     updatedData: WaterMeterReadingUpdateDto
     image?: { file: Buffer; metadata: FileMetadata }
     deleteImage?: boolean
-  }): Promise<WaterMeterReading> {
+  }): Promise<WaterMeterReadingUpdaterResult> {
     const { id, updatedData, image, deleteImage } = params
 
     // Find the reading to update
@@ -84,7 +91,11 @@ export class WaterMeterReadingUpdater {
     // Save the updated reading
     await this.waterMeterReadingRepository.save(updatedReading)
 
-    // Handle image operations
+    let imageUploadFailed = false
+    let imageDeleteFailed = false
+    let imageError: string | undefined
+
+    // Handle image operations - errors are captured but don't prevent reading update
     if (
       this.waterMeterReadingImageRepository &&
       this.fileDeleterService &&
@@ -95,16 +106,28 @@ export class WaterMeterReadingUpdater {
 
       // Delete existing image if requested or if replacing with new image
       if (existingImage && (deleteImage || image)) {
-        await this.fileDeleterService.deleteWaterMeterReadingImage(existingImage.id)
+        try {
+          await this.fileDeleterService.deleteWaterMeterReadingImage(existingImage.id)
+        } catch (error) {
+          imageDeleteFailed = true
+          imageError = error instanceof Error ? error.message : 'Unknown error deleting image'
+          console.error('Failed to delete image for water meter reading:', error)
+        }
       }
 
       // Upload new image if provided
       if (image) {
-        await this.fileUploaderService.uploadWaterMeterReadingImage({
-          file: image.file,
-          waterMeterReadingId: id,
-          metadata: image.metadata
-        })
+        try {
+          await this.fileUploaderService.uploadWaterMeterReadingImage({
+            file: image.file,
+            waterMeterReadingId: id,
+            metadata: image.metadata
+          })
+        } catch (error) {
+          imageUploadFailed = true
+          imageError = error instanceof Error ? error.message : 'Unknown error uploading image'
+          console.error('Failed to upload image for water meter reading:', error)
+        }
       }
     }
 
@@ -117,6 +140,11 @@ export class WaterMeterReadingUpdater {
     // This ensures lastReadingNormalizedValue, lastReadingExcessConsumption, etc. are correct
     await this.waterMeterLastReadingUpdater.run(waterMeter, updatedLastReadings)
 
-    return updatedReading
+    return {
+      reading: updatedReading,
+      imageUploadFailed,
+      imageDeleteFailed,
+      imageError
+    }
   }
 }

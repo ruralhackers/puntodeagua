@@ -27,9 +27,12 @@ export async function compressImage(file: File): Promise<File> {
       return file
     }
 
-    console.log(
-      `Image compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`
-    )
+    // Only log in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `Image compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`
+      )
+    }
 
     return compressedFile
   } catch (error) {

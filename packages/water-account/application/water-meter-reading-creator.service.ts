@@ -11,6 +11,12 @@ import type { WaterMeterReadingRepository } from '../domain/repositories/water-m
 import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
+export interface WaterMeterReadingCreatorResult {
+  reading: WaterMeterReading
+  imageUploadFailed?: boolean
+  imageError?: string
+}
+
 export class WaterMeterReadingCreator {
   constructor(
     private readonly waterMeterLastReadingUpdater: WaterMeterLastReadingUpdater,
@@ -25,7 +31,7 @@ export class WaterMeterReadingCreator {
     date?: Date
     notes?: string
     image?: { file: Buffer; metadata: FileMetadata }
-  }) {
+  }): Promise<WaterMeterReadingCreatorResult> {
     const { waterMeterId, reading, date, notes, image } = params
     const waterMeter = await this.waterMeterRepository.findById(waterMeterId)
     if (!waterMeter) {
@@ -60,18 +66,32 @@ export class WaterMeterReadingCreator {
     await this.waterMeterReadingRepository.save(newWaterReading)
     lastReadings.push(newWaterReading)
 
-    // Upload image if provided
+    let imageUploadFailed = false
+    let imageError: string | undefined
+
+    // Upload image if provided - errors are captured but don't prevent reading creation
     if (image && this.fileUploaderService) {
-      await this.fileUploaderService.uploadWaterMeterReadingImage({
-        file: image.file,
-        waterMeterReadingId: newWaterReading.id,
-        metadata: image.metadata
-      })
+      try {
+        await this.fileUploaderService.uploadWaterMeterReadingImage({
+          file: image.file,
+          waterMeterReadingId: newWaterReading.id,
+          metadata: image.metadata
+        })
+      } catch (error) {
+        imageUploadFailed = true
+        imageError = error instanceof Error ? error.message : 'Unknown error uploading image'
+        // Log error but continue - reading is saved
+        console.error('Failed to upload image for water meter reading:', error)
+      }
     }
 
     // Update last reading in water meter. If we would have events we would launch an event instead
     await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
 
-    return newWaterReading
+    return {
+      reading: newWaterReading,
+      imageUploadFailed,
+      imageError
+    }
   }
 }

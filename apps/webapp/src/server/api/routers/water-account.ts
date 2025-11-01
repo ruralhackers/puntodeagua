@@ -78,8 +78,12 @@ export const waterAccountRouter = createTRPCRouter({
           image: imageData
         }
 
-        const reading = await service.run(params)
-        return reading.toDto()
+        const result = await service.run(params)
+        return {
+          reading: result.reading.toDto(),
+          imageUploadFailed: result.imageUploadFailed,
+          imageError: result.imageError
+        }
       } catch (error) {
         handleDomainError(error)
       }
@@ -116,13 +120,18 @@ export const waterAccountRouter = createTRPCRouter({
           imageData = { file: buffer, metadata: fileMetadata }
         }
 
-        const reading = await service.run({
+        const result = await service.run({
           id: Id.fromString(input.id),
           updatedData: { reading: input.reading, notes: input.notes },
           image: imageData,
           deleteImage: input.deleteImage
         })
-        return reading.toDto()
+        return {
+          reading: result.reading.toDto(),
+          imageUploadFailed: result.imageUploadFailed,
+          imageDeleteFailed: result.imageDeleteFailed,
+          imageError: result.imageError
+        }
       } catch (error) {
         handleDomainError(error)
       }

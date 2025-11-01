@@ -14,4 +14,3 @@ export const fileUploadInputSchema = z.object({
 })
 
 export type FileUploadInputDto = z.infer<typeof fileUploadInputSchema>
-

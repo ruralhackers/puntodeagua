@@ -63,7 +63,8 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
     getImageData,
     setImagePreview
   } = useImageUpload('edit-image')
-  const [deleteExistingImage, setDeleteExistingImage] = useState(false)
+  const [shouldDeleteExistingImage, setShouldDeleteExistingImage] = useState(false)
+  const [isLoadingImage, setIsLoadingImage] = useState(false)
 
   const form = useForm<EditReadingFormData>({
     resolver: zodResolver(editReadingSchema),
@@ -76,17 +77,31 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   // Initialize existing image
   useEffect(() => {
     if (reading.waterMeterReadingImage?.url) {
+      setIsLoadingImage(true)
       setImagePreview(reading.waterMeterReadingImage.url)
-      setDeleteExistingImage(false)
+      setShouldDeleteExistingImage(false)
+      // Simulate image load for better UX
+      const img = new Image()
+      img.onload = () => setIsLoadingImage(false)
+      img.onerror = () => setIsLoadingImage(false)
+      img.src = reading.waterMeterReadingImage.url
     } else {
       setImagePreview(null)
-      setDeleteExistingImage(false)
+      setShouldDeleteExistingImage(false)
+      setIsLoadingImage(false)
     }
   }, [reading.waterMeterReadingImage, setImagePreview])
 
   const updateReadingMutation = api.waterAccount.updateWaterMeterReading.useMutation({
-    onSuccess: () => {
-      toast.success('Lectura actualizada correctamente')
+    onSuccess: (data) => {
+      // Show appropriate toast based on result
+      if (data?.imageUploadFailed) {
+        toast.warning('Lectura actualizada, pero no se pudo subir la nueva imagen')
+      } else if (data?.imageDeleteFailed) {
+        toast.warning('Lectura actualizada, pero no se pudo eliminar la imagen anterior')
+      } else {
+        toast.success('Lectura actualizada correctamente')
+      }
       onSuccess?.()
       onClose()
     },
@@ -95,10 +110,11 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
     }
   })
 
-  // Custom remove handler that sets deleteExistingImage flag
+  // Custom remove handler that sets shouldDeleteExistingImage flag
+  // This flag indicates the user wants to delete the existing image
   const handleRemoveImageWithFlag = () => {
     handleRemoveImage()
-    setDeleteExistingImage(true)
+    setShouldDeleteExistingImage(true)
   }
 
   const onSubmit = async (data: EditReadingFormData) => {
@@ -111,7 +127,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
       notes: data.notes || null,
       // Type assertion needed due to ArrayBuffer vs ArrayBufferLike difference
       image: imageData as Parameters<typeof updateReadingMutation.mutate>[0]['image'],
-      deleteImage: deleteExistingImage && !imageData // Only delete if no new image
+      deleteImage: shouldDeleteExistingImage && !imageData // Only delete if no new image
     })
   }
 
@@ -182,7 +198,13 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                 disabled={updateReadingMutation.isPending}
               />
               {imageError && <p className="text-sm text-red-500">{imageError}</p>}
-              {imagePreview && (
+              {isLoadingImage && (
+                <div className="mt-2 space-y-2">
+                  <div className="h-40 rounded border bg-muted animate-pulse" />
+                  <p className="text-sm text-muted-foreground">Cargando imagen...</p>
+                </div>
+              )}
+              {imagePreview && !isLoadingImage && (
                 <div className="mt-2 space-y-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

@@ -238,10 +238,10 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('2000')
-    expect(result.normalizedReading).toBe(2000) // Should be recalculated
-    expect(result.notes).toBe('Original notes') // Should remain unchanged
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('2000')
+    expect(result.reading.normalizedReading).toBe(2000) // Should be recalculated
+    expect(result.reading.notes).toBe('Original notes') // Should remain unchanged
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(readingId)
@@ -280,10 +280,10 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('1000') // Should remain unchanged
-    expect(result.normalizedReading).toBe(1000) // Should remain unchanged
-    expect(result.notes).toBe('Updated notes') // Should be updated
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('1000') // Should remain unchanged
+    expect(result.reading.normalizedReading).toBe(1000) // Should remain unchanged
+    expect(result.reading.notes).toBe('Updated notes') // Should be updated
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
@@ -320,10 +320,10 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('3000')
-    expect(result.normalizedReading).toBe(3000) // Should be recalculated
-    expect(result.notes).toBe('Updated notes')
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('3000')
+    expect(result.reading.normalizedReading).toBe(3000) // Should be recalculated
+    expect(result.reading.notes).toBe('Updated notes')
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
@@ -372,9 +372,9 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('2')
-    expect(result.normalizedReading).toBe(2000) // 2 M3 = 2000 L
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('2')
+    expect(result.reading.normalizedReading).toBe(2000) // 2 M3 = 2000 L
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
@@ -454,9 +454,9 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('600')
-    expect(result.normalizedReading).toBe(600)
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('600')
+    expect(result.reading.normalizedReading).toBe(600)
 
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
@@ -545,9 +545,9 @@ describe('WaterMeterReadingUpdater', () => {
     })
 
     // Assert
-    expect(result).toBeInstanceOf(WaterMeterReading)
-    expect(result.reading.toString()).toBe('1000')
-    expect(result.normalizedReading).toBe(1000)
+    expect(result.reading).toBeInstanceOf(WaterMeterReading)
+    expect(result.reading.reading.toString()).toBe('1000')
+    expect(result.reading.normalizedReading).toBe(1000)
   })
 
   it('should recalculate excesses after updating previous reading', async () => {
@@ -632,7 +632,7 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert
-      expect(result.notes).toBe('Updated notes')
+      expect(result.reading.notes).toBe('Updated notes')
       expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
       expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
     })
@@ -890,10 +890,203 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert - both reading and image should be updated
-      expect(result.reading.toString()).toBe('2000')
-      expect(result.notes).toBe('Updated both')
+      expect(result.reading.reading.toString()).toBe('2000')
+      expect(result.reading.notes).toBe('Updated both')
       expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalled()
       expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalled()
+      expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalled()
+    })
+
+    it('should update reading even if new image upload fails', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading without image'
+      })
+
+      const imageBuffer = Buffer.from('new-image-data')
+      const imageMetadata = FileMetadata.create({
+        fileName: 'new-image.jpg',
+        fileSize: 1024 * 120,
+        mimeType: 'image/jpeg',
+        originalName: 'new-photo.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
+        new Error('Storage service unavailable')
+      )
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Updated with failed image upload' },
+        image: {
+          file: imageBuffer,
+          metadata: imageMetadata
+        }
+      })
+
+      // Assert - reading should be updated despite image failure
+      expect(result.reading).toBeDefined()
+      expect(result.imageUploadFailed).toBe(true)
+      expect(result.imageError).toContain('Storage service unavailable')
+      expect(mockWaterMeterReadingRepository.save).toHaveBeenCalled()
+      expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalled()
+    })
+
+    it('should keep old image if new upload fails', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading with image'
+      })
+
+      const newImageBuffer = Buffer.from('new-image-data')
+      const newImageMetadata = FileMetadata.create({
+        fileName: 'new-image.jpg',
+        fileSize: 1024 * 150,
+        mimeType: 'image/jpeg',
+        originalName: 'updated-meter.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(existingImage)
+      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
+        new Error('Upload failed')
+      )
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Updated with failed image replacement' },
+        image: {
+          file: newImageBuffer,
+          metadata: newImageMetadata
+        }
+      })
+
+      // Assert - old image was deleted but new upload failed
+      expect(result.reading).toBeDefined()
+      expect(result.imageUploadFailed).toBe(true)
+      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
+        existingImage.id
+      )
+      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalled()
+    })
+
+    it('should return imageUploadFailed flag when upload fails', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Original'
+      })
+
+      const imageBuffer = Buffer.from('new-image')
+      const imageMetadata = FileMetadata.create({
+        fileName: 'new.jpg',
+        fileSize: 1024 * 100,
+        mimeType: 'image/jpeg',
+        originalName: 'photo.jpg'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(undefined)
+      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
+        new Error('Invalid file')
+      )
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { reading: '2000' },
+        image: {
+          file: imageBuffer,
+          metadata: imageMetadata
+        }
+      })
+
+      // Assert
+      expect(result.imageUploadFailed).toBe(true)
+      expect(result.imageError).toBe('Invalid file')
+      expect(result.reading.reading.toString()).toBe('2000')
+    })
+
+    it('should update reading even if image delete fails', async () => {
+      // Arrange
+      const readingId = Id.generateUniqueId()
+      const reading = WaterMeterReading.fromDto({
+        id: readingId.toString(),
+        waterMeterId: defaultWaterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: new Date(),
+        notes: 'Reading with image'
+      })
+
+      mockWaterMeterReadingRepository.findById = mock().mockResolvedValue(reading)
+      mockWaterMeterRepository.findById = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingRepository.findLastReadingsForWaterMeter = mock()
+        .mockResolvedValueOnce([reading])
+        .mockResolvedValueOnce([reading])
+      mockWaterMeterReadingRepository.save = mock().mockResolvedValue(undefined)
+      mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
+      mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
+        mock().mockResolvedValue(existingImage)
+      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockRejectedValue(
+        new Error('Storage delete failed')
+      )
+
+      // Act
+      const result = await serviceWithImageSupport.run({
+        id: readingId,
+        updatedData: { notes: 'Updated with failed delete' },
+        deleteImage: true
+      })
+
+      // Assert
+      expect(result.reading).toBeDefined()
+      expect(result.imageDeleteFailed).toBe(true)
+      expect(result.imageError).toContain('Storage delete failed')
+      expect(mockWaterMeterReadingRepository.save).toHaveBeenCalled()
       expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalled()
     })
   })

@@ -68,7 +68,7 @@ export function AddReadingModal({
 
   // Mutation for adding new reading
   const addReadingMutation = api.waterAccount.addWaterMeterReading.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       // Invalidate and refetch water meters data
       await utils.waterAccount.getActiveWaterMetersOrderedByLastReading.invalidate()
       // Invalidate water meter readings to update the history
@@ -85,7 +85,15 @@ export function AddReadingModal({
       handleRemoveImage()
 
       onClose()
-      toast.success('Lectura añadida con éxito')
+
+      // Show appropriate toast based on image upload result
+      if (data?.imageUploadFailed) {
+        toast.warning(
+          'Lectura guardada, pero no se pudo subir la imagen. Puedes editarla más tarde.'
+        )
+      } else {
+        toast.success('Lectura añadida con éxito')
+      }
     },
     onError: (error) => {
       handleDomainError(error)
@@ -268,7 +276,11 @@ export function AddReadingModal({
             onClick={handleSubmitReading}
             disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
           >
-            {addReadingMutation.isPending ? 'Guardando...' : 'Guardar Lectura'}
+            {addReadingMutation.isPending
+              ? imagePreview
+                ? 'Guardando lectura y subiendo imagen...'
+                : 'Guardando lectura...'
+              : 'Guardar Lectura'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -111,11 +111,23 @@ export default function MeterReplacementForm({
     resolver: zodResolver(dynamicFormSchema),
     defaultValues: {
       newWaterMeterName: '',
-      measurementUnit: (meter?.measurementUnit as 'L' | 'M3') || 'M3',
+      measurementUnit: 'M3',
       replacementDate: new Date().toISOString().split('T')[0],
       finalReading: ''
     }
   })
+
+  // Update form when meter data is loaded
+  useEffect(() => {
+    if (meter) {
+      form.reset({
+        newWaterMeterName: meter.waterPoint.name,
+        measurementUnit: meter.measurementUnit as 'L' | 'M3',
+        replacementDate: new Date().toISOString().split('T')[0],
+        finalReading: ''
+      })
+    }
+  }, [meter, form])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
@@ -168,7 +180,7 @@ export default function MeterReplacementForm({
                 <p className="text-sm text-muted-foreground">
                   {meter && (
                     <>
-                      Contador actual: <strong>{meter.waterAccountName}</strong>
+                      Dueño: <strong>{meter.waterAccountName}</strong>
                       <br />
                       Ubicación: {meter.waterPoint.name}
                       {lastReadingValue && (
@@ -280,7 +292,7 @@ export default function MeterReplacementForm({
               <DialogDescription>
                 {meter && (
                   <>
-                    Contador actual: <strong>{meter.waterAccountName}</strong>
+                    Dueño: <strong>{meter.waterAccountName}</strong>
                     <br />
                     Ubicación: {meter.waterPoint.name}
                     {lastReadingValue && (

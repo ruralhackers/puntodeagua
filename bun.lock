@@ -42,6 +42,7 @@
         "@pda/community": "workspace:*",
         "@pda/database": "workspace:*",
         "@pda/registers": "workspace:*",
+        "@pda/storage": "workspace:*",
         "@pda/user": "workspace:*",
         "@pda/water-account": "workspace:*",
         "@prisma/client": "^6.16.0",

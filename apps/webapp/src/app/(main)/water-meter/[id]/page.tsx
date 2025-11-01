@@ -6,6 +6,7 @@ import { es } from 'date-fns/locale'
 import {
   AlertTriangle,
   Calendar,
+  Camera,
   CheckCircle,
   Clock,
   Droplets,
@@ -23,8 +24,17 @@ import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
+import type { ImagePreviewData } from '@/types/image'
 import { ConsumptionCalculation } from '../_components/consumption-calculation'
 import { AddReadingModal } from '../new/_components/add-reading-modal'
 import { EditReadingModal } from './_components/edit-reading-modal'
@@ -34,12 +44,14 @@ export default function WaterMeterDetailPage() {
   const waterMeterId = params.id as string
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [addReadingModalOpen, setAddReadingModalOpen] = useState(false)
+  const [imageModalOpen, setImageModalOpen] = useState(false)
   const [editingReading, setEditingReading] = useState<{
     id: string
     reading: string
     notes: string | null
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   } | null>(null)
+  const [selectedImage, setSelectedImage] = useState<ImagePreviewData | null>(null)
 
   const {
     data: waterMeter,
@@ -85,6 +97,16 @@ export default function WaterMeterDetailPage() {
     // Invalidate both queries to refresh the data
     utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
     utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+  }
+
+  const handleViewImage = (image: WaterMeterReadingImageDto) => {
+    setSelectedImage({
+      url: image.url,
+      fileName: image.fileName,
+      fileSize: image.fileSize,
+      uploadedAt: image.uploadedAt
+    })
+    setImageModalOpen(true)
   }
 
   const handleRecalculateExcess = () => {
@@ -388,9 +410,27 @@ export default function WaterMeterDetailPage() {
                         )}
                       </div>
 
-                      {/* Botón de editar para las dos primeras lecturas (última y anterior) */}
-                      {(index === 0 || index === 1) && (
-                        <div className="flex items-center gap-2">
+                      {/* Botones de acción */}
+                      <div className="flex items-center gap-2">
+                        {/* Botón de ver foto - siempre visible si hay imagen */}
+                        {reading.waterMeterReadingImage && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (reading.waterMeterReadingImage) {
+                                handleViewImage(reading.waterMeterReadingImage)
+                              }
+                            }}
+                            className="shrink-0"
+                          >
+                            <Camera className="h-4 w-4 mr-1" />
+                            Ver foto
+                          </Button>
+                        )}
+
+                        {/* Botón de editar solo para las dos primeras lecturas */}
+                        {(index === 0 || index === 1) && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -407,8 +447,8 @@ export default function WaterMeterDetailPage() {
                             <Edit className="h-3 w-3 mr-1" />
                             Editar
                           </Button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </Card>
                 ))}
@@ -442,6 +482,41 @@ export default function WaterMeterDetailPage() {
           onClose={() => setAddReadingModalOpen(false)}
         />
       )}
+
+      {/* Modal de visualización de imagen */}
+      <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Foto de la lectura</DialogTitle>
+            <DialogDescription>
+              {selectedImage && (
+                <div className="text-sm text-muted-foreground">
+                  {selectedImage.fileName} • {(selectedImage.fileSize / 1024 / 1024).toFixed(2)} MB
+                  •{' '}
+                  {format(new Date(selectedImage.uploadedAt), "dd/MM/yyyy 'a las' HH:mm", {
+                    locale: es
+                  })}
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedImage && (
+            <div className="flex justify-center items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedImage.url}
+                alt="Foto de la lectura"
+                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+              />
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImageModalOpen(false)}>
+              Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageContainer>
   )
 }

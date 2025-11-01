@@ -25,6 +25,7 @@
     "@pda/registers": "workspace:*",
     "@pda/user": "workspace:*",
     "@pda/water-account": "workspace:*",
+    "@pda/storage": "workspace:*",
     "@prisma/client": "^6.16.0",
     "@radix-ui/react-icons": "^1.3.2",
     "@react-pdf/renderer": "^4.3.1",

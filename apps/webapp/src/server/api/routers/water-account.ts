@@ -1,4 +1,5 @@
 import { Id } from '@pda/common/domain'
+import { fileUploadInputSchema } from '@pda/storage'
 import { FileMetadataCreatorService, WaterAccountFactory } from '@pda/water-account'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
@@ -45,16 +46,7 @@ export const waterAccountRouter = createTRPCRouter({
         reading: z.string(),
         readingDate: z.date(),
         notes: z.string().nullable().optional(),
-        image: z
-          .object({
-            file: z.instanceof(Uint8Array),
-            metadata: z.object({
-              fileSize: z.number(),
-              mimeType: z.string(),
-              originalName: z.string()
-            })
-          })
-          .optional()
+        image: fileUploadInputSchema.optional()
       })
     )
     .mutation(async ({ input }) => {
@@ -99,16 +91,7 @@ export const waterAccountRouter = createTRPCRouter({
         id: z.string(),
         reading: z.string().optional(),
         notes: z.string().nullable().optional(),
-        image: z
-          .object({
-            file: z.instanceof(Uint8Array),
-            metadata: z.object({
-              fileSize: z.number(),
-              mimeType: z.string(),
-              originalName: z.string()
-            })
-          })
-          .optional(),
+        image: fileUploadInputSchema.optional(),
         deleteImage: z.boolean().optional()
       })
     )

@@ -27,9 +27,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useImageUpload } from '@/hooks/use-image-upload'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
-import { compressImage } from '@/lib/image-compressor'
 import { api } from '@/trpc/react'
+import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
 const editReadingSchema = z.object({
   reading: z.string().min(1, 'La lectura es requerida'),
@@ -54,9 +55,14 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   const { parseSpanishNumber, formatToSpanish } = useSpanishNumberParser()
 
   // Image state management
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [imageError, setImageError] = useState<string | null>(null)
+  const {
+    imagePreview,
+    imageError,
+    handleImageSelect,
+    handleRemoveImage,
+    getImageData,
+    setImagePreview
+  } = useImageUpload('edit-image')
   const [deleteExistingImage, setDeleteExistingImage] = useState(false)
 
   const form = useForm<EditReadingFormData>({
@@ -71,14 +77,12 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   useEffect(() => {
     if (reading.waterMeterReadingImage?.url) {
       setImagePreview(reading.waterMeterReadingImage.url)
-      setSelectedImage(null)
       setDeleteExistingImage(false)
     } else {
       setImagePreview(null)
-      setSelectedImage(null)
       setDeleteExistingImage(false)
     }
-  }, [reading.waterMeterReadingImage])
+  }, [reading.waterMeterReadingImage, setImagePreview])
 
   const updateReadingMutation = api.waterAccount.updateWaterMeterReading.useMutation({
     onSuccess: () => {
@@ -91,91 +95,23 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
     }
   })
 
-  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setImageError(null)
-
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-    if (!validTypes.includes(file.type)) {
-      setImageError('Formato no válido. Solo se permiten archivos JPG, PNG o WebP.')
-      return
-    }
-
-    // Validate file size (10MB max before compression)
-    const maxSize = 10 * 1024 * 1024
-    if (file.size > maxSize) {
-      setImageError('La imagen es demasiado grande. Máximo 10MB.')
-      return
-    }
-
-    try {
-      // Compress the image
-      const compressedFile = await compressImage(file)
-
-      setSelectedImage(compressedFile)
-      setDeleteExistingImage(false) // If adding new image, don't delete flag
-
-      // Create preview
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(compressedFile)
-    } catch (error) {
-      console.error('Error processing image:', error)
-      setImageError('Error al procesar la imagen. Intenta con otra.')
-    }
-  }
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null)
-    setImagePreview(null)
-    setImageError(null)
-    setDeleteExistingImage(true) // Mark for deletion
-
-    // Reset file input
-    const fileInput = document.getElementById('edit-image') as HTMLInputElement
-    if (fileInput) fileInput.value = ''
+  // Custom remove handler that sets deleteExistingImage flag
+  const handleRemoveImageWithFlag = () => {
+    handleRemoveImage()
+    setDeleteExistingImage(true)
   }
 
   const onSubmit = async (data: EditReadingFormData) => {
     // Prepare image data if new image is selected
-    let imageData:
-      | {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          file: any
-          metadata: {
-            fileSize: number
-            mimeType: string
-            originalName: string
-          }
-        }
-      | undefined
-    if (selectedImage) {
-      try {
-        imageData = {
-          file: new Uint8Array(await selectedImage.arrayBuffer()),
-          metadata: {
-            fileSize: selectedImage.size,
-            mimeType: selectedImage.type,
-            originalName: selectedImage.name
-          }
-        }
-      } catch {
-        toast.error('Error al procesar la imagen')
-        return
-      }
-    }
+    const imageData = await getImageData()
 
     updateReadingMutation.mutate({
       id: reading.id,
       reading: parseSpanishNumber(data.reading).toString(),
       notes: data.notes || null,
-      image: imageData,
-      deleteImage: deleteExistingImage && !selectedImage // Only delete if no new image
+      // Type assertion needed due to ArrayBuffer vs ArrayBufferLike difference
+      image: imageData as Parameters<typeof updateReadingMutation.mutate>[0]['image'],
+      deleteImage: deleteExistingImage && !imageData // Only delete if no new image
     })
   }
 
@@ -241,13 +177,14 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
               <Input
                 id="edit-image"
                 type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
+                accept={ACCEPTED_FILE_TYPES}
                 onChange={handleImageSelect}
                 disabled={updateReadingMutation.isPending}
               />
               {imageError && <p className="text-sm text-red-500">{imageError}</p>}
               {imagePreview && (
                 <div className="mt-2 space-y-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview}
                     alt="Vista previa"
@@ -257,7 +194,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                     type="button"
                     size="sm"
                     variant="destructive"
-                    onClick={handleRemoveImage}
+                    onClick={handleRemoveImageWithFlag}
                     disabled={updateReadingMutation.isPending}
                   >
                     Quitar foto

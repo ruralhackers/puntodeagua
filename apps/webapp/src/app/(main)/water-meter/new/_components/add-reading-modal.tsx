@@ -14,10 +14,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useImageUpload } from '@/hooks/use-image-upload'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
-import { compressImage } from '@/lib/image-compressor'
 import { api } from '@/trpc/react'
+import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
 interface AddReadingModalProps {
   waterMeterId: string
@@ -42,12 +43,11 @@ export function AddReadingModal({
     notes: ''
   })
   const [validationError, setValidationError] = useState<string | null>(null)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [imageError, setImageError] = useState<string | null>(null)
 
   const utils = api.useUtils()
   const { parseSpanishNumber } = useSpanishNumberParser()
+  const { imagePreview, imageError, handleImageSelect, handleRemoveImage, getImageData } =
+    useImageUpload('image')
 
   // Helper function to normalize reading based on measurement unit
   const normalizeReading = (reading: string): number => {
@@ -107,32 +107,7 @@ export function AddReadingModal({
     setValidationError(null)
 
     // Prepare image data if image is selected
-    let imageData:
-      | {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          file: any
-          metadata: {
-            fileSize: number
-            mimeType: string
-            originalName: string
-          }
-        }
-      | undefined
-    if (selectedImage) {
-      try {
-        imageData = {
-          file: new Uint8Array(await selectedImage.arrayBuffer()),
-          metadata: {
-            fileSize: selectedImage.size,
-            mimeType: selectedImage.type,
-            originalName: selectedImage.name
-          }
-        }
-      } catch {
-        toast.error('Error al procesar la imagen')
-        return
-      }
-    }
+    const imageData = await getImageData()
 
     // Convert Spanish format to standard format before sending to backend
     const standardReading = parseSpanishNumber(readingForm.reading).toString()
@@ -141,7 +116,8 @@ export function AddReadingModal({
       reading: standardReading,
       readingDate: new Date(readingForm.readingDate),
       notes: readingForm.notes || null,
-      image: imageData
+      // Type assertion needed due to ArrayBuffer vs ArrayBufferLike difference
+      image: imageData as Parameters<typeof addReadingMutation.mutate>[0]['image']
     })
   }
 
@@ -155,54 +131,6 @@ export function AddReadingModal({
       setReadingForm((prev) => ({ ...prev, reading: value }))
       setValidationError(null)
     }
-  }
-
-  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Reset error
-    setImageError(null)
-
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-    if (!validTypes.includes(file.type)) {
-      setImageError('Formato no válido. Solo se permiten archivos JPG, PNG o WebP.')
-      return
-    }
-
-    // Validate file size (10MB max before compression)
-    const maxSize = 10 * 1024 * 1024
-    if (file.size > maxSize) {
-      setImageError('La imagen es demasiado grande. Máximo 10MB.')
-      return
-    }
-
-    try {
-      // Compress the image
-      const compressedFile = await compressImage(file)
-
-      setSelectedImage(compressedFile)
-
-      // Create preview
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(compressedFile)
-    } catch (error) {
-      console.error('Error processing image:', error)
-      setImageError('Error al procesar la imagen. Intenta con otra.')
-    }
-  }
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null)
-    setImagePreview(null)
-    setImageError(null)
-    // Reset file input
-    const fileInput = document.getElementById('image') as HTMLInputElement
-    if (fileInput) fileInput.value = ''
   }
 
   const handleClose = () => {
@@ -301,13 +229,14 @@ export function AddReadingModal({
               <Input
                 id="image"
                 type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
+                accept={ACCEPTED_FILE_TYPES}
                 onChange={handleImageSelect}
                 disabled={addReadingMutation.isPending}
               />
               {imageError && <p className="text-sm text-red-500 mt-1">{imageError}</p>}
               {imagePreview && (
                 <div className="mt-2 relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
                   <Button
                     type="button"

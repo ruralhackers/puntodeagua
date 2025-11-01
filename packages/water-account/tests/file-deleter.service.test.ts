@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import type { FileStorageRepository } from '@pda/storage'
+import { type FileStorageRepository, ImageEntityType } from '@pda/storage'
 import { FileDeleterService } from '../application/file-deleter.service'
 import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-image'
+import type { WaterMeterImageRepository } from '../domain/repositories/water-meter-image.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
 import {
   createMockFileStorageRepository,
@@ -13,6 +14,7 @@ describe('FileDeleterService', () => {
   let service: FileDeleterService
   let mockFileStorageRepository: FileStorageRepository
   let mockWaterMeterReadingImageRepository: WaterMeterReadingImageRepository
+  let mockWaterMeterImageRepository: WaterMeterImageRepository
 
   const defaultImageId = Id.generateUniqueId()
   const defaultImage = WaterMeterReadingImage.fromDto({
@@ -29,10 +31,17 @@ describe('FileDeleterService', () => {
   beforeEach(() => {
     mockFileStorageRepository = createMockFileStorageRepository()
     mockWaterMeterReadingImageRepository = createMockWaterMeterReadingImageRepository()
+    mockWaterMeterImageRepository = {
+      findById: mock(),
+      findByWaterMeterId: mock(),
+      save: mock(),
+      delete: mock()
+    } as unknown as WaterMeterImageRepository
 
     service = new FileDeleterService(
       mockFileStorageRepository,
-      mockWaterMeterReadingImageRepository
+      mockWaterMeterReadingImageRepository,
+      mockWaterMeterImageRepository
     )
   })
 
@@ -43,7 +52,10 @@ describe('FileDeleterService', () => {
     mockWaterMeterReadingImageRepository.delete = mock().mockResolvedValue(undefined)
 
     // Act
-    await service.deleteWaterMeterReadingImage(defaultImageId)
+    await service.run({
+      entityId: defaultImageId,
+      entityType: ImageEntityType.WATER_METER_READING
+    })
 
     // Assert
     expect(mockWaterMeterReadingImageRepository.findById).toHaveBeenCalledWith(defaultImageId)
@@ -56,7 +68,10 @@ describe('FileDeleterService', () => {
     mockWaterMeterReadingImageRepository.findById = mock().mockResolvedValue(undefined)
 
     // Act
-    await service.deleteWaterMeterReadingImage(defaultImageId)
+    await service.run({
+      entityId: defaultImageId,
+      entityType: ImageEntityType.WATER_METER_READING
+    })
 
     // Assert - should complete without error
     expect(mockFileStorageRepository.delete).not.toHaveBeenCalled()
@@ -78,7 +93,10 @@ describe('FileDeleterService', () => {
     })
 
     // Act
-    await service.deleteWaterMeterReadingImage(defaultImageId)
+    await service.run({
+      entityId: defaultImageId,
+      entityType: ImageEntityType.WATER_METER_READING
+    })
 
     // Assert
     expect(callOrder).toEqual(['storage', 'database'])
@@ -92,9 +110,12 @@ describe('FileDeleterService', () => {
     )
 
     // Act & Assert - should propagate error
-    await expect(service.deleteWaterMeterReadingImage(defaultImageId)).rejects.toThrow(
-      'Storage service unavailable'
-    )
+    await expect(
+      service.run({
+        entityId: defaultImageId,
+        entityType: ImageEntityType.WATER_METER_READING
+      })
+    ).rejects.toThrow('Storage service unavailable')
 
     // Verify that database delete was not called after storage failure
     expect(mockWaterMeterReadingImageRepository.delete).not.toHaveBeenCalled()
@@ -109,9 +130,12 @@ describe('FileDeleterService', () => {
     )
 
     // Act & Assert - should propagate error
-    await expect(service.deleteWaterMeterReadingImage(defaultImageId)).rejects.toThrow(
-      'Database error'
-    )
+    await expect(
+      service.run({
+        entityId: defaultImageId,
+        entityType: ImageEntityType.WATER_METER_READING
+      })
+    ).rejects.toThrow('Database error')
 
     // Verify that storage delete was called (since it comes first)
     expect(mockFileStorageRepository.delete).toHaveBeenCalled()
@@ -157,7 +181,10 @@ describe('FileDeleterService', () => {
     mockWaterMeterReadingImageRepository.delete = mock()
 
     // Act
-    await service.deleteWaterMeterReadingImage(defaultImageId)
+    await service.run({
+      entityId: defaultImageId,
+      entityType: ImageEntityType.WATER_METER_READING
+    })
 
     // Assert
     expect(mockWaterMeterReadingImageRepository.findById).toHaveBeenCalledWith(defaultImageId)

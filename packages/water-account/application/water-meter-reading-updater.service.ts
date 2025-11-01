@@ -1,5 +1,5 @@
 import { Decimal, type Id } from '@pda/common/domain'
-import type { FileMetadata } from '@pda/storage'
+import { type FileMetadata, ImageEntityType } from '@pda/storage'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterReadingUpdateDto } from '../domain/entities/water-meter-reading.dto'
 import {
@@ -107,7 +107,10 @@ export class WaterMeterReadingUpdater {
       // Delete existing image if requested or if replacing with new image
       if (existingImage && (deleteImage || image)) {
         try {
-          await this.fileDeleterService.deleteWaterMeterReadingImage(existingImage.id)
+          await this.fileDeleterService.run({
+            entityId: existingImage.id,
+            entityType: ImageEntityType.WATER_METER_READING
+          })
         } catch (error) {
           imageDeleteFailed = true
           imageError = error instanceof Error ? error.message : 'Unknown error deleting image'
@@ -118,9 +121,10 @@ export class WaterMeterReadingUpdater {
       // Upload new image if provided
       if (image) {
         try {
-          await this.fileUploaderService.uploadWaterMeterReadingImage({
+          await this.fileUploaderService.run({
             file: image.file,
-            waterMeterReadingId: id,
+            entityId: id,
+            entityType: ImageEntityType.WATER_METER_READING,
             metadata: image.metadata
           })
         } catch (error) {

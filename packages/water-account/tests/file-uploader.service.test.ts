@@ -6,11 +6,13 @@ import {
   type FileStorageRepository,
   FileUploadError,
   FileUploadResult,
+  ImageEntityType,
   InvalidFileTypeError,
   MAX_FILE_SIZE,
   VALID_IMAGE_TYPES
 } from '@pda/storage'
 import { FileUploaderService } from '../application/file-uploader.service'
+import type { WaterMeterImageRepository } from '../domain/repositories/water-meter-image.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
 import {
   createMockFileStorageRepository,
@@ -21,6 +23,7 @@ describe('FileUploaderService', () => {
   let service: FileUploaderService
   let mockFileStorageRepository: FileStorageRepository
   let mockWaterMeterReadingImageRepository: WaterMeterReadingImageRepository
+  let mockWaterMeterImageRepository: WaterMeterImageRepository
 
   const defaultWaterMeterReadingId = Id.generateUniqueId()
   const defaultFileBuffer = Buffer.from('fake-image-data')
@@ -34,10 +37,17 @@ describe('FileUploaderService', () => {
   beforeEach(() => {
     mockFileStorageRepository = createMockFileStorageRepository()
     mockWaterMeterReadingImageRepository = createMockWaterMeterReadingImageRepository()
+    mockWaterMeterImageRepository = {
+      findById: mock(),
+      findByWaterMeterId: mock(),
+      save: mock(),
+      delete: mock()
+    } as unknown as WaterMeterImageRepository
 
     service = new FileUploaderService(
       mockFileStorageRepository,
-      mockWaterMeterReadingImageRepository
+      mockWaterMeterReadingImageRepository,
+      mockWaterMeterImageRepository
     )
   })
 
@@ -54,9 +64,10 @@ describe('FileUploaderService', () => {
     mockWaterMeterReadingImageRepository.save = mock().mockResolvedValue(undefined)
 
     // Act
-    const result = await service.uploadWaterMeterReadingImage({
+    const result = await service.run({
       file: defaultFileBuffer,
-      waterMeterReadingId: defaultWaterMeterReadingId,
+      entityId: defaultWaterMeterReadingId,
+      entityType: ImageEntityType.WATER_METER_READING,
       metadata: defaultFileMetadata
     })
 
@@ -82,9 +93,10 @@ describe('FileUploaderService', () => {
 
     // Act & Assert
     await expect(
-      service.uploadWaterMeterReadingImage({
+      service.run({
         file: defaultFileBuffer,
-        waterMeterReadingId: defaultWaterMeterReadingId,
+        entityId: defaultWaterMeterReadingId,
+        entityType: ImageEntityType.WATER_METER_READING,
         metadata: invalidMetadata
       })
     ).rejects.toThrow(InvalidFileTypeError)
@@ -104,9 +116,10 @@ describe('FileUploaderService', () => {
 
     // Act & Assert
     await expect(
-      service.uploadWaterMeterReadingImage({
+      service.run({
         file: defaultFileBuffer,
-        waterMeterReadingId: defaultWaterMeterReadingId,
+        entityId: defaultWaterMeterReadingId,
+        entityType: ImageEntityType.WATER_METER_READING,
         metadata: largeFileMetadata
       })
     ).rejects.toThrow(FileSizeExceededError)
@@ -123,9 +136,10 @@ describe('FileUploaderService', () => {
 
     // Act & Assert
     await expect(
-      service.uploadWaterMeterReadingImage({
+      service.run({
         file: defaultFileBuffer,
-        waterMeterReadingId: defaultWaterMeterReadingId,
+        entityId: defaultWaterMeterReadingId,
+        entityType: ImageEntityType.WATER_METER_READING,
         metadata: defaultFileMetadata
       })
     ).rejects.toThrow(FileUploadError)
@@ -147,9 +161,10 @@ describe('FileUploaderService', () => {
     mockWaterMeterReadingImageRepository.save = mock().mockResolvedValue(undefined)
 
     // Act
-    await service.uploadWaterMeterReadingImage({
+    await service.run({
       file: defaultFileBuffer,
-      waterMeterReadingId: defaultWaterMeterReadingId,
+      entityId: defaultWaterMeterReadingId,
+      entityType: ImageEntityType.WATER_METER_READING,
       metadata: defaultFileMetadata
     })
 
@@ -175,9 +190,10 @@ describe('FileUploaderService', () => {
 
     // Act & Assert
     await expect(
-      service.uploadWaterMeterReadingImage({
+      service.run({
         file: defaultFileBuffer,
-        waterMeterReadingId: defaultWaterMeterReadingId,
+        entityId: defaultWaterMeterReadingId,
+        entityType: ImageEntityType.WATER_METER_READING,
         metadata: invalidMetadata
       })
     ).rejects.toThrow(InvalidFileTypeError)
@@ -207,9 +223,10 @@ describe('FileUploaderService', () => {
         originalName: `photo.${mimeType.split('/')[1]}`
       })
 
-      const result = await service.uploadWaterMeterReadingImage({
+      const result = await service.run({
         file: defaultFileBuffer,
-        waterMeterReadingId: defaultWaterMeterReadingId,
+        entityId: defaultWaterMeterReadingId,
+        entityType: ImageEntityType.WATER_METER_READING,
         metadata
       })
 
@@ -236,9 +253,10 @@ describe('FileUploaderService', () => {
     mockWaterMeterReadingImageRepository.save = mock().mockResolvedValue(undefined)
 
     // Act
-    const result = await service.uploadWaterMeterReadingImage({
+    const result = await service.run({
       file: defaultFileBuffer,
-      waterMeterReadingId: defaultWaterMeterReadingId,
+      entityId: defaultWaterMeterReadingId,
+      entityType: ImageEntityType.WATER_METER_READING,
       metadata: exactLimitMetadata
     })
 

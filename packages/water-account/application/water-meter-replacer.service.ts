@@ -1,5 +1,5 @@
 import type { Id } from '@pda/common/domain'
-import type { FileMetadata } from '@pda/storage'
+import { type FileMetadata, ImageEntityType } from '@pda/storage'
 import { WaterMeter } from '../domain/entities/water-meter'
 import {
   WaterMeterInactiveError,
@@ -92,9 +92,10 @@ export class WaterMeterReplacer {
     let imageUploaded = false
     if (params.image) {
       try {
-        await this.fileUploaderService.uploadWaterMeterImage({
+        await this.fileUploaderService.run({
           file: params.image.file,
-          waterMeterId: newWaterMeter.id,
+          entityId: newWaterMeter.id,
+          entityType: ImageEntityType.WATER_METER,
           metadata: params.image.metadata
         })
         imageUploaded = true

@@ -78,13 +78,13 @@ export const createMockFileStorageRepository = (): FileStorageRepository => {
 
 export const createMockFileUploaderService = (): FileUploaderService => {
   return {
-    uploadWaterMeterReadingImage: mock()
+    run: mock()
   } as unknown as FileUploaderService
 }
 
 export const createMockFileDeleterService = (): FileDeleterService => {
   return {
-    deleteWaterMeterReadingImage: mock()
+    run: mock()
   } as unknown as FileDeleterService
 }
 

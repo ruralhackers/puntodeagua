@@ -1,5 +1,5 @@
 import { Decimal, type Id } from '@pda/common/domain'
-import type { FileMetadata } from '@pda/storage'
+import { type FileMetadata, ImageEntityType } from '@pda/storage'
 import { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import {
   WaterMeterNotFoundError,
@@ -72,9 +72,10 @@ export class WaterMeterReadingCreator {
     // Upload image if provided - errors are captured but don't prevent reading creation
     if (image && this.fileUploaderService) {
       try {
-        await this.fileUploaderService.uploadWaterMeterReadingImage({
+        await this.fileUploaderService.run({
           file: image.file,
-          waterMeterReadingId: newWaterReading.id,
+          entityId: newWaterReading.id,
+          entityType: ImageEntityType.WATER_METER_READING,
           metadata: image.metadata
         })
       } catch (error) {

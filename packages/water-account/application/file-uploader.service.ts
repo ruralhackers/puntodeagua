@@ -3,6 +3,7 @@ import {
   type FileMetadata,
   FileSizeExceededError,
   type FileStorageRepository,
+  ImageEntityType,
   InvalidFileTypeError,
   MAX_FILE_SIZE,
   VALID_IMAGE_TYPES
@@ -12,6 +13,13 @@ import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-i
 import type { WaterMeterImageRepository } from '../domain/repositories/water-meter-image.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
 
+interface UploadParams {
+  file: Buffer
+  entityId: Id
+  entityType: ImageEntityType
+  metadata: FileMetadata
+}
+
 export class FileUploaderService {
   constructor(
     private readonly fileStorageRepository: FileStorageRepository,
@@ -19,16 +27,27 @@ export class FileUploaderService {
     private readonly waterMeterImageRepository: WaterMeterImageRepository
   ) {}
 
-  async uploadWaterMeterReadingImage(params: {
-    file: Buffer
-    waterMeterReadingId: Id
-    metadata: FileMetadata
-  }): Promise<string> {
-    const { file, waterMeterReadingId, metadata } = params
+  async run(params: UploadParams): Promise<string> {
+    const { file, entityId, entityType, metadata } = params
 
     // Validate file
     this.validateFile(metadata)
 
+    switch (entityType) {
+      case ImageEntityType.WATER_METER_READING:
+        return this.uploadWaterMeterReadingImage(file, entityId, metadata)
+      case ImageEntityType.WATER_METER:
+        return this.uploadWaterMeterImage(file, entityId, metadata)
+      default:
+        throw new Error(`Unsupported entity type: ${entityType}`)
+    }
+  }
+
+  private async uploadWaterMeterReadingImage(
+    file: Buffer,
+    waterMeterReadingId: Id,
+    metadata: FileMetadata
+  ): Promise<string> {
     // Upload to storage
     const uploadResult = await this.fileStorageRepository.upload(
       file,
@@ -54,16 +73,11 @@ export class FileUploaderService {
     return uploadResult.url
   }
 
-  async uploadWaterMeterImage(params: {
-    file: Buffer
-    waterMeterId: Id
+  private async uploadWaterMeterImage(
+    file: Buffer,
+    waterMeterId: Id,
     metadata: FileMetadata
-  }): Promise<string> {
-    const { file, waterMeterId, metadata } = params
-
-    // Validate file
-    this.validateFile(metadata)
-
+  ): Promise<string> {
     // Upload to storage
     const uploadResult = await this.fileStorageRepository.upload(
       file,

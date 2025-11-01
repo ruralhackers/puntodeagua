@@ -1,5 +1,5 @@
 import type { Id } from '@pda/common/domain'
-import type { FileMetadata } from '@pda/storage'
+import { type FileMetadata, ImageEntityType } from '@pda/storage'
 import { WaterMeterNotFoundError } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterImageRepository } from '../domain/repositories/water-meter-image.repository'
@@ -32,18 +32,25 @@ export class WaterMeterImageUpdaterService {
     const existingImage = await this.waterMeterImageRepo.findByWaterMeterId(params.waterMeterId)
 
     if (params.deleteImage && existingImage) {
-      await this.fileDeleterService.deleteWaterMeterImage(params.waterMeterId)
+      await this.fileDeleterService.run({
+        entityId: params.waterMeterId,
+        entityType: ImageEntityType.WATER_METER
+      })
       return { success: true, deleted: true }
     }
 
     if (params.image) {
       if (existingImage) {
-        await this.fileDeleterService.deleteWaterMeterImage(params.waterMeterId)
+        await this.fileDeleterService.run({
+          entityId: params.waterMeterId,
+          entityType: ImageEntityType.WATER_METER
+        })
       }
 
-      await this.fileUploaderService.uploadWaterMeterImage({
+      await this.fileUploaderService.run({
         file: params.image.file,
-        waterMeterId: params.waterMeterId,
+        entityId: params.waterMeterId,
+        entityType: ImageEntityType.WATER_METER,
         metadata: params.image.metadata
       })
 

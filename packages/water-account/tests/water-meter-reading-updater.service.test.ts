@@ -633,8 +633,8 @@ describe('WaterMeterReadingUpdater', () => {
 
       // Assert
       expect(result.reading.notes).toBe('Updated notes')
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileDeleterService.run).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.run).not.toHaveBeenCalled()
     })
 
     it('should replace existing image when new image is provided', async () => {
@@ -666,10 +666,8 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(existingImage)
-      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
-        'https://r2.example.com/new-image.jpg'
-      )
+      mockFileDeleterService.run = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.run = mock().mockResolvedValue('https://r2.example.com/new-image.jpg')
 
       // Act
       await serviceWithImageSupport.run({
@@ -682,12 +680,14 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert - old image should be deleted, new image should be uploaded
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
-        existingImage.id
-      )
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalledWith({
+      expect(mockFileDeleterService.run).toHaveBeenCalledWith({
+        entityId: existingImage.id,
+        entityType: expect.anything()
+      })
+      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
         file: newImageBuffer,
-        waterMeterReadingId: readingId,
+        entityId: readingId,
+        entityType: expect.anything(),
         metadata: newImageMetadata
       })
     })
@@ -713,7 +713,7 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(existingImage)
-      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
+      mockFileDeleterService.run = mock().mockResolvedValue(undefined)
 
       // Act
       await serviceWithImageSupport.run({
@@ -723,10 +723,11 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
-        existingImage.id
-      )
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileDeleterService.run).toHaveBeenCalledWith({
+        entityId: existingImage.id,
+        entityType: expect.anything()
+      })
+      expect(mockFileUploaderService.run).not.toHaveBeenCalled()
     })
 
     it('should add image to reading that did not have one', async () => {
@@ -758,7 +759,7 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
+      mockFileUploaderService.run = mock().mockResolvedValue(
         'https://r2.example.com/first-image.jpg'
       )
 
@@ -773,10 +774,11 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalledWith({
+      expect(mockFileDeleterService.run).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
         file: imageBuffer,
-        waterMeterReadingId: readingId,
+        entityId: readingId,
+        entityType: expect.anything(),
         metadata: imageMetadata
       })
     })
@@ -808,8 +810,8 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert - service without image support should not call image methods
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileDeleterService.run).not.toHaveBeenCalled()
+      expect(mockFileUploaderService.run).not.toHaveBeenCalled()
     })
 
     it('should handle case where deleteImage is requested but no image exists', async () => {
@@ -842,7 +844,7 @@ describe('WaterMeterReadingUpdater', () => {
       })
 
       // Assert - should not call delete if no image exists
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).not.toHaveBeenCalled()
+      expect(mockFileDeleterService.run).not.toHaveBeenCalled()
     })
 
     it('should update reading value and image in single operation', async () => {
@@ -874,10 +876,8 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(existingImage)
-      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockResolvedValue(
-        'https://r2.example.com/updated.jpg'
-      )
+      mockFileDeleterService.run = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.run = mock().mockResolvedValue('https://r2.example.com/updated.jpg')
 
       // Act
       const result = await serviceWithImageSupport.run({
@@ -892,8 +892,8 @@ describe('WaterMeterReadingUpdater', () => {
       // Assert - both reading and image should be updated
       expect(result.reading.reading.toString()).toBe('2000')
       expect(result.reading.notes).toBe('Updated both')
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalled()
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalled()
+      expect(mockFileDeleterService.run).toHaveBeenCalled()
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
       expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalled()
     })
 
@@ -926,7 +926,7 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
+      mockFileUploaderService.run = mock().mockRejectedValue(
         new Error('Storage service unavailable')
       )
 
@@ -977,10 +977,8 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(existingImage)
-      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
-        new Error('Upload failed')
-      )
+      mockFileDeleterService.run = mock().mockResolvedValue(undefined)
+      mockFileUploaderService.run = mock().mockRejectedValue(new Error('Upload failed'))
 
       // Act
       const result = await serviceWithImageSupport.run({
@@ -995,10 +993,11 @@ describe('WaterMeterReadingUpdater', () => {
       // Assert - old image was deleted but new upload failed
       expect(result.reading).toBeDefined()
       expect(result.imageUploadFailed).toBe(true)
-      expect(mockFileDeleterService.deleteWaterMeterReadingImage).toHaveBeenCalledWith(
-        existingImage.id
-      )
-      expect(mockFileUploaderService.uploadWaterMeterReadingImage).toHaveBeenCalled()
+      expect(mockFileDeleterService.run).toHaveBeenCalledWith({
+        entityId: existingImage.id,
+        entityType: expect.anything()
+      })
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
     })
 
     it('should return imageUploadFailed flag when upload fails', async () => {
@@ -1030,9 +1029,7 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(undefined)
-      mockFileUploaderService.uploadWaterMeterReadingImage = mock().mockRejectedValue(
-        new Error('Invalid file')
-      )
+      mockFileUploaderService.run = mock().mockRejectedValue(new Error('Invalid file'))
 
       // Act
       const result = await serviceWithImageSupport.run({
@@ -1071,9 +1068,7 @@ describe('WaterMeterReadingUpdater', () => {
       mockWaterMeterLastReadingUpdater.run = mock().mockResolvedValue(defaultWaterMeter)
       mockWaterMeterReadingImageRepository.findByWaterMeterReadingId =
         mock().mockResolvedValue(existingImage)
-      mockFileDeleterService.deleteWaterMeterReadingImage = mock().mockRejectedValue(
-        new Error('Storage delete failed')
-      )
+      mockFileDeleterService.run = mock().mockRejectedValue(new Error('Storage delete failed'))
 
       // Act
       const result = await serviceWithImageSupport.run({

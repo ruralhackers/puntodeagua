@@ -1,10 +1,9 @@
 'use client'
 
-import { AlertTriangle, CheckCircle, Clock, Droplets, Eye, MapPin } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, Droplets, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
@@ -149,58 +148,42 @@ export default function WaterMeterList({
   return (
     <div className="space-y-2">
       {filteredWaterMeters.map((waterMeter) => (
-        <Card
-          key={waterMeter.id}
-          className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            {/* Información principal */}
-            <div className="flex-1 space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <Link
-                  href={`/water-meter/${waterMeter.id}`}
-                  className="font-semibold text-lg hover:text-blue-600 hover:underline transition-colors"
-                >
-                  {waterMeter.waterAccountName}
-                </Link>
-                {getStatusBadge(waterMeter)}
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  <span className="font-medium">{waterMeter.waterPoint.name}</span>
-                  {waterMeter.lastReadingNormalizedValue && (
-                    <>
-                      <span className="sm:inline">•</span>
-                      <Droplets className="h-3 w-3" />
-                      <span className="font-semibold text-blue-600">
-                        {waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L
-                      </span>
-                    </>
-                  )}
+        <Link key={waterMeter.id} href={`/water-meter/${waterMeter.id}`}>
+          <Card className="p-4 cursor-pointer hover:bg-accent transition-colors">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* Información principal */}
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h3 className="font-semibold text-lg">{waterMeter.waterAccountName}</h3>
+                  {getStatusBadge(waterMeter)}
                 </div>
-              </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <span>Ultima lectura: {formatLastReading(waterMeter.lastReadingDate)}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    <span className="font-medium">{waterMeter.waterPoint.name}</span>
+                    {waterMeter.lastReadingNormalizedValue && (
+                      <>
+                        <span className="sm:inline">•</span>
+                        <Droplets className="h-3 w-3" />
+                        <span className="font-semibold text-blue-600">
+                          {waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    <span>Ultima lectura: {formatLastReading(waterMeter.lastReadingDate)}</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Botones de acción */}
-            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <Button size="sm" asChild className="flex-1 sm:flex-none">
-                <Link href={`/water-meter/${waterMeter.id}`}>
-                  <Eye className="h-3 w-3 mr-1" />
-                  Ver detalle
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
       ))}
     </div>
   )

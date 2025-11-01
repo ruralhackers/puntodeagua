@@ -105,7 +105,11 @@ export default function OwnerChangePage() {
                         ` - ${new Date(meter.lastReadingDate).toLocaleDateString('es-ES')}`}
                     </p>
                   </div>
-                  <Button size="sm">Cambiar Titular</Button>
+                  <div className="text-right">
+                    <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">
+                      {meter.measurementUnit}
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

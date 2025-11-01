@@ -2,6 +2,7 @@ import type { Id, TableQueryParams, TableQueryResult } from '@pda/common/domain'
 import { BasePrismaRepository, PrismaTableQueryBuilder } from '@pda/common/infrastructure'
 import type { Prisma, client as prisma } from '@pda/database'
 import { WaterPoint } from '../../domain/entities/water-point'
+import type { WaterPointWithAccountDto } from '../../domain/entities/water-point-with-account.dto'
 import type { WaterPointRepository } from '../../domain/repositories/water-point.repository'
 import { waterPointTableConfig } from './water-point-table-config'
 
@@ -33,7 +34,63 @@ export class WaterPointPrismaRepository
     const waterPoints = await this.getModel().findMany({
       where: { communityZoneId: { in: zonesIds.map((id) => id.toString()) } }
     })
-    return waterPoints.map((waterPoint) => WaterPoint.fromDto(this.fromPrismaPayload(waterPoint)))
+    return waterPoints.map((waterPoint: any) =>
+      WaterPoint.fromDto(this.fromPrismaPayload(waterPoint))
+    )
+  }
+
+  async findByCommunityZonesIdWithAccount(zonesIds: Id[]): Promise<WaterPointWithAccountDto[]> {
+    const waterPoints = await this.getModel().findMany({
+      where: { communityZoneId: { in: zonesIds.map((id) => id.toString()) } },
+      include: {
+        waterMeters: {
+          where: { isActive: true },
+          take: 1,
+          select: {
+            waterAccount: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    return waterPoints.map((waterPoint: any) => ({
+      ...this.fromPrismaPayload(waterPoint),
+      waterAccountName:
+        waterPoint.waterMeters.length > 0 ? waterPoint.waterMeters[0].waterAccount.name : null
+    }))
+  }
+
+  async findByCommunityIdWithAccount(communityId: Id): Promise<WaterPointWithAccountDto[]> {
+    const waterPoints = await this.getModel().findMany({
+      where: {
+        communityZone: {
+          communityId: communityId.toString()
+        }
+      },
+      include: {
+        waterMeters: {
+          where: { isActive: true },
+          take: 1,
+          select: {
+            waterAccount: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    return waterPoints.map((waterPoint: any) => ({
+      ...this.fromPrismaPayload(waterPoint),
+      waterAccountName:
+        waterPoint.waterMeters.length > 0 ? waterPoint.waterMeters[0].waterAccount.name : null
+    }))
   }
 
   async findById(id: Id) {
@@ -51,6 +108,7 @@ export class WaterPointPrismaRepository
       fixedPopulation: waterPoint.fixedPopulation,
       floatingPopulation: waterPoint.floatingPopulation,
       cadastralReference: waterPoint.cadastralReference,
+      communityZoneId: waterPoint.communityZoneId.toString(),
       waterDepositIds: waterPoint.waterDepositIds.map((id) => id.toString())
     }
 
@@ -60,8 +118,7 @@ export class WaterPointPrismaRepository
       },
       create: {
         ...update,
-        id: waterPoint.id.toString(),
-        communityZoneId: waterPoint.communityZoneId.toString()
+        id: waterPoint.id.toString()
       },
       update
     })

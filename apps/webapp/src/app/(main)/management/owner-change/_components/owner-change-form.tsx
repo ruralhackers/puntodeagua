@@ -116,8 +116,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
     try {
       await changeOwnerMutation.mutateAsync({
         waterMeterId: meterId,
-        newWaterAccountId:
-          values.ownerType === 'existing' ? values.existingAccountId : undefined,
+        newWaterAccountId: values.ownerType === 'existing' ? values.existingAccountId : undefined,
         newWaterAccountData:
           values.ownerType === 'new'
             ? {
@@ -194,13 +193,17 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                               <FormControl>
                                 <RadioGroupItem value="existing" />
                               </FormControl>
-                              <FormLabel className="font-normal">Sí, seleccionar de la lista</FormLabel>
+                              <FormLabel className="font-normal">
+                                Sí, seleccionar de la lista
+                              </FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0">
                               <FormControl>
                                 <RadioGroupItem value="new" />
                               </FormControl>
-                              <FormLabel className="font-normal">No, es una persona nueva</FormLabel>
+                              <FormLabel className="font-normal">
+                                No, es una persona nueva
+                              </FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -319,7 +322,9 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                             <FormControl>
                               <RadioGroupItem value="existing" />
                             </FormControl>
-                            <FormLabel className="font-normal">Sí, seleccionar de la lista</FormLabel>
+                            <FormLabel className="font-normal">
+                              Sí, seleccionar de la lista
+                            </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
@@ -424,4 +429,3 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
     </Dialog>
   )
 }
-

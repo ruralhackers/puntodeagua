@@ -81,10 +81,7 @@ export default function OwnerChangePage() {
 
         {showFilters && (
           <Card className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-blue-200 shadow-lg shadow-blue-100/50">
-            <OwnerChangeFilters
-              selectedZones={selectedZones}
-              onZonesChange={setSelectedZones}
-            />
+            <OwnerChangeFilters selectedZones={selectedZones} onZonesChange={setSelectedZones} />
           </Card>
         )}
 
@@ -128,4 +125,3 @@ export default function OwnerChangePage() {
     </PageContainer>
   )
 }
-

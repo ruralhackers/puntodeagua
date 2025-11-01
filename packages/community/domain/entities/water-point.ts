@@ -9,7 +9,7 @@ export class WaterPoint {
     public fixedPopulation: number,
     public floatingPopulation: number,
     public cadastralReference: string,
-    public readonly communityZoneId: Id,
+    public communityZoneId: Id,
     public waterDepositIds: Id[],
     public notes?: string
   ) {}

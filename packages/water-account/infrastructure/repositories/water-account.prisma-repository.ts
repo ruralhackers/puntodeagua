@@ -62,4 +62,3 @@ export class WaterAccountPrismaRepository
     throw new Error('Not implemented')
   }
 }
-

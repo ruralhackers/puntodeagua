@@ -44,7 +44,7 @@ export default function ManagementPage() {
                     Cambio de Titular
                   </CardTitle>
                   <CardDescription className="text-green-600 dark:text-green-400 text-xs mt-1">
-                    Cambiar propietario de punto de agua
+                    Cambiar propietario
                   </CardDescription>
                 </div>
               </div>
@@ -52,21 +52,23 @@ export default function ManagementPage() {
           </Card>
         </Link>
 
-        <Card className="h-32 bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 dark:from-gray-800 dark:to-gray-900 dark:border-gray-700 opacity-60 relative">
-          <CardContent className="flex items-center justify-center h-full p-6">
-            <div className="flex flex-col items-center gap-3 text-center">
-              <Home className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-              <div>
-                <CardTitle className="text-gray-500 dark:text-gray-400 text-sm font-semibold">
-                  Cambio de Datos
-                </CardTitle>
-                <CardDescription className="text-gray-400 dark:text-gray-500 text-xs mt-1">
-                  Próximamente
-                </CardDescription>
+        <Link href="/management/water-point-data" className="group">
+          <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:border-purple-300 dark:from-purple-950 dark:to-purple-900 dark:border-purple-800">
+            <CardContent className="flex items-center justify-center h-full p-6">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <Home className="h-8 w-8 text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                <div>
+                  <CardTitle className="text-purple-800 dark:text-purple-200 text-sm font-semibold">
+                    Cambiar Datos de Casa
+                  </CardTitle>
+                  <CardDescription className="text-purple-600 dark:text-purple-400 text-xs mt-1">
+                    Editar información
+                  </CardDescription>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </main>
   )

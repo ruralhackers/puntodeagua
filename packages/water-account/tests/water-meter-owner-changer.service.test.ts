@@ -307,11 +307,10 @@ describe('WaterMeterOwnerChanger', () => {
       // Assert
       expect(result).toBeDefined()
       expect(result.newWaterAccountId).not.toBe(oldOwnerId.toString())
-      
+
       const savedAccount = (mockWaterAccountRepository.save as any).mock.calls[0][0] as WaterAccount
       expect(savedAccount.name).toBe(newAccountData.name)
       expect(savedAccount.notes).toBe(newAccountData.notes)
     })
   })
 })
-

@@ -1,109 +1,1428 @@
 {
   "community": {
-    "name": "Example Community",
+    "name": "Comunidad de Prueba",
     "waterLimitRule": {
       "type": "PERSON_BASED",
-      "value": 150
+      "value": 180
     }
   },
   "deposits": [
     {
-      "name": "Main Deposit",
-      "location": "North sector, near the reservoir",
-      "notes": "Primary water storage facility"
+      "name": "Depósito de Prueba",
+      "location": "Ubicación de Prueba",
+      "notes": "Depósito de prueba para testing"
     }
   ],
   "zones": [
     {
-      "name": "Zone A",
-      "notes": "Northern residential area"
+      "name": "Zona A",
+      "notes": "Zona de prueba A"
     },
     {
-      "name": "Zone B",
-      "notes": "Southern residential area"
+      "name": "Zona B",
+      "notes": "Zona de prueba B"
     }
   ],
   "users": [
     {
-      "email": "admin@example.com",
-      "name": "Community Administrator",
-      "password": "change-me-123",
+      "email": "test1@test.com",
+      "name": "Usuario de Prueba 1",
+      "password": "admin123",
+      "roles": ["ADMIN"]
+    },
+    {
+      "email": "test2@test.com",
+      "name": "Usuario de Prueba 2",
+      "password": "test2",
+      "roles": ["COMMUNITY_ADMIN"]
+    },
+    {
+      "email": "test3@test.com",
+      "name": "Usuario de Prueba 3",
+      "password": "test3",
+      "roles": ["MANAGER"]
+    },
+    {
+      "email": "test4@test.com",
+      "name": "Usuario de Prueba 4",
+      "password": "test4",
+      "roles": ["COMMUNITY_ADMIN"]
+    },
+    {
+      "email": "test5@test.com",
+      "name": "Usuario de Prueba 5",
+      "password": "test5",
+      "roles": ["MANAGER"]
+    },
+    {
+      "email": "test6@test.com",
+      "name": "Usuario de Prueba 6",
+      "password": "test6",
+      "roles": ["COMMUNITY_ADMIN"]
+    },
+    {
+      "email": "test7@test.com",
+      "name": "Usuario de Prueba 7",
+      "password": "test7",
+      "roles": ["MANAGER"]
+    },
+    {
+      "email": "test8@test.com",
+      "name": "Usuario de Prueba 8",
+      "password": "test8",
+      "roles": ["COMMUNITY_ADMIN"]
+    },
+    {
+      "email": "test9@test.com",
+      "name": "Usuario de Prueba 9",
+      "password": "test9",
+      "roles": ["MANAGER"]
+    },
+    {
+      "email": "test10@test.com",
+      "name": "Usuario de Prueba 10",
+      "password": "test10",
       "roles": ["COMMUNITY_ADMIN"]
     }
   ],
   "waterAccounts": [
+    { "tempId": "WA001", "name": "MARIA GARCIA LOPEZ", "nationalId": "TEST001A", "notes": "" },
+    { "tempId": "WA002", "name": "JUAN PEREZ MARTINEZ", "nationalId": "TEST002B", "notes": "" },
     {
-      "tempId": "WA001",
-      "name": "John Doe",
-      "nationalId": "12345678A",
+      "tempId": "WA003",
+      "name": "CARMEN RODRIGUEZ SANCHEZ",
+      "nationalId": "TEST003C",
       "notes": ""
     },
     {
-      "tempId": "WA002",
-      "name": "Jane Smith",
-      "nationalId": "87654321B",
+      "tempId": "WA004",
+      "name": "FRANCISCO FERNANDEZ TORRES",
+      "nationalId": "TEST004D",
       "notes": ""
-    }
+    },
+    { "tempId": "WA005", "name": "ANA LOPEZ GONZALEZ", "nationalId": "TEST005E", "notes": "" },
+    { "tempId": "WA006", "name": "JOSE MARTINEZ RUIZ", "nationalId": "TEST006F", "notes": "" },
+    { "tempId": "WA007", "name": "LAURA SANCHEZ DIAZ", "nationalId": "TEST007G", "notes": "" },
+    { "tempId": "WA008", "name": "MIGUEL TORRES MORENO", "nationalId": "TEST008H", "notes": "" },
+    {
+      "tempId": "WA009",
+      "name": "PATRICIA GONZALEZ ALVAREZ",
+      "nationalId": "TEST009I",
+      "notes": ""
+    },
+    { "tempId": "WA010", "name": "CARLOS RUIZ JIMENEZ", "nationalId": "TEST010J", "notes": "" },
+    { "tempId": "WA011", "name": "ISABEL DIAZ NAVARRO", "nationalId": "TEST011K", "notes": "" },
+    { "tempId": "WA012", "name": "ANTONIO MORENO CASTRO", "nationalId": "TEST012L", "notes": "" },
+    { "tempId": "WA013", "name": "ELENA ALVAREZ ORTEGA", "nationalId": "TEST013M", "notes": "" },
+    { "tempId": "WA014", "name": "LUIS JIMENEZ DELGADO", "nationalId": "TEST014N", "notes": "" },
+    { "tempId": "WA015", "name": "MONICA NAVARRO RAMIREZ", "nationalId": "TEST015O", "notes": "" },
+    { "tempId": "WA016", "name": "MANUEL CASTRO VEGA", "nationalId": "TEST016P", "notes": "" },
+    { "tempId": "WA017", "name": "SONIA ORTEGA MEDINA", "nationalId": "TEST017Q", "notes": "" },
+    { "tempId": "WA018", "name": "PABLO DELGADO SERRANO", "nationalId": "TEST018R", "notes": "" },
+    { "tempId": "WA019", "name": "ROSA RAMIREZ PAREDES", "nationalId": "TEST019S", "notes": "" },
+    { "tempId": "WA020", "name": "RAFAEL VEGA CAMACHO", "nationalId": "TEST020T", "notes": "" },
+    { "tempId": "WA021", "name": "CRISTINA MEDINA ROMERO", "nationalId": "TEST021U", "notes": "" },
+    { "tempId": "WA022", "name": "JAVIER SERRANO LARA", "nationalId": "TEST022V", "notes": "" },
+    { "tempId": "WA023", "name": "ANGELA PAREDES GIL", "nationalId": "TEST023W", "notes": "" },
+    { "tempId": "WA024", "name": "FERNANDO CAMACHO MOLINA", "nationalId": "TEST024X", "notes": "" },
+    { "tempId": "WA025", "name": "MARTA ROMERO HERMOSO", "nationalId": "TEST025Y", "notes": "" },
+    { "tempId": "WA026", "name": "ALBERTO LARA MARTIN", "nationalId": "TEST026Z", "notes": "" },
+    { "tempId": "WA027", "name": "SANDRA GIL RUBIO", "nationalId": "TEST0271", "notes": "" },
+    { "tempId": "WA028", "name": "DIEGO MOLINA BENITEZ", "nationalId": "TEST0282", "notes": "" },
+    { "tempId": "WA029", "name": "BEATRIZ HERMOSO CAMPOS", "nationalId": "TEST0293", "notes": "" },
+    { "tempId": "WA030", "name": "SERGIO MARTIN LEON", "nationalId": "TEST0304", "notes": "" },
+    { "tempId": "WA031", "name": "MIRIAM RUBIO MONTERO", "nationalId": "TEST0315", "notes": "" },
+    { "tempId": "WA032", "name": "VICTOR BENITEZ SANTOS", "nationalId": "TEST0326", "notes": "" },
+    { "tempId": "WA033", "name": "NURIA CAMPOS IBANEZ", "nationalId": "TEST0337", "notes": "" },
+    { "tempId": "WA034", "name": "RICARDO LEON GOMEZ", "nationalId": "TEST0348", "notes": "" },
+    { "tempId": "WA035", "name": "ANDREA MONTERO MARQUEZ", "nationalId": "TEST0359", "notes": "" },
+    { "tempId": "WA036", "name": "JORGE SANTOS PEÑA", "nationalId": "TEST0360", "notes": "" },
+    { "tempId": "WA037", "name": "SILVIA IBANEZ CANO", "nationalId": "TEST0371", "notes": "" },
+    { "tempId": "WA038", "name": "RAMON GOMEZ MENDEZ", "nationalId": "TEST0382", "notes": "" },
+    { "tempId": "WA039", "name": "CLARA MARQUEZ CABRERA", "nationalId": "TEST0393", "notes": "" },
+    { "tempId": "WA040", "name": "ADRIAN PEÑA GUERRERO", "nationalId": "TEST0404", "notes": "" },
+    { "tempId": "WA041", "name": "ROCIO CANO MUNOZ", "nationalId": "TEST0415", "notes": "" },
+    { "tempId": "WA042", "name": "ALICIA MENDEZ VICENTE", "nationalId": "TEST0426", "notes": "" },
+    { "tempId": "WA043", "name": "GONZALO CABRERA AGUILAR", "nationalId": "TEST0437", "notes": "" },
+    { "tempId": "WA044", "name": "PAULA GUERRERO VARGAS", "nationalId": "TEST0448", "notes": "" },
+    { "tempId": "WA045", "name": "HUGO MUNOZ VALLE", "nationalId": "TEST0459", "notes": "" },
+    { "tempId": "WA046", "name": "INES VICENTE CARRILLO", "nationalId": "TEST0460", "notes": "" },
+    { "tempId": "WA047", "name": "RAUL AGUILAR PINO", "nationalId": "TEST0471", "notes": "" },
+    { "tempId": "WA048", "name": "MARTA VARGAS DOMINGUEZ", "nationalId": "TEST0482", "notes": "" },
+    { "tempId": "WA049", "name": "OSCAR VALLE HERRERO", "nationalId": "TEST0493", "notes": "" },
+    { "tempId": "WA050", "name": "EVA CARRILLO ROJAS", "nationalId": "TEST0504", "notes": "" },
+    { "tempId": "WA051", "name": "NATALIA PINO CALVO", "nationalId": "TEST0515", "notes": "" },
+    { "tempId": "WA052", "name": "HECTOR DOMINGUEZ PRIETO", "nationalId": "TEST0526", "notes": "" },
+    { "tempId": "WA053", "name": "DIANA HERRERO GARRIDO", "nationalId": "TEST0537", "notes": "" },
+    { "tempId": "WA054", "name": "IVAN ROJAS CASTILLO", "nationalId": "TEST0548", "notes": "" },
+    { "tempId": "WA055", "name": "LUCIA CALVO CORTES", "nationalId": "TEST0559", "notes": "" },
+    { "tempId": "WA056", "name": "ALVARO PRIETO GARRIDO", "nationalId": "TEST0560", "notes": "" },
+    { "tempId": "WA057", "name": "NOELIA GARRIDO LOZANO", "nationalId": "TEST0571", "notes": "" },
+    { "tempId": "WA058", "name": "MARIO CASTILLO CALDERON", "nationalId": "TEST0582", "notes": "" },
+    { "tempId": "WA059", "name": "ANA BELEN CORTES ARIAS", "nationalId": "TEST0593", "notes": "" },
+    { "tempId": "WA060", "name": "DANIEL GARRIDO REYES", "nationalId": "TEST0604", "notes": "" }
   ],
   "waterPoints": [
     {
       "tempId": "WP001",
-      "name": "Main Street 10",
-      "location": "Main Street 10",
-      "zone": "Zone A",
-      "cadastralReference": "EXAMPLE001",
-      "fixedPopulation": 4,
+      "name": "Calle Principal 1",
+      "location": "Calle Principal 1",
+      "zone": "Zona A",
+      "cadastralReference": "TEST001REF",
+      "fixedPopulation": 2,
       "floatingPopulation": 0,
       "notes": ""
     },
     {
       "tempId": "WP002",
-      "name": "Oak Avenue 25",
-      "location": "Oak Avenue 25",
-      "zone": "Zone B",
-      "cadastralReference": "EXAMPLE002",
+      "name": "Calle Principal 3",
+      "location": "Calle Principal 3",
+      "zone": "Zona A",
+      "cadastralReference": "TEST002REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP003",
+      "name": "Calle Principal 5",
+      "location": "Calle Principal 5",
+      "zone": "Zona A",
+      "cadastralReference": "TEST003REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP004",
+      "name": "Calle Principal 7",
+      "location": "Calle Principal 7",
+      "zone": "Zona A",
+      "cadastralReference": "TEST004REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP005",
+      "name": "Calle Principal 9",
+      "location": "Calle Principal 9",
+      "zone": "Zona A",
+      "cadastralReference": "TEST005REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP006",
+      "name": "Calle Secundaria 2",
+      "location": "Calle Secundaria 2",
+      "zone": "Zona A",
+      "cadastralReference": "TEST006REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP007",
+      "name": "Calle Secundaria 4",
+      "location": "Calle Secundaria 4",
+      "zone": "Zona A",
+      "cadastralReference": "TEST007REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 3,
+      "notes": ""
+    },
+    {
+      "tempId": "WP008",
+      "name": "Calle Secundaria 6",
+      "location": "Calle Secundaria 6",
+      "zone": "Zona A",
+      "cadastralReference": "TEST008REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP009",
+      "name": "Calle Secundaria 8",
+      "location": "Calle Secundaria 8",
+      "zone": "Zona A",
+      "cadastralReference": "TEST009REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP010",
+      "name": "Calle Secundaria 10",
+      "location": "Calle Secundaria 10",
+      "zone": "Zona A",
+      "cadastralReference": "TEST010REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP011",
+      "name": "Avenida Central 1",
+      "location": "Avenida Central 1",
+      "zone": "Zona A",
+      "cadastralReference": "TEST011REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP012",
+      "name": "Avenida Central 3",
+      "location": "Avenida Central 3",
+      "zone": "Zona A",
+      "cadastralReference": "TEST012REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 4,
+      "notes": ""
+    },
+    {
+      "tempId": "WP013",
+      "name": "Avenida Central 5",
+      "location": "Avenida Central 5",
+      "zone": "Zona A",
+      "cadastralReference": "TEST013REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP014",
+      "name": "Avenida Central 7",
+      "location": "Avenida Central 7",
+      "zone": "Zona A",
+      "cadastralReference": "TEST014REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP015",
+      "name": "Avenida Central 9",
+      "location": "Avenida Central 9",
+      "zone": "Zona A",
+      "cadastralReference": "TEST015REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP016",
+      "name": "Plaza Mayor 1",
+      "location": "Plaza Mayor 1",
+      "zone": "Zona A",
+      "cadastralReference": "TEST016REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP017",
+      "name": "Plaza Mayor 3",
+      "location": "Plaza Mayor 3",
+      "zone": "Zona A",
+      "cadastralReference": "TEST017REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP018",
+      "name": "Plaza Mayor 5",
+      "location": "Plaza Mayor 5",
+      "zone": "Zona A",
+      "cadastralReference": "TEST018REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP019",
+      "name": "Plaza Mayor 7",
+      "location": "Plaza Mayor 7",
+      "zone": "Zona A",
+      "cadastralReference": "TEST019REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP020",
+      "name": "Plaza Mayor 9",
+      "location": "Plaza Mayor 9",
+      "zone": "Zona A",
+      "cadastralReference": "TEST020REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP021",
+      "name": "Calle Norte 2",
+      "location": "Calle Norte 2",
+      "zone": "Zona A",
+      "cadastralReference": "TEST021REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 3,
+      "notes": ""
+    },
+    {
+      "tempId": "WP022",
+      "name": "Calle Norte 4",
+      "location": "Calle Norte 4",
+      "zone": "Zona A",
+      "cadastralReference": "TEST022REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP023",
+      "name": "Calle Norte 6",
+      "location": "Calle Norte 6",
+      "zone": "Zona A",
+      "cadastralReference": "TEST023REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP024",
+      "name": "Calle Norte 8",
+      "location": "Calle Norte 8",
+      "zone": "Zona A",
+      "cadastralReference": "TEST024REF",
       "fixedPopulation": 3,
       "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP025",
+      "name": "Calle Norte 10",
+      "location": "Calle Norte 10",
+      "zone": "Zona A",
+      "cadastralReference": "TEST025REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP026",
+      "name": "Calle Sur 1",
+      "location": "Calle Sur 1",
+      "zone": "Zona B",
+      "cadastralReference": "TEST026REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP027",
+      "name": "Calle Sur 3",
+      "location": "Calle Sur 3",
+      "zone": "Zona B",
+      "cadastralReference": "TEST027REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP028",
+      "name": "Calle Sur 5",
+      "location": "Calle Sur 5",
+      "zone": "Zona B",
+      "cadastralReference": "TEST028REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP029",
+      "name": "Calle Sur 7",
+      "location": "Calle Sur 7",
+      "zone": "Zona B",
+      "cadastralReference": "TEST029REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP030",
+      "name": "Calle Sur 9",
+      "location": "Calle Sur 9",
+      "zone": "Zona B",
+      "cadastralReference": "TEST030REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP031",
+      "name": "Calle Este 2",
+      "location": "Calle Este 2",
+      "zone": "Zona B",
+      "cadastralReference": "TEST031REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 4,
+      "notes": ""
+    },
+    {
+      "tempId": "WP032",
+      "name": "Calle Este 4",
+      "location": "Calle Este 4",
+      "zone": "Zona B",
+      "cadastralReference": "TEST032REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP033",
+      "name": "Calle Este 6",
+      "location": "Calle Este 6",
+      "zone": "Zona B",
+      "cadastralReference": "TEST033REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 3,
+      "notes": ""
+    },
+    {
+      "tempId": "WP034",
+      "name": "Calle Este 8",
+      "location": "Calle Este 8",
+      "zone": "Zona B",
+      "cadastralReference": "TEST034REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP035",
+      "name": "Calle Este 10",
+      "location": "Calle Este 10",
+      "zone": "Zona B",
+      "cadastralReference": "TEST035REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP036",
+      "name": "Calle Oeste 1",
+      "location": "Calle Oeste 1",
+      "zone": "Zona B",
+      "cadastralReference": "TEST036REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP037",
+      "name": "Calle Oeste 3",
+      "location": "Calle Oeste 3",
+      "zone": "Zona B",
+      "cadastralReference": "TEST037REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP038",
+      "name": "Calle Oeste 5",
+      "location": "Calle Oeste 5",
+      "zone": "Zona B",
+      "cadastralReference": "TEST038REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP039",
+      "name": "Calle Oeste 7",
+      "location": "Calle Oeste 7",
+      "zone": "Zona B",
+      "cadastralReference": "TEST039REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP040",
+      "name": "Calle Oeste 9",
+      "location": "Calle Oeste 9",
+      "zone": "Zona B",
+      "cadastralReference": "TEST040REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP041",
+      "name": "Calle Nueva 2",
+      "location": "Calle Nueva 2",
+      "zone": "Zona B",
+      "cadastralReference": "TEST041REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 3,
+      "notes": ""
+    },
+    {
+      "tempId": "WP042",
+      "name": "Calle Nueva 4",
+      "location": "Calle Nueva 4",
+      "zone": "Zona B",
+      "cadastralReference": "TEST042REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP043",
+      "name": "Calle Nueva 6",
+      "location": "Calle Nueva 6",
+      "zone": "Zona B",
+      "cadastralReference": "TEST043REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP044",
+      "name": "Calle Nueva 8",
+      "location": "Calle Nueva 8",
+      "zone": "Zona B",
+      "cadastralReference": "TEST044REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP045",
+      "name": "Calle Nueva 10",
+      "location": "Calle Nueva 10",
+      "zone": "Zona B",
+      "cadastralReference": "TEST045REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP046",
+      "name": "Calle Vieja 1",
+      "location": "Calle Vieja 1",
+      "zone": "Zona B",
+      "cadastralReference": "TEST046REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP047",
+      "name": "Calle Vieja 3",
+      "location": "Calle Vieja 3",
+      "zone": "Zona B",
+      "cadastralReference": "TEST047REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP048",
+      "name": "Calle Vieja 5",
+      "location": "Calle Vieja 5",
+      "zone": "Zona B",
+      "cadastralReference": "TEST048REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 4,
+      "notes": ""
+    },
+    {
+      "tempId": "WP049",
+      "name": "Calle Vieja 7",
+      "location": "Calle Vieja 7",
+      "zone": "Zona B",
+      "cadastralReference": "TEST049REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP050",
+      "name": "Calle Vieja 9",
+      "location": "Calle Vieja 9",
+      "zone": "Zona B",
+      "cadastralReference": "TEST050REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP051",
+      "name": "Avenida del Sol 2",
+      "location": "Avenida del Sol 2",
+      "zone": "Zona B",
+      "cadastralReference": "TEST051REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP052",
+      "name": "Avenida del Sol 4",
+      "location": "Avenida del Sol 4",
+      "zone": "Zona B",
+      "cadastralReference": "TEST052REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP053",
+      "name": "Avenida del Sol 6",
+      "location": "Avenida del Sol 6",
+      "zone": "Zona B",
+      "cadastralReference": "TEST053REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 3,
+      "notes": ""
+    },
+    {
+      "tempId": "WP054",
+      "name": "Avenida del Sol 8",
+      "location": "Avenida del Sol 8",
+      "zone": "Zona B",
+      "cadastralReference": "TEST054REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP055",
+      "name": "Avenida del Sol 10",
+      "location": "Avenida del Sol 10",
+      "zone": "Zona B",
+      "cadastralReference": "TEST055REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP056",
+      "name": "Calle de la Paz 1",
+      "location": "Calle de la Paz 1",
+      "zone": "Zona B",
+      "cadastralReference": "TEST056REF",
+      "fixedPopulation": 1,
+      "floatingPopulation": 1,
+      "notes": ""
+    },
+    {
+      "tempId": "WP057",
+      "name": "Calle de la Paz 3",
+      "location": "Calle de la Paz 3",
+      "zone": "Zona B",
+      "cadastralReference": "TEST057REF",
+      "fixedPopulation": 4,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP058",
+      "name": "Calle de la Paz 5",
+      "location": "Calle de la Paz 5",
+      "zone": "Zona B",
+      "cadastralReference": "TEST058REF",
+      "fixedPopulation": 0,
+      "floatingPopulation": 2,
+      "notes": ""
+    },
+    {
+      "tempId": "WP059",
+      "name": "Calle de la Paz 7",
+      "location": "Calle de la Paz 7",
+      "zone": "Zona B",
+      "cadastralReference": "TEST059REF",
+      "fixedPopulation": 3,
+      "floatingPopulation": 0,
+      "notes": ""
+    },
+    {
+      "tempId": "WP060",
+      "name": "Calle de la Paz 9",
+      "location": "Calle de la Paz 9",
+      "zone": "Zona B",
+      "cadastralReference": "TEST060REF",
+      "fixedPopulation": 2,
+      "floatingPopulation": 1,
       "notes": ""
     }
   ],
   "waterMeters": [
     {
-      "name": "Meter Main Street 10",
+      "name": "Contador Calle Principal 1",
       "waterAccountId": "WA001",
       "waterPointId": "WP001",
       "measurementUnit": "M3",
       "isActive": true,
       "readings": [
-        {
-          "reading": 100,
-          "readingDate": "2024-01-15",
-          "notes": "Initial reading"
-        },
-        {
-          "reading": 125,
-          "readingDate": "2024-02-15",
-          "notes": "Monthly reading"
-        }
+        { "reading": 1000, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1250, "readingDate": "2024-06-01", "notes": "Lectura actual" }
       ]
     },
     {
-      "name": "Meter Oak Avenue 25",
+      "name": "Contador Calle Principal 3",
       "waterAccountId": "WA002",
       "waterPointId": "WP002",
       "measurementUnit": "M3",
       "isActive": true,
       "readings": [
-        {
-          "reading": 50.5,
-          "readingDate": "2024-01-15",
-          "notes": "Initial reading"
-        },
-        {
-          "reading": 68.3,
-          "readingDate": "2024-02-15",
-          "notes": "Monthly reading"
-        }
+        { "reading": 500, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 750, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Principal 5",
+      "waterAccountId": "WA003",
+      "waterPointId": "WP003",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2000, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2200, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Principal 7",
+      "waterAccountId": "WA004",
+      "waterPointId": "WP004",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 850, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1100, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Principal 9",
+      "waterAccountId": "WA005",
+      "waterPointId": "WP005",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 3200, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3450, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Secundaria 2",
+      "waterAccountId": "WA006",
+      "waterPointId": "WP006",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1500, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1750, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Secundaria 4",
+      "waterAccountId": "WA007",
+      "waterPointId": "WP007",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 600, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 900, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Secundaria 6",
+      "waterAccountId": "WA008",
+      "waterPointId": "WP008",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2800, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3000, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Secundaria 8",
+      "waterAccountId": "WA009",
+      "waterPointId": "WP009",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 950, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1200, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Secundaria 10",
+      "waterAccountId": "WA010",
+      "waterPointId": "WP010",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1700, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2100, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida Central 1",
+      "waterAccountId": "WA011",
+      "waterPointId": "WP011",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4100, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4400, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida Central 3",
+      "waterAccountId": "WA012",
+      "waterPointId": "WP012",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1100, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1800, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida Central 5",
+      "waterAccountId": "WA013",
+      "waterPointId": "WP013",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 650, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 850, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida Central 7",
+      "waterAccountId": "WA014",
+      "waterPointId": "WP014",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2400, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2700, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida Central 9",
+      "waterAccountId": "WA015",
+      "waterPointId": "WP015",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1350, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1600, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Plaza Mayor 1",
+      "waterAccountId": "WA016",
+      "waterPointId": "WP016",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 900, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1150, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Plaza Mayor 3",
+      "waterAccountId": "WA017",
+      "waterPointId": "WP017",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 3800, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4050, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Plaza Mayor 5",
+      "waterAccountId": "WA018",
+      "waterPointId": "WP018",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 700, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 950, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Plaza Mayor 7",
+      "waterAccountId": "WA019",
+      "waterPointId": "WP019",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2600, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2900, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Plaza Mayor 9",
+      "waterAccountId": "WA020",
+      "waterPointId": "WP020",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1450, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1700, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Norte 2",
+      "waterAccountId": "WA021",
+      "waterPointId": "WP021",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1050, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1600, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Norte 4",
+      "waterAccountId": "WA022",
+      "waterPointId": "WP022",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4200, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4500, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Norte 6",
+      "waterAccountId": "WA023",
+      "waterPointId": "WP023",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 550, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 700, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Norte 8",
+      "waterAccountId": "WA024",
+      "waterPointId": "WP024",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2750, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3150, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Norte 10",
+      "waterAccountId": "WA025",
+      "waterPointId": "WP025",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1550, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1800, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Sur 1",
+      "waterAccountId": "WA026",
+      "waterPointId": "WP026",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 920, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1170, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Sur 3",
+      "waterAccountId": "WA027",
+      "waterPointId": "WP027",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 3900, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4150, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Sur 5",
+      "waterAccountId": "WA028",
+      "waterPointId": "WP028",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 680, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 920, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Sur 7",
+      "waterAccountId": "WA029",
+      "waterPointId": "WP029",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2650, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2950, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Sur 9",
+      "waterAccountId": "WA030",
+      "waterPointId": "WP030",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1480, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1730, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Este 2",
+      "waterAccountId": "WA031",
+      "waterPointId": "WP031",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1120, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2100, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Este 4",
+      "waterAccountId": "WA032",
+      "waterPointId": "WP032",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4300, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4600, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Este 6",
+      "waterAccountId": "WA033",
+      "waterPointId": "WP033",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 720, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1080, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Este 8",
+      "waterAccountId": "WA034",
+      "waterPointId": "WP034",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2850, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3250, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Este 10",
+      "waterAccountId": "WA035",
+      "waterPointId": "WP035",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1650, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 2100, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Oeste 1",
+      "waterAccountId": "WA036",
+      "waterPointId": "WP036",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 980, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1230, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Oeste 3",
+      "waterAccountId": "WA037",
+      "waterPointId": "WP037",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4000, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4250, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Oeste 5",
+      "waterAccountId": "WA038",
+      "waterPointId": "WP038",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 620, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 860, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Oeste 7",
+      "waterAccountId": "WA039",
+      "waterPointId": "WP039",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2700, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3000, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Oeste 9",
+      "waterAccountId": "WA040",
+      "waterPointId": "WP040",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1520, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1770, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Nueva 2",
+      "waterAccountId": "WA041",
+      "waterPointId": "WP041",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1080, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1800, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Nueva 4",
+      "waterAccountId": "WA042",
+      "waterPointId": "WP042",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4100, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4400, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Nueva 6",
+      "waterAccountId": "WA043",
+      "waterPointId": "WP043",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 580, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 730, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Nueva 8",
+      "waterAccountId": "WA044",
+      "waterPointId": "WP044",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2900, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3300, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Nueva 10",
+      "waterAccountId": "WA045",
+      "waterPointId": "WP045",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1580, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1830, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Vieja 1",
+      "waterAccountId": "WA046",
+      "waterPointId": "WP046",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1020, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1270, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Vieja 3",
+      "waterAccountId": "WA047",
+      "waterPointId": "WP047",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4200, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4500, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Vieja 5",
+      "waterAccountId": "WA048",
+      "waterPointId": "WP048",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1150, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1950, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Vieja 7",
+      "waterAccountId": "WA049",
+      "waterPointId": "WP049",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 2950, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3250, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle Vieja 9",
+      "waterAccountId": "WA050",
+      "waterPointId": "WP050",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1620, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1870, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida del Sol 2",
+      "waterAccountId": "WA051",
+      "waterPointId": "WP051",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1180, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1580, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida del Sol 4",
+      "waterAccountId": "WA052",
+      "waterPointId": "WP052",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4400, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4700, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida del Sol 6",
+      "waterAccountId": "WA053",
+      "waterPointId": "WP053",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 800, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1160, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida del Sol 8",
+      "waterAccountId": "WA054",
+      "waterPointId": "WP054",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 3050, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3450, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Avenida del Sol 10",
+      "waterAccountId": "WA055",
+      "waterPointId": "WP055",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1680, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1930, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle de la Paz 1",
+      "waterAccountId": "WA056",
+      "waterPointId": "WP056",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1100, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1350, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle de la Paz 3",
+      "waterAccountId": "WA057",
+      "waterPointId": "WP057",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 4500, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 4800, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle de la Paz 5",
+      "waterAccountId": "WA058",
+      "waterPointId": "WP058",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 750, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1050, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle de la Paz 7",
+      "waterAccountId": "WA059",
+      "waterPointId": "WP059",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 3100, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 3400, "readingDate": "2024-06-01", "notes": "Lectura actual" }
+      ]
+    },
+    {
+      "name": "Contador Calle de la Paz 9",
+      "waterAccountId": "WA060",
+      "waterPointId": "WP060",
+      "measurementUnit": "M3",
+      "isActive": true,
+      "readings": [
+        { "reading": 1720, "readingDate": "2024-01-01", "notes": "Lectura inicial" },
+        { "reading": 1970, "readingDate": "2024-06-01", "notes": "Lectura actual" }
       ]
     }
   ]

@@ -7,13 +7,16 @@ import {
   MAX_FILE_SIZE,
   VALID_IMAGE_TYPES
 } from '@pda/storage'
+import { WaterMeterImage } from '../domain/entities/water-meter-image'
 import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-image'
+import type { WaterMeterImageRepository } from '../domain/repositories/water-meter-image.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
 
 export class FileUploaderService {
   constructor(
     private readonly fileStorageRepository: FileStorageRepository,
-    private readonly waterMeterReadingImageRepository: WaterMeterReadingImageRepository
+    private readonly waterMeterReadingImageRepository: WaterMeterReadingImageRepository,
+    private readonly waterMeterImageRepository: WaterMeterImageRepository
   ) {}
 
   async uploadWaterMeterReadingImage(params: {
@@ -47,6 +50,40 @@ export class FileUploaderService {
 
     // Save to database
     await this.waterMeterReadingImageRepository.save(image)
+
+    return uploadResult.url
+  }
+
+  async uploadWaterMeterImage(params: {
+    file: Buffer
+    waterMeterId: Id
+    metadata: FileMetadata
+  }): Promise<string> {
+    const { file, waterMeterId, metadata } = params
+
+    // Validate file
+    this.validateFile(metadata)
+
+    // Upload to storage
+    const uploadResult = await this.fileStorageRepository.upload(
+      file,
+      metadata,
+      waterMeterId.toString(),
+      'water-meters'
+    )
+
+    // Create WaterMeterImage entity
+    const image = WaterMeterImage.create({
+      waterMeterId: waterMeterId.toString(),
+      url: uploadResult.url,
+      fileName: uploadResult.metadata.fileName,
+      fileSize: uploadResult.metadata.fileSize,
+      mimeType: uploadResult.metadata.mimeType,
+      externalKey: uploadResult.externalKey
+    })
+
+    // Save to database
+    await this.waterMeterImageRepository.save(image)
 
     return uploadResult.url
   }

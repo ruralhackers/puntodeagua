@@ -113,7 +113,8 @@ export class WaterMeterPrismaRepository
             id: true,
             name: true
           }
-        }
+        },
+        waterMeterImage: true
       }
     })
     if (!meter) return undefined
@@ -137,7 +138,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes
-      }
+      },
+      waterMeterImage: meter.waterMeterImage || null
     }
   }
 
@@ -209,7 +211,8 @@ export class WaterMeterPrismaRepository
             id: true,
             name: true
           }
-        }
+        },
+        waterMeterImage: true
       }
     })
     // biome-ignore lint/suspicious/noExplicitAny: Prisma return type is complex
@@ -232,7 +235,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes
-      }
+      },
+      waterMeterImage: meter.waterMeterImage || null
     }))
   }
 
@@ -299,7 +303,8 @@ export class WaterMeterPrismaRepository
             id: true,
             name: true
           }
-        }
+        },
+        waterMeterImage: true
       },
       orderBy: {
         lastReadingDate: 'asc'
@@ -327,7 +332,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes
-      }
+      },
+      waterMeterImage: meter.waterMeterImage || null
     }))
   }
 }

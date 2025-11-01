@@ -4,6 +4,7 @@ import { R2FileStorageRepository } from '@pda/storage'
 import { FileDeleterService } from '../../application/file-deleter.service'
 import { FileUploaderService } from '../../application/file-uploader.service'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
+import { WaterMeterImageUpdaterService } from '../../application/water-meter-image-updater.service'
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
 import { WaterMeterOwnerChanger } from '../../application/water-meter-owner-changer.service'
 import { WaterMeterReadingCreator } from '../../application/water-meter-reading-creator.service'
@@ -11,6 +12,7 @@ import { WaterMeterReadingUpdater } from '../../application/water-meter-reading-
 import { WaterMeterReplacer } from '../../application/water-meter-replacer.service'
 import { WaterAccountPrismaRepository } from '../repositories/water-account.prisma-repository'
 import { WaterMeterPrismaRepository } from '../repositories/water-meter.prisma-repository'
+import { WaterMeterImagePrismaRepository } from '../repositories/water-meter-image.prisma-repository'
 import { WaterMeterReadingPrismaRepository } from '../repositories/water-meter-reading.prisma-repository'
 import { WaterMeterReadingImagePrismaRepository } from '../repositories/water-meter-reading-image.prisma-repository'
 
@@ -18,6 +20,7 @@ export class WaterAccountFactory {
   private static waterMeterPrismaRepositoryInstance: WaterMeterPrismaRepository
   private static waterMeterReadingPrismaRepositoryInstance: WaterMeterReadingPrismaRepository
   private static waterMeterReadingImagePrismaRepositoryInstance: WaterMeterReadingImagePrismaRepository
+  private static waterMeterImagePrismaRepositoryInstance: WaterMeterImagePrismaRepository
   private static waterAccountPrismaRepositoryInstance: WaterAccountPrismaRepository
   private static r2FileStorageRepositoryInstance: R2FileStorageRepository
 
@@ -45,14 +48,16 @@ export class WaterAccountFactory {
   static fileUploaderService() {
     return new FileUploaderService(
       WaterAccountFactory.r2FileStorageRepository(),
-      WaterAccountFactory.waterMeterReadingImagePrismaRepository()
+      WaterAccountFactory.waterMeterReadingImagePrismaRepository(),
+      WaterAccountFactory.waterMeterImagePrismaRepository()
     )
   }
 
   static fileDeleterService() {
     return new FileDeleterService(
       WaterAccountFactory.r2FileStorageRepository(),
-      WaterAccountFactory.waterMeterReadingImagePrismaRepository()
+      WaterAccountFactory.waterMeterReadingImagePrismaRepository(),
+      WaterAccountFactory.waterMeterImagePrismaRepository()
     )
   }
 
@@ -75,7 +80,8 @@ export class WaterAccountFactory {
   static waterMeterReplacerService() {
     return new WaterMeterReplacer(
       WaterAccountFactory.waterMeterPrismaRepository(),
-      WaterAccountFactory.waterMeterReadingCreatorService()
+      WaterAccountFactory.waterMeterReadingCreatorService(),
+      WaterAccountFactory.fileUploaderService()
     )
   }
 
@@ -83,6 +89,15 @@ export class WaterAccountFactory {
     return new WaterMeterOwnerChanger(
       WaterAccountFactory.waterMeterPrismaRepository(),
       WaterAccountFactory.waterAccountPrismaRepository()
+    )
+  }
+
+  static waterMeterImageUpdaterService() {
+    return new WaterMeterImageUpdaterService(
+      WaterAccountFactory.waterMeterPrismaRepository(),
+      WaterAccountFactory.waterMeterImagePrismaRepository(),
+      WaterAccountFactory.fileUploaderService(),
+      WaterAccountFactory.fileDeleterService()
     )
   }
 
@@ -132,5 +147,13 @@ export class WaterAccountFactory {
       )
     }
     return WaterAccountFactory.waterAccountPrismaRepositoryInstance
+  }
+
+  static waterMeterImagePrismaRepository() {
+    if (!WaterAccountFactory.waterMeterImagePrismaRepositoryInstance) {
+      WaterAccountFactory.waterMeterImagePrismaRepositoryInstance =
+        new WaterMeterImagePrismaRepository(prisma)
+    }
+    return WaterAccountFactory.waterMeterImagePrismaRepositoryInstance
   }
 }

@@ -1,7 +1,8 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, X } from 'lucide-react'
+import { Camera, Loader2, X } from 'lucide-react'
+import NextImage from 'next/image'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -25,6 +26,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -32,8 +34,10 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { api } from '@/trpc/react'
+import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
 const formSchema = z.object({
   newWaterMeterName: z.string().min(1, 'El nombre es requerido'),
@@ -92,7 +96,7 @@ export default function MeterReplacementForm({
   const replaceMeterMutation = api.waterAccount.replaceWaterMeter.useMutation({
     onSuccess: (data) => {
       toast.success('Contador reemplazado exitosamente', {
-        description: `Nuevo contador creado. Lectura final ${
+        description: `Nuevo contador creado. ${data.imageUploaded ? 'Foto subida. ' : ''}Lectura final ${
           data.finalReadingCreated ? 'registrada' : 'no proporcionada'
         }.`
       })
@@ -117,6 +121,9 @@ export default function MeterReplacementForm({
     }
   })
 
+  const { imagePreview, imageError, handleImageSelect, handleRemoveImage, getImageData } =
+    useImageUpload('meter-replacement-image')
+
   // Update form when meter data is loaded
   useEffect(() => {
     if (meter) {
@@ -132,12 +139,15 @@ export default function MeterReplacementForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
     try {
+      const imageData = await getImageData()
+
       await replaceMeterMutation.mutateAsync({
         oldWaterMeterId: meterId,
         newWaterMeterName: values.newWaterMeterName,
         measurementUnit: values.measurementUnit,
         replacementDate: values.replacementDate ? new Date(values.replacementDate) : undefined,
-        finalReading: values.finalReading || undefined
+        finalReading: values.finalReading || undefined,
+        image: imageData || undefined
       })
     } finally {
       setIsSubmitting(false)
@@ -280,6 +290,49 @@ export default function MeterReplacementForm({
                       </FormItem>
                     )}
                   />
+
+                  {/* Image Upload Section */}
+                  <div className="space-y-2">
+                    <Label htmlFor="meter-image">Foto del nuevo contador (opcional)</Label>
+                    {imagePreview ? (
+                      <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                        <NextImage
+                          src={imagePreview}
+                          alt="Preview del contador"
+                          fill
+                          className="object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={handleRemoveImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <label
+                        htmlFor="meter-image"
+                        className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex flex-col items-center justify-center py-6">
+                          <Camera className="h-10 w-10 text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-600 font-medium">Subir foto</p>
+                          <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP hasta 5MB</p>
+                        </div>
+                        <input
+                          id="meter-image"
+                          type="file"
+                          accept={ACCEPTED_FILE_TYPES}
+                          className="hidden"
+                          onChange={handleImageSelect}
+                        />
+                      </label>
+                    )}
+                    {imageError && <p className="text-sm text-red-500">{imageError}</p>}
+                  </div>
                 </form>
               </Form>
             </div>
@@ -392,6 +445,49 @@ export default function MeterReplacementForm({
                     </FormItem>
                   )}
                 />
+
+                {/* Image Upload Section */}
+                <div className="space-y-2">
+                  <Label htmlFor="meter-image-desktop">Foto del nuevo contador (opcional)</Label>
+                  {imagePreview ? (
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                      <NextImage
+                        src={imagePreview}
+                        alt="Preview del contador"
+                        fill
+                        className="object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="meter-image-desktop"
+                      className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex flex-col items-center justify-center py-6">
+                        <Camera className="h-10 w-10 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-600 font-medium">Subir foto</p>
+                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP hasta 5MB</p>
+                      </div>
+                      <input
+                        id="meter-image-desktop"
+                        type="file"
+                        accept={ACCEPTED_FILE_TYPES}
+                        className="hidden"
+                        onChange={handleImageSelect}
+                      />
+                    </label>
+                  )}
+                  {imageError && <p className="text-sm text-red-500">{imageError}</p>}
+                </div>
 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={onClose}>

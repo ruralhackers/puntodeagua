@@ -16,6 +16,7 @@ import {
   Plus,
   RefreshCw
 } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
@@ -40,6 +41,7 @@ import { ConsumptionCalculation } from '../_components/consumption-calculation'
 import { AddReadingModal } from '../new/_components/add-reading-modal'
 import { EditReadingModal } from './_components/edit-reading-modal'
 import { ReadingCardSkeleton } from './_components/reading-card-skeleton'
+import { WaterMeterImageModal } from './_components/water-meter-image-modal'
 
 export default function WaterMeterDetailPage() {
   const params = useParams()
@@ -47,6 +49,7 @@ export default function WaterMeterDetailPage() {
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [addReadingModalOpen, setAddReadingModalOpen] = useState(false)
   const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [editImageModalOpen, setEditImageModalOpen] = useState(false)
   const [editingReading, setEditingReading] = useState<{
     id: string
     reading: string
@@ -305,7 +308,7 @@ export default function WaterMeterDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Last Reading */}
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
@@ -385,6 +388,59 @@ export default function WaterMeterDetailPage() {
                     </Badge>
                   </div>
                 </div>
+              </div>
+
+              {/* Imagen del Contador */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  Imagen del Contador
+                </h3>
+                {waterMeter.waterMeterImage ? (
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      className="relative w-full h-32 rounded-lg border cursor-pointer hover:opacity-80 transition overflow-hidden"
+                      onClick={() => {
+                        setSelectedImage({
+                          url: waterMeter.waterMeterImage!.url,
+                          fileName: waterMeter.waterMeterImage!.fileName,
+                          fileSize: waterMeter.waterMeterImage!.fileSize,
+                          uploadedAt: waterMeter.waterMeterImage!.uploadedAt
+                        })
+                        setImageModalOpen(true)
+                      }}
+                    >
+                      <Image
+                        src={waterMeter.waterMeterImage.url}
+                        alt="Foto del contador"
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setEditImageModalOpen(true)}
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Cambiar
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm text-gray-500 italic mb-2">Sin imagen</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setEditImageModalOpen(true)}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Agregar
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
@@ -551,25 +607,22 @@ export default function WaterMeterDetailPage() {
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>Foto de la lectura</DialogTitle>
-            <DialogDescription>
-              {selectedImage && (
-                <div className="text-sm text-muted-foreground">
-                  {selectedImage.fileName} • {(selectedImage.fileSize / 1024 / 1024).toFixed(2)} MB
-                  •{' '}
-                  {format(new Date(selectedImage.uploadedAt), "dd/MM/yyyy 'a las' HH:mm", {
-                    locale: es
-                  })}
-                </div>
-              )}
-            </DialogDescription>
+            {selectedImage && (
+              <DialogDescription>
+                {selectedImage.fileName} • {(selectedImage.fileSize / 1024 / 1024).toFixed(2)} MB •{' '}
+                {format(new Date(selectedImage.uploadedAt), "dd/MM/yyyy 'a las' HH:mm", {
+                  locale: es
+                })}
+              </DialogDescription>
+            )}
           </DialogHeader>
           {selectedImage && (
-            <div className="flex justify-center items-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <div className="flex justify-center items-center relative w-full h-[70vh]">
+              <Image
                 src={selectedImage.url}
                 alt="Foto de la lectura"
-                className="max-w-full max-h-[70vh] object-contain rounded-lg"
+                fill
+                className="object-contain rounded-lg"
               />
             </div>
           )}
@@ -580,6 +633,19 @@ export default function WaterMeterDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Modal para editar imagen del contador */}
+      {editImageModalOpen && waterMeter && (
+        <WaterMeterImageModal
+          waterMeterId={waterMeter.id}
+          currentImage={waterMeter.waterMeterImage || null}
+          onClose={() => setEditImageModalOpen(false)}
+          onSuccess={() => {
+            utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+            setEditImageModalOpen(false)
+          }}
+        />
+      )}
     </PageContainer>
   )
 }

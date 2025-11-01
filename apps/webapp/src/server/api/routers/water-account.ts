@@ -149,6 +149,45 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
+  updateWaterMeterImage: protectedProcedure
+    .input(
+      z.object({
+        waterMeterId: z.string(),
+        image: fileUploadInputSchema.optional(),
+        deleteImage: z.boolean().optional()
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterImageUpdaterService()
+
+        let imageData:
+          | {
+              file: Buffer
+              metadata: ReturnType<typeof FileMetadataCreatorService.createFileMetadata>
+            }
+          | undefined
+        if (input.image) {
+          const buffer = Buffer.from(input.image.file)
+          const fileMetadata = FileMetadataCreatorService.createFileMetadata({
+            originalName: input.image.metadata.originalName,
+            fileSize: input.image.metadata.fileSize,
+            mimeType: input.image.metadata.mimeType
+          })
+          imageData = { file: buffer, metadata: fileMetadata }
+        }
+
+        const result = await service.run({
+          waterMeterId: Id.fromString(input.waterMeterId),
+          image: imageData,
+          deleteImage: input.deleteImage
+        })
+        return result
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
   replaceWaterMeter: protectedProcedure
     .input(
       z.object({
@@ -156,18 +195,38 @@ export const waterAccountRouter = createTRPCRouter({
         newWaterMeterName: z.string(),
         measurementUnit: z.string(),
         replacementDate: z.date().optional(),
-        finalReading: z.string().optional()
+        finalReading: z.string().optional(),
+        image: fileUploadInputSchema.optional()
       })
     )
     .mutation(async ({ input }) => {
       try {
         const service = WaterAccountFactory.waterMeterReplacerService()
+
+        // Prepare image data if provided
+        let imageData:
+          | {
+              file: Buffer
+              metadata: ReturnType<typeof FileMetadataCreatorService.createFileMetadata>
+            }
+          | undefined
+        if (input.image) {
+          const buffer = Buffer.from(input.image.file)
+          const fileMetadata = FileMetadataCreatorService.createFileMetadata({
+            originalName: input.image.metadata.originalName,
+            fileSize: input.image.metadata.fileSize,
+            mimeType: input.image.metadata.mimeType
+          })
+          imageData = { file: buffer, metadata: fileMetadata }
+        }
+
         const result = await service.run({
           oldWaterMeterId: Id.fromString(input.oldWaterMeterId),
           newWaterMeterName: input.newWaterMeterName,
           measurementUnit: input.measurementUnit,
           replacementDate: input.replacementDate,
-          finalReading: input.finalReading
+          finalReading: input.finalReading,
+          image: imageData
         })
         return result
       } catch (error) {

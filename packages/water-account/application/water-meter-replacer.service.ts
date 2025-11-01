@@ -1,4 +1,5 @@
 import type { Id } from '@pda/common/domain'
+import type { FileMetadata } from '@pda/storage'
 import { WaterMeter } from '../domain/entities/water-meter'
 import {
   WaterMeterInactiveError,
@@ -7,6 +8,7 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import { MeasurementUnit } from '../domain/value-objects/measurement-unit'
+import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterReadingCreator } from './water-meter-reading-creator.service'
 
 export interface WaterMeterReplacerResult {
@@ -14,12 +16,14 @@ export interface WaterMeterReplacerResult {
   newWaterMeterId: string
   finalReadingCreated: boolean
   initialReadingCreated: boolean
+  imageUploaded: boolean
 }
 
 export class WaterMeterReplacer {
   constructor(
     private readonly waterMeterRepository: WaterMeterRepository,
-    private readonly waterMeterReadingCreator: WaterMeterReadingCreator
+    private readonly waterMeterReadingCreator: WaterMeterReadingCreator,
+    private readonly fileUploaderService: FileUploaderService
   ) {}
 
   async run(params: {
@@ -28,6 +32,10 @@ export class WaterMeterReplacer {
     measurementUnit: string
     replacementDate?: Date
     finalReading?: string
+    image?: {
+      file: Buffer
+      metadata: FileMetadata
+    }
   }): Promise<WaterMeterReplacerResult> {
     const { oldWaterMeterId, newWaterMeterName, measurementUnit, replacementDate, finalReading } =
       params
@@ -80,6 +88,22 @@ export class WaterMeterReplacer {
     })
     await this.waterMeterRepository.save(newWaterMeter)
 
+    // 4.5. Upload image if provided
+    let imageUploaded = false
+    if (params.image) {
+      try {
+        await this.fileUploaderService.uploadWaterMeterImage({
+          file: params.image.file,
+          waterMeterId: newWaterMeter.id,
+          metadata: params.image.metadata
+        })
+        imageUploaded = true
+      } catch (error) {
+        console.error('Failed to upload water meter image:', error)
+        // Continue even if image upload fails
+      }
+    }
+
     // 5. Create initial reading with value 0 for new water meter
     await this.waterMeterReadingCreator.run({
       waterMeterId: newWaterMeter.id,
@@ -92,7 +116,8 @@ export class WaterMeterReplacer {
       oldWaterMeterId: oldWaterMeter.id.toString(),
       newWaterMeterId: newWaterMeter.id.toString(),
       finalReadingCreated,
-      initialReadingCreated: true
+      initialReadingCreated: true,
+      imageUploaded
     }
   }
 }

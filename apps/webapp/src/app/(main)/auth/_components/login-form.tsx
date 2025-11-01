@@ -19,6 +19,7 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { api } from '@/trpc/react'
 
 const MagicLinkSchema = z.object({
   email: z.string().email({ message: 'Por favor ingresa una dirección de correo válida.' })
@@ -29,7 +30,12 @@ const CredentialsSchema = z.object({
   password: z.string().min(1, { message: 'La contraseña es requerida.' })
 })
 
-type LoginMethod = 'magic-link' | 'credentials'
+const FormSchema = z.object({
+  email: z.string().email({ message: 'Por favor ingresa una dirección de correo válida.' }),
+  password: z.string().optional()
+})
+
+type LoginMethod = 'magic-link' | 'credentials' | 'forgot-password'
 
 export function LoginForm() {
   const router = useRouter()
@@ -40,22 +46,44 @@ export function LoginForm() {
   const [sentEmail, setSentEmail] = useState('')
   const [loginMethod, setLoginMethod] = useState<LoginMethod>('credentials')
 
-  const schema = loginMethod === 'magic-link' ? MagicLinkSchema : CredentialsSchema
-
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       email: '',
-      ...(loginMethod === 'credentials' && { password: '' })
+      password: ''
     }
   })
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
+  const forgotPasswordMutation = api.auth.forgotPassword.useMutation({
+    onSuccess: (data) => {
+      setEmailSent(true)
+      setSentEmail(form.getValues('email'))
+      toast.success('Correo enviado', {
+        description: data.message
+      })
+    },
+    onError: (error) => {
+      toast.error('Error', {
+        description: error.message || 'Ocurrió un error. Por favor intenta de nuevo.'
+      })
+    }
+  })
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (loginMethod === 'forgot-password') {
+      // Validate email only for forgot password
+      const validated = MagicLinkSchema.parse(data)
+      forgotPasswordMutation.mutate({ email: validated.email })
+      return
+    }
+
     setIsLoading(true)
     try {
       if (loginMethod === 'magic-link') {
+        // Validate email only for magic link
+        const validated = MagicLinkSchema.parse(data)
         const result = await signIn('email', {
-          email: data.email,
+          email: validated.email,
           redirect: false
         })
 
@@ -65,12 +93,14 @@ export function LoginForm() {
           })
         } else {
           setEmailSent(true)
-          setSentEmail(data.email)
+          setSentEmail(validated.email)
         }
       } else {
+        // Validate email + password for credentials
+        const validated = CredentialsSchema.parse(data)
         const result = await signIn('credentials', {
-          email: data.email,
-          password: (data as z.infer<typeof CredentialsSchema>).password,
+          email: validated.email,
+          password: validated.password,
           redirect: false
         })
 
@@ -99,16 +129,29 @@ export function LoginForm() {
 
   // Show email verification message if email was sent successfully
   if (emailSent) {
+    const isForgotPassword = loginMethod === 'forgot-password'
     return (
       <div className="space-y-6 text-center">
         <div className="space-y-2">
           <h2 className="text-xl font-semibold text-gray-900">Revisa tu correo</h2>
           <p className="text-gray-600">
-            Hemos enviado un enlace mágico a{' '}
-            <span className="font-medium text-gray-900">{sentEmail}</span>
+            {isForgotPassword ? (
+              <>
+                Si existe una cuenta con{' '}
+                <span className="font-medium text-gray-900">{sentEmail}</span>, recibirás un enlace
+                de recuperación.
+              </>
+            ) : (
+              <>
+                Hemos enviado un enlace mágico a{' '}
+                <span className="font-medium text-gray-900">{sentEmail}</span>
+              </>
+            )}
           </p>
           <p className="text-sm text-gray-500">
-            Haz clic en el enlace de tu correo para iniciar sesión en tu cuenta.
+            {isForgotPassword
+              ? 'Por favor revisa tu bandeja de entrada y sigue las instrucciones del correo.'
+              : 'Haz clic en el enlace de tu correo para iniciar sesión en tu cuenta.'}
           </p>
         </div>
         <Button
@@ -151,6 +194,17 @@ export function LoginForm() {
           }`}
         >
           Enlace Mágico
+        </button>
+        <button
+          type="button"
+          onClick={() => handleMethodChange('forgot-password')}
+          className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            loginMethod === 'forgot-password'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Recuperar Contraseña
         </button>
       </div>
 
@@ -201,16 +255,22 @@ export function LoginForm() {
           <Button
             className="w-full h-11 bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors"
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || forgotPasswordMutation.isPending}
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading
+            {(isLoading || forgotPasswordMutation.isPending) && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {isLoading || forgotPasswordMutation.isPending
               ? loginMethod === 'magic-link'
                 ? 'Enviando...'
-                : 'Iniciando sesión...'
+                : loginMethod === 'forgot-password'
+                  ? 'Enviando...'
+                  : 'Iniciando sesión...'
               : loginMethod === 'magic-link'
                 ? 'Enviar Enlace Mágico'
-                : 'Iniciar Sesión'}
+                : loginMethod === 'forgot-password'
+                  ? 'Enviar Enlace de Recuperación'
+                  : 'Iniciar Sesión'}
           </Button>
         </form>
       </Form>

@@ -4,10 +4,7 @@ import type { ReactNode } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { getPreference } from '@/server/server-actions'
 import { PreferencesStoreProvider } from '@/stores/preferences/preferences-provider'
-import {
-  THEME_PRESET_VALUES,
-  type ThemePreset
-} from '@/types/preferences/theme'
+import { THEME_PRESET_VALUES, type ThemePreset } from '@/types/preferences/theme'
 import '../styles/globals.css'
 import { APP_METADATA } from '../data/metadata'
 import { TRPCReactProvider } from '../trpc/react'

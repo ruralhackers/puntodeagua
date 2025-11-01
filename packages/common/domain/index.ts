@@ -13,6 +13,7 @@ export type {
   TableQueryPort,
   TableQueryResult
 } from './repositories/table-query-port'
+export { generateResetToken, getResetTokenExpiry } from './utils/generate-reset-token'
 export { saltAndHashPassword, verifyPassword } from './utils/salt-and-hash-password'
 export { Decimal } from './value-objects/decimal'
 export { Email } from './value-objects/email'

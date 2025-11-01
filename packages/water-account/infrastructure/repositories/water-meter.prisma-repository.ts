@@ -248,7 +248,8 @@ export class WaterMeterPrismaRepository
       lastReadingDate: zone.lastReadingDate ?? null,
       lastReadingExcessConsumption: zone.lastReadingExcessConsumption ?? null,
       waterAccountId: zone.waterAccountId.toString(),
-      waterPointId: zone.waterPoint.id.toString()
+      waterPointId: zone.waterPoint.id.toString(),
+      isActive: zone.isActive
     }
 
     await this.getModel().upsert({
@@ -267,6 +268,73 @@ export class WaterMeterPrismaRepository
     await this.getModel().delete({
       where: { id: id.toString() }
     })
+  }
+
+  async findByCommunityZonesIdOrderedByLastReading(
+    zonesIds: Id[]
+  ): Promise<WaterMeterDisplayDto[]> {
+    const whereClause =
+      zonesIds.length === 0
+        ? {}
+        : {
+            waterPoint: {
+              communityZoneId: { in: zonesIds.map((id) => id.toString()) }
+            }
+          }
+
+    const meters = await this.getModel().findMany({
+      where: whereClause,
+      include: {
+        waterPoint: {
+          select: {
+            id: true,
+            name: true,
+            location: true,
+            fixedPopulation: true,
+            floatingPopulation: true,
+            cadastralReference: true,
+            communityZoneId: true,
+            waterDepositIds: true,
+            notes: true
+          }
+        },
+        waterAccount: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        waterMeterImage: true
+      },
+      orderBy: {
+        lastReadingDate: 'asc'
+      }
+    })
+
+    // biome-ignore lint/suspicious/noExplicitAny: Prisma return type is complex
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return meters.map((meter: any) => ({
+      id: meter.id,
+      waterAccountId: meter.waterAccountId,
+      waterAccountName: meter.waterAccount.name,
+      measurementUnit: meter.measurementUnit,
+      lastReadingNormalizedValue: meter.lastReadingNormalizedValue,
+      lastReadingDate: meter.lastReadingDate,
+      lastReadingExcessConsumption: meter.lastReadingExcessConsumption,
+      isActive: meter.isActive,
+      waterPoint: {
+        id: meter.waterPoint.id,
+        name: meter.waterPoint.name,
+        location: meter.waterPoint.location,
+        fixedPopulation: meter.waterPoint.fixedPopulation,
+        floatingPopulation: meter.waterPoint.floatingPopulation,
+        cadastralReference: meter.waterPoint.cadastralReference,
+        communityZoneId: meter.waterPoint.communityZoneId,
+        waterDepositIds: meter.waterPoint.waterDepositIds,
+        notes: meter.waterPoint.notes
+      },
+      waterMeterImage: meter.waterMeterImage || null
+    }))
   }
 
   async findActiveByCommunityZonesIdOrderedByLastReading(

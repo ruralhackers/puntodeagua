@@ -13,12 +13,14 @@ interface WaterMeterListProps {
   selectedZone: string
   nameFilter: string
   showOnlyExcess: boolean
+  showInactive: boolean
 }
 
 export default function WaterMeterList({
   selectedZone,
   nameFilter,
-  showOnlyExcess
+  showOnlyExcess,
+  showInactive
 }: WaterMeterListProps) {
   const zones = useCommunityZonesStore((state) => state.zones)
 
@@ -34,7 +36,10 @@ export default function WaterMeterList({
     isLoading,
     error
   } = api.waterAccount.getActiveWaterMetersOrderedByLastReading.useQuery(
-    { zoneIds },
+    {
+      zoneIds,
+      includeInactive: showInactive
+    },
     { enabled: zoneIds.length > 0 }
   )
 
@@ -149,12 +154,21 @@ export default function WaterMeterList({
     <div className="space-y-2">
       {filteredWaterMeters.map((waterMeter) => (
         <Link key={waterMeter.id} href={`/water-meter/${waterMeter.id}`}>
-          <Card className="p-4 cursor-pointer hover:bg-accent transition-colors">
+          <Card
+            className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
+              !waterMeter.isActive ? 'opacity-60 border-gray-300' : ''
+            }`}
+          >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Información principal */}
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-3 flex-wrap">
                   <h3 className="font-semibold text-lg">{waterMeter.waterAccountName}</h3>
+                  {!waterMeter.isActive && (
+                    <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                      Inactivo
+                    </Badge>
+                  )}
                   {getStatusBadge(waterMeter)}
                 </div>
 

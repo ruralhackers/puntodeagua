@@ -23,6 +23,7 @@ export default function WaterMeterListPage() {
   const [selectedZone, setSelectedZone] = useState<string>('all')
   const [nameFilter, setNameFilter] = useState<string>('')
   const [showOnlyExcess, setShowOnlyExcess] = useState<boolean>(false)
+  const [showInactive, setShowInactive] = useState<boolean>(false)
   const [showFilters, setShowFilters] = useState<boolean>(false)
 
   const zones = useCommunityZonesStore((state) => state.zones)
@@ -87,15 +88,27 @@ export default function WaterMeterListPage() {
                 {/* Excess Filter */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Estado</Label>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="excess-only"
-                      checked={showOnlyExcess}
-                      onCheckedChange={(checked) => setShowOnlyExcess(checked === true)}
-                    />
-                    <Label htmlFor="excess-only" className="text-sm font-normal cursor-pointer">
-                      Solo contadores con exceso
-                    </Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="excess-only"
+                        checked={showOnlyExcess}
+                        onCheckedChange={(checked) => setShowOnlyExcess(checked === true)}
+                      />
+                      <Label htmlFor="excess-only" className="text-sm font-normal cursor-pointer">
+                        Solo contadores con exceso
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="show-inactive"
+                        checked={showInactive}
+                        onCheckedChange={(checked) => setShowInactive(checked === true)}
+                      />
+                      <Label htmlFor="show-inactive" className="text-sm font-normal cursor-pointer">
+                        Mostrar contadores inactivos
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -107,6 +120,7 @@ export default function WaterMeterListPage() {
           selectedZone={selectedZone}
           nameFilter={nameFilter}
           showOnlyExcess={showOnlyExcess}
+          showInactive={showInactive}
         />
       </div>
     </PageContainer>

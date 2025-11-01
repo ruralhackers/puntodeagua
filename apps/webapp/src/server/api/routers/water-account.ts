@@ -31,10 +31,22 @@ export const waterAccountRouter = createTRPCRouter({
     }),
 
   getActiveWaterMetersOrderedByLastReading: protectedProcedure
-    .input(z.object({ zoneIds: z.array(z.string()) }))
+    .input(
+      z.object({
+        zoneIds: z.array(z.string()),
+        includeInactive: z.boolean().optional().default(false)
+      })
+    )
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const zoneIds = input.zoneIds.map(Id.fromString)
+
+      // Si includeInactive es true, usar método que devuelva todos
+      if (input.includeInactive) {
+        const displayDtos = await repo.findByCommunityZonesIdOrderedByLastReading(zoneIds)
+        return displayDtos
+      }
+
       const displayDtos = await repo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
       return displayDtos
     }),

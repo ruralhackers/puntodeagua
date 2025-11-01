@@ -173,5 +173,41 @@ export const waterAccountRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  getAllWaterAccounts: protectedProcedure.query(async () => {
+    const repo = WaterAccountFactory.waterAccountPrismaRepository()
+    const accounts = await repo.findAll()
+    return accounts.map((account) => account.toDto())
+  }),
+
+  changeWaterMeterOwner: protectedProcedure
+    .input(
+      z.object({
+        waterMeterId: z.string(),
+        newWaterAccountId: z.string().optional(),
+        newWaterAccountData: z
+          .object({
+            name: z.string(),
+            nationalId: z.string(),
+            notes: z.string().optional()
+          })
+          .optional()
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterOwnerChangerService()
+        const result = await service.run({
+          waterMeterId: Id.fromString(input.waterMeterId),
+          newWaterAccountId: input.newWaterAccountId
+            ? Id.fromString(input.newWaterAccountId)
+            : undefined,
+          newWaterAccountData: input.newWaterAccountData
+        })
+        return result
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

@@ -71,4 +71,8 @@ export class WaterMeter {
   deactivate() {
     this.isActive = false
   }
+
+  changeOwner(newWaterAccountId: Id) {
+    this.waterAccountId = newWaterAccountId
+  }
 }

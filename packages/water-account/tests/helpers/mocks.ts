@@ -4,6 +4,7 @@ import type { FileStorageRepository } from '@pda/storage'
 import type { FileDeleterService } from '../../application/file-deleter.service'
 import type { FileUploaderService } from '../../application/file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
+import type { WaterAccountRepository } from '../../domain/repositories/water-account.repository'
 import type { WaterMeterRepository } from '../../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterReadingImageRepository } from '../../domain/repositories/water-meter-reading-image.repository'
@@ -85,4 +86,14 @@ export const createMockFileDeleterService = (): FileDeleterService => {
   return {
     deleteWaterMeterReadingImage: mock()
   } as unknown as FileDeleterService
+}
+
+export const createMockWaterAccountRepository = (): WaterAccountRepository => {
+  return {
+    findById: mock(),
+    findAll: mock(),
+    save: mock(),
+    delete: mock(),
+    findForTable: mock()
+  } as unknown as WaterAccountRepository
 }

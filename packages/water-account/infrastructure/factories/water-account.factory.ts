@@ -5,9 +5,11 @@ import { FileDeleterService } from '../../application/file-deleter.service'
 import { FileUploaderService } from '../../application/file-uploader.service'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
+import { WaterMeterOwnerChanger } from '../../application/water-meter-owner-changer.service'
 import { WaterMeterReadingCreator } from '../../application/water-meter-reading-creator.service'
 import { WaterMeterReadingUpdater } from '../../application/water-meter-reading-updater.service'
 import { WaterMeterReplacer } from '../../application/water-meter-replacer.service'
+import { WaterAccountPrismaRepository } from '../repositories/water-account.prisma-repository'
 import { WaterMeterPrismaRepository } from '../repositories/water-meter.prisma-repository'
 import { WaterMeterReadingPrismaRepository } from '../repositories/water-meter-reading.prisma-repository'
 import { WaterMeterReadingImagePrismaRepository } from '../repositories/water-meter-reading-image.prisma-repository'
@@ -16,6 +18,7 @@ export class WaterAccountFactory {
   private static waterMeterPrismaRepositoryInstance: WaterMeterPrismaRepository
   private static waterMeterReadingPrismaRepositoryInstance: WaterMeterReadingPrismaRepository
   private static waterMeterReadingImagePrismaRepositoryInstance: WaterMeterReadingImagePrismaRepository
+  private static waterAccountPrismaRepositoryInstance: WaterAccountPrismaRepository
   private static r2FileStorageRepositoryInstance: R2FileStorageRepository
 
   // SERVICES
@@ -76,6 +79,13 @@ export class WaterAccountFactory {
     )
   }
 
+  static waterMeterOwnerChangerService() {
+    return new WaterMeterOwnerChanger(
+      WaterAccountFactory.waterMeterPrismaRepository(),
+      WaterAccountFactory.waterAccountPrismaRepository()
+    )
+  }
+
   // REPOSITORIES
   static waterMeterPrismaRepository() {
     if (!WaterAccountFactory.waterMeterPrismaRepositoryInstance) {
@@ -113,5 +123,14 @@ export class WaterAccountFactory {
       })
     }
     return WaterAccountFactory.r2FileStorageRepositoryInstance
+  }
+
+  static waterAccountPrismaRepository() {
+    if (!WaterAccountFactory.waterAccountPrismaRepositoryInstance) {
+      WaterAccountFactory.waterAccountPrismaRepositoryInstance = new WaterAccountPrismaRepository(
+        prisma
+      )
+    }
+    return WaterAccountFactory.waterAccountPrismaRepositoryInstance
   }
 }

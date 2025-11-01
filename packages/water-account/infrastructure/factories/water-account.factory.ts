@@ -7,6 +7,7 @@ import { WaterMeterExcessRecalculator } from '../../application/water-meter-exce
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingCreator } from '../../application/water-meter-reading-creator.service'
 import { WaterMeterReadingUpdater } from '../../application/water-meter-reading-updater.service'
+import { WaterMeterReplacer } from '../../application/water-meter-replacer.service'
 import { WaterMeterPrismaRepository } from '../repositories/water-meter.prisma-repository'
 import { WaterMeterReadingPrismaRepository } from '../repositories/water-meter-reading.prisma-repository'
 import { WaterMeterReadingImagePrismaRepository } from '../repositories/water-meter-reading-image.prisma-repository'
@@ -65,6 +66,13 @@ export class WaterAccountFactory {
       WaterAccountFactory.waterMeterPrismaRepository(),
       CommunityFactory.communityPrismaRepository(),
       CommunityFactory.communityZonePrismaRepository()
+    )
+  }
+
+  static waterMeterReplacerService() {
+    return new WaterMeterReplacer(
+      WaterAccountFactory.waterMeterPrismaRepository(),
+      WaterAccountFactory.waterMeterReadingCreatorService()
     )
   }
 

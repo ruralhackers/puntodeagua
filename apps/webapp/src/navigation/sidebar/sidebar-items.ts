@@ -6,6 +6,7 @@ import {
   GlassWater,
   LayoutDashboard,
   type LucideIcon,
+  Settings,
   TestTube,
   Users
 } from 'lucide-react'
@@ -86,6 +87,11 @@ export const sidebarItems: NavGroup[] = [
         title: 'Incidencias',
         url: '/incidents',
         icon: AlertTriangle
+      },
+      {
+        title: 'Gestión',
+        url: '/management',
+        icon: Settings
       }
     ]
   },

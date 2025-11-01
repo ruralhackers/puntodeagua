@@ -147,5 +147,31 @@ export const waterAccountRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  replaceWaterMeter: protectedProcedure
+    .input(
+      z.object({
+        oldWaterMeterId: z.string(),
+        newWaterMeterName: z.string(),
+        measurementUnit: z.string(),
+        replacementDate: z.date().optional(),
+        finalReading: z.string().optional()
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterReplacerService()
+        const result = await service.run({
+          oldWaterMeterId: Id.fromString(input.oldWaterMeterId),
+          newWaterMeterName: input.newWaterMeterName,
+          measurementUnit: input.measurementUnit,
+          replacementDate: input.replacementDate,
+          finalReading: input.finalReading
+        })
+        return result
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

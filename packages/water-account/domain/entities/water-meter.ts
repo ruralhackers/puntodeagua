@@ -67,4 +67,8 @@ export class WaterMeter {
     this.lastReadingDate = params.readingDate
     this.lastReadingExcessConsumption = params.excessConsumption
   }
+
+  deactivate() {
+    this.isActive = false
+  }
 }

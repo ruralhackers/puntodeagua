@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Gauge, LogOut, Menu, ShieldUser } from 'lucide-react'
+import { Download, Gauge, LogOut, Menu, Settings, ShieldUser } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -73,6 +73,12 @@ export function AccountMenu() {
             <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
               <Gauge />
               Contadores
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
+              <Settings />
+              Gestión
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

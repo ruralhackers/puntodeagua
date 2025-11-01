@@ -10,6 +10,16 @@ export class WaterMeterNotFoundError extends NotFoundError {
   static override defaultMessageEs = 'Contador no encontrado'
 }
 
+export class WaterMeterInactiveError extends ForbiddenError {
+  constructor(message: string = WaterMeterInactiveError.defaultMessage) {
+    super(message)
+    this.name = 'WaterMeterInactiveError'
+  }
+
+  static override defaultMessage = 'Water meter is already inactive'
+  static override defaultMessageEs = 'El contador ya está inactivo'
+}
+
 export class WaterMeterReadingDateNotAllowedError extends ForbiddenError {
   constructor(message: string = WaterMeterReadingDateNotAllowedError.defaultMessage) {
     super(message)

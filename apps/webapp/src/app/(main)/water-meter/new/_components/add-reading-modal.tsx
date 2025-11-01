@@ -1,7 +1,7 @@
 'use client'
 
+import { Loader2, X } from 'lucide-react'
 import { useState } from 'react'
-import { X, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -171,9 +171,7 @@ export function AddReadingModal({
                 disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
                 size="sm"
               >
-                {addReadingMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {addReadingMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Guardar
               </Button>
               <Button
@@ -225,7 +223,9 @@ export function AddReadingModal({
                       value={readingForm.reading}
                       onChange={handleReadingChange}
                     />
-                    {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
+                    {validationError && (
+                      <p className="text-sm text-red-500 mt-1">{validationError}</p>
+                    )}
                   </div>
 
                   <div>
@@ -255,7 +255,11 @@ export function AddReadingModal({
                   {imagePreview && (
                     <div className="mt-2 space-y-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
+                      <img
+                        src={imagePreview}
+                        alt="Vista previa"
+                        className="max-h-40 rounded border"
+                      />
                       <Button
                         type="button"
                         size="sm"
@@ -292,9 +296,7 @@ export function AddReadingModal({
                 <br />
                 <span className="text-sm text-muted-foreground">
                   Unidad de medida:{' '}
-                  <strong>
-                    {measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}
-                  </strong>
+                  <strong>{measurementUnit === 'L' ? 'Litros (L)' : 'Metros cúbicos (m³)'}</strong>
                 </span>
                 {lastReadingValue !== null && (
                   <>
@@ -328,7 +330,9 @@ export function AddReadingModal({
                     value={readingForm.reading}
                     onChange={handleReadingChange}
                   />
-                  {validationError && <p className="text-sm text-red-500 mt-1">{validationError}</p>}
+                  {validationError && (
+                    <p className="text-sm text-red-500 mt-1">{validationError}</p>
+                  )}
                 </div>
               </div>
 
@@ -378,7 +382,11 @@ export function AddReadingModal({
                   {imagePreview && (
                     <div className="mt-2 relative">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={imagePreview} alt="Vista previa" className="max-h-40 rounded border" />
+                      <img
+                        src={imagePreview}
+                        alt="Vista previa"
+                        className="max-h-40 rounded border"
+                      />
                       <Button
                         type="button"
                         size="sm"
@@ -407,9 +415,7 @@ export function AddReadingModal({
               <Button
                 type="button"
                 onClick={handleSubmitReading}
-                disabled={
-                  !readingForm.reading || addReadingMutation.isPending || !!validationError
-                }
+                disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
               >
                 {addReadingMutation.isPending
                   ? imagePreview

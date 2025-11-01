@@ -64,7 +64,7 @@ export default function AnalysisPage() {
             {isLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <AnalysisCardSkeleton key={`analysis-skeleton-${i}`} />
+                  <AnalysisCardSkeleton key={`analysis-skeleton-${i}-${Date.now()}`} />
                 ))}
               </div>
             ) : error ? (

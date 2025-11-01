@@ -95,7 +95,7 @@ export default function WaterPointDataPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded">
+                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
                       Casa
                     </span>
                   </div>

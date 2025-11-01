@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import type { Session } from 'next-auth'
 import { AccountMenu } from '@/app/(main)/app/_components/account-menu'
-import { ThemeSwitcher } from '@/app/(main)/app/_components/theme-switcher'
 import { APP_CONFIG } from '@/config/app-config'
 
 interface HeaderProps {
@@ -40,9 +39,6 @@ export function Header({ session }: HeaderProps) {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
-            <ThemeSwitcher />
-          </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
             <AccountMenu />
           </div>

@@ -5,9 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { getPreference } from '@/server/server-actions'
 import { PreferencesStoreProvider } from '@/stores/preferences/preferences-provider'
 import {
-  THEME_MODE_VALUES,
   THEME_PRESET_VALUES,
-  type ThemeMode,
   type ThemePreset
 } from '@/types/preferences/theme'
 import '../styles/globals.css'
@@ -25,7 +23,6 @@ const playfairDisplay = Playfair_Display({
 export const metadata = APP_METADATA
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const themeMode = await getPreference<ThemeMode>('theme_mode', THEME_MODE_VALUES, 'light')
   const themePreset = await getPreference<ThemePreset>(
     'theme_preset',
     THEME_PRESET_VALUES,
@@ -35,12 +32,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html
       lang="en"
-      className={`${themeMode === 'dark' ? 'dark' : ''} ${playfairDisplay.variable}`}
+      className={playfairDisplay.variable}
       data-theme-preset={themePreset}
       suppressHydrationWarning
     >
       <body className={`${inter.className} min-h-screen antialiased`}>
-        <PreferencesStoreProvider themeMode={themeMode} themePreset={themePreset}>
+        <PreferencesStoreProvider themePreset={themePreset}>
           <TRPCReactProvider>
             <NuqsAdapter>{children}</NuqsAdapter>
           </TRPCReactProvider>

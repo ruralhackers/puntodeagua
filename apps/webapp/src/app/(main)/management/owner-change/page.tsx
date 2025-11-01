@@ -106,7 +106,7 @@ export default function OwnerChangePage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                       {meter.measurementUnit}
                     </span>
                   </div>

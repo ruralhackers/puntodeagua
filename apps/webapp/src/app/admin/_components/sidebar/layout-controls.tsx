@@ -13,11 +13,14 @@ import {
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { updateContentLayout } from '@/lib/layout-utils'
-import { updateThemeMode, updateThemePreset } from '@/lib/theme-utils'
 import { setValueToCookie } from '@/server/server-actions'
 import { usePreferencesStore } from '@/stores/preferences/preferences-provider'
 import type { ContentLayout, SidebarCollapsible, SidebarVariant } from '@/types/preferences/layout'
-import { THEME_PRESET_OPTIONS, type ThemeMode, type ThemePreset } from '@/types/preferences/theme'
+import { THEME_PRESET_OPTIONS, type ThemePreset } from '@/types/preferences/theme'
+
+function updateThemePreset(value: string) {
+  document.documentElement.setAttribute('data-theme-preset', value)
+}
 
 type LayoutControlsProps = {
   readonly variant: SidebarVariant
@@ -28,17 +31,10 @@ type LayoutControlsProps = {
 export function LayoutControls(props: LayoutControlsProps) {
   const { variant, collapsible, contentLayout } = props
 
-  const themeMode = usePreferencesStore((s) => s.themeMode)
-  const setThemeMode = usePreferencesStore((s) => s.setThemeMode)
   const themePreset = usePreferencesStore((s) => s.themePreset)
   const setThemePreset = usePreferencesStore((s) => s.setThemePreset)
 
   const handleValueChange = async (key: string, value: any) => {
-    if (key === 'theme_mode') {
-      updateThemeMode(value)
-      setThemeMode(value as ThemeMode)
-    }
-
     if (key === 'theme_preset') {
       updateThemePreset(value)
       setThemePreset(value as ThemePreset)
@@ -81,8 +77,7 @@ export function LayoutControls(props: LayoutControlsProps) {
                       <span
                         className="size-2.5 rounded-full"
                         style={{
-                          backgroundColor:
-                            themeMode === 'dark' ? preset.primary.dark : preset.primary.light
+                          backgroundColor: preset.primary
                         }}
                       />
                       {preset.label}
@@ -90,25 +85,6 @@ export function LayoutControls(props: LayoutControlsProps) {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-1">
-              <Label className="text-xs font-medium">Mode</Label>
-              <ToggleGroup
-                className="w-full"
-                size="sm"
-                variant="outline"
-                type="single"
-                value={themeMode}
-                onValueChange={(value) => handleValueChange('theme_mode', value)}
-              >
-                <ToggleGroupItem className="text-xs" value="light" aria-label="Toggle inset">
-                  Light
-                </ToggleGroupItem>
-                <ToggleGroupItem className="text-xs" value="dark" aria-label="Toggle sidebar">
-                  Dark
-                </ToggleGroupItem>
-              </ToggleGroup>
             </div>
 
             <div className="space-y-1">

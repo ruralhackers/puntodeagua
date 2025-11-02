@@ -280,5 +280,95 @@ export const waterAccountRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  exportWaterMeterReadings: protectedProcedure
+    .input(
+      z.object({
+        startDate: z.date(),
+        endDate: z.date(),
+        communityId: z.string().optional()
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const { CommunityFactory } = await import('@pda/community')
+        
+        // Get community ID from user session or input
+        const communityId = input.communityId
+          ? Id.fromString(input.communityId)
+          : ctx.session?.user?.community?.id
+            ? Id.fromString(ctx.session.user.community.id)
+            : undefined
+
+        if (!communityId) {
+          throw new Error('No se pudo determinar la comunidad para la exportación')
+        }
+
+        // Get community to access waterLimitRule
+        const communityRepo = CommunityFactory.communityPrismaRepository()
+        const community = await communityRepo.findById(communityId)
+        
+        if (!community) {
+          throw new Error('Comunidad no encontrada')
+        }
+
+        // Get all water meters for this community with readings in range
+        const waterMeterRepo = WaterAccountFactory.waterMeterPrismaRepository()
+        const waterMeterReadingRepo = WaterAccountFactory.waterMeterReadingPrismaRepository()
+        const communityZoneRepo = CommunityFactory.communityZonePrismaRepository()
+
+        // Get all zones for this community
+        const zones = await communityZoneRepo.findByCommunityId(communityId)
+        const zoneIds = zones.map(zone => zone.id)
+
+        // Get only active water meters
+        const waterMeters = await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
+
+        // For each water meter, get readings in the date range
+        const result = await Promise.all(
+          waterMeters.map(async (waterMeter) => {
+            const allReadings = await waterMeterReadingRepo.findByWaterMeterId(
+              Id.fromString(waterMeter.id)
+            )
+
+            // Filter readings by date range and sort by date ascending
+            const readingsInRange = allReadings
+              .filter((reading) => {
+                const readingDate = reading.readingDate
+                return readingDate >= input.startDate && readingDate <= input.endDate
+              })
+              .sort((a, b) => a.readingDate.getTime() - b.readingDate.getTime())
+              .map((reading) => ({
+                normalizedReading: reading.normalizedReading,
+                readingDate: reading.readingDate
+              }))
+
+            // Get zone name
+            const zone = zones.find(z => z.id.toString() === waterMeter.waterPoint.communityZoneId)
+
+            return {
+              id: waterMeter.id,
+              name: waterMeter.id, // The water meter doesn't have a name field, using ID
+              waterAccountName: waterMeter.waterAccountName,
+              isActive: waterMeter.isActive,
+              readings: readingsInRange,
+              waterPoint: {
+                name: waterMeter.waterPoint.name,
+                fixedPopulation: waterMeter.waterPoint.fixedPopulation,
+                floatingPopulation: waterMeter.waterPoint.floatingPopulation
+              },
+              waterLimitRule: community.waterLimitRule.toDto(),
+              communityZone: {
+                name: zone?.name ?? 'Desconocida'
+              }
+            }
+          })
+        )
+
+        return result
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

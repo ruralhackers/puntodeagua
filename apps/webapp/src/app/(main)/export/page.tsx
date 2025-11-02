@@ -13,8 +13,8 @@ export default function ExportDataPage() {
       title: 'Lecturas',
       description: 'Exportar lecturas de contadores de agua',
       icon: Gauge,
-      enabled: false,
-      comingSoon: true
+      enabled: true,
+      href: '/export/readings'
     },
     {
       id: 'analysis',

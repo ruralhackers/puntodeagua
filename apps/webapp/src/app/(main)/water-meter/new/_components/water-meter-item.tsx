@@ -2,7 +2,8 @@
 
 import type { WaterMeterDisplayDto } from '@pda/water-account/domain'
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
+import { formatLastReading } from '../../_components/format-last-reading'
+import { WaterMeterStatusBadge } from '../../_components/water-meter-status-badge'
 import { AddReadingModal } from './add-reading-modal'
 
 interface WaterMeterItemProps {
@@ -12,46 +13,12 @@ interface WaterMeterItemProps {
 export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
   const [showAddReadingModal, setShowAddReadingModal] = useState(false)
 
-  const formatLastReading = () => {
-    if (!waterMeter.lastReadingDate) {
-      return 'Sin lecturas'
-    }
-
-    const daysAgo = Math.floor(
-      (Date.now() - new Date(waterMeter.lastReadingDate).getTime()) / (1000 * 60 * 60 * 24)
-    )
-
-    if (daysAgo === 0) {
-      return 'Hoy'
-    } else if (daysAgo === 1) {
-      return 'Ayer'
-    } else {
-      return `Hace ${daysAgo} días`
-    }
-  }
-
   const formatReadingValue = () => {
     if (!waterMeter.lastReadingNormalizedValue) {
       return 'Sin lectura'
     }
 
     return `${waterMeter.lastReadingNormalizedValue.toLocaleString('es-ES')} L`
-  }
-
-  const getExcessBadge = () => {
-    if (waterMeter.lastReadingExcessConsumption === null) {
-      return null
-    }
-
-    return waterMeter.lastReadingExcessConsumption ? (
-      <Badge variant="destructive" className="text-xs">
-        Exceso
-      </Badge>
-    ) : (
-      <Badge variant="secondary" className="text-xs">
-        Normal
-      </Badge>
-    )
   }
 
   return (
@@ -66,7 +33,13 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <div className="font-medium text-lg">{waterMeter.waterAccountName}</div>
-              {getExcessBadge()}
+              {waterMeter.lastReadingExcessConsumption !== null && (
+                <WaterMeterStatusBadge
+                  lastReadingDate={waterMeter.lastReadingDate}
+                  lastReadingExcessConsumption={waterMeter.lastReadingExcessConsumption}
+                  variant="compact"
+                />
+              )}
             </div>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -74,7 +47,7 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
               <span>•</span>
               <span>{waterMeter.waterPoint.location}</span>
               <span>•</span>
-              <span>Última lectura: {formatLastReading()}</span>
+              <span>Última lectura: {formatLastReading(waterMeter.lastReadingDate)}</span>
               {waterMeter.lastReadingNormalizedValue && (
                 <>
                   <span className="hidden md:inline">•</span>

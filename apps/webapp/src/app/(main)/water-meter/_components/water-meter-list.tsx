@@ -1,13 +1,15 @@
 'use client'
 
-import { AlertTriangle, CheckCircle, Clock, Droplets, MapPin } from 'lucide-react'
+import { AlertTriangle, Clock, Droplets, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
+import { formatLastReading } from './format-last-reading'
 import { WaterMeterCardSkeleton } from './water-meter-card-skeleton'
+import { WaterMeterStatusBadge } from './water-meter-status-badge'
 
 interface WaterMeterListProps {
   selectedZone: string
@@ -67,46 +69,6 @@ export default function WaterMeterList({
 
     return filtered
   }, [waterMeters, nameFilter, showOnlyExcess])
-
-  const getStatusBadge = (waterMeter: {
-    lastReadingDate: Date | null
-    lastReadingExcessConsumption: boolean | null
-  }) => {
-    if (!waterMeter.lastReadingDate) {
-      return (
-        <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">
-          <Clock className="h-3 w-3 mr-1" />
-          Sin lectura
-        </Badge>
-      )
-    }
-
-    if (waterMeter.lastReadingExcessConsumption) {
-      return (
-        <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">
-          <AlertTriangle className="h-3 w-3 mr-1" />
-          Exceso
-        </Badge>
-      )
-    }
-
-    return (
-      <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
-        <CheckCircle className="h-3 w-3 mr-1" />
-        Normal
-      </Badge>
-    )
-  }
-
-  const formatLastReading = (date: Date | null) => {
-    if (!date) return 'Sin lecturas'
-
-    const daysAgo = Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24))
-
-    if (daysAgo === 0) return 'Hoy'
-    if (daysAgo === 1) return 'Ayer'
-    return `Hace ${daysAgo} días`
-  }
 
   if (isLoading) {
     return (
@@ -169,7 +131,11 @@ export default function WaterMeterList({
                       Inactivo
                     </Badge>
                   )}
-                  {getStatusBadge(waterMeter)}
+                  <WaterMeterStatusBadge
+                    lastReadingDate={waterMeter.lastReadingDate}
+                    lastReadingExcessConsumption={waterMeter.lastReadingExcessConsumption}
+                    variant="compact"
+                  />
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">

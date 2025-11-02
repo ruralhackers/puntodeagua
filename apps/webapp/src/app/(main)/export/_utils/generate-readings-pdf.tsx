@@ -45,4 +45,3 @@ export async function generateReadingsPDF({
 
   return blob
 }
-

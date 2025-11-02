@@ -75,33 +75,33 @@ export default function ReadingsExportResultsPage() {
   const totalMeters = displayData.length
   const metersWithReadings = displayData.filter((meter) => meter.readings.length >= 2).length
   const metersWithInsufficientData = displayData.filter((meter) => meter.readings.length < 2).length
-  
+
   // Para calcular excesos necesitamos revisar cada contador
   const metersWithExcess = displayData.filter((meter) => {
     if (meter.readings.length < 2) return false
-    
+
     const lastReading = meter.readings[meter.readings.length - 1]
     const firstReading = meter.readings[0]
-    
+
     if (!lastReading || !firstReading) return false
-    
+
     const consumption = lastReading.normalizedReading - firstReading.normalizedReading
     const days = Math.floor(
       (new Date(lastReading.readingDate).getTime() - new Date(firstReading.readingDate).getTime()) /
         (1000 * 60 * 60 * 24)
     )
-    
+
     if (days <= 0) return false
-    
+
     const pax = meter.waterPoint.fixedPopulation + meter.waterPoint.floatingPopulation
     let maxAllowed = 0
-    
+
     if (meter.waterLimitRule.type === 'PERSON_BASED') {
       maxAllowed = days * pax * meter.waterLimitRule.value
     } else if (meter.waterLimitRule.type === 'HOUSEHOLD_BASED') {
       maxAllowed = days * meter.waterLimitRule.value
     }
-    
+
     return consumption > maxAllowed
   }).length
 
@@ -292,4 +292,3 @@ export default function ReadingsExportResultsPage() {
     </div>
   )
 }
-

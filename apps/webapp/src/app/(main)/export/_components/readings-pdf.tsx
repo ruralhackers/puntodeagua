@@ -277,9 +277,7 @@ export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsP
                       {meter.waterAccountName} - {meter.communityZone.name}
                     </Text>
                     <Text style={[styles.cellReading, styles.insufficientData]}>
-                      {meter.readings.length === 1
-                        ? 'Solo 1 lectura'
-                        : 'Sin lecturas'}
+                      {meter.readings.length === 1 ? 'Solo 1 lectura' : 'Sin lecturas'}
                     </Text>
                     <Text style={[styles.cellReading, styles.insufficientData]}>-</Text>
                     <Text style={[styles.cellConsumption, styles.insufficientData]}>
@@ -298,7 +296,8 @@ export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsP
 
               if (!firstReading || !lastReading) return null
 
-              const totalConsumption = lastReading.normalizedReading - firstReading.normalizedReading
+              const totalConsumption =
+                lastReading.normalizedReading - firstReading.normalizedReading
               const days = Math.floor(
                 (new Date(lastReading.readingDate).getTime() -
                   new Date(firstReading.readingDate).getTime()) /
@@ -344,7 +343,9 @@ export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsP
                   </Text>
                   <Text style={styles.cellTotal}>{formatNumber(totalConsumption)} L</Text>
                   <Text style={styles.cellMax}>{formatNumber(maxAllowed)} L</Text>
-                  <Text style={[styles.cellExcess, hasExcess ? styles.excessBadge : styles.okBadge]}>
+                  <Text
+                    style={[styles.cellExcess, hasExcess ? styles.excessBadge : styles.okBadge]}
+                  >
                     {hasExcess ? 'SÍ' : 'NO'}
                   </Text>
                 </View>
@@ -364,4 +365,3 @@ export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsP
     </Document>
   )
 }
-

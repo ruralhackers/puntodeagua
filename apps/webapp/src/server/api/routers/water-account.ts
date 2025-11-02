@@ -293,7 +293,7 @@ export const waterAccountRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       try {
         const { CommunityFactory } = await import('@pda/community')
-        
+
         // Get community ID from user session or input
         const communityId = input.communityId
           ? Id.fromString(input.communityId)
@@ -308,7 +308,7 @@ export const waterAccountRouter = createTRPCRouter({
         // Get community to access waterLimitRule
         const communityRepo = CommunityFactory.communityPrismaRepository()
         const community = await communityRepo.findById(communityId)
-        
+
         if (!community) {
           throw new Error('Comunidad no encontrada')
         }
@@ -320,10 +320,11 @@ export const waterAccountRouter = createTRPCRouter({
 
         // Get all zones for this community
         const zones = await communityZoneRepo.findByCommunityId(communityId)
-        const zoneIds = zones.map(zone => zone.id)
+        const zoneIds = zones.map((zone) => zone.id)
 
         // Get only active water meters
-        const waterMeters = await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
+        const waterMeters =
+          await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
 
         // For each water meter, get readings in the date range
         const result = await Promise.all(
@@ -345,7 +346,9 @@ export const waterAccountRouter = createTRPCRouter({
               }))
 
             // Get zone name
-            const zone = zones.find(z => z.id.toString() === waterMeter.waterPoint.communityZoneId)
+            const zone = zones.find(
+              (z) => z.id.toString() === waterMeter.waterPoint.communityZoneId
+            )
 
             return {
               id: waterMeter.id,

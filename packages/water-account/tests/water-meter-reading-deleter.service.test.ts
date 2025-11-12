@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import { ImageEntityType } from '@pda/storage'
 import type { FileDeleterService } from '../application/file-deleter.service'
-import { WaterMeterReadingDeleter } from '../application/water-meter-reading-deleter.service'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
+import { WaterMeterReadingDeleter } from '../application/water-meter-reading-deleter.service'
 import { WaterMeter, WaterMeterReading } from '../domain'
 import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-image'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
@@ -130,7 +130,9 @@ describe('WaterMeterReadingDeleter', () => {
     mockWaterMeterReadingRepository.findLastReading = mock().mockResolvedValue(defaultLastReading)
 
     // Act & Assert
-    await expect(service.run(oldReadingId)).rejects.toThrow('Can only delete the most recent reading')
+    await expect(service.run(oldReadingId)).rejects.toThrow(
+      'Can only delete the most recent reading'
+    )
 
     // Verify deletion was not attempted
     expect(mockWaterMeterReadingRepository.delete).not.toHaveBeenCalled()
@@ -377,4 +379,3 @@ describe('WaterMeterReadingDeleter', () => {
     expect(mockWaterMeterReadingRepository.delete).toHaveBeenCalledWith(readingId)
   })
 })
-

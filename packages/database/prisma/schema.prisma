@@ -84,6 +84,7 @@ model Community {
   waterDeposits WaterDeposit[]
   analyses      Analysis[]
   incidents     Incident[]
+  providers     Provider[]
 }
 
 model CommunityZone {
@@ -287,4 +288,51 @@ model Incident {
   @@index([communityZoneId])
   @@index([waterDepositId])
   @@index([waterPointId])
+}
+
+model Provider {
+  id          String  @id @default(cuid())
+  companyName String  @map("company_name")
+  taxId       String? @map("tax_id")
+
+  // Contact information
+  contactPerson  String  @map("contact_person")
+  contactPhone   String  @map("contact_phone")
+  contactEmail   String? @map("contact_email")
+  secondaryPhone String? @map("secondary_phone")
+  billingEmail   String? @map("billing_email")
+
+  // Address
+  address    String? @db.Text
+  city       String?
+  postalCode String? @map("postal_code")
+  province   String?
+
+  // Provider type (in English)
+  providerType       String  @map("provider_type")
+  customProviderType String? @map("custom_provider_type")
+
+  // Operational details
+  isActive           Boolean @default(true) @map("is_active")
+  notes              String  @default("") @db.Text
+  businessHours      String? @map("business_hours")
+  emergencyAvailable Boolean @default(false) @map("emergency_available")
+  emergencyPhone     String? @map("emergency_phone")
+
+  // Administrative/Financial
+  bankAccount  String? @map("bank_account")
+  paymentTerms String? @map("payment_terms")
+  website      String?
+
+  // Relations
+  communityId String?    @map("community_id")
+  community   Community? @relation(fields: [communityId], references: [id])
+
+  // Audit
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([communityId])
+  @@index([providerType])
+  @@index([isActive])
 }

@@ -305,7 +305,11 @@ export default function WaterMeterDetailPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCancelDelete} disabled={deleteReadingMutation.isPending}>
+            <Button
+              variant="outline"
+              onClick={handleCancelDelete}
+              disabled={deleteReadingMutation.isPending}
+            >
               Cancelar
             </Button>
             <Button

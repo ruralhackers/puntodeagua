@@ -1,10 +1,10 @@
-import { Id } from '@pda/common/domain'
+import type { Id } from '@pda/common/domain'
 import { ImageEntityType } from '@pda/storage'
-import type { FileDeleterService } from './file-deleter.service'
-import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
+import type { FileDeleterService } from './file-deleter.service'
+import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export class WaterMeterReadingDeleter {
   constructor(
@@ -29,9 +29,7 @@ export class WaterMeterReadingDeleter {
     }
 
     // Verify this is the last reading (safety check)
-    const lastReading = await this.waterMeterReadingRepository.findLastReading(
-      reading.waterMeterId
-    )
+    const lastReading = await this.waterMeterReadingRepository.findLastReading(reading.waterMeterId)
     if (!lastReading || !lastReading.id.equals(readingId)) {
       throw new Error('Can only delete the most recent reading')
     }
@@ -39,9 +37,8 @@ export class WaterMeterReadingDeleter {
     // Delete associated image if it exists
     if (this.waterMeterReadingImageRepository && this.fileDeleterService) {
       try {
-        const image = await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(
-          readingId
-        )
+        const image =
+          await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(readingId)
         if (image) {
           await this.fileDeleterService.run({
             entityId: image.id,
@@ -77,4 +74,3 @@ export class WaterMeterReadingDeleter {
     }
   }
 }
-

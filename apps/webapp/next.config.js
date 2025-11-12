@@ -16,7 +16,7 @@ const config = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.zeltia.ai',
+        hostname: 'images.puntodeagua.com',
         port: '',
         pathname: '/**'
       }

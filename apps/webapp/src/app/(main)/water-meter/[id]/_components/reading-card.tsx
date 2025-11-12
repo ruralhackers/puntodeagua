@@ -1,7 +1,7 @@
 import type { WaterMeterReadingImageDto } from '@pda/water-account'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Calendar, Camera, Droplets, Edit, FileText } from 'lucide-react'
+import { Calendar, Camera, Droplets, Edit, FileText, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
@@ -22,9 +22,10 @@ interface ReadingCardProps {
     notes: string | null
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   }) => void
+  onDelete: (readingId: string) => void
 }
 
-export function ReadingCard({ reading, index, onViewImage, onEdit }: ReadingCardProps) {
+export function ReadingCard({ reading, index, onViewImage, onEdit, onDelete }: ReadingCardProps) {
   return (
     <Card className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -100,6 +101,19 @@ export function ReadingCard({ reading, index, onViewImage, onEdit }: ReadingCard
             >
               <Edit className="h-3 w-3 mr-1" />
               Editar
+            </Button>
+          )}
+
+          {/* Botón de borrar solo para la última lectura */}
+          {index === 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onDelete(reading.id)}
+              className="shrink-0"
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Borrar
             </Button>
           )}
         </div>

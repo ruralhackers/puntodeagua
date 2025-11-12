@@ -149,6 +149,18 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
+  deleteWaterMeterReading: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        const service = WaterAccountFactory.waterMeterReadingDeleterService()
+        await service.run(Id.fromString(input.id))
+        return { success: true }
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
   recalculateWaterMeterExcess: protectedProcedure
     .input(z.object({ waterMeterId: z.string() }))
     .mutation(async ({ input }) => {

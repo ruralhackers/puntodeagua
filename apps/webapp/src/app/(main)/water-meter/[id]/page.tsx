@@ -37,6 +37,8 @@ export default function WaterMeterDetailPage() {
   const [addReadingModalOpen, setAddReadingModalOpen] = useState(false)
   const [imageModalOpen, setImageModalOpen] = useState(false)
   const [editImageModalOpen, setEditImageModalOpen] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [readingToDelete, setReadingToDelete] = useState<string | null>(null)
   const [editingReading, setEditingReading] = useState<{
     id: string
     reading: string
@@ -73,6 +75,21 @@ export default function WaterMeterDetailPage() {
     }
   })
 
+  const deleteReadingMutation = api.waterAccount.deleteWaterMeterReading.useMutation({
+    onSuccess: () => {
+      toast.success('Lectura eliminada correctamente')
+      utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
+      utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+      setDeleteConfirmOpen(false)
+      setReadingToDelete(null)
+    },
+    onError: (error) => {
+      toast.error('Error al eliminar la lectura', {
+        description: error.message
+      })
+    }
+  })
+
   const handleEditReading = (reading: {
     id: string
     reading: string
@@ -86,6 +103,22 @@ export default function WaterMeterDetailPage() {
   const handleEditSuccess = () => {
     utils.waterAccount.getWaterMeterReadings.invalidate({ waterMeterId })
     utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
+  }
+
+  const handleDeleteReading = (readingId: string) => {
+    setReadingToDelete(readingId)
+    setDeleteConfirmOpen(true)
+  }
+
+  const handleConfirmDelete = () => {
+    if (readingToDelete) {
+      deleteReadingMutation.mutate({ id: readingToDelete })
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmOpen(false)
+    setReadingToDelete(null)
   }
 
   const handleViewImage = (image: WaterMeterReadingImageDto) => {
@@ -200,6 +233,7 @@ export default function WaterMeterDetailPage() {
           error={readingsError}
           onViewImage={handleViewImage}
           onEdit={handleEditReading}
+          onDelete={handleDeleteReading}
         />
       </div>
 
@@ -255,6 +289,31 @@ export default function WaterMeterDetailPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setImageModalOpen(false)}>
               Cerrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo de confirmación de borrado */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>¿Confirmar eliminación?</DialogTitle>
+            <DialogDescription>
+              Estás a punto de eliminar la última lectura. Esta acción no se puede deshacer. El
+              contador se actualizará automáticamente con la lectura anterior.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelDelete} disabled={deleteReadingMutation.isPending}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleteReadingMutation.isPending}
+            >
+              {deleteReadingMutation.isPending ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogFooter>
         </DialogContent>

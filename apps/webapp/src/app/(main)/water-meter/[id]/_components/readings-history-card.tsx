@@ -24,6 +24,7 @@ interface ReadingsHistoryCardProps {
     notes: string | null
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   }) => void
+  onDelete: (readingId: string) => void
 }
 
 export function ReadingsHistoryCard({
@@ -31,7 +32,8 @@ export function ReadingsHistoryCard({
   isLoading,
   error,
   onViewImage,
-  onEdit
+  onEdit,
+  onDelete
 }: ReadingsHistoryCardProps) {
   return (
     <Card>
@@ -67,6 +69,7 @@ export function ReadingsHistoryCard({
                 index={index}
                 onViewImage={onViewImage}
                 onEdit={onEdit}
+                onDelete={onDelete}
               />
             ))}
           </div>

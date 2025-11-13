@@ -59,8 +59,12 @@ export const providersRouter = createTRPCRouter({
   deleteProvider: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
-      const repo = ProvidersFactory.providerPrismaRepository()
-      await repo.delete(Id.fromString(input.id))
-      return { success: true }
+      try {
+        const service = ProvidersFactory.providerDeleterService()
+        await service.run({ id: Id.fromString(input.id) })
+        return { success: true }
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

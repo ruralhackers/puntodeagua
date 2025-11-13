@@ -1,5 +1,6 @@
 import { client as prisma } from '@pda/database'
 import { ProviderCreator } from '../../application/provider-creator.service'
+import { ProviderDeleter } from '../../application/provider-deleter.service'
 import { ProviderUpdater } from '../../application/provider-updater.service'
 import { ProviderPrismaRepository } from '../repositories/provider.prisma-repository'
 
@@ -13,6 +14,10 @@ export class ProvidersFactory {
 
   static providerUpdaterService() {
     return new ProviderUpdater(ProvidersFactory.providerPrismaRepository())
+  }
+
+  static providerDeleterService() {
+    return new ProviderDeleter(ProvidersFactory.providerPrismaRepository())
   }
 
   static providerPrismaRepository() {

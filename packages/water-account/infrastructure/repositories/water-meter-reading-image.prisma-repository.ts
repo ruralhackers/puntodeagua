@@ -1,6 +1,7 @@
 import type { Id } from '@pda/common/domain'
 import { BasePrismaRepository } from '@pda/common/infrastructure'
 import type { Prisma, client as prisma } from '@pda/database'
+import type { EntityFileRepository } from '@pda/storage'
 import { WaterMeterReadingImage } from '../../domain/entities/water-meter-reading-image'
 import type { WaterMeterReadingImageRepository } from '../../domain/repositories/water-meter-reading-image.repository'
 
@@ -14,7 +15,7 @@ export const fromWaterMeterReadingImagePrismaPayload = (
 
 export class WaterMeterReadingImagePrismaRepository
   extends BasePrismaRepository
-  implements WaterMeterReadingImageRepository
+  implements WaterMeterReadingImageRepository, EntityFileRepository<WaterMeterReadingImage>
 {
   protected readonly model = 'waterMeterReadingImage'
 
@@ -76,5 +77,10 @@ export class WaterMeterReadingImagePrismaRepository
     await this.getModel().delete({
       where: { id: id.toString() }
     })
+  }
+
+  async findByEntityId(waterMeterReadingId: Id): Promise<WaterMeterReadingImage[]> {
+    const image = await this.findByWaterMeterReadingId(waterMeterReadingId)
+    return image ? [image] : []
   }
 }

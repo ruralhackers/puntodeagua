@@ -1,6 +1,7 @@
 import type { Id } from '@pda/common/domain'
-import { type FileMetadata, ImageEntityType } from '@pda/storage'
+import { type FileMetadata, type FileUploaderService, ImageEntityType } from '@pda/storage'
 import { WaterMeter } from '../domain/entities/water-meter'
+import { WaterMeterImage } from '../domain/entities/water-meter-image'
 import {
   WaterMeterInactiveError,
   WaterMeterNotFoundError,
@@ -8,7 +9,6 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import { MeasurementUnit } from '../domain/value-objects/measurement-unit'
-import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterReadingCreator } from './water-meter-reading-creator.service'
 
 export interface WaterMeterReplacerResult {
@@ -96,7 +96,17 @@ export class WaterMeterReplacer {
           file: params.image.file,
           entityId: newWaterMeter.id,
           entityType: ImageEntityType.WATER_METER,
-          metadata: params.image.metadata
+          metadata: params.image.metadata,
+          storageFolder: 'water-meters',
+          createEntity: (uploadResult) =>
+            WaterMeterImage.create({
+              waterMeterId: newWaterMeter.id.toString(),
+              url: uploadResult.url,
+              fileName: uploadResult.metadata.fileName,
+              fileSize: uploadResult.metadata.fileSize,
+              mimeType: uploadResult.metadata.mimeType,
+              externalKey: uploadResult.externalKey
+            })
         })
         imageUploaded = true
       } catch (error) {

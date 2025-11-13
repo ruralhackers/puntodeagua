@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
 import { WaterMeterItem } from './water-meter-item'
 import { WaterMeterListSkeleton } from './water-meter-list-skeleton'
@@ -12,12 +13,23 @@ interface WaterMeterListProps {
 }
 
 export function WaterMeterList({ selectedZones, nameFilter, showOnlyExcess }: WaterMeterListProps) {
+  const zones = useCommunityZonesStore((state) => state.zones)
+
+  // If no specific zones are selected, use all zones from the user's community
+  // This ensures we only show water meters from the user's community
+  const zoneIdsToQuery = useMemo(() => {
+    if (selectedZones.length > 0) {
+      return selectedZones
+    }
+    return zones.map((zone) => zone.id)
+  }, [selectedZones, zones])
+
   const {
     data: waterMeters,
     isLoading,
     error
   } = api.waterAccount.getActiveWaterMetersOrderedByLastReading.useQuery({
-    zoneIds: selectedZones
+    zoneIds: zoneIdsToQuery
   })
 
   const filteredWaterMeters = useMemo(() => {

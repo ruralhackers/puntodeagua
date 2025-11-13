@@ -166,6 +166,7 @@
       "dependencies": {
         "@pda/common": "workspace:*",
         "@pda/database": "workspace:*",
+        "@pda/storage": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {

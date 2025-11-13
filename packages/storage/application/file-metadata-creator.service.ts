@@ -1,4 +1,4 @@
-import { DEFAULT_FILE_EXTENSION, FileMetadata } from '@pda/storage'
+import { DEFAULT_FILE_EXTENSION, FileMetadata } from '../domain'
 
 export class FileMetadataCreatorService {
   static createFileMetadata(params: {

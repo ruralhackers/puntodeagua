@@ -1,6 +1,7 @@
 import { Decimal, type Id } from '@pda/common/domain'
-import { type FileMetadata, ImageEntityType } from '@pda/storage'
+import { type FileMetadata, type FileUploaderService, ImageEntityType } from '@pda/storage'
 import { WaterMeterReading } from '../domain/entities/water-meter-reading'
+import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-image'
 import {
   WaterMeterNotFoundError,
   WaterMeterReadingDateNotAllowedError,
@@ -8,7 +9,6 @@ import {
 } from '../domain/errors/water-meter-errors'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
-import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export interface WaterMeterReadingCreatorResult {
@@ -76,7 +76,18 @@ export class WaterMeterReadingCreator {
           file: image.file,
           entityId: newWaterReading.id,
           entityType: ImageEntityType.WATER_METER_READING,
-          metadata: image.metadata
+          metadata: image.metadata,
+          storageFolder: 'water-meter-readings',
+          createEntity: (uploadResult) =>
+            WaterMeterReadingImage.create({
+              waterMeterReadingId: newWaterReading.id.toString(),
+              url: uploadResult.url,
+              fileName: uploadResult.metadata.fileName,
+              fileSize: uploadResult.metadata.fileSize,
+              mimeType: uploadResult.metadata.mimeType,
+              uploadedAt: new Date(),
+              externalKey: uploadResult.externalKey
+            })
         })
       } catch (error) {
         imageUploadFailed = true

@@ -1,9 +1,8 @@
 import type { Id } from '@pda/common/domain'
-import { ImageEntityType } from '@pda/storage'
+import { type FileDeleterService, ImageEntityType } from '@pda/storage'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
-import type { FileDeleterService } from './file-deleter.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export class WaterMeterReadingDeleter {
@@ -41,7 +40,7 @@ export class WaterMeterReadingDeleter {
           await this.waterMeterReadingImageRepository.findByWaterMeterReadingId(readingId)
         if (image) {
           await this.fileDeleterService.run({
-            entityId: image.id,
+            fileId: image.id,
             entityType: ImageEntityType.WATER_METER_READING
           })
         }

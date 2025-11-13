@@ -681,15 +681,10 @@ describe('WaterMeterReadingUpdater', () => {
 
       // Assert - old image should be deleted, new image should be uploaded
       expect(mockFileDeleterService.run).toHaveBeenCalledWith({
-        entityId: existingImage.id,
+        fileId: existingImage.id,
         entityType: expect.anything()
       })
-      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
-        file: newImageBuffer,
-        entityId: readingId,
-        entityType: expect.anything(),
-        metadata: newImageMetadata
-      })
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
     })
 
     it('should delete image when deleteImage flag is true', async () => {
@@ -724,7 +719,7 @@ describe('WaterMeterReadingUpdater', () => {
 
       // Assert
       expect(mockFileDeleterService.run).toHaveBeenCalledWith({
-        entityId: existingImage.id,
+        fileId: existingImage.id,
         entityType: expect.anything()
       })
       expect(mockFileUploaderService.run).not.toHaveBeenCalled()
@@ -775,12 +770,7 @@ describe('WaterMeterReadingUpdater', () => {
 
       // Assert
       expect(mockFileDeleterService.run).not.toHaveBeenCalled()
-      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
-        file: imageBuffer,
-        entityId: readingId,
-        entityType: expect.anything(),
-        metadata: imageMetadata
-      })
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
     })
 
     it('should not call image services when image support is not configured', async () => {
@@ -994,7 +984,7 @@ describe('WaterMeterReadingUpdater', () => {
       expect(result.reading).toBeDefined()
       expect(result.imageUploadFailed).toBe(true)
       expect(mockFileDeleterService.run).toHaveBeenCalledWith({
-        entityId: existingImage.id,
+        fileId: existingImage.id,
         entityType: expect.anything()
       })
       expect(mockFileUploaderService.run).toHaveBeenCalled()

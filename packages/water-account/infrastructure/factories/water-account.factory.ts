@@ -1,8 +1,11 @@
 import { CommunityFactory } from '@pda/community'
 import { client as prisma } from '@pda/database'
-import { R2FileStorageRepository } from '@pda/storage'
-import { FileDeleterService } from '../../application/file-deleter.service'
-import { FileUploaderService } from '../../application/file-uploader.service'
+import {
+  FileDeleterService,
+  FileEntityType,
+  FileUploaderService,
+  R2FileStorageRepository
+} from '@pda/storage'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
 import { WaterMeterImageUpdaterService } from '../../application/water-meter-image-updater.service'
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
@@ -57,19 +60,31 @@ export class WaterAccountFactory {
   }
 
   static fileUploaderService() {
-    return new FileUploaderService(
-      WaterAccountFactory.r2FileStorageRepository(),
-      WaterAccountFactory.waterMeterReadingImagePrismaRepository(),
+    const repositoryMap = new Map()
+    repositoryMap.set(
+      FileEntityType.WATER_METER,
       WaterAccountFactory.waterMeterImagePrismaRepository()
     )
+    repositoryMap.set(
+      FileEntityType.WATER_METER_READING,
+      WaterAccountFactory.waterMeterReadingImagePrismaRepository()
+    )
+
+    return new FileUploaderService(WaterAccountFactory.r2FileStorageRepository(), repositoryMap)
   }
 
   static fileDeleterService() {
-    return new FileDeleterService(
-      WaterAccountFactory.r2FileStorageRepository(),
-      WaterAccountFactory.waterMeterReadingImagePrismaRepository(),
+    const repositoryMap = new Map()
+    repositoryMap.set(
+      FileEntityType.WATER_METER,
       WaterAccountFactory.waterMeterImagePrismaRepository()
     )
+    repositoryMap.set(
+      FileEntityType.WATER_METER_READING,
+      WaterAccountFactory.waterMeterReadingImagePrismaRepository()
+    )
+
+    return new FileDeleterService(WaterAccountFactory.r2FileStorageRepository(), repositoryMap)
   }
 
   static waterMeterExcessRecalculatorService() {

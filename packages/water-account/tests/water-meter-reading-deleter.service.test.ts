@@ -226,7 +226,7 @@ describe('WaterMeterReadingDeleter', () => {
       readingId
     )
     expect(mockFileDeleterService.run).toHaveBeenCalledWith({
-      entityId: image.id,
+      fileId: image.id,
       entityType: ImageEntityType.WATER_METER_READING
     })
   })

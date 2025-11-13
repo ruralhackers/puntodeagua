@@ -19,6 +19,12 @@ const config = {
         hostname: 'images.puntodeagua.com',
         port: '',
         pathname: '/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.zeltia.ai',
+        port: '',
+        pathname: '/**'
       }
     ]
   }

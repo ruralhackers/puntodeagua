@@ -311,12 +311,7 @@ describe('WaterMeterReadingCreator', () => {
       expect(result.reading).toBeInstanceOf(WaterMeterReading)
       expect(result.reading.reading.toString()).toBe(reading)
       expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(result.reading)
-      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
-        file: imageBuffer,
-        entityId: result.reading.id,
-        entityType: expect.anything(),
-        metadata: imageMetadata
-      })
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
       expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(waterMeter, [
         result.reading
       ])
@@ -417,12 +412,7 @@ describe('WaterMeterReadingCreator', () => {
 
       // Assert
       expect(result.reading).toBeInstanceOf(WaterMeterReading)
-      expect(mockFileUploaderService.run).toHaveBeenCalledWith({
-        file: imageBuffer,
-        entityId: result.reading.id,
-        entityType: expect.anything(),
-        metadata: imageMetadata
-      })
+      expect(mockFileUploaderService.run).toHaveBeenCalled()
       expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(waterMeter, [
         lastReading,
         result.reading

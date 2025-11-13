@@ -1,7 +1,13 @@
 import { Decimal, type Id } from '@pda/common/domain'
-import { type FileMetadata, ImageEntityType } from '@pda/storage'
+import {
+  type FileDeleterService,
+  type FileMetadata,
+  type FileUploaderService,
+  ImageEntityType
+} from '@pda/storage'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterReadingUpdateDto } from '../domain/entities/water-meter-reading.dto'
+import { WaterMeterReadingImage } from '../domain/entities/water-meter-reading-image'
 import {
   WaterMeterNotFoundError,
   WaterMeterReadingNotAllowedError,
@@ -10,8 +16,6 @@ import {
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 import type { WaterMeterReadingRepository } from '../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterReadingImageRepository } from '../domain/repositories/water-meter-reading-image.repository'
-import type { FileDeleterService } from './file-deleter.service'
-import type { FileUploaderService } from './file-uploader.service'
 import type { WaterMeterLastReadingUpdater } from './water-meter-last-reading-updater.service'
 
 export interface WaterMeterReadingUpdaterResult {
@@ -108,7 +112,7 @@ export class WaterMeterReadingUpdater {
       if (existingImage && (deleteImage || image)) {
         try {
           await this.fileDeleterService.run({
-            entityId: existingImage.id,
+            fileId: existingImage.id,
             entityType: ImageEntityType.WATER_METER_READING
           })
         } catch (error) {
@@ -125,7 +129,18 @@ export class WaterMeterReadingUpdater {
             file: image.file,
             entityId: id,
             entityType: ImageEntityType.WATER_METER_READING,
-            metadata: image.metadata
+            metadata: image.metadata,
+            storageFolder: 'water-meter-readings',
+            createEntity: (uploadResult) =>
+              WaterMeterReadingImage.create({
+                waterMeterReadingId: id.toString(),
+                url: uploadResult.url,
+                fileName: uploadResult.metadata.fileName,
+                fileSize: uploadResult.metadata.fileSize,
+                mimeType: uploadResult.metadata.mimeType,
+                uploadedAt: new Date(),
+                externalKey: uploadResult.externalKey
+              })
           })
         } catch (error) {
           imageUploadFailed = true

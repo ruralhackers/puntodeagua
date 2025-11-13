@@ -10,4 +10,3 @@ export class ProviderCreator {
     return provider
   }
 }
-

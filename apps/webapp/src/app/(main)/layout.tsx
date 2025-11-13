@@ -37,12 +37,12 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
               // On wider screens with collapsed sidebar, removes margin and sets margin auto for alignment.
               'max-[113rem]:peer-data-[variant=inset]:!mr-2 min-[101rem]:peer-data-[variant=inset]:peer-data-[state=collapsed]:!mr-auto',
               // Ensure proper flexbox layout for scroll and add background
-              'flex flex-col h-screen bg-gradient-to-br from-blue-50/40 to-slate-50/60'
+              'flex flex-col overflow-y-auto bg-gradient-to-br from-blue-50/40 to-slate-50/60'
             )}
           >
             <Header session={session} />
             <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
-              <div className="min-h-0 flex-1 p-4 md:p-6 overflow-y-auto">{children}</div>
+              <div className="flex-1 p-4 md:p-6">{children}</div>
               <Footer />
             </CommunityZonesStoreProvider>
           </SidebarInset>

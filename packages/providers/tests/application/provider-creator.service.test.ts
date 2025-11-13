@@ -74,30 +74,6 @@ describe('ProviderCreator', () => {
     expect(mockProviderRepository.save).toHaveBeenCalledWith(provider)
   })
 
-  it('should create provider with type "other" and customProviderType', async () => {
-    // Arrange
-    const provider = Provider.create({
-      companyName: 'Custom Service',
-      contactPerson: 'Bob Johnson',
-      contactPhone: '+1234567890',
-      providerType: 'other',
-      customProviderType: 'Carpentry',
-      isActive: true,
-      emergencyAvailable: false
-    })
-
-    mockProviderRepository.save = mock().mockResolvedValue(undefined)
-
-    // Act
-    const result = await service.run({ provider })
-
-    // Assert
-    expect(result).toBeInstanceOf(Provider)
-    expect(result.providerType.toString()).toBe('other')
-    expect(result.customProviderType).toBe('Carpentry')
-    expect(mockProviderRepository.save).toHaveBeenCalledWith(provider)
-  })
-
   it('should pass provider to repository save method', async () => {
     // Arrange
     const provider = Provider.create({
@@ -119,4 +95,3 @@ describe('ProviderCreator', () => {
     expect(mockProviderRepository.save).toHaveBeenCalledWith(provider)
   })
 })
-

@@ -3,6 +3,7 @@ import { registersRouter } from './routers/analysis'
 import { authRouter } from './routers/auth'
 import { communityRouter } from './routers/community'
 import { incidentsRouter } from './routers/incident'
+import { providersRouter } from './routers/provider'
 import { tableRouter } from './routers/table'
 import { userRouter } from './routers/user'
 import { waterAccountRouter } from './routers/water-account'
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   community: communityRouter,
   registers: registersRouter,
   incidents: incidentsRouter,
+  providers: providersRouter,
   user: userRouter,
   table: tableRouter,
   waterAccount: waterAccountRouter

@@ -309,8 +309,7 @@ model Provider {
   province   String?
 
   // Provider type (in English)
-  providerType       String  @map("provider_type")
-  customProviderType String? @map("custom_provider_type")
+  providerType String @map("provider_type")
 
   // Operational details
   isActive           Boolean @default(true) @map("is_active")

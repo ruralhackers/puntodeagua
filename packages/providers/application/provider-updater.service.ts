@@ -1,4 +1,4 @@
-import { Id } from '@pda/common/domain'
+import type { Id } from '@pda/common/domain'
 import type { ProviderUpdateDto } from '../domain/entities/provider.dto'
 import { ProviderNotFoundError } from '../domain/errors/provider-errors'
 import type { ProviderRepository } from '../domain/repositories/provider.repository'
@@ -20,4 +20,3 @@ export class ProviderUpdater {
     return provider
   }
 }
-

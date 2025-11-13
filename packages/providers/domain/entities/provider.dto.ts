@@ -2,7 +2,7 @@ import { idSchema } from '@pda/common/domain'
 import { z } from 'zod'
 import { ProviderType } from '../value-objects/provider-type'
 
-const providerBaseSchema = z.object({
+export const providerSchema = z.object({
   id: idSchema,
   companyName: z.string().min(1, 'Company name is required'),
   taxId: z.string().optional(),
@@ -22,7 +22,6 @@ const providerBaseSchema = z.object({
 
   // Provider type (in English)
   providerType: z.enum(ProviderType.values() as [string, ...string[]]),
-  customProviderType: z.string().optional(),
 
   // Operational details
   isActive: z.boolean().default(true),
@@ -34,29 +33,15 @@ const providerBaseSchema = z.object({
   // Administrative/Financial
   bankAccount: z.string().optional(),
   paymentTerms: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
+  website: z.string().optional(),
 
   // Relations
   communityId: idSchema.optional()
 })
 
-export const providerSchema = providerBaseSchema.refine(
-  (data) => {
-    // If providerType is "other", customProviderType is required
-    if (data.providerType === 'other') {
-      return data.customProviderType && data.customProviderType.trim().length > 0
-    }
-    return true
-  },
-  {
-    message: 'Custom provider type is required when provider type is "other"',
-    path: ['customProviderType']
-  }
-)
+export type ProviderDto = z.infer<typeof providerSchema>
 
-export type ProviderDto = z.infer<typeof providerBaseSchema>
-
-const providerUpdateBaseSchema = z.object({
+export const providerUpdateSchema = z.object({
   companyName: z.string().min(1, 'Company name is required'),
   taxId: z.string().optional(),
   contactPerson: z.string().min(1, 'Contact person is required'),
@@ -69,7 +54,6 @@ const providerUpdateBaseSchema = z.object({
   postalCode: z.string().optional(),
   province: z.string().optional(),
   providerType: z.enum(ProviderType.values() as [string, ...string[]]),
-  customProviderType: z.string().optional(),
   isActive: z.boolean(),
   notes: z.string().optional(),
   businessHours: z.string().optional(),
@@ -77,22 +61,8 @@ const providerUpdateBaseSchema = z.object({
   emergencyPhone: z.string().optional(),
   bankAccount: z.string().optional(),
   paymentTerms: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
+  website: z.string().optional(),
   communityId: idSchema.optional()
 })
 
-export const providerUpdateSchema = providerUpdateBaseSchema.refine(
-  (data) => {
-    if (data.providerType === 'other') {
-      return data.customProviderType && data.customProviderType.trim().length > 0
-    }
-    return true
-  },
-  {
-    message: 'Custom provider type is required when provider type is "other"',
-    path: ['customProviderType']
-  }
-)
-
-export type ProviderUpdateDto = z.infer<typeof providerUpdateBaseSchema>
-
+export type ProviderUpdateDto = z.infer<typeof providerUpdateSchema>

@@ -30,9 +30,9 @@ describe('ProviderUpdater', () => {
     mockProviderRepository.findById = mock().mockResolvedValue(undefined)
 
     // Act & Assert
-    await expect(
-      service.run({ id: providerId, updatedProviderData: updateData })
-    ).rejects.toThrow(ProviderNotFoundError)
+    await expect(service.run({ id: providerId, updatedProviderData: updateData })).rejects.toThrow(
+      ProviderNotFoundError
+    )
 
     expect(mockProviderRepository.findById).toHaveBeenCalledWith(providerId)
     expect(mockProviderRepository.save).not.toHaveBeenCalled()
@@ -72,39 +72,6 @@ describe('ProviderUpdater', () => {
     expect(result.notes).toBe('Updated notes')
     expect(mockProviderRepository.findById).toHaveBeenCalledWith(provider.id)
     expect(mockProviderRepository.save).toHaveBeenCalledWith(provider)
-  })
-
-  it('should update provider to "other" with customProviderType', async () => {
-    // Arrange
-    const provider = Provider.create({
-      companyName: 'Test Company',
-      contactPerson: 'Jane Smith',
-      contactPhone: '+1234567890',
-      providerType: 'plumbing',
-      isActive: true,
-      emergencyAvailable: false
-    })
-
-    const updateData = {
-      companyName: 'Test Company',
-      contactPerson: 'Jane Smith',
-      contactPhone: '+1234567890',
-      providerType: 'other' as const,
-      customProviderType: 'Painting',
-      isActive: true,
-      emergencyAvailable: false
-    }
-
-    mockProviderRepository.findById = mock().mockResolvedValue(provider)
-    mockProviderRepository.save = mock().mockResolvedValue(undefined)
-
-    // Act
-    const result = await service.run({ id: provider.id, updatedProviderData: updateData })
-
-    // Assert
-    expect(result.providerType.toString()).toBe('other')
-    expect(result.customProviderType).toBe('Painting')
-    expect(mockProviderRepository.save).toHaveBeenCalled()
   })
 
   it('should maintain provider id after update', async () => {
@@ -216,4 +183,3 @@ describe('ProviderUpdater', () => {
     expect(result.notes).toBe('New notes')
   })
 })
-

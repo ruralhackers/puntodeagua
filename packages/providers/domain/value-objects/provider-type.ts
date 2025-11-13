@@ -1,11 +1,10 @@
-const providerTypes = ['plumbing', 'electricity', 'analysis', 'masonry', 'other'] as const
+const providerTypes = ['plumbing', 'electricity', 'analysis', 'masonry'] as const
 
 export class ProviderType {
   static readonly PLUMBING = ProviderType.fromString('plumbing')
   static readonly ELECTRICITY = ProviderType.fromString('electricity')
   static readonly ANALYSIS = ProviderType.fromString('analysis')
   static readonly MASONRY = ProviderType.fromString('masonry')
-  static readonly OTHER = ProviderType.fromString('other')
 
   private constructor(private readonly value: string) {}
 
@@ -31,9 +30,4 @@ export class ProviderType {
   toString(): string {
     return this.value
   }
-
-  isOther(): boolean {
-    return this.value === 'other'
-  }
 }
-

@@ -82,6 +82,12 @@ export function AccountMenu() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
+            <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
+              <ShieldUser />
+              Proveedores
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
               <Download />
               Exportar

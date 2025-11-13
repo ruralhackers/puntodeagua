@@ -22,4 +22,3 @@ export interface ProviderRepository
   save(provider: Provider): Promise<void>
   delete(id: Id): Promise<void>
 }
-

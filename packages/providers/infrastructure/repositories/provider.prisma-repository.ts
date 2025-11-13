@@ -113,4 +113,3 @@ export class ProviderPrismaRepository extends BasePrismaRepository implements Pr
     }
   }
 }
-

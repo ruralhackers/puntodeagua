@@ -42,6 +42,7 @@
         "@pda/common": "workspace:*",
         "@pda/community": "workspace:*",
         "@pda/database": "workspace:*",
+        "@pda/providers": "workspace:*",
         "@pda/registers": "workspace:*",
         "@pda/storage": "workspace:*",
         "@pda/user": "workspace:*",

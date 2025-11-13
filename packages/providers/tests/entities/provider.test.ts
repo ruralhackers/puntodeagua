@@ -2,28 +2,12 @@ import { describe, expect, it } from 'bun:test'
 import { Id } from '@pda/common/domain'
 import { Provider } from '../../domain/entities/provider'
 import type { ProviderDto } from '../../domain/entities/provider.dto'
-import { CustomProviderTypeRequiredError } from '../../domain/errors/provider-errors'
 import { ProviderType } from '../../domain/value-objects/provider-type'
 
 describe('Provider', () => {
   const validCommunityId = 'clx12345678901234567890123'
 
   describe('create()', () => {
-    it('should throw error when type is "other" without customProviderType', () => {
-      // Arrange
-      const dto = {
-        companyName: 'Test Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'other' as const,
-        isActive: true,
-        emergencyAvailable: false
-      }
-
-      // Act & Assert
-      expect(() => Provider.create(dto)).toThrow(CustomProviderTypeRequiredError)
-    })
-
     it('should create provider with all required fields', () => {
       // Arrange
       const dto = {
@@ -95,26 +79,6 @@ describe('Provider', () => {
       expect(provider.website).toBe('https://test.com')
       expect(provider.communityId?.toString()).toBe(validCommunityId)
     })
-
-    it('should create provider with type "other" and customProviderType', () => {
-      // Arrange
-      const dto = {
-        companyName: 'Custom Service Company',
-        contactPerson: 'Jane Smith',
-        contactPhone: '+1234567890',
-        providerType: 'other' as const,
-        customProviderType: 'Carpentry',
-        isActive: true,
-        emergencyAvailable: false
-      }
-
-      // Act
-      const provider = Provider.create(dto)
-
-      // Assert
-      expect(provider.providerType.equals(ProviderType.OTHER)).toBe(true)
-      expect(provider.customProviderType).toBe('Carpentry')
-    })
   })
 
   describe('fromDto()', () => {
@@ -134,7 +98,6 @@ describe('Provider', () => {
         postalCode: '12345',
         province: 'Test Province',
         providerType: 'analysis',
-        customProviderType: undefined,
         isActive: true,
         notes: 'Test notes',
         businessHours: '9-5',
@@ -178,7 +141,6 @@ describe('Provider', () => {
       expect(provider.contactEmail).toBeUndefined()
       expect(provider.secondaryPhone).toBeUndefined()
       expect(provider.address).toBeUndefined()
-      expect(provider.customProviderType).toBeUndefined()
       expect(provider.communityId).toBeUndefined()
     })
   })
@@ -200,7 +162,6 @@ describe('Provider', () => {
         postalCode: '12345',
         province: 'Test Province',
         providerType: 'plumbing',
-        customProviderType: undefined,
         isActive: true,
         notes: 'Test notes',
         businessHours: '9-5',
@@ -270,98 +231,6 @@ describe('Provider', () => {
       expect(provider.providerType.equals(ProviderType.ELECTRICITY)).toBe(true)
       expect(provider.isActive).toBe(false)
       expect(provider.notes).toBe('Updated notes')
-    })
-
-    it('should throw error when updating to "other" without customProviderType', () => {
-      // Arrange
-      const provider = Provider.create({
-        companyName: 'Test Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'plumbing',
-        isActive: true,
-        emergencyAvailable: false
-      })
-
-      const updateData = {
-        companyName: 'Test Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'other' as const,
-        isActive: true,
-        emergencyAvailable: false
-      }
-
-      // Act & Assert
-      expect(() => provider.update(updateData)).toThrow(CustomProviderTypeRequiredError)
-    })
-
-    it('should update provider to "other" with customProviderType', () => {
-      // Arrange
-      const provider = Provider.create({
-        companyName: 'Test Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'plumbing',
-        isActive: true,
-        emergencyAvailable: false
-      })
-
-      const updateData = {
-        companyName: 'Test Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'other' as const,
-        customProviderType: 'Painting',
-        isActive: true,
-        emergencyAvailable: false
-      }
-
-      // Act
-      provider.update(updateData)
-
-      // Assert
-      expect(provider.providerType.equals(ProviderType.OTHER)).toBe(true)
-      expect(provider.customProviderType).toBe('Painting')
-    })
-  })
-
-  describe('getDisplayType()', () => {
-    it('should return customProviderType when type is "other"', () => {
-      // Arrange
-      const provider = Provider.create({
-        companyName: 'Custom Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'other',
-        customProviderType: 'Carpentry',
-        isActive: true,
-        emergencyAvailable: false
-      })
-
-      // Act
-      const displayType = provider.getDisplayType()
-
-      // Assert
-      expect(displayType).toBe('Carpentry')
-    })
-
-    it('should return provider type when not "other"', () => {
-      // Arrange
-      const provider = Provider.create({
-        companyName: 'Plumbing Company',
-        contactPerson: 'John Doe',
-        contactPhone: '+1234567890',
-        providerType: 'plumbing',
-        isActive: true,
-        emergencyAvailable: false
-      })
-
-      // Act
-      const displayType = provider.getDisplayType()
-
-      // Assert
-      expect(displayType).toBe('plumbing')
     })
   })
 
@@ -549,4 +418,3 @@ describe('Provider', () => {
     })
   })
 })
-

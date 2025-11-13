@@ -1,5 +1,4 @@
 import { Id } from '@pda/common/domain'
-import { CustomProviderTypeRequiredError } from '../errors/provider-errors'
 import { ProviderType } from '../value-objects/provider-type'
 import type { ProviderDto, ProviderUpdateDto } from './provider.dto'
 import { providerSchema, providerUpdateSchema } from './provider.dto'
@@ -19,7 +18,6 @@ export class Provider {
     public readonly postalCode: string | undefined,
     public readonly province: string | undefined,
     public providerType: ProviderType,
-    public customProviderType: string | undefined,
     public isActive: boolean,
     public notes: string | undefined,
     public readonly businessHours: string | undefined,
@@ -32,23 +30,10 @@ export class Provider {
   ) {}
 
   static create(providerData: Omit<ProviderDto, 'id'>) {
-    // Validate using Zod schema (includes customProviderType validation)
-    let validatedData: ProviderDto
-    try {
-      validatedData = providerSchema.parse({ ...providerData, id: 'temp' }) as ProviderDto
-    } catch (error) {
-      // Check if error is a ZodError about customProviderType
-      if (error instanceof Error && error.message.includes('customProviderType')) {
-        throw new CustomProviderTypeRequiredError()
-      }
-      throw error
-    }
+    // Validate using Zod schema
+    const validatedData = providerSchema.parse({ ...providerData, id: 'temp' }) as ProviderDto
 
-    // Additional business logic validation
     const providerType = ProviderType.fromString(validatedData.providerType)
-    if (providerType.isOther() && !validatedData.customProviderType?.trim()) {
-      throw new CustomProviderTypeRequiredError()
-    }
 
     return new Provider(
       Id.generateUniqueId(),
@@ -64,7 +49,6 @@ export class Provider {
       validatedData.postalCode,
       validatedData.province,
       providerType,
-      validatedData.customProviderType,
       validatedData.isActive,
       validatedData.notes,
       validatedData.businessHours,
@@ -92,7 +76,6 @@ export class Provider {
       dto.postalCode,
       dto.province,
       ProviderType.fromString(dto.providerType),
-      dto.customProviderType,
       dto.isActive,
       dto.notes,
       dto.businessHours,
@@ -106,25 +89,12 @@ export class Provider {
   }
 
   public update(providerData: ProviderUpdateDto): Provider {
-    // Validate using Zod schema (includes customProviderType validation)
-    let validatedData: ProviderUpdateDto
-    try {
-      validatedData = providerUpdateSchema.parse(providerData) as ProviderUpdateDto
-    } catch (error) {
-      // Check if error is a ZodError about customProviderType
-      if (error instanceof Error && error.message.includes('customProviderType')) {
-        throw new CustomProviderTypeRequiredError()
-      }
-      throw error
-    }
-    
+    // Validate using Zod schema
+    const validatedData = providerUpdateSchema.parse(providerData) as ProviderUpdateDto
+
     const providerType = ProviderType.fromString(validatedData.providerType)
-    if (providerType.isOther() && !validatedData.customProviderType?.trim()) {
-      throw new CustomProviderTypeRequiredError()
-    }
 
     this.providerType = providerType
-    this.customProviderType = validatedData.customProviderType
     this.isActive = validatedData.isActive
     this.notes = validatedData.notes
 
@@ -146,7 +116,6 @@ export class Provider {
       postalCode: this.postalCode,
       province: this.province,
       providerType: this.providerType.toString(),
-      customProviderType: this.customProviderType,
       isActive: this.isActive,
       notes: this.notes,
       businessHours: this.businessHours,
@@ -158,12 +127,4 @@ export class Provider {
       communityId: this.communityId?.toString()
     }
   }
-
-  getDisplayType(): string {
-    if (this.providerType.isOther() && this.customProviderType) {
-      return this.customProviderType
-    }
-    return this.providerType.toString()
-  }
 }
-

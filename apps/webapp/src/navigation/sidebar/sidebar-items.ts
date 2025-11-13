@@ -1,5 +1,6 @@
 import {
   AlertTriangle,
+  Building2,
   ChartBar,
   Download,
   Fingerprint,
@@ -87,6 +88,11 @@ export const sidebarItems: NavGroup[] = [
         title: 'Incidencias',
         url: '/incidents',
         icon: AlertTriangle
+      },
+      {
+        title: 'Proveedores',
+        url: '/provider',
+        icon: Building2
       },
       {
         title: 'Gestión',

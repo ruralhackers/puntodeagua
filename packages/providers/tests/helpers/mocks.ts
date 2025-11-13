@@ -11,4 +11,3 @@ export const createMockProviderRepository = (): ProviderRepository => {
     findByCommunityId: mock()
   } as unknown as ProviderRepository
 }
-

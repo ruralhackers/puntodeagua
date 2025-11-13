@@ -49,8 +49,7 @@ export const providerTableConfig: TableConfig<Provider> = {
         { value: 'plumbing', label: 'Plumbing' },
         { value: 'electricity', label: 'Electricity' },
         { value: 'analysis', label: 'Analysis' },
-        { value: 'masonry', label: 'Masonry' },
-        { value: 'other', label: 'Other' }
+        { value: 'masonry', label: 'Masonry' }
       ]
     },
     {
@@ -64,4 +63,3 @@ export const providerTableConfig: TableConfig<Provider> = {
     }
   ]
 }
-

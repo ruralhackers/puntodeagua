@@ -22,4 +22,3 @@ export class ProvidersFactory {
     return ProvidersFactory.providerPrismaRepositoryInstance
   }
 }
-

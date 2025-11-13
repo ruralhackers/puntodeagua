@@ -141,4 +141,3 @@ describe('ProviderDeleter', () => {
     expect(mockProviderRepository.delete).toHaveBeenCalledTimes(1)
   })
 })
-

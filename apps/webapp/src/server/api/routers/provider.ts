@@ -66,5 +66,47 @@ export const providersRouter = createTRPCRouter({
       } catch (error) {
         handleDomainError(error)
       }
+    }),
+
+  toggleProviderActive: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        const repo = ProvidersFactory.providerPrismaRepository()
+        const provider = await repo.findById(Id.fromString(input.id))
+        if (!provider) {
+          throw new Error('Provider not found')
+        }
+        const service = ProvidersFactory.providerUpdaterService()
+        const updatedProvider = await service.run({
+          id: Id.fromString(input.id),
+          updatedProviderData: {
+            companyName: provider.companyName,
+            taxId: provider.taxId,
+            contactPerson: provider.contactPerson,
+            contactPhone: provider.contactPhone,
+            contactEmail: provider.contactEmail,
+            secondaryPhone: provider.secondaryPhone,
+            billingEmail: provider.billingEmail,
+            address: provider.address,
+            city: provider.city,
+            postalCode: provider.postalCode,
+            province: provider.province,
+            providerType: provider.providerType.toString() as any,
+            isActive: !provider.isActive,
+            notes: provider.notes,
+            businessHours: provider.businessHours,
+            emergencyAvailable: provider.emergencyAvailable,
+            emergencyPhone: provider.emergencyPhone,
+            bankAccount: provider.bankAccount,
+            paymentTerms: provider.paymentTerms,
+            website: provider.website,
+            communityId: provider.communityId?.toString()
+          }
+        })
+        return updatedProvider.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
     })
 })

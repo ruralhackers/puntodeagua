@@ -2,6 +2,12 @@ import { Id } from '@pda/common/domain'
 import { RegistersFactory } from '@pda/registers'
 import { Incident } from '@pda/registers/domain/entities/incident'
 import { incidentSchema } from '@pda/registers/domain/entities/incident.dto'
+import {
+  FileEntityType,
+  type FileMetadata,
+  FileMetadataCreatorService,
+  fileUploadInputSchema
+} from '@pda/storage'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
@@ -25,12 +31,25 @@ export const incidentsRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = RegistersFactory.incidentPrismaRepository()
+      const imageRepo = RegistersFactory.incidentImagePrismaRepository()
+
       const incident = await repo.findById(Id.fromString(input.id))
-      return incident?.toDto()
+      if (!incident) return null
+
+      const images = await imageRepo.findByIncidentId(Id.fromString(input.id))
+
+      return {
+        ...incident.toDto(),
+        images: images.map((img) => img.toDto())
+      }
     }),
 
   addIncident: protectedProcedure
-    .input(incidentSchema.omit({ id: true }))
+    .input(
+      incidentSchema.omit({ id: true }).extend({
+        images: z.array(fileUploadInputSchema).optional()
+      })
+    )
     .mutation(async ({ input }) => {
       try {
         const service = RegistersFactory.incidentCreatorService()
@@ -48,31 +67,75 @@ export const incidentsRouter = createTRPCRouter({
           status: 'open'
         })
 
-        const savedIncident = await service.run({ incident })
-        return savedIncident.toDto()
+        // Process images if provided
+        let imageData: Array<{ file: Buffer; metadata: FileMetadata }> | undefined
+        if (input.images && input.images.length > 0) {
+          imageData = input.images.map((img) => ({
+            file: Buffer.from(img.file),
+            metadata: FileMetadataCreatorService.createFileMetadata({
+              originalName: img.metadata.originalName,
+              fileSize: img.metadata.fileSize,
+              mimeType: img.metadata.mimeType
+            })
+          }))
+        }
+
+        const result = await service.run({ incident, images: imageData })
+
+        return {
+          incident: result.incident.toDto(),
+          imageUploadErrors: result.imageUploadErrors
+        }
       } catch (error) {
         // Handle domain errors with Spanish messages
         handleDomainError(error)
       }
     }),
 
-  updateIncident: protectedProcedure.input(incidentSchema).mutation(async ({ input }) => {
-    try {
-      const service = RegistersFactory.incidentUpdaterService()
-
-      const savedIncident = await service.run({
-        id: Id.fromString(input.id),
-        updatedIncidentData: {
-          status: input.status,
-          endAt: input.endAt,
-          closingDescription: input.closingDescription
-        }
+  updateIncident: protectedProcedure
+    .input(
+      incidentSchema.extend({
+        newImages: z.array(fileUploadInputSchema).optional(),
+        deleteImageIds: z.array(z.string()).optional()
       })
-      return savedIncident.toDto()
-    } catch (error) {
-      handleDomainError(error)
-    }
-  }),
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const service = RegistersFactory.incidentUpdaterService()
+
+        // Process new images if provided
+        let newImageData: Array<{ file: Buffer; metadata: FileMetadata }> | undefined
+        if (input.newImages && input.newImages.length > 0) {
+          newImageData = input.newImages.map((img) => ({
+            file: Buffer.from(img.file),
+            metadata: FileMetadataCreatorService.createFileMetadata({
+              originalName: img.metadata.originalName,
+              fileSize: img.metadata.fileSize,
+              mimeType: img.metadata.mimeType
+            })
+          }))
+        }
+
+        const result = await service.run({
+          id: Id.fromString(input.id),
+          updatedIncidentData: {
+            status: input.status,
+            endAt: input.endAt,
+            closingDescription: input.closingDescription
+          },
+          newImages: newImageData,
+          deleteImageIds: input.deleteImageIds?.map((id) => Id.fromString(id))
+        })
+
+        return {
+          incident: result.incident.toDto(),
+          imageUploadErrors: result.imageUploadErrors,
+          imageDeleteErrors: result.imageDeleteErrors
+        }
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
 
   deleteIncident: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -125,6 +188,21 @@ export const incidentsRouter = createTRPCRouter({
         const incidents = await repo.findByFilters(filters)
 
         return incidents.map((incident) => incident.toDto())
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
+  deleteIncidentImage: protectedProcedure
+    .input(z.object({ imageId: z.string() }))
+    .mutation(async ({ input }) => {
+      try {
+        const service = RegistersFactory.fileDeleterService()
+        await service.run({
+          fileId: Id.fromString(input.imageId),
+          entityType: FileEntityType.INCIDENT
+        })
+        return { success: true }
       } catch (error) {
         handleDomainError(error)
       }

@@ -109,8 +109,10 @@ describe('IncidentUpdater Service', () => {
       // Assert
       expect(mockRepository.findById).toHaveBeenCalledWith(incidentId)
       expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Incident))
-      expect(result.closingDescription).toBe('Updated description')
-      expect(result.status.toString()).toBe('closed')
+      expect(result.incident.closingDescription).toBe('Updated description')
+      expect(result.incident.status.toString()).toBe('closed')
+      expect(result.imageUploadErrors).toBeUndefined()
+      expect(result.imageDeleteErrors).toBeUndefined()
     })
 
     it('should merge updated fields with existing fields', async () => {
@@ -141,8 +143,10 @@ describe('IncidentUpdater Service', () => {
       })
 
       // Assert
-      expect(result.status.toString()).toBe('closed')
-      expect(result.closingDescription).toBeUndefined()
+      expect(result.incident.status.toString()).toBe('closed')
+      expect(result.incident.closingDescription).toBeUndefined()
+      expect(result.imageUploadErrors).toBeUndefined()
+      expect(result.imageDeleteErrors).toBeUndefined()
     })
   })
 })

@@ -1,6 +1,15 @@
 'use client'
 
-import { AlertTriangle, ChevronDown, ChevronRight, Loader2, MapPin, User } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  Image as ImageIcon,
+  Loader2,
+  MapPin,
+  User,
+  X
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -18,6 +27,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useMultipleImageUpload } from '@/hooks/use-multiple-image-upload'
 import { handleDomainError } from '@/lib/error-handler'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
@@ -36,6 +46,8 @@ export default function NewIncidentPage() {
     waterPointId: ''
   })
   const [isLocationExpanded, setIsLocationExpanded] = useState(false)
+
+  const { images, handleImageSelect, removeImage, getImagesData } = useMultipleImageUpload()
 
   const utils = api.useUtils()
 
@@ -61,13 +73,16 @@ export default function NewIncidentPage() {
     }
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formData.title || !formData.reporterName) {
       toast.error('El título y el nombre de la persona que reporta son obligatorios')
       return
     }
+
+    // Get images data if any
+    const imagesData = images.length > 0 ? await getImagesData() : undefined
 
     createIncidentMutation.mutate({
       title: formData.title,
@@ -78,7 +93,8 @@ export default function NewIncidentPage() {
       waterDepositId: formData.waterDepositId || undefined,
       waterPointId: formData.waterPointId || undefined,
       startAt: new Date(),
-      status: 'open'
+      status: 'open',
+      images: imagesData
     })
   }
 
@@ -163,6 +179,54 @@ export default function NewIncidentPage() {
                 <p className="text-xs text-muted-foreground">
                   Proporciona tantos detalles como sea posible para ayudar a resolver la incidencia
                   rápidamente
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Images */}
+          <Card className="border-blue-200 bg-blue-50/30">
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <Label
+                  htmlFor="images"
+                  className="flex items-center gap-2 text-sm font-semibold text-blue-800"
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  Imágenes (Opcional)
+                </Label>
+                <Input
+                  id="images"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  multiple
+                  onChange={handleImageSelect}
+                  className="border-blue-200"
+                />
+                {images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {images.map((img) => (
+                      <div key={img.id} className="relative">
+                        <img
+                          src={img.preview}
+                          alt="Preview"
+                          className="w-full h-24 object-cover rounded border border-blue-200"
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="absolute top-1 right-1 h-6 w-6"
+                          onClick={() => removeImage(img.id)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Puedes subir múltiples imágenes para documentar la incidencia
                 </p>
               </div>
             </CardContent>

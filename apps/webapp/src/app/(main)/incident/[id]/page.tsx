@@ -1,62 +1,39 @@
 'use client'
 
-import { ArrowLeft, Calendar, CheckCircle, Edit, MapPin, User } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Calendar, Check, MapPin, User } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import CloseIncidentDialog from '@/components/incident/close-incident-dialog'
+import { IncidentImageGallery } from '@/components/incident-image-gallery'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { handleDomainError } from '@/lib/error-handler'
 import { api } from '@/trpc/react'
 
 export default function IncidentDetailPage() {
   const params = useParams()
   const incidentId = params.id as string
-  const [isUpdating, setIsUpdating] = useState(false)
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false)
 
   const {
     data: incident,
     isLoading,
-    error,
     refetch
   } = api.incidents.getIncidentById.useQuery({ id: incidentId }, { enabled: !!incidentId })
 
-  const updateIncidentMutation = api.incidents.updateIncident.useMutation({
+  const deleteImageMutation = api.incidents.deleteIncidentImage.useMutation({
     onSuccess: () => {
-      toast.success('Incidencia actualizada con éxito')
+      toast.success('Imagen eliminada con éxito')
       refetch()
-      setIsUpdating(false)
     },
     onError: (error) => {
       handleDomainError(error)
-      setIsUpdating(false)
     }
   })
-
-  const handleStatusChange = (newStatus: 'open' | 'closed') => {
-    if (!incident) return
-
-    if (newStatus === 'closed') {
-      setIsCloseDialogOpen(true)
-    } else {
-      setIsUpdating(true)
-      updateIncidentMutation.mutate({
-        ...incident,
-        status: newStatus,
-        endAt: undefined
-      })
-    }
-  }
-
-  const handleCloseDialogSuccess = () => {
-    refetch()
-  }
 
   if (isLoading) {
     return (
@@ -68,12 +45,10 @@ export default function IncidentDetailPage() {
     )
   }
 
-  if (error || !incident) {
+  if (!incident) {
     return (
       <PageContainer>
-        <div className="text-center text-destructive">
-          {error ? `Error al cargar la incidencia: ${error.message}` : 'Incidencia no encontrada'}
-        </div>
+        <div className="text-center text-destructive">Incidencia no encontrada</div>
       </PageContainer>
     )
   }
@@ -99,213 +74,132 @@ export default function IncidentDetailPage() {
     })
   }
 
-  const getLocationText = () => {
-    if (incident.waterPointId) return 'Punto de Agua'
-    if (incident.waterDepositId) return 'Depósito de Agua'
-    if (incident.communityZoneId) return 'Zona de Agua'
-    return 'Comunidad'
+  const handleCloseSuccess = () => {
+    refetch()
   }
 
   return (
     <PageContainer>
       <div className="space-y-6">
         {/* Header */}
-        <div className="space-y-4">
-          {/* Back Button */}
-          <div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
             <Link href="/incident">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver a Incidencias
-              </Button>
+              <ArrowLeft className="h-4 w-4" />
             </Link>
+          </Button>
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{incident.title}</h1>
+            <Badge variant={getStatusVariant(incident.status)} className="mt-2">
+              {incident.status === 'open' ? 'Abierta' : 'Cerrada'}
+            </Badge>
           </div>
+          {incident.status === 'open' && (
+            <Button
+              onClick={() => setIsCloseDialogOpen(true)}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Check className="h-4 w-4 mr-2" />
+              Cerrar Incidencia
+            </Button>
+          )}
+        </div>
 
-          {/* Title and Action Buttons */}
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{incident.title}</h1>
-              <div className="flex items-center space-x-2 mt-2">
-                <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
-                <span className="text-sm text-muted-foreground">
-                  Reportado por {incident.reporterName}
-                </span>
+        {/* Details Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Detalles de la Incidencia
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start gap-2">
+                <User className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Reportado por</p>
+                  <p className="text-sm text-muted-foreground">{incident.reporterName}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Fecha de inicio</p>
+                  <p className="text-sm text-muted-foreground">{formatDate(incident.startAt)}</p>
+                </div>
+              </div>
+
+              {incident.endAt && (
+                <div className="flex items-start gap-2">
+                  <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium">Fecha de cierre</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(incident.endAt)}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-2">
+                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Ubicación</p>
+                  <p className="text-sm text-muted-foreground">
+                    {incident.waterPointId
+                      ? 'Punto de Agua'
+                      : incident.waterDepositId
+                        ? 'Depósito de Agua'
+                        : incident.communityZoneId
+                          ? 'Zona de Agua'
+                          : 'Comunidad'}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              {incident.status === 'open' && (
-                <Button
-                  onClick={() => handleStatusChange('closed')}
-                  disabled={isUpdating}
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Cerrar Incidencia
-                </Button>
-              )}
-              {incident.status === 'closed' && (
-                <Button
-                  onClick={() => handleStatusChange('open')}
-                  disabled={isUpdating}
-                  variant="outline"
-                  size="sm"
-                  className="w-full sm:w-auto"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  {isUpdating ? 'Reabriendo...' : 'Reabrir Incidencia'}
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Descripción Original</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {incident.description ? (
-                  <p className="text-muted-foreground whitespace-pre-wrap">
-                    {incident.description}
-                  </p>
-                ) : (
-                  <p className="text-muted-foreground italic">No se proporcionó descripción</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Closing Description */}
-            {incident.status === 'closed' && incident.closingDescription && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Descripción de Cierre</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground whitespace-pre-wrap">
-                    {incident.closingDescription}
-                  </p>
-                </CardContent>
-              </Card>
+            {incident.description && (
+              <div className="pt-4 border-t">
+                <p className="text-sm font-medium mb-2">Descripción</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {incident.description}
+                </p>
+              </div>
             )}
 
-            {/* Timeline */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Cronología</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="font-medium">Incidencia Creada</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(incident.startAt)}</p>
-                  </div>
-                </div>
+            {incident.closingDescription && (
+              <div className="pt-4 border-t bg-green-50 rounded-lg p-4">
+                <p className="text-sm font-medium mb-2 text-green-800">Descripción de cierre</p>
+                <p className="text-sm text-green-700 whitespace-pre-wrap">
+                  {incident.closingDescription}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                {incident.endAt && (
-                  <>
-                    <Separator />
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <div>
-                        <p className="font-medium">Incidencia Cerrada</p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatDate(incident.endAt)}
-                        </p>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Incident Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Detalles de la Incidencia</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Reportero</p>
-                    <p className="text-sm text-muted-foreground">{incident.reporterName}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Fecha de Inicio</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(incident.startAt)}</p>
-                  </div>
-                </div>
-
-                {incident.endAt && (
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">Fecha de Fin</p>
-                      <p className="text-sm text-muted-foreground">{formatDate(incident.endAt)}</p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm font-medium">Ubicación</p>
-                    <p className="text-sm text-muted-foreground">{getLocationText()}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Status Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Estado</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Badge variant={getStatusVariant(incident.status)}>{incident.status}</Badge>
-                  {incident.status === 'open' && (
-                    <Button
-                      onClick={() => handleStatusChange('closed')}
-                      disabled={isUpdating}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Cerrar
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Images Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Imágenes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <IncidentImageGallery
+              images={incident.images || []}
+              onDeleteImage={(imageId) => deleteImageMutation.mutate({ imageId })}
+              canDelete={incident.status === 'open'}
+            />
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Close Incident Dialog */}
-      {incident && (
-        <CloseIncidentDialog
-          incident={incident}
-          open={isCloseDialogOpen}
-          onOpenChange={setIsCloseDialogOpen}
-          onSuccess={handleCloseDialogSuccess}
-        />
-      )}
+      {/* Close Dialog */}
+      <CloseIncidentDialog
+        incident={incident}
+        open={isCloseDialogOpen}
+        onOpenChange={setIsCloseDialogOpen}
+        onSuccess={handleCloseSuccess}
+      />
     </PageContainer>
   )
 }

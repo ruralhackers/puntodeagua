@@ -284,10 +284,29 @@ model Incident {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  incidentImages IncidentImage[]
+
   @@index([communityId])
   @@index([communityZoneId])
   @@index([waterDepositId])
   @@index([waterPointId])
+}
+
+model IncidentImage {
+  id          String   @id @default(cuid())
+  incidentId  String   @map("incident_id")
+  url         String
+  fileName    String   @map("file_name")
+  fileSize    Int      @map("file_size")
+  mimeType    String   @map("mime_type")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  externalKey String   @map("external_key")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
 }
 
 model Provider {

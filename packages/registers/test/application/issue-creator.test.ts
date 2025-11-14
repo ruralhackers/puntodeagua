@@ -49,11 +49,12 @@ describe('IncidentCreator Service', () => {
 
       // Assert
       expect(mockRepository.save).toHaveBeenCalledWith(incident)
-      expect(result).toBe(incident)
-      expect(result.title).toBe('Water leak in main pipe')
-      expect(result.reporterName).toBe('John Doe')
-      expect(result.status.toString()).toBe('open')
-      expect(result.id).toBeDefined()
+      expect(result.incident).toBe(incident)
+      expect(result.incident.title).toBe('Water leak in main pipe')
+      expect(result.incident.reporterName).toBe('John Doe')
+      expect(result.incident.status.toString()).toBe('open')
+      expect(result.incident.id).toBeDefined()
+      expect(result.imageUploadErrors).toBeUndefined()
     })
 
     it('should save an incident with minimal required fields', async () => {
@@ -72,13 +73,14 @@ describe('IncidentCreator Service', () => {
 
       // Assert
       expect(mockRepository.save).toHaveBeenCalledWith(incident)
-      expect(result).toBe(incident)
-      expect(result.title).toBe('Test Incident')
-      expect(result.reporterName).toBe('Jane Doe')
-      expect(result.communityZoneId).toBeUndefined()
-      expect(result.waterDepositId).toBeUndefined()
-      expect(result.waterPointId).toBeUndefined()
-      expect(result.description).toBeUndefined()
+      expect(result.incident).toBe(incident)
+      expect(result.incident.title).toBe('Test Incident')
+      expect(result.incident.reporterName).toBe('Jane Doe')
+      expect(result.incident.communityZoneId).toBeUndefined()
+      expect(result.incident.waterDepositId).toBeUndefined()
+      expect(result.incident.waterPointId).toBeUndefined()
+      expect(result.incident.description).toBeUndefined()
+      expect(result.imageUploadErrors).toBeUndefined()
     })
   })
 })

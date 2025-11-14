@@ -4,6 +4,7 @@ import type { FileDeleterService, FileStorageRepository, FileUploaderService } f
 import type { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
 import type { WaterAccountRepository } from '../../domain/repositories/water-account.repository'
 import type { WaterMeterRepository } from '../../domain/repositories/water-meter.repository'
+import type { WaterMeterImageRepository } from '../../domain/repositories/water-meter-image.repository'
 import type { WaterMeterReadingRepository } from '../../domain/repositories/water-meter-reading.repository'
 import type { WaterMeterReadingImageRepository } from '../../domain/repositories/water-meter-reading-image.repository'
 
@@ -63,6 +64,16 @@ export const createMockWaterMeterReadingImageRepository = (): WaterMeterReadingI
     save: mock(),
     delete: mock()
   } as unknown as WaterMeterReadingImageRepository
+}
+
+export const createMockWaterMeterImageRepository = (): WaterMeterImageRepository => {
+  return {
+    findById: mock(),
+    findByWaterMeterId: mock(),
+    findByEntityId: mock(),
+    save: mock(),
+    delete: mock()
+  } as unknown as WaterMeterImageRepository
 }
 
 export const createMockFileStorageRepository = (): FileStorageRepository => {

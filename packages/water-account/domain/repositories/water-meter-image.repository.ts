@@ -1,9 +1,15 @@
-import type { Deletable, FindableById, Id, Savable } from '@pda/common/domain'
+import type { Id } from '@pda/common/domain'
+import type { EntityFileRepository } from '@pda/storage'
 import type { WaterMeterImage } from '../entities/water-meter-image'
 
-export interface WaterMeterImageRepository
-  extends Savable<WaterMeterImage>,
-    FindableById<WaterMeterImage>,
-    Deletable<WaterMeterImage> {
+/**
+ * Repository for managing water meter images.
+ * Water meters have a 1:1 relationship with images (one image per meter).
+ */
+export interface WaterMeterImageRepository extends EntityFileRepository<WaterMeterImage> {
+  /**
+   * Find the image for a specific water meter
+   * Returns undefined if no image exists (1:1 relationship)
+   */
   findByWaterMeterId(waterMeterId: Id): Promise<WaterMeterImage | undefined>
 }

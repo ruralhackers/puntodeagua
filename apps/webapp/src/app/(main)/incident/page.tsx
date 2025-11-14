@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Plus, Search } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +25,7 @@ import IncidentActions from './_components/incident-actions'
 
 export default function IncidentsPage() {
   const user = useUserStore((state) => state.user)
+  const router = useRouter()
   const communityId = user?.community?.id
   const [searchTerm, setSearchTerm] = useState('')
   const [showOnlyOpen, setShowOnlyOpen] = useState(true)
@@ -134,8 +136,8 @@ export default function IncidentsPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Incidencias</h1>
             <p className="text-muted-foreground">
-              Tenemos {totalCount} {totalCount === 1 ? 'incidencia' : 'incidencias'}, de las
-              cuales {openCount} {openCount === 1 ? 'está abierta' : 'están abiertas'}
+              Tenemos {totalCount} {totalCount === 1 ? 'incidencia' : 'incidencias'}, de las cuales{' '}
+              {openCount} {openCount === 1 ? 'está abierta' : 'están abiertas'}
             </p>
           </div>
           <Button asChild className="w-full sm:w-auto">
@@ -162,11 +164,7 @@ export default function IncidentsPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Switch
-                  id="show-open"
-                  checked={showOnlyOpen}
-                  onCheckedChange={setShowOnlyOpen}
-                />
+                <Switch id="show-open" checked={showOnlyOpen} onCheckedChange={setShowOnlyOpen} />
                 <Label htmlFor="show-open" className="cursor-pointer whitespace-nowrap">
                   Solo abiertas
                 </Label>
@@ -191,23 +189,16 @@ export default function IncidentsPage() {
               </TableHeader>
               <TableBody>
                 {filteredIncidents.map((incident) => (
-                  <TableRow key={incident.id} className="cursor-pointer">
-                    <TableCell
-                      className="font-medium"
-                      onClick={() => (window.location.href = `/incident/${incident.id}`)}
-                    >
-                      {incident.title}
-                    </TableCell>
-                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
-                      {incident.reporterName}
-                    </TableCell>
-                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
-                      {formatDate(incident.startAt)}
-                    </TableCell>
-                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
-                      {getLocationText(incident)}
-                    </TableCell>
-                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
+                  <TableRow
+                    key={incident.id}
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/incident/${incident.id}`)}
+                  >
+                    <TableCell className="font-medium">{incident.title}</TableCell>
+                    <TableCell>{incident.reporterName}</TableCell>
+                    <TableCell>{formatDate(incident.startAt)}</TableCell>
+                    <TableCell>{getLocationText(incident)}</TableCell>
+                    <TableCell>
                       <Badge variant={getStatusVariant(incident.status)}>
                         {incident.status === 'open' ? 'Abierta' : 'Cerrada'}
                       </Badge>

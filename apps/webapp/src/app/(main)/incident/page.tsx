@@ -1,18 +1,32 @@
 'use client'
 
-import { AlertTriangle, Plus } from 'lucide-react'
+import { AlertTriangle, Plus, Search } from 'lucide-react'
 import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
-import IncidentCard from './_components/incident-card'
+import IncidentActions from './_components/incident-actions'
 
 export default function IncidentsPage() {
   const user = useUserStore((state) => state.user)
   const communityId = user?.community?.id
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showOnlyOpen, setShowOnlyOpen] = useState(true)
 
   const {
     data: incidents,
@@ -22,6 +36,36 @@ export default function IncidentsPage() {
     { id: communityId || '' },
     { enabled: !!communityId }
   )
+
+  const filteredIncidents = useMemo(() => {
+    let filtered = incidents || []
+
+    // Filter by status if active
+    if (showOnlyOpen) {
+      filtered = filtered.filter((i) => i.status === 'open')
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      filtered = filtered.filter((i) => {
+        const locationText = i.waterPointId
+          ? 'punto de agua'
+          : i.waterDepositId
+            ? 'depósito de agua'
+            : i.communityZoneId
+              ? 'zona de agua'
+              : 'comunidad'
+        return (
+          i.title.toLowerCase().includes(searchLower) ||
+          i.description?.toLowerCase().includes(searchLower) ||
+          locationText.includes(searchLower)
+        )
+      })
+    }
+
+    return filtered
+  }, [incidents, showOnlyOpen, searchTerm])
 
   if (!communityId) {
     return (
@@ -53,8 +97,34 @@ export default function IncidentsPage() {
     )
   }
 
-  const openIncidents = incidents?.filter((incident) => incident.status === 'open') || []
-  const closedIncidents = incidents?.filter((incident) => incident.status === 'closed') || []
+  const openCount = incidents?.filter((i) => i.status === 'open').length || 0
+  const totalCount = incidents?.length || 0
+
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
+  const getLocationText = (incident: (typeof incidents)[number]) => {
+    if (incident.waterPointId) return 'Punto de Agua'
+    if (incident.waterDepositId) return 'Depósito de Agua'
+    if (incident.communityZoneId) return 'Zona de Agua'
+    return 'Comunidad'
+  }
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'open':
+        return 'destructive'
+      case 'closed':
+        return 'secondary'
+      default:
+        return 'default'
+    }
+  }
 
   return (
     <PageContainer>
@@ -64,7 +134,8 @@ export default function IncidentsPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Incidencias</h1>
             <p className="text-muted-foreground">
-              Gestiona y rastrea las incidencias en la infraestructura de agua de tu comunidad
+              Tenemos {totalCount} {totalCount === 1 ? 'incidencia' : 'incidencias'}, de las
+              cuales {openCount} {openCount === 1 ? 'está abierta' : 'están abiertas'}
             </p>
           </div>
           <Button asChild className="w-full sm:w-auto">
@@ -75,80 +146,100 @@ export default function IncidentsPage() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Incidencias</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{incidents?.length || 0}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Incidencias Abiertas</CardTitle>
-              <Badge variant="destructive" className="h-4 w-4 rounded-full" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-destructive">{openIncidents.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Incidencias Cerradas</CardTitle>
-              <Badge variant="secondary" className="h-4 w-4 rounded-full" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-muted-foreground">
-                {closedIncidents.length}
+        {/* Search and Filter Controls */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por título, descripción o ubicación..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Open Incidents */}
-        {openIncidents.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Incidencias Abiertas</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {openIncidents.map((incident) => (
-                <IncidentCard key={incident.id} incident={incident} />
-              ))}
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="show-open"
+                  checked={showOnlyOpen}
+                  onCheckedChange={setShowOnlyOpen}
+                />
+                <Label htmlFor="show-open" className="cursor-pointer whitespace-nowrap">
+                  Solo abiertas
+                </Label>
+              </div>
             </div>
-          </div>
-        )}
+          </CardContent>
+        </Card>
 
-        {/* Closed Incidents */}
-        {closedIncidents.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Incidencias Cerradas</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {closedIncidents.map((incident) => (
-                <IncidentCard key={incident.id} incident={incident} />
-              ))}
-            </div>
+        {/* Table */}
+        {filteredIncidents.length > 0 ? (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Título</TableHead>
+                  <TableHead>Reportado por</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Ubicación</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredIncidents.map((incident) => (
+                  <TableRow key={incident.id} className="cursor-pointer">
+                    <TableCell
+                      className="font-medium"
+                      onClick={() => (window.location.href = `/incident/${incident.id}`)}
+                    >
+                      {incident.title}
+                    </TableCell>
+                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
+                      {incident.reporterName}
+                    </TableCell>
+                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
+                      {formatDate(incident.startAt)}
+                    </TableCell>
+                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
+                      {getLocationText(incident)}
+                    </TableCell>
+                    <TableCell onClick={() => (window.location.href = `/incident/${incident.id}`)}>
+                      <Badge variant={getStatusVariant(incident.status)}>
+                        {incident.status === 'open' ? 'Abierta' : 'Cerrada'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <IncidentActions incident={incident} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        )}
-
-        {/* Empty State */}
-        {incidents?.length === 0 && (
+        ) : (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                No se encontraron incidencias en tu comunidad
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">No se encontraron incidencias</h3>
               <p className="text-muted-foreground text-center mb-4">
-                Aún no se han reportado incidencias en tu comunidad.
+                {searchTerm
+                  ? 'No hay incidencias que coincidan con tu búsqueda'
+                  : showOnlyOpen
+                    ? 'No hay incidencias abiertas'
+                    : 'Aún no se han reportado incidencias'}
               </p>
-              <Button onClick={() => setIsAddIncidentModalOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Reportar Primera Incidencia de tu comunidad
-              </Button>
+              {!searchTerm && incidents?.length === 0 && (
+                <Button asChild>
+                  <Link href="/incident/new">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Reportar Primera Incidencia
+                  </Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}

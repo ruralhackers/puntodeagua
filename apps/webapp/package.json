@@ -5,9 +5,9 @@
   "license": "AGPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --env-file ../../.env.local next dev --port 3001",
-    "build": "bun x prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
-    "postinstall": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
+    "dev": "bun --env-file ../../.env.local next dev --port 3000",
+    "build": "bun run -F @pda/database generate && next build",
+    "postinstall": "bun run -F @pda/database generate",
     "preview": "next build && next start",
     "generate:presets": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' src/scripts/generate-theme-presets.ts",
     "start": "next start"
@@ -74,7 +74,6 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.5.3",
-    "prisma": "^6.5.0",
     "tailwindcss": "^4.0.15",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.8.2"

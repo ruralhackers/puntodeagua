@@ -31,6 +31,30 @@ interface AddReadingModalProps {
   onClose: () => void
 }
 
+function getCurrentDateString(): string {
+  return new Date().toISOString().split('T')[0] ?? ''
+}
+
+function getCurrentTimeString(): string {
+  const now = new Date()
+  return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+}
+
+function getDefaultReadingForm() {
+  return {
+    reading: '',
+    readingDate: getCurrentDateString(),
+    readingTime: getCurrentTimeString(),
+    notes: ''
+  }
+}
+
+function combineDateAndTime(dateStr: string, timeStr: string): Date {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  const [hours, minutes] = timeStr.split(':').map(Number)
+  return new Date(year, month - 1, day, hours, minutes, 0, 0)
+}
+
 export function AddReadingModal({
   waterMeterId,
   waterPointName,
@@ -39,11 +63,7 @@ export function AddReadingModal({
   lastReadingDate,
   onClose
 }: AddReadingModalProps) {
-  const [readingForm, setReadingForm] = useState({
-    reading: '',
-    readingDate: new Date().toISOString().split('T')[0], // Today's date
-    notes: ''
-  })
+  const [readingForm, setReadingForm] = useState(getDefaultReadingForm)
   const [validationError, setValidationError] = useState<string | null>(null)
 
   const utils = api.useUtils()
@@ -80,11 +100,7 @@ export function AddReadingModal({
       await utils.waterAccount.getWaterMeterById.invalidate({ id: waterMeterId })
 
       // Reset form and image state
-      setReadingForm({
-        reading: '',
-        readingDate: new Date().toISOString().split('T')[0],
-        notes: ''
-      })
+      setReadingForm(getDefaultReadingForm())
       handleRemoveImage()
 
       onClose()
@@ -104,7 +120,19 @@ export function AddReadingModal({
   })
 
   const handleSubmitReading = async () => {
-    if (!readingForm.reading || !readingForm.readingDate) return
+    if (!readingForm.reading || !readingForm.readingDate || !readingForm.readingTime) return
+
+    const readingDate = combineDateAndTime(readingForm.readingDate, readingForm.readingTime)
+
+    if (readingDate > new Date()) {
+      setValidationError('La fecha y hora no pueden ser futuras')
+      return
+    }
+
+    if (lastReadingDate && readingDate <= new Date(lastReadingDate)) {
+      setValidationError('La nueva lectura debe ser posterior a la última lectura')
+      return
+    }
 
     // Client-side validation: check if new reading is less than last reading
     if (lastReadingValue !== null) {
@@ -125,7 +153,7 @@ export function AddReadingModal({
     addReadingMutation.mutate({
       waterMeterId: waterMeterId,
       reading: standardReading,
-      readingDate: new Date(readingForm.readingDate),
+      readingDate,
       notes: readingForm.notes || null,
       // Type assertion needed due to ArrayBuffer vs ArrayBufferLike difference
       image: imageData as Parameters<typeof addReadingMutation.mutate>[0]['image']
@@ -148,11 +176,7 @@ export function AddReadingModal({
     onClose()
     setValidationError(null)
     // Reset form when closing
-    setReadingForm({
-      reading: '',
-      readingDate: new Date().toISOString().split('T')[0],
-      notes: ''
-    })
+    setReadingForm(getDefaultReadingForm())
     handleRemoveImage()
   }
 
@@ -210,33 +234,44 @@ export function AddReadingModal({
               </div>
 
               <div className="space-y-4">
-                {/* Lectura y Fecha en la misma fila */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="reading">Lectura</Label>
-                    <Input
-                      id="reading"
-                      type="text"
-                      inputMode="decimal"
-                      placeholder={`0,00 ${measurementUnit}`}
-                      className={validationError ? 'border-red-500' : ''}
-                      value={readingForm.reading}
-                      onChange={handleReadingChange}
-                    />
-                    {validationError && (
-                      <p className="text-sm text-red-500 mt-1">{validationError}</p>
-                    )}
-                  </div>
+                <div>
+                  <Label htmlFor="reading">Lectura</Label>
+                  <Input
+                    id="reading"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder={`0,00 ${measurementUnit}`}
+                    className={validationError ? 'border-red-500' : ''}
+                    value={readingForm.reading}
+                    onChange={handleReadingChange}
+                  />
+                  {validationError && (
+                    <p className="text-sm text-red-500 mt-1">{validationError}</p>
+                  )}
+                </div>
 
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="readingDate">Fecha</Label>
                     <Input
                       id="readingDate"
                       type="date"
                       value={readingForm.readingDate}
-                      max={new Date().toISOString().split('T')[0]}
+                      max={getCurrentDateString()}
                       onChange={(e) =>
                         setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="readingTime">Hora</Label>
+                    <Input
+                      id="readingTime"
+                      type="time"
+                      value={readingForm.readingTime}
+                      onChange={(e) =>
+                        setReadingForm((prev) => ({ ...prev, readingTime: e.target.value }))
                       }
                     />
                   </div>
@@ -345,9 +380,24 @@ export function AddReadingModal({
                   type="date"
                   className="col-span-3"
                   value={readingForm.readingDate}
-                  max={new Date().toISOString().split('T')[0]}
+                  max={getCurrentDateString()}
                   onChange={(e) =>
                     setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="readingTime" className="text-right">
+                  Hora
+                </Label>
+                <Input
+                  id="readingTime"
+                  type="time"
+                  className="col-span-3"
+                  value={readingForm.readingTime}
+                  onChange={(e) =>
+                    setReadingForm((prev) => ({ ...prev, readingTime: e.target.value }))
                   }
                 />
               </div>

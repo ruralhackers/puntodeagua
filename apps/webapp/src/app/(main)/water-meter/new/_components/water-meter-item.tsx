@@ -44,6 +44,12 @@ export function WaterMeterItem({ waterMeter }: WaterMeterItemProps) {
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="font-medium">Punto: {waterMeter.waterPoint.name}</span>
+              {waterMeter.waterPoint.connectionNumber && (
+                <>
+                  <span>•</span>
+                  <span>Nº enganche: {waterMeter.waterPoint.connectionNumber}</span>
+                </>
+              )}
               <span>•</span>
               <span>{waterMeter.waterPoint.location}</span>
               <span>•</span>

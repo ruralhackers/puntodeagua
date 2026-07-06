@@ -31,6 +31,7 @@ export interface CommunitySeedData {
     tempId: string
     name: string
     location: string
+    connectionNumber?: string
     zone: string
     cadastralReference: string
     fixedPopulation: number

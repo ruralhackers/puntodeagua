@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed": "bun --env-file ../../.env.local run src/index.ts"
+    "seed": "bun --env-file ../../.env.local run src/index.ts",
+    "fix-vilarchan": "bun --env-file ../../.env.local run src/fix-vilarchan.ts"
   },
   "dependencies": {
     "@pda/common": "workspace:*",

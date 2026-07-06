@@ -3,6 +3,7 @@ import { BasePrismaRepository, PrismaTableQueryBuilder } from '@pda/common/infra
 import type { Prisma, client as prisma } from '@pda/database'
 import { WaterPoint } from '../../domain/entities/water-point'
 import type { WaterPointWithAccountDto } from '../../domain/entities/water-point-with-account.dto'
+import { DuplicateConnectionNumberError } from '../../domain/errors/water-point-errors'
 import type { WaterPointRepository } from '../../domain/repositories/water-point.repository'
 import { waterPointTableConfig } from './water-point-table-config'
 
@@ -101,10 +102,13 @@ export class WaterPointPrismaRepository
   }
 
   async save(waterPoint: WaterPoint) {
+    await this.assertUniqueConnectionNumber(waterPoint)
+
     const update = {
       name: waterPoint.name,
       location: waterPoint.location,
       notes: waterPoint.notes,
+      connectionNumber: waterPoint.connectionNumber ?? null,
       fixedPopulation: waterPoint.fixedPopulation,
       floatingPopulation: waterPoint.floatingPopulation,
       cadastralReference: waterPoint.cadastralReference,
@@ -122,6 +126,32 @@ export class WaterPointPrismaRepository
       },
       update
     })
+  }
+
+  private async assertUniqueConnectionNumber(waterPoint: WaterPoint) {
+    const connectionNumber = waterPoint.connectionNumber?.trim()
+    if (!connectionNumber) return
+
+    const zone = await this.db.communityZone.findUnique({
+      where: { id: waterPoint.communityZoneId.toString() },
+      select: { communityId: true }
+    })
+    if (!zone) return
+
+    const duplicate = await this.getModel().findFirst({
+      where: {
+        connectionNumber,
+        id: { not: waterPoint.id.toString() },
+        communityZone: {
+          communityId: zone.communityId
+        }
+      },
+      select: { id: true }
+    })
+
+    if (duplicate) {
+      throw new DuplicateConnectionNumberError(connectionNumber)
+    }
   }
 
   async delete(id: Id) {

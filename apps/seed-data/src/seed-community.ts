@@ -121,6 +121,7 @@ export async function seedCommunity(communityName: string) {
         data: {
           name: wpData.name,
           location: wpData.location,
+          connectionNumber: wpData.connectionNumber || null,
           cadastralReference: wpData.cadastralReference,
           fixedPopulation: wpData.fixedPopulation,
           floatingPopulation: wpData.floatingPopulation,

@@ -32,7 +32,8 @@ export default function OwnerChangePage() {
         const matchesName =
           meter.waterAccountName.toLowerCase().includes(searchLower) ||
           meter.waterPoint.name.toLowerCase().includes(searchLower) ||
-          meter.waterPoint.location.toLowerCase().includes(searchLower)
+          meter.waterPoint.location.toLowerCase().includes(searchLower) ||
+          meter.waterPoint.connectionNumber?.toLowerCase().includes(searchLower)
 
         if (!matchesName) return false
       }
@@ -98,6 +99,9 @@ export default function OwnerChangePage() {
                     <h3 className="font-semibold">{meter.waterAccountName}</h3>
                     <p className="text-sm text-muted-foreground">
                       {meter.waterPoint.name} - {meter.waterPoint.location}
+                      {meter.waterPoint.connectionNumber && (
+                        <> · Nº enganche: {meter.waterPoint.connectionNumber}</>
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Última lectura: {meter.lastReadingNormalizedValue || 'N/A'} L

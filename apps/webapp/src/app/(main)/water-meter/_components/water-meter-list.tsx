@@ -58,7 +58,8 @@ export default function WaterMeterList({
         (meter) =>
           meter.waterAccountName.toLowerCase().includes(searchTerm) ||
           meter.waterPoint.name.toLowerCase().includes(searchTerm) ||
-          meter.waterPoint.location.toLowerCase().includes(searchTerm)
+          meter.waterPoint.location.toLowerCase().includes(searchTerm) ||
+          meter.waterPoint.connectionNumber?.toLowerCase().includes(searchTerm)
       )
     }
 
@@ -142,6 +143,12 @@ export default function WaterMeterList({
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     <span className="font-medium">{waterMeter.waterPoint.name}</span>
+                    {waterMeter.waterPoint.connectionNumber && (
+                      <>
+                        <span className="sm:inline">•</span>
+                        <span>Nº enganche: {waterMeter.waterPoint.connectionNumber}</span>
+                      </>
+                    )}
                     {waterMeter.lastReadingNormalizedValue && (
                       <>
                         <span className="sm:inline">•</span>

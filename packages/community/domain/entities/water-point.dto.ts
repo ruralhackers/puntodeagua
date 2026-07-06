@@ -8,6 +8,7 @@ export const waterPointSchema = z.object({
   name: z.string(),
   location: z.string(), // raw string, e.g. "lat,lng"; consider VO later
   notes: z.string().optional(),
+  connectionNumber: z.string().optional(),
   fixedPopulation: z.number().int().min(0),
   floatingPopulation: z.number().int().min(0),
   cadastralReference: z.string(),

@@ -7,6 +7,7 @@ interface WaterPointSectionProps {
     id: string
     name: string
     location: string
+    connectionNumber?: string | null
     fixedPopulation: number
     floatingPopulation: number
   }
@@ -17,6 +18,9 @@ export function WaterPointSection({ waterPoint }: WaterPointSectionProps) {
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Punto de Agua</h3>
       <div className="space-y-1">
+        {waterPoint.connectionNumber && (
+          <div className="text-sm font-semibold text-blue-700">Nº enganche: {waterPoint.connectionNumber}</div>
+        )}
         <div className="font-medium">{waterPoint.name}</div>
         <div className="text-sm text-gray-600">{waterPoint.location}</div>
         <div className="text-sm text-gray-500">

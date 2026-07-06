@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/select'
 import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
@@ -193,6 +194,11 @@ export default function MeterReplacementForm({
                       Dueño: <strong>{meter.waterAccountName}</strong>
                       <br />
                       Ubicación: {meter.waterPoint.name}
+                      <br />
+                      <ConnectionNumberLabel
+                        connectionNumber={meter.waterPoint.connectionNumber}
+                        className="text-sm text-muted-foreground"
+                      />
                       {lastReadingValue && (
                         <>
                           <br />
@@ -348,6 +354,12 @@ export default function MeterReplacementForm({
                     Dueño: <strong>{meter.waterAccountName}</strong>
                     <br />
                     Ubicación: {meter.waterPoint.name}
+                    {meter.waterPoint.connectionNumber && (
+                      <>
+                        <br />
+                        Nº enganche: <strong>{meter.waterPoint.connectionNumber}</strong>
+                      </>
+                    )}
                     {lastReadingValue && (
                       <>
                         <br />

@@ -13,6 +13,7 @@ interface MeterInfoCardProps {
     id: string
     name: string
     location: string
+    connectionNumber?: string | null
     fixedPopulation: number
     floatingPopulation: number
   }

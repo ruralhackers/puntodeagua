@@ -10,6 +10,7 @@ export { CommunityZone } from './entities/community-zone'
 export type { CommunityZoneDto } from './entities/community-zone.dto'
 export { WaterPoint } from './entities/water-point'
 export { type WaterPointDto, waterPointSchema } from './entities/water-point.dto'
+export { DuplicateConnectionNumberError } from './errors/water-point-errors'
 
 // Repositories
 export type { CommunityRepository } from './repositories/community.repository'

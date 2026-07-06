@@ -36,6 +36,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { api } from '@/trpc/react'
 
@@ -171,6 +172,11 @@ export default function WaterPointDataForm({
                       Casa: <strong>{waterPoint.name}</strong>
                       <br />
                       Ubicación: {waterPoint.location}
+                      <br />
+                      <ConnectionNumberLabel
+                        connectionNumber={waterPoint.connectionNumber}
+                        className="text-sm text-muted-foreground mt-1"
+                      />
                     </>
                   )}
                 </p>
@@ -337,6 +343,12 @@ export default function WaterPointDataForm({
                     Casa: <strong>{waterPoint.name}</strong>
                     <br />
                     Ubicación: {waterPoint.location}
+                    {waterPoint.connectionNumber && (
+                      <>
+                        <br />
+                        Nº enganche: <strong>{waterPoint.connectionNumber}</strong>
+                      </>
+                    )}
                   </>
                 )}
               </DialogDescription>

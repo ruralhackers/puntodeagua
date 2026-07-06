@@ -3,6 +3,7 @@
 import { Loader2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import PageContainer from '@/components/layout/page-container'
+import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { Card, CardContent } from '@/components/ui/card'
 import { SearchInput } from '@/components/ui/search-input'
 import { useUserStore } from '@/stores/user/user-provider'
@@ -34,6 +35,7 @@ export default function WaterPointDataPage() {
           waterPoint.name.toLowerCase().includes(searchLower) ||
           waterPoint.location.toLowerCase().includes(searchLower) ||
           waterPoint.cadastralReference.toLowerCase().includes(searchLower) ||
+          waterPoint.connectionNumber?.toLowerCase().includes(searchLower) ||
           waterPoint.waterAccountName?.toLowerCase().includes(searchLower)
 
         if (!matchesName) return false
@@ -64,7 +66,7 @@ export default function WaterPointDataPage() {
           <SearchInput
             value={nameFilter}
             onChange={setNameFilter}
-            placeholder="Buscar por nombre, dirección o referencia..."
+            placeholder="Buscar por nombre, nº enganche, dirección..."
             minChars={3}
           />
         </div>
@@ -80,15 +82,18 @@ export default function WaterPointDataPage() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold">{waterPoint.name}</h3>
+                    <ConnectionNumberLabel connectionNumber={waterPoint.connectionNumber} />
                     {waterPoint.waterAccountName && (
                       <p className="text-sm text-muted-foreground font-medium">
                         Titular: {waterPoint.waterAccountName}
                       </p>
                     )}
                     <p className="text-sm text-muted-foreground">{waterPoint.location}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Ref. Catastral: {waterPoint.cadastralReference}
-                    </p>
+                    {waterPoint.cadastralReference && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Ref. Catastral: {waterPoint.cadastralReference}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-1">
                       Población: {waterPoint.fixedPopulation} fija, {waterPoint.floatingPopulation}{' '}
                       flotante

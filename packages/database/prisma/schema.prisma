@@ -124,6 +124,8 @@ model WaterPoint {
 
   notes String @default("") @db.Text
 
+  connectionNumber String? @map("connection_number")
+
   fixedPopulation    Int    @default(0) @map("fixed_population")
   floatingPopulation Int    @default(0) @map("floating_population")
   cadastralReference String @map("cadastral_reference")

@@ -33,6 +33,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { api } from '@/trpc/react'
 
 const formSchema = z
@@ -169,6 +170,10 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                     <>
                       Punto de agua: <strong>{meter.waterPoint.name}</strong>
                       <br />
+                      <ConnectionNumberLabel
+                        connectionNumber={meter.waterPoint.connectionNumber}
+                        className="text-sm text-muted-foreground"
+                      />
                       Titular actual: <strong>{meter.waterAccountName}</strong>
                     </>
                   )}
@@ -298,6 +303,12 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                   <>
                     Punto de agua: <strong>{meter.waterPoint.name}</strong>
                     <br />
+                    {meter.waterPoint.connectionNumber && (
+                      <>
+                        Nº enganche: <strong>{meter.waterPoint.connectionNumber}</strong>
+                        <br />
+                      </>
+                    )}
                     Titular actual: <strong>{meter.waterAccountName}</strong>
                   </>
                 )}

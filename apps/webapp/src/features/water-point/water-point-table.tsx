@@ -21,6 +21,7 @@ export default function WaterPointTable(searchParams: SearchParams) {
           }
         },
         { accessorKey: 'name', header: 'name' },
+        { accessorKey: 'connectionNumber', header: 'Nº enganche' },
         { accessorKey: 'location', header: 'location' },
         { accessorKey: 'fixedPopulation', header: 'fixedPopulation' },
         { accessorKey: 'floatingPopulation', header: 'floatingPopulation' },

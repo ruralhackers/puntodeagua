@@ -325,6 +325,26 @@ describe('WaterPointDataUpdater', () => {
       expect(savedWaterPoint.location).toBe(defaultWaterPoint.location)
     })
 
+    it('should preserve connectionNumber when updating other fields', async () => {
+      const waterPointWithConnection = WaterPoint.fromDto({
+        ...defaultWaterPoint.toDto(),
+        connectionNumber: 'C35'
+      })
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(waterPointWithConnection))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      await service.run({
+        waterPointId: waterPointWithConnection.id,
+        updatedData: {
+          fixedPopulation: 7
+        }
+      })
+
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.connectionNumber).toBe('C35')
+      expect(savedWaterPoint.fixedPopulation).toBe(7)
+    })
+
     it('should not modify name or location fields', async () => {
       // Arrange
       const originalName = defaultWaterPoint.name

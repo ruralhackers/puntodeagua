@@ -1,13 +1,21 @@
 import { AlertTriangle, Droplets, FlaskConical, Wrench } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { APP_CONFIG } from '@/config/app-config'
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { auth } from '@/server/auth'
 
 export const metadata = {
   title: `${APP_CONFIG.name} | Panel`
 }
 
 export default async function Home() {
+  const session = await auth()
+  if (session?.user && isWaterMeterReaderOnly(session.user.roles)) {
+    redirect('/water-meter/new')
+  }
+
   return (
     <main className="flex-1 px-3 py-4">
       <div className="mb-6">

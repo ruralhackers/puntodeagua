@@ -174,6 +174,13 @@ async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: str
       communityId: anceuCommunityId
     },
     {
+      email: 'reader@anceu.com',
+      name: 'Lector Contadores Anceu',
+      passwordHash: await saltAndHashPassword('reader123'),
+      roles: ['WATER_METER_READER'],
+      communityId: anceuCommunityId
+    },
+    {
       email: 'user1@anceu.com',
       name: 'Usuario 1 Anceu',
       passwordHash: await saltAndHashPassword('user123'),
@@ -212,6 +219,7 @@ async function seedUsers(anceuCommunityId: string, ponteCaldelasCommunityId: str
   console.log('- superadmin@puntodeagua.com (password: superadmin123) - SUPER_ADMIN')
   console.log('- admin@anceu.com (password: admin123) - COMMUNITY_ADMIN')
   console.log('- manager@anceu.com (password: manager123) - MANAGER')
+  console.log('- reader@anceu.com (password: reader123) - WATER_METER_READER')
   console.log('- user1@anceu.com (password: user123) - COMMUNITY_ADMIN')
   console.log('- user2@anceu.com (password: user123) - COMMUNITY_ADMIN')
   console.log('- admin@pontecaldelas.com (password: admin123) - COMMUNITY_ADMIN')

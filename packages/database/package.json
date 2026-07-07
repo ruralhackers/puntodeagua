@@ -10,6 +10,7 @@
     "db:push:prd": "bun --env-file=../../.env prisma db push",
     "db:push": "bun --env-file=../../.env.local prisma db push",
     "db:seed": "bun --env-file=../../.env.local run src/seed.ts",
+    "create:reader": "bun --env-file=../../.env.local run src/create-reader-user.ts",
     "db:fresh": "bun migrate:reset && bun db:push && bun db:seed",
     "db:sync": "bun generate && bun db:push",
     "db:sync:force": "bun generate && bun db:push --force-reset",
@@ -19,6 +20,7 @@
     "migrate:reset": "bun --env-file=../../.env.local prisma migrate reset"
   },
   "dependencies": {
+    "@pda/common": "workspace:*",
     "@prisma/client": "^6.16.0",
     "pg": "^8.16.3"
   },

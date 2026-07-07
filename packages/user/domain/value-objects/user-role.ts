@@ -1,5 +1,10 @@
 export class UserRole {
-  private static readonly VALID_ROLES = ['ADMIN', 'COMMUNITY_ADMIN', 'MANAGER']
+  private static readonly VALID_ROLES = [
+    'ADMIN',
+    'COMMUNITY_ADMIN',
+    'MANAGER',
+    'WATER_METER_READER'
+  ]
 
   private constructor(private readonly value: string) {}
 
@@ -16,6 +21,10 @@ export class UserRole {
 
   static manager(): UserRole {
     return new UserRole('MANAGER')
+  }
+
+  static waterMeterReader(): UserRole {
+    return new UserRole('WATER_METER_READER')
   }
 
   toString(): string {
@@ -36,6 +45,14 @@ export class UserRole {
 
   isManager(): boolean {
     return this.value === 'MANAGER'
+  }
+
+  isWaterMeterReader(): boolean {
+    return this.value === 'WATER_METER_READER'
+  }
+
+  isStaff(): boolean {
+    return this.isAdmin() || this.isCommunityAdmin() || this.isManager()
   }
 
   canManage(): boolean {

@@ -2,11 +2,20 @@ import { Id } from '@pda/common/domain'
 import { FileMetadataCreatorService, fileUploadInputSchema } from '@pda/storage'
 import { WaterAccountFactory } from '@pda/water-account'
 import { z } from 'zod'
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import {
+  assertWaterMeterBelongsToUserCommunity,
+  assertZoneIdsBelongToUserCommunity
+} from '@/server/api/guards/water-meter-community-guard'
+import {
+  createTRPCRouter,
+  staffProcedure,
+  waterMeterReaderAllowedProcedure
+} from '@/server/api/trpc'
 
 export const waterAccountRouter = createTRPCRouter({
-  getWaterMeterById: protectedProcedure
+  getWaterMeterById: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
@@ -14,7 +23,7 @@ export const waterAccountRouter = createTRPCRouter({
       return displayDto
     }),
 
-  getWaterMeterReadings: protectedProcedure
+  getWaterMeterReadings: staffProcedure
     .input(z.object({ waterMeterId: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterReadingPrismaRepository()
@@ -22,7 +31,7 @@ export const waterAccountRouter = createTRPCRouter({
       return readings.map((reading) => reading.toDto())
     }),
 
-  getWaterMetersByWaterPointId: protectedProcedure
+  getWaterMetersByWaterPointId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
@@ -30,14 +39,21 @@ export const waterAccountRouter = createTRPCRouter({
       return displayDtos
     }),
 
-  getActiveWaterMetersOrderedByLastReading: protectedProcedure
+  getActiveWaterMetersOrderedByLastReading: waterMeterReaderAllowedProcedure
     .input(
       z.object({
         zoneIds: z.array(z.string()),
         includeInactive: z.boolean().optional().default(false)
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
+        await assertZoneIdsBelongToUserCommunity(
+          input.zoneIds,
+          ctx.session.user.community?.id
+        )
+      }
+
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const zoneIds = input.zoneIds.map(Id.fromString)
 
@@ -51,7 +67,7 @@ export const waterAccountRouter = createTRPCRouter({
       return displayDtos
     }),
 
-  addWaterMeterReading: protectedProcedure
+  addWaterMeterReading: waterMeterReaderAllowedProcedure
     .input(
       z.object({
         waterMeterId: z.string(),
@@ -61,8 +77,13 @@ export const waterAccountRouter = createTRPCRouter({
         image: fileUploadInputSchema.optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
+        await assertWaterMeterBelongsToUserCommunity(
+          input.waterMeterId,
+          ctx.session.user.community?.id
+        )
+
         const service = WaterAccountFactory.waterMeterReadingCreatorService()
 
         // Prepare image data if provided
@@ -101,7 +122,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  updateWaterMeterReading: protectedProcedure
+  updateWaterMeterReading: staffProcedure
     .input(
       z.object({
         id: z.string(),
@@ -149,7 +170,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  deleteWaterMeterReading: protectedProcedure
+  deleteWaterMeterReading: staffProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       try {
@@ -161,7 +182,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  recalculateWaterMeterExcess: protectedProcedure
+  recalculateWaterMeterExcess: staffProcedure
     .input(z.object({ waterMeterId: z.string() }))
     .mutation(async ({ input }) => {
       try {
@@ -173,7 +194,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  updateWaterMeterImage: protectedProcedure
+  updateWaterMeterImage: staffProcedure
     .input(
       z.object({
         waterMeterId: z.string(),
@@ -212,7 +233,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  replaceWaterMeter: protectedProcedure
+  replaceWaterMeter: staffProcedure
     .input(
       z.object({
         oldWaterMeterId: z.string(),
@@ -258,13 +279,13 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  getAllWaterAccounts: protectedProcedure.query(async () => {
+  getAllWaterAccounts: staffProcedure.query(async () => {
     const repo = WaterAccountFactory.waterAccountPrismaRepository()
     const accounts = await repo.findAll()
     return accounts.map((account) => account.toDto())
   }),
 
-  changeWaterMeterOwner: protectedProcedure
+  changeWaterMeterOwner: staffProcedure
     .input(
       z.object({
         waterMeterId: z.string(),
@@ -294,7 +315,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  exportWaterMeterReadings: protectedProcedure
+  exportWaterMeterReadings: staffProcedure
     .input(
       z.object({
         startDate: z.date(),

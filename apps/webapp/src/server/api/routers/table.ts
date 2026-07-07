@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 import { TableRepositoryProxy } from '@/server/repositories/table-proxy.repository'
 
 export const tableRouter = createTRPCRouter({
-  domainTable: protectedProcedure
+  domainTable: staffProcedure
     .input(
       z.object({
         model: z.string(),

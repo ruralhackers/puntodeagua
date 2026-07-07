@@ -5,6 +5,7 @@ import { AppSidebar } from '@/app/admin/_components/sidebar/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { users } from '@/data/users'
+import { canAccessAdminPanel } from '@/lib/user-roles'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
 import { getPreference } from '@/server/server-actions'
@@ -30,6 +31,10 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
 
   if (!session?.user) {
     return redirect('/')
+  }
+
+  if (!canAccessAdminPanel(session.user.roles)) {
+    return redirect('/unauthorized')
   }
 
   const [sidebarVariant, sidebarCollapsible, contentLayout] = await Promise.all([

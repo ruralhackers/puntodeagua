@@ -10,16 +10,16 @@ import {
 } from '@pda/storage'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 
 export const incidentsRouter = createTRPCRouter({
-  getIncidents: protectedProcedure.query(async () => {
+  getIncidents: staffProcedure.query(async () => {
     const repo = RegistersFactory.incidentPrismaRepository()
     const incidents = await repo.findAll()
     return incidents.map((incident) => incident.toDto())
   }),
 
-  getIncidentsByCommunityId: protectedProcedure
+  getIncidentsByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = RegistersFactory.incidentPrismaRepository()
@@ -27,7 +27,7 @@ export const incidentsRouter = createTRPCRouter({
       return incidents.map((incident) => incident.toDto())
     }),
 
-  getIncidentById: protectedProcedure
+  getIncidentById: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = RegistersFactory.incidentPrismaRepository()
@@ -44,7 +44,7 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  addIncident: protectedProcedure
+  addIncident: staffProcedure
     .input(
       incidentSchema.omit({ id: true }).extend({
         images: z.array(fileUploadInputSchema).optional()
@@ -92,7 +92,7 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  updateIncident: protectedProcedure
+  updateIncident: staffProcedure
     .input(
       incidentSchema.extend({
         newImages: z.array(fileUploadInputSchema).optional(),
@@ -137,7 +137,7 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  deleteIncident: protectedProcedure
+  deleteIncident: staffProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       const repo = RegistersFactory.incidentPrismaRepository()
@@ -145,7 +145,7 @@ export const incidentsRouter = createTRPCRouter({
       return { success: true }
     }),
 
-  exportIncidents: protectedProcedure
+  exportIncidents: staffProcedure
     .input(
       z.object({
         startDate: z.string().transform((str) => new Date(str)),
@@ -193,7 +193,7 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  deleteIncidentImage: protectedProcedure
+  deleteIncidentImage: staffProcedure
     .input(z.object({ imageId: z.string() }))
     .mutation(async ({ input }) => {
       try {

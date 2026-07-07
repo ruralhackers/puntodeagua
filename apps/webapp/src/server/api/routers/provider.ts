@@ -4,16 +4,16 @@ import { Provider } from '@pda/providers/domain/entities/provider'
 import { providerSchema } from '@pda/providers/domain/entities/provider.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 
 export const providersRouter = createTRPCRouter({
-  getProviders: protectedProcedure.query(async () => {
+  getProviders: staffProcedure.query(async () => {
     const repo = ProvidersFactory.providerPrismaRepository()
     const providers = await repo.findAll()
     return providers.map((provider) => provider.toDto())
   }),
 
-  getProvidersByCommunityId: protectedProcedure
+  getProvidersByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = ProvidersFactory.providerPrismaRepository()
@@ -21,7 +21,7 @@ export const providersRouter = createTRPCRouter({
       return providers.map((provider) => provider.toDto())
     }),
 
-  getProviderById: protectedProcedure
+  getProviderById: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = ProvidersFactory.providerPrismaRepository()
@@ -29,7 +29,7 @@ export const providersRouter = createTRPCRouter({
       return provider?.toDto()
     }),
 
-  addProvider: protectedProcedure
+  addProvider: staffProcedure
     .input(providerSchema.omit({ id: true }))
     .mutation(async ({ input }) => {
       try {
@@ -42,7 +42,7 @@ export const providersRouter = createTRPCRouter({
       }
     }),
 
-  updateProvider: protectedProcedure.input(providerSchema).mutation(async ({ input }) => {
+  updateProvider: staffProcedure.input(providerSchema).mutation(async ({ input }) => {
     try {
       const service = ProvidersFactory.providerUpdaterService()
       const { id, ...updateData } = input
@@ -56,7 +56,7 @@ export const providersRouter = createTRPCRouter({
     }
   }),
 
-  deleteProvider: protectedProcedure
+  deleteProvider: staffProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       try {
@@ -68,7 +68,7 @@ export const providersRouter = createTRPCRouter({
       }
     }),
 
-  toggleProviderActive: protectedProcedure
+  toggleProviderActive: staffProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input }) => {
       try {

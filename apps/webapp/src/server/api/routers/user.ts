@@ -2,10 +2,10 @@ import { Id } from '@pda/common/domain'
 import { UserFactory } from '@pda/user'
 import { userSchema } from '@pda/user/domain'
 import { z } from 'zod'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 
 export const userRouter = createTRPCRouter({
-  getById: protectedProcedure
+  getById: staffProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
       const repo = UserFactory.userPrismaRepository()
@@ -14,12 +14,12 @@ export const userRouter = createTRPCRouter({
       return user.toClientDto()
     }),
 
-  update: protectedProcedure.input(userSchema).mutation(async ({ input }) => {
+  update: staffProcedure.input(userSchema).mutation(async ({ input }) => {
     const user = await UserFactory.userUpdaterService().run(input)
     return user.toClientDto()
   }),
 
-  delete: protectedProcedure
+  delete: staffProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input }) => {
       console.log('Deleting user with id:', input.id)

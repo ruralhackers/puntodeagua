@@ -1,17 +1,24 @@
 import { Id } from '@pda/common/domain'
 import { CommunityFactory } from '@pda/community'
 import { z } from 'zod'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure, waterMeterReaderAllowedProcedure } from '@/server/api/trpc'
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import {
+  assertCommunityAccess
+} from '@/server/api/guards/water-meter-community-guard'
 
 export const communityRouter = createTRPCRouter({
-  getCommunityZones: protectedProcedure
+  getCommunityZones: waterMeterReaderAllowedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
+        assertCommunityAccess(input.id, ctx.session.user.community?.id)
+      }
       const repo = CommunityFactory.communityZonePrismaRepository()
       const zones = await repo.findByCommunityId(Id.fromString(input.id))
       return zones.map((zone) => zone.toDto())
     }),
-  getWaterPoints: protectedProcedure
+  getWaterPoints: staffProcedure
     .input(z.object({ zoneIds: z.array(z.string()) }))
     .query(async ({ input }) => {
       const repo = CommunityFactory.waterPointPrismaRepository()
@@ -19,7 +26,7 @@ export const communityRouter = createTRPCRouter({
       return waterPoints.map((waterPoint) => waterPoint.toDto())
     }),
 
-  getWaterPointsWithAccount: protectedProcedure
+  getWaterPointsWithAccount: staffProcedure
     .input(z.object({ zoneIds: z.array(z.string()) }))
     .query(async ({ input }) => {
       const repo = CommunityFactory.waterPointPrismaRepository()
@@ -29,14 +36,14 @@ export const communityRouter = createTRPCRouter({
       return waterPoints
     }),
 
-  getWaterPointsByCommunityWithAccount: protectedProcedure
+  getWaterPointsByCommunityWithAccount: staffProcedure
     .input(z.object({ communityId: z.string() }))
     .query(async ({ input }) => {
       const repo = CommunityFactory.waterPointPrismaRepository()
       const waterPoints = await repo.findByCommunityIdWithAccount(Id.fromString(input.communityId))
       return waterPoints
     }),
-  getWaterPointById: protectedProcedure
+  getWaterPointById: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = CommunityFactory.waterPointPrismaRepository()
@@ -45,7 +52,7 @@ export const communityRouter = createTRPCRouter({
       return waterPoint.toDto()
     }),
 
-  getWaterDepositsByCommunityId: protectedProcedure
+  getWaterDepositsByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = CommunityFactory.waterDepositPrismaRepository()
@@ -53,7 +60,7 @@ export const communityRouter = createTRPCRouter({
       return waterDeposits.map((waterDeposit) => waterDeposit.toDto())
     }),
 
-  getDepositsByWaterPointId: protectedProcedure
+  getDepositsByWaterPointId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const waterPointRepo = CommunityFactory.waterPointPrismaRepository()
@@ -65,7 +72,7 @@ export const communityRouter = createTRPCRouter({
       return deposits.map((deposit) => deposit.toDto())
     }),
 
-  updateWaterPointDeposits: protectedProcedure
+  updateWaterPointDeposits: staffProcedure
     .input(
       z.object({
         waterPointId: z.string(),
@@ -82,7 +89,7 @@ export const communityRouter = createTRPCRouter({
       return waterPoint.toDto()
     }),
 
-  updateWaterPointData: protectedProcedure
+  updateWaterPointData: staffProcedure
     .input(
       z.object({
         waterPointId: z.string(),

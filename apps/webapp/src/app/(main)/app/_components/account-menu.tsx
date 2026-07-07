@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Gauge, LogOut, Menu, Settings, ShieldUser } from 'lucide-react'
+import { Download, Droplets, Gauge, LogOut, Menu, Settings, ShieldUser } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { getInitials } from '@/lib/utils'
 import { useUserStore } from '../../../../stores/user/user-provider'
 
@@ -19,6 +20,8 @@ export function AccountMenu() {
   const user = useUserStore((state) => state.user)
 
   if (!user) return null
+
+  const readerOnly = isWaterMeterReaderOnly(user.roles)
 
   return (
     <DropdownMenu>
@@ -52,47 +55,52 @@ export function AccountMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {user.roles.includes('ADMIN') && (
+          {readerOnly ? (
+            <DropdownMenuItem asChild>
+              <Link href="/water-meter/new" className="flex items-center gap-2 cursor-pointer">
+                <Droplets />
+                Crear lectura
+              </Link>
+            </DropdownMenuItem>
+          ) : (
             <>
+              {user.roles.includes('ADMIN') && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
+                      <ShieldUser />
+                      Admin
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem asChild>
-                <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
-                  <ShieldUser />
-                  Admin
+                <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
+                  <Gauge />
+                  Contadores
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
+                  <Settings />
+                  Gestión
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
+                  <ShieldUser />
+                  Proveedores
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
+                  <Download />
+                  Exportar
+                </Link>
+              </DropdownMenuItem>
             </>
           )}
-          {/* <DropdownMenuItem asChild>
-            <Link href={`/users`} className="flex items-center gap-2 cursor-pointer">
-              <Users />
-              Usuarios
-            </Link>
-          </DropdownMenuItem> */}
-          <DropdownMenuItem asChild>
-            <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
-              <Gauge />
-              Contadores
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
-              <Settings />
-              Gestión
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
-              <ShieldUser />
-              Proveedores
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
-              <Download />
-              Exportar
-            </Link>
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem

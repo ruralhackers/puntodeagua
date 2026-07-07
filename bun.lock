@@ -136,6 +136,7 @@
       "name": "@pda/database",
       "version": "0.0.1",
       "dependencies": {
+        "@pda/common": "workspace:*",
         "@prisma/client": "^6.16.0",
         "pg": "^8.16.3",
       },

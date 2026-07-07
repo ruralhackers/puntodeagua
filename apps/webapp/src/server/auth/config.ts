@@ -1,12 +1,6 @@
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { Email, verifyPassword } from '@pda/common/domain'
 import type { CommunityDto } from '@pda/community'
-import { UserFactory } from '@pda/user'
-import type { UserClientDto } from '@pda/user/domain'
 import type { DefaultSession, NextAuthConfig } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import EmailProvider from 'next-auth/providers/email'
-import { db } from '@/server/db'
+import type { UserClientDto } from '@pda/user/domain'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -29,73 +23,22 @@ declare module 'next-auth' {
 }
 
 /**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
+ * Edge-compatible NextAuth configuration.
  *
- * @see https://next-auth.js.org/configuration/options
+ * This config must NOT import anything that relies on Node.js APIs (Prisma adapter, nodemailer,
+ * bcrypt, etc.) because it is consumed by the Next.js middleware, which runs on the Edge runtime.
+ *
+ * Node-only providers and the database adapter are added on top of this base config in
+ * `./index.ts`, which only runs in Node.js server contexts.
+ *
+ * @see https://authjs.dev/guides/edge-compatibility
  */
 export const authConfig = {
   trustHost: true,
   session: {
     strategy: 'jwt'
   },
-  providers: [
-    EmailProvider({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM
-      // maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
-    }),
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
-        password: { label: 'Password', type: 'password', placeholder: '••••••••' }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          console.log('Missing credentials')
-          return null
-        }
-
-        try {
-          const repo = UserFactory.userPrismaRepository()
-          const email = Email.fromString(credentials.email as string)
-          const user = await repo.findByEmail(email)
-
-          if (!user || !user.passwordHash) {
-            console.log('User not found or missing passwordHash')
-            return null
-          }
-
-          const isPasswordValid = await verifyPassword(
-            credentials.password as string,
-            user.passwordHash
-          )
-
-          if (!isPasswordValid) {
-            return null
-          }
-
-          return user.toClientDto()
-        } catch (error) {
-          console.error('Error in authorize function:', error)
-          return null
-        }
-      }
-    })
-    // ...add more providers here
-    // GitHubProvider,
-    // DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
-  adapter: PrismaAdapter(db),
+  providers: [],
   callbacks: {
     session: ({ session, token }) => {
       if (token && session.user) {

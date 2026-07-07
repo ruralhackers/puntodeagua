@@ -11,6 +11,7 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { auth } from '@/server/auth'
 import { db } from '@/server/db'
 
@@ -128,4 +129,33 @@ export const protectedProcedure = t.procedure.use(timingMiddleware).use(({ ctx, 
       session: { ...ctx.session, user: ctx.session.user }
     }
   })
+})
+
+/**
+ * Accessible by any authenticated user, including WATER_METER_READER.
+ * Used for the water meter reading creation flow.
+ */
+export const waterMeterReaderAllowedProcedure = protectedProcedure
+
+/**
+ * Staff-only procedure (ADMIN, COMMUNITY_ADMIN, MANAGER).
+ * Blocks users with only the WATER_METER_READER role.
+ */
+export const staffProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const roles = ctx.session.user.roles ?? []
+  if (isWaterMeterReaderOnly(roles)) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+  return next({ ctx })
+})
+
+/**
+ * Global admin procedure.
+ */
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const roles = ctx.session.user.roles ?? []
+  if (!roles.includes('ADMIN')) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+  return next({ ctx })
 })

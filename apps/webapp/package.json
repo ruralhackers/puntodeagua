@@ -5,7 +5,7 @@
   "license": "AGPL-3.0",
   "type": "module",
   "scripts": {
-    "dev": "bun --env-file ../../.env.local next dev --port 3000",
+    "dev": "bun --env-file ../../.env.local next dev --port 3005",
     "build": "bun run -F @pda/database generate && next build",
     "postinstall": "bun run -F @pda/database generate",
     "preview": "next build && next start",

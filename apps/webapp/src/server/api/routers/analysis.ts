@@ -8,16 +8,16 @@ import {
 import { analysisSchema } from '@pda/registers/domain/entities/analysis.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc'
+import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 
 export const registersRouter = createTRPCRouter({
-  getAnalyses: protectedProcedure.query(async () => {
+  getAnalyses: staffProcedure.query(async () => {
     const repo = RegistersFactory.analysisPrismaRepository()
     const analyses = await repo.findAll()
     return analyses.map((analysis) => analysis.toDto())
   }),
 
-  getAnalysesByCommunityId: protectedProcedure
+  getAnalysesByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = RegistersFactory.analysisPrismaRepository()
@@ -25,7 +25,7 @@ export const registersRouter = createTRPCRouter({
       return analyses.map((analysis) => analysis.toDto())
     }),
 
-  getAnalysisById: protectedProcedure
+  getAnalysisById: staffProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const repo = RegistersFactory.analysisPrismaRepository()
@@ -33,7 +33,7 @@ export const registersRouter = createTRPCRouter({
       return analysis?.toDto()
     }),
 
-  addAnalysis: protectedProcedure
+  addAnalysis: staffProcedure
     .input(analysisSchema.omit({ id: true }))
     .mutation(async ({ input }) => {
       try {
@@ -61,7 +61,7 @@ export const registersRouter = createTRPCRouter({
       }
     }),
 
-  exportAnalyses: protectedProcedure
+  exportAnalyses: staffProcedure
     .input(
       z.object({
         analysisTypes: z.array(z.enum(AnalysisType.values() as [string, ...string[]])),

@@ -14,12 +14,14 @@ interface MeterImageSectionProps {
     | undefined
   onViewImage: () => void
   onEditImage: () => void
+  readOnly?: boolean
 }
 
 export function MeterImageSection({
   waterMeterImage,
   onViewImage,
-  onEditImage
+  onEditImage,
+  readOnly = false
 }: MeterImageSectionProps) {
   return (
     <div className="space-y-3">
@@ -40,18 +42,22 @@ export function MeterImageSection({
               className="object-cover"
             />
           </button>
-          <Button variant="outline" size="sm" className="w-full" onClick={onEditImage}>
-            <Edit className="h-3 w-3 mr-1" />
-            Cambiar
-          </Button>
+          {!readOnly && (
+            <Button variant="outline" size="sm" className="w-full" onClick={onEditImage}>
+              <Edit className="h-3 w-3 mr-1" />
+              Cambiar
+            </Button>
+          )}
         </div>
       ) : (
         <div>
           <p className="text-sm text-gray-500 italic mb-2">Sin imagen</p>
-          <Button variant="outline" size="sm" className="w-full" onClick={onEditImage}>
-            <Plus className="h-3 w-3 mr-1" />
-            Agregar
-          </Button>
+          {!readOnly && (
+            <Button variant="outline" size="sm" className="w-full" onClick={onEditImage}>
+              <Plus className="h-3 w-3 mr-1" />
+              Agregar
+            </Button>
+          )}
         </div>
       )}
     </div>

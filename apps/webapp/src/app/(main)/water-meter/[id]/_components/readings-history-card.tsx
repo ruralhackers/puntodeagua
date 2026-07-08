@@ -25,6 +25,7 @@ interface ReadingsHistoryCardProps {
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   }) => void
   onDelete: (readingId: string) => void
+  readOnly?: boolean
 }
 
 export function ReadingsHistoryCard({
@@ -33,7 +34,8 @@ export function ReadingsHistoryCard({
   error,
   onViewImage,
   onEdit,
-  onDelete
+  onDelete,
+  readOnly = false
 }: ReadingsHistoryCardProps) {
   return (
     <Card>
@@ -67,6 +69,7 @@ export function ReadingsHistoryCard({
                 key={reading.id}
                 reading={reading}
                 index={index}
+                readOnly={readOnly}
                 onViewImage={onViewImage}
                 onEdit={onEdit}
                 onDelete={onDelete}

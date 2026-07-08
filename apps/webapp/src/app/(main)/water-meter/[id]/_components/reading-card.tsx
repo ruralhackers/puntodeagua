@@ -15,6 +15,7 @@ interface ReadingCardProps {
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   }
   index: number
+  readOnly?: boolean
   onViewImage: (image: WaterMeterReadingImageDto) => void
   onEdit: (reading: {
     id: string
@@ -25,7 +26,14 @@ interface ReadingCardProps {
   onDelete: (readingId: string) => void
 }
 
-export function ReadingCard({ reading, index, onViewImage, onEdit, onDelete }: ReadingCardProps) {
+export function ReadingCard({
+  reading,
+  index,
+  readOnly = false,
+  onViewImage,
+  onEdit,
+  onDelete
+}: ReadingCardProps) {
   return (
     <Card className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -85,7 +93,7 @@ export function ReadingCard({ reading, index, onViewImage, onEdit, onDelete }: R
           )}
 
           {/* Botón de editar solo para las dos primeras lecturas */}
-          {(index === 0 || index === 1) && (
+          {!readOnly && (index === 0 || index === 1) && (
             <Button
               variant="outline"
               size="sm"
@@ -105,7 +113,7 @@ export function ReadingCard({ reading, index, onViewImage, onEdit, onDelete }: R
           )}
 
           {/* Botón de borrar solo para la última lectura */}
-          {index === 0 && (
+          {!readOnly && index === 0 && (
             <Button
               variant="destructive"
               size="sm"

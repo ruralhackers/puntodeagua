@@ -10,6 +10,7 @@ interface LastReadingSectionProps {
   lastReadingExcessConsumption: boolean | null
   onRecalculate: () => void
   isRecalculating: boolean
+  readOnly?: boolean
 }
 
 export function LastReadingSection({
@@ -17,7 +18,8 @@ export function LastReadingSection({
   lastReadingNormalizedValue,
   lastReadingExcessConsumption,
   onRecalculate,
-  isRecalculating
+  isRecalculating,
+  readOnly = false
 }: LastReadingSectionProps) {
   return (
     <div className="space-y-3">
@@ -38,16 +40,18 @@ export function LastReadingSection({
               Exceso
             </Badge>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRecalculate}
-            disabled={isRecalculating}
-            className="mt-2"
-          >
-            <RefreshCw className={`h-3 w-3 mr-1 ${isRecalculating ? 'animate-spin' : ''}`} />
-            Recalcular Exceso
-          </Button>
+          {!readOnly && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRecalculate}
+              disabled={isRecalculating}
+              className="mt-2"
+            >
+              <RefreshCw className={`h-3 w-3 mr-1 ${isRecalculating ? 'animate-spin' : ''}`} />
+              Recalcular Exceso
+            </Button>
+          )}
         </div>
       ) : (
         <div className="text-sm text-gray-500 italic">Sin lecturas</div>

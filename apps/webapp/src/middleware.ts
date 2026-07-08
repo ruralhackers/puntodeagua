@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server'
 import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { isPathAllowedForWaterMeterReader } from '@/lib/water-meter-reader-paths'
 import { auth } from '@/server/auth/edge'
-
-const WATER_METER_READER_ALLOWED_PATHS = ['/water-meter/new', '/unauthorized', '/privacy', '/terms']
-
-function isPathAllowedForWaterMeterReader(pathname: string): boolean {
-  return WATER_METER_READER_ALLOWED_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`)
-  )
-}
 
 export default auth((req) => {
   const { pathname } = req.nextUrl

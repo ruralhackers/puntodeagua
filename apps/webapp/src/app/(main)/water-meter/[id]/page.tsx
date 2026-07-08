@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
+import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 import type { ImagePreviewData } from '@/types/image'
@@ -60,6 +61,7 @@ export default function WaterMeterDetailPage() {
   } = api.waterAccount.getWaterMeterReadings.useQuery({ waterMeterId }, { enabled: !!waterMeterId })
 
   const user = useUserStore((state) => state.user)
+  const readOnly = user ? isWaterMeterReaderOnly(user.roles) : false
   const waterLimitRule = user?.community?.waterLimitRule
   const utils = api.useUtils()
 
@@ -199,6 +201,7 @@ export default function WaterMeterDetailPage() {
           lastReadingDate={waterMeter.lastReadingDate}
           lastReadingExcessConsumption={waterMeter.lastReadingExcessConsumption}
           onAddReading={() => setAddReadingModalOpen(true)}
+          readOnly={readOnly}
         />
 
         {/* Water Meter Info Card */}
@@ -214,6 +217,7 @@ export default function WaterMeterDetailPage() {
           isRecalculating={recalculateExcessMutation.isPending}
           onViewImage={handleMeterImageView}
           onEditImage={() => setEditImageModalOpen(true)}
+          readOnly={readOnly}
         />
 
         {/* Consumption Calculation */}
@@ -234,11 +238,12 @@ export default function WaterMeterDetailPage() {
           onViewImage={handleViewImage}
           onEdit={handleEditReading}
           onDelete={handleDeleteReading}
+          readOnly={readOnly}
         />
       </div>
 
       {/* Modal de edición */}
-      {editingReading && (
+      {!readOnly && editingReading && (
         <EditReadingModal
           isOpen={editModalOpen}
           onClose={() => {
@@ -295,36 +300,38 @@ export default function WaterMeterDetailPage() {
       </Dialog>
 
       {/* Diálogo de confirmación de borrado */}
-      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>¿Confirmar eliminación?</DialogTitle>
-            <DialogDescription>
-              Estás a punto de eliminar la última lectura. Esta acción no se puede deshacer. El
-              contador se actualizará automáticamente con la lectura anterior.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={handleCancelDelete}
-              disabled={deleteReadingMutation.isPending}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleConfirmDelete}
-              disabled={deleteReadingMutation.isPending}
-            >
-              {deleteReadingMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {!readOnly && (
+        <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>¿Confirmar eliminación?</DialogTitle>
+              <DialogDescription>
+                Estás a punto de eliminar la última lectura. Esta acción no se puede deshacer. El
+                contador se actualizará automáticamente con la lectura anterior.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={handleCancelDelete}
+                disabled={deleteReadingMutation.isPending}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmDelete}
+                disabled={deleteReadingMutation.isPending}
+              >
+                {deleteReadingMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Modal para editar imagen del contador */}
-      {editImageModalOpen && waterMeter && (
+      {!readOnly && editImageModalOpen && waterMeter && (
         <WaterMeterImageModal
           waterMeterId={waterMeter.id}
           currentImage={waterMeter.waterMeterImage || null}

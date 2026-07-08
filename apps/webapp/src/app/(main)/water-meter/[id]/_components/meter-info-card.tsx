@@ -32,6 +32,7 @@ interface MeterInfoCardProps {
   isRecalculating: boolean
   onViewImage: () => void
   onEditImage: () => void
+  readOnly?: boolean
 }
 
 export function MeterInfoCard({
@@ -45,7 +46,8 @@ export function MeterInfoCard({
   onRecalculate,
   isRecalculating,
   onViewImage,
-  onEditImage
+  onEditImage,
+  readOnly = false
 }: MeterInfoCardProps) {
   return (
     <Card>
@@ -63,13 +65,15 @@ export function MeterInfoCard({
             lastReadingExcessConsumption={lastReadingExcessConsumption}
             onRecalculate={onRecalculate}
             isRecalculating={isRecalculating}
+            readOnly={readOnly}
           />
-          <WaterPointSection waterPoint={waterPoint} />
+          <WaterPointSection waterPoint={waterPoint} readOnly={readOnly} />
           <TechnicalInfoSection measurementUnit={measurementUnit} isActive={isActive} />
           <MeterImageSection
             waterMeterImage={waterMeterImage}
             onViewImage={onViewImage}
             onEditImage={onEditImage}
+            readOnly={readOnly}
           />
         </div>
       </CardContent>

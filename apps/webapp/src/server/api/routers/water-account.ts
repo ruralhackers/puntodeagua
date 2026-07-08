@@ -15,17 +15,28 @@ import {
 } from '@/server/api/trpc'
 
 export const waterAccountRouter = createTRPCRouter({
-  getWaterMeterById: staffProcedure
+  getWaterMeterById: waterMeterReaderAllowedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
+        await assertWaterMeterBelongsToUserCommunity(input.id, ctx.session.user.community?.id)
+      }
+
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const displayDto = await repo.findByIdForDisplay(Id.fromString(input.id))
       return displayDto
     }),
 
-  getWaterMeterReadings: staffProcedure
+  getWaterMeterReadings: waterMeterReaderAllowedProcedure
     .input(z.object({ waterMeterId: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
+        await assertWaterMeterBelongsToUserCommunity(
+          input.waterMeterId,
+          ctx.session.user.community?.id
+        )
+      }
+
       const repo = WaterAccountFactory.waterMeterReadingPrismaRepository()
       const readings = await repo.findByWaterMeterId(Id.fromString(input.waterMeterId))
       return readings.map((reading) => reading.toDto())
@@ -48,10 +59,7 @@ export const waterAccountRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
-        await assertZoneIdsBelongToUserCommunity(
-          input.zoneIds,
-          ctx.session.user.community?.id
-        )
+        await assertZoneIdsBelongToUserCommunity(input.zoneIds, ctx.session.user.community?.id)
       }
 
       const repo = WaterAccountFactory.waterMeterPrismaRepository()

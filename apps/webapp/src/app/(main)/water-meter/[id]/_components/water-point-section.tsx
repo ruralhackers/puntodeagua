@@ -11,15 +11,18 @@ interface WaterPointSectionProps {
     fixedPopulation: number
     floatingPopulation: number
   }
+  readOnly?: boolean
 }
 
-export function WaterPointSection({ waterPoint }: WaterPointSectionProps) {
+export function WaterPointSection({ waterPoint, readOnly = false }: WaterPointSectionProps) {
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Punto de Agua</h3>
       <div className="space-y-1">
         {waterPoint.connectionNumber && (
-          <div className="text-sm font-semibold text-blue-700">Nº enganche: {waterPoint.connectionNumber}</div>
+          <div className="text-sm font-semibold text-blue-700">
+            Nº enganche: {waterPoint.connectionNumber}
+          </div>
         )}
         <div className="font-medium">{waterPoint.name}</div>
         <div className="text-sm text-gray-600">{waterPoint.location}</div>
@@ -27,12 +30,14 @@ export function WaterPointSection({ waterPoint }: WaterPointSectionProps) {
           {waterPoint.fixedPopulation + waterPoint.floatingPopulation} personas
         </div>
       </div>
-      <Button variant="outline" size="sm" asChild>
-        <Link href={`/water-point/${waterPoint.id}`}>
-          <MapPin className="h-3 w-3 mr-1" />
-          Ver Punto
-        </Link>
-      </Button>
+      {!readOnly && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/water-point/${waterPoint.id}`}>
+            <MapPin className="h-3 w-3 mr-1" />
+            Ver Punto
+          </Link>
+        </Button>
+      )}
     </div>
   )
 }

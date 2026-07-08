@@ -44,7 +44,8 @@ export function WaterMeterList({ selectedZones, nameFilter, showOnlyExcess }: Wa
         (meter) =>
           meter.waterAccountName.toLowerCase().includes(searchTerm) ||
           meter.waterPoint.name.toLowerCase().includes(searchTerm) ||
-          meter.waterPoint.location.toLowerCase().includes(searchTerm)
+          meter.waterPoint.location.toLowerCase().includes(searchTerm) ||
+          meter.waterPoint.connectionNumber?.toLowerCase().includes(searchTerm)
       )
     }
 

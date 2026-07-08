@@ -105,7 +105,8 @@ export class WaterMeterPrismaRepository
             cadastralReference: true,
             communityZoneId: true,
             waterDepositIds: true,
-            notes: true
+            notes: true,
+            connectionNumber: true
           }
         },
         waterAccount: {
@@ -137,7 +138,8 @@ export class WaterMeterPrismaRepository
         cadastralReference: meter.waterPoint.cadastralReference,
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
-        notes: meter.waterPoint.notes
+        notes: meter.waterPoint.notes,
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }
@@ -203,7 +205,8 @@ export class WaterMeterPrismaRepository
             cadastralReference: true,
             communityZoneId: true,
             waterDepositIds: true,
-            notes: true
+            notes: true,
+            connectionNumber: true
           }
         },
         waterAccount: {
@@ -234,7 +237,8 @@ export class WaterMeterPrismaRepository
         cadastralReference: meter.waterPoint.cadastralReference,
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
-        notes: meter.waterPoint.notes
+        notes: meter.waterPoint.notes,
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))
@@ -295,7 +299,8 @@ export class WaterMeterPrismaRepository
             cadastralReference: true,
             communityZoneId: true,
             waterDepositIds: true,
-            notes: true
+            notes: true,
+            connectionNumber: true
           }
         },
         waterAccount: {
@@ -331,7 +336,8 @@ export class WaterMeterPrismaRepository
         cadastralReference: meter.waterPoint.cadastralReference,
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
-        notes: meter.waterPoint.notes
+        notes: meter.waterPoint.notes,
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))
@@ -363,7 +369,8 @@ export class WaterMeterPrismaRepository
             cadastralReference: true,
             communityZoneId: true,
             waterDepositIds: true,
-            notes: true
+            notes: true,
+            connectionNumber: true
           }
         },
         waterAccount: {
@@ -399,7 +406,8 @@ export class WaterMeterPrismaRepository
         cadastralReference: meter.waterPoint.cadastralReference,
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
-        notes: meter.waterPoint.notes
+        notes: meter.waterPoint.notes,
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))

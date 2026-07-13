@@ -1,4 +1,5 @@
 import type { WaterMeterReadingImageDto } from '@pda/water-account'
+import { consumptionBetweenReadings } from '@pda/water-account/domain'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Calendar, Camera, Droplets, Edit, FileText, Trash2 } from 'lucide-react'
@@ -14,6 +15,10 @@ interface ReadingCardProps {
     notes?: string | null
     waterMeterReadingImage?: WaterMeterReadingImageDto | null
   }
+  previousReading?: {
+    normalizedReading: number
+    readingDate: Date
+  }
   index: number
   readOnly?: boolean
   onViewImage: (image: WaterMeterReadingImageDto) => void
@@ -28,12 +33,26 @@ interface ReadingCardProps {
 
 export function ReadingCard({
   reading,
+  previousReading,
   index,
   readOnly = false,
   onViewImage,
   onEdit,
   onDelete
 }: ReadingCardProps) {
+  const consumption = previousReading
+    ? consumptionBetweenReadings(
+        {
+          normalizedReading: reading.normalizedReading,
+          readingDate: new Date(reading.readingDate)
+        },
+        {
+          normalizedReading: previousReading.normalizedReading,
+          readingDate: new Date(previousReading.readingDate)
+        }
+      )
+    : null
+
   return (
     <Card className="p-4 hover:bg-blue-50 hover:border-blue-200 transition-all duration-200">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -43,7 +62,7 @@ export function ReadingCard({
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-blue-600" />
               <span className="font-semibold text-lg">
-                {format(new Date(reading.readingDate), 'dd/MM/yyyy', {
+                {format(new Date(reading.readingDate), 'dd/MM/yyyy HH:mm', {
                   locale: es
                 })}
               </span>
@@ -64,6 +83,29 @@ export function ReadingCard({
               </span>
             </div>
           </div>
+
+          {consumption ? (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-700">Consumo: </span>
+                <span className="font-semibold text-gray-900">
+                  +{consumption.consumptionLiters.toLocaleString('es-ES')} L
+                </span>
+              </div>
+              <span className="hidden sm:inline text-muted-foreground">•</span>
+              <div>
+                <span className="font-medium text-gray-700">Ritmo: </span>
+                <span className="font-semibold text-gray-900">
+                  {consumption.dailyConsumption.toLocaleString('es-ES', {
+                    maximumFractionDigits: 0
+                  })}{' '}
+                  L/día
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground italic">Primera lectura</div>
+          )}
 
           {reading.notes && (
             <div className="flex items-start gap-2 text-sm text-muted-foreground">

@@ -98,7 +98,12 @@ export class WaterMeterReadingCreator {
     }
 
     // Update last reading in water meter. If we would have events we would launch an event instead
-    await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
+    try {
+      await this.waterMeterLastReadingUpdater.run(waterMeter, lastReadings)
+    } catch (error) {
+      await this.waterMeterReadingRepository.delete(newWaterReading.id)
+      throw error
+    }
 
     return {
       reading: newWaterReading,

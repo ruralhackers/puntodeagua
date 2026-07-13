@@ -1,5 +1,5 @@
 import type { CommunityRepository, CommunityZoneRepository } from '@pda/community'
-import { differenceInDays } from 'date-fns'
+import { consumptionBetweenReadings } from '../domain/consumption-between-readings'
 import type { WaterMeter } from '../domain'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
@@ -48,16 +48,11 @@ export class WaterMeterLastReadingUpdater {
       const totalDays = 365
       dailyConsumption = latestReading.normalizedReading / totalDays
     } else {
-      const daysSinceLastReading = differenceInDays(
-        latestReading.readingDate,
-        secondLatestReading.readingDate
+      const { dailyConsumption: consumptionPerDay } = consumptionBetweenReadings(
+        latestReading,
+        secondLatestReading
       )
-      if (daysSinceLastReading <= 0) {
-        throw new Error('Days since last reading must be greater than 0')
-      }
-      dailyConsumption =
-        (latestReading.normalizedReading - secondLatestReading.normalizedReading) /
-        daysSinceLastReading
+      dailyConsumption = consumptionPerDay
     }
 
     const excessConsumption = dailyConsumption > waterLimitPerDay

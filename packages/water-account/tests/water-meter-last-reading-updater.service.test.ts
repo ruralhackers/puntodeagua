@@ -258,4 +258,45 @@ describe('ReadingCreatorService', () => {
     expect(resultWaterMeter.lastReadingDate).toBe(lastReadings[0]?.readingDate)
     expect(resultWaterMeter.lastReadingExcessConsumption).toBe(false)
   })
+
+  it('should calculate excess consumption for same-day readings using hourly extrapolation', async () => {
+    // Arrange
+    const waterMeter = defaultWaterMeter
+    const communityZone = defaultCommunityZone
+    const community = defaultCommunity
+
+    const sameDayMorning = new Date('2026-07-11T08:00:00')
+    const sameDayAfternoon = new Date('2026-07-11T14:00:00')
+
+    const lastReadings = [
+      WaterMeterReading.fromDto({
+        id: Id.generateUniqueId().toString(),
+        waterMeterId: waterMeter.id.toString(),
+        reading: '1600',
+        normalizedReading: 1600,
+        readingDate: sameDayAfternoon,
+        notes: 'Afternoon reading'
+      }),
+      WaterMeterReading.fromDto({
+        id: Id.generateUniqueId().toString(),
+        waterMeterId: waterMeter.id.toString(),
+        reading: '1000',
+        normalizedReading: 1000,
+        readingDate: sameDayMorning,
+        notes: 'Morning reading'
+      })
+    ]
+
+    mockCommunityZoneRepository.findById = mock().mockResolvedValue(communityZone)
+    mockCommunityRepository.findById = mock().mockResolvedValue(community)
+    mockWaterMeterRepository.save = mock().mockResolvedValue(waterMeter)
+
+    // Act
+    const resultWaterMeter = await service.run(waterMeter, lastReadings)
+
+    // Assert - 600 L in 6 h extrapolates to 2400 L/day, above 1500 L/day limit
+    expect(resultWaterMeter.lastReadingNormalizedValue).toBe(1600)
+    expect(resultWaterMeter.lastReadingDate).toBe(sameDayAfternoon)
+    expect(resultWaterMeter.lastReadingExcessConsumption).toBe(true)
+  })
 })

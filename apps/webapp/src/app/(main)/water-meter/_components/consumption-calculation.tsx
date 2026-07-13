@@ -1,3 +1,4 @@
+import { consumptionBetweenReadings } from '@pda/water-account/domain'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { AlertTriangle, Calculator } from 'lucide-react'
@@ -10,22 +11,35 @@ interface ConsumptionCalculationProps {
   previousReading: { normalizedReading: number; readingDate: Date | string }
 }
 
+function formatPeriodDuration(hoursBetween: number, daysBetween: number): string {
+  if (hoursBetween < 24) {
+    return `${hoursBetween.toLocaleString('es-ES', { maximumFractionDigits: 1 })} h`
+  }
+
+  return `${daysBetween.toLocaleString('es-ES', { maximumFractionDigits: 1 })} días`
+}
+
 export function ConsumptionCalculation({
   waterLimitRule,
   pax,
   lastReading,
   previousReading
 }: ConsumptionCalculationProps) {
-  // Calcular días transcurridos
-  const daysBetween = Math.floor(
-    (new Date(lastReading.readingDate).getTime() -
-      new Date(previousReading.readingDate).getTime()) /
-      (1000 * 60 * 60 * 24)
-  )
+  const last = {
+    normalizedReading: lastReading.normalizedReading,
+    readingDate: new Date(lastReading.readingDate)
+  }
+  const previous = {
+    normalizedReading: previousReading.normalizedReading,
+    readingDate: new Date(previousReading.readingDate)
+  }
+
+  const { consumptionLiters, hoursBetween, daysBetween } = consumptionBetweenReadings(last, previous)
 
   // Calcular consumo máximo permitido según el tipo de regla
   let maxAllowedConsumption = 0
   let calculationExplanation = ''
+  const periodLabel = formatPeriodDuration(hoursBetween, daysBetween)
 
   if (waterLimitRule.type === 'PERSON_BASED') {
     if (!pax || pax === 0) {
@@ -33,19 +47,16 @@ export function ConsumptionCalculation({
       return null
     }
     maxAllowedConsumption = daysBetween * pax * waterLimitRule.value
-    calculationExplanation = `${daysBetween} días × ${pax} personas × ${waterLimitRule.value} L/día`
+    calculationExplanation = `${periodLabel} × ${pax} personas × ${waterLimitRule.value} L/día`
   } else if (waterLimitRule.type === 'HOUSEHOLD_BASED') {
     maxAllowedConsumption = daysBetween * waterLimitRule.value
-    calculationExplanation = `${daysBetween} días × ${waterLimitRule.value} L/día`
+    calculationExplanation = `${periodLabel} × ${waterLimitRule.value} L/día`
   } else {
     // Tipo de regla no soportado
     return null
   }
 
-  // Consumo real
-  const actualConsumption = lastReading.normalizedReading - previousReading.normalizedReading
-
-  const isExcess = actualConsumption > maxAllowedConsumption
+  const isExcess = consumptionLiters > maxAllowedConsumption
 
   return (
     <Card>
@@ -61,11 +72,11 @@ export function ConsumptionCalculation({
           <div className="p-4 bg-gray-50 rounded-lg">
             <div className="text-sm text-gray-600 mb-1">Período Analizado</div>
             <div className="text-lg font-semibold">
-              {format(new Date(previousReading.readingDate), 'dd/MM/yyyy', { locale: es })}
+              {format(previous.readingDate, 'dd/MM/yyyy HH:mm', { locale: es })}
               {' → '}
-              {format(new Date(lastReading.readingDate), 'dd/MM/yyyy', { locale: es })}
+              {format(last.readingDate, 'dd/MM/yyyy HH:mm', { locale: es })}
             </div>
-            <div className="text-sm text-gray-500 mt-1">{daysBetween} días transcurridos</div>
+            <div className="text-sm text-gray-500 mt-1">{periodLabel} transcurridos</div>
           </div>
 
           {/* Cálculos */}
@@ -95,16 +106,16 @@ export function ConsumptionCalculation({
                 Consumo Real
               </div>
               <div className="text-xs text-gray-600 mb-2">
-                {lastReading.normalizedReading.toLocaleString('es-ES')} L -{' '}
-                {previousReading.normalizedReading.toLocaleString('es-ES')} L
+                {last.normalizedReading.toLocaleString('es-ES')} L -{' '}
+                {previous.normalizedReading.toLocaleString('es-ES')} L
               </div>
               <div className={`text-2xl font-bold ${isExcess ? 'text-red-600' : 'text-green-600'}`}>
-                {actualConsumption.toLocaleString('es-ES')} L
+                {consumptionLiters.toLocaleString('es-ES')} L
               </div>
               {isExcess && (
                 <div className="mt-2 flex items-center gap-1 text-xs text-red-700">
                   <AlertTriangle className="h-3 w-3" />
-                  Exceso: {(actualConsumption - maxAllowedConsumption).toLocaleString('es-ES')} L
+                  Exceso: {(consumptionLiters - maxAllowedConsumption).toLocaleString('es-ES')} L
                 </div>
               )}
             </div>

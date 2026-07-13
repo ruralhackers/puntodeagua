@@ -68,6 +68,7 @@ export function ReadingsHistoryCard({
               <ReadingCard
                 key={reading.id}
                 reading={reading}
+                previousReading={readings[index + 1]}
                 index={index}
                 readOnly={readOnly}
                 onViewImage={onViewImage}

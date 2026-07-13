@@ -1,3 +1,8 @@
+export {
+  consumptionBetweenReadings,
+  type ConsumptionBetweenReadings,
+  type ReadingForConsumption
+} from './consumption-between-readings'
 export { WaterAccount } from './entities/water-account'
 export type { WaterAccountDto } from './entities/water-account.dto'
 export { WaterMeter } from './entities/water-meter'

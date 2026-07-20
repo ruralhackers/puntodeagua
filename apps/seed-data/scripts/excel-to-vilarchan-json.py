@@ -146,6 +146,7 @@ def build_json(rows: list[list[str | None]], existing_meta: dict) -> dict:
                     "tempId": account_id,
                     "name": titular,
                     "nationalId": "",
+                    "phone": "",
                     "notes": "",
                 }
             )

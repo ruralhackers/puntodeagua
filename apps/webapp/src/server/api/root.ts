@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from '@/server/api/trpc'
 import { registersRouter } from './routers/analysis'
 import { authRouter } from './routers/auth'
 import { communityRouter } from './routers/community'
+import { feesRouter } from './routers/fees'
 import { incidentsRouter } from './routers/incident'
 import { providersRouter } from './routers/provider'
 import { tableRouter } from './routers/table'
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   registers: registersRouter,
   incidents: incidentsRouter,
   providers: providersRouter,
+  fees: feesRouter,
   user: userRouter,
   table: tableRouter,
   waterAccount: waterAccountRouter

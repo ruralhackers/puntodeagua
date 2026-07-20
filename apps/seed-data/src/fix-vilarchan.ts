@@ -11,6 +11,7 @@ interface ExpectedRow {
   connectionNumber: string
   accountName: string
   nationalId: string
+  phone: string
   waterPointName: string
   location: string
   cadastralReference: string
@@ -75,6 +76,7 @@ function buildExpectedRows(json: CommunitySeedData): ExpectedRow[] {
       connectionNumber,
       accountName: account.name,
       nationalId: account.nationalId,
+      phone: account.phone ?? '',
       waterPointName: point.name,
       location: point.location,
       cadastralReference: point.cadastralReference,
@@ -188,6 +190,7 @@ function planRowUpdate(
 
   pushChange(changes, `account:${account.id}`, 'name', account.name, expected.accountName)
   pushChange(changes, `account:${account.id}`, 'nationalId', account.nationalId, expected.nationalId)
+  pushChange(changes, `account:${account.id}`, 'phone', account.phone ?? '', expected.phone)
   pushChange(
     changes,
     `point:${point.id}`,
@@ -216,9 +219,11 @@ async function applyChanges(changes: FieldChange[]) {
     const [entityType, entityId] = change.entity.split(':')
 
     if (entityType === 'account') {
+      const value =
+        change.field === 'phone' ? change.to || null : change.to
       await prisma.waterAccount.update({
         where: { id: entityId },
-        data: { [change.field]: change.to }
+        data: { [change.field]: value }
       })
       continue
     }

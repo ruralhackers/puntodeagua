@@ -1,6 +1,6 @@
 'use client'
 
-import { Download, Droplets, Gauge, LogOut, Menu, Settings, ShieldUser } from 'lucide-react'
+import { Download, Droplets, Gauge, LogOut, Menu, Receipt, Settings, ShieldUser } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -91,6 +91,12 @@ export function AccountMenu() {
                 <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
                   <ShieldUser />
                   Proveedores
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/fees`} className="flex items-center gap-2 cursor-pointer">
+                  <Receipt />
+                  Cobros
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

@@ -1,10 +1,12 @@
 import { Id } from '@pda/common/domain'
 import { FileMetadataCreatorService, fileUploadInputSchema } from '@pda/storage'
-import { WaterAccountFactory } from '@pda/water-account'
+import { WaterAccountFactory, waterAccountUpdateSchema } from '@pda/water-account'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { handleDomainError } from '@/server/api/error-handler'
 import {
+  assertCommunityAccess,
   assertWaterMeterBelongsToUserCommunity,
   assertZoneIdsBelongToUserCommunity
 } from '@/server/api/guards/water-meter-community-guard'
@@ -293,6 +295,67 @@ export const waterAccountRouter = createTRPCRouter({
     return accounts.map((account) => account.toDto())
   }),
 
+  getWaterAccountsByCommunityId: staffProcedure
+    .input(z.object({ communityId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      assertCommunityAccess(input.communityId, ctx.session.user.community?.id)
+      const repo = WaterAccountFactory.waterAccountPrismaRepository()
+      const accounts = await repo.findByCommunityId(Id.fromString(input.communityId))
+      return accounts.map((account) => account.toDto())
+    }),
+
+  getWaterAccountById: staffProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const communityId = ctx.session.user.community?.id
+      if (!communityId) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
+      }
+      const repo = WaterAccountFactory.waterAccountPrismaRepository()
+      const belongs = await repo.belongsToCommunity(
+        Id.fromString(input.id),
+        Id.fromString(communityId)
+      )
+      if (!belongs) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Community access denied' })
+      }
+      const account = await repo.findById(Id.fromString(input.id))
+      return account?.toDto() ?? null
+    }),
+
+  updateWaterAccount: staffProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        data: waterAccountUpdateSchema
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const communityId = ctx.session.user.community?.id
+        if (!communityId) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
+        }
+        const repo = WaterAccountFactory.waterAccountPrismaRepository()
+        const belongs = await repo.belongsToCommunity(
+          Id.fromString(input.id),
+          Id.fromString(communityId)
+        )
+        if (!belongs) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Community access denied' })
+        }
+
+        const service = WaterAccountFactory.waterAccountUpdaterService()
+        const account = await service.run({
+          id: Id.fromString(input.id),
+          data: input.data
+        })
+        return account.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
   changeWaterMeterOwner: staffProcedure
     .input(
       z.object({
@@ -302,6 +365,7 @@ export const waterAccountRouter = createTRPCRouter({
           .object({
             name: z.string(),
             nationalId: z.string(),
+            phone: z.string().optional(),
             notes: z.string().optional()
           })
           .optional()

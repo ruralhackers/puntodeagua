@@ -1,11 +1,13 @@
-import { ArrowLeft, Plus } from 'lucide-react'
+import { ArrowLeft, Plus, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { WaterMeterStatusBadge } from '../../_components/water-meter-status-badge'
 
 interface WaterMeterHeaderProps {
   waterAccountName: string
+  waterAccountPhone?: string
   waterPointName: string
+  waterPointId: string
   lastReadingDate: Date | null
   lastReadingExcessConsumption: boolean | null
   onAddReading: () => void
@@ -14,7 +16,9 @@ interface WaterMeterHeaderProps {
 
 export function WaterMeterHeader({
   waterAccountName,
+  waterAccountPhone,
   waterPointName,
+  waterPointId,
   lastReadingDate,
   lastReadingExcessConsumption,
   onAddReading,
@@ -35,6 +39,14 @@ export function WaterMeterHeader({
         {/* Left side: Info */}
         <div className="space-y-1 min-w-0 flex-1">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight">{waterAccountName}</h1>
+          {waterAccountPhone ? (
+            <a
+              href={`tel:${waterAccountPhone}`}
+              className="text-sm text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+            >
+              {waterAccountPhone}
+            </a>
+          ) : null}
           <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
             <span className="truncate">{waterPointName}</span>
             <span>•</span>
@@ -45,11 +57,21 @@ export function WaterMeterHeader({
           </div>
         </div>
 
-        {/* Right side: Action button */}
-        <Button variant="outline" size="sm" className="shrink-0 self-start" onClick={onAddReading}>
-          <Plus className="h-4 w-4 mr-2" />
-          Nueva Lectura
-        </Button>
+        {/* Right side: Action buttons */}
+        <div className="flex flex-wrap gap-2 shrink-0 self-start">
+          {!readOnly && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href={`/fees/new/${waterPointId}`}>
+                <Receipt className="h-4 w-4 mr-2" />
+                Nuevo cobro
+              </Link>
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={onAddReading}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nueva Lectura
+          </Button>
+        </div>
       </div>
     </div>
   )

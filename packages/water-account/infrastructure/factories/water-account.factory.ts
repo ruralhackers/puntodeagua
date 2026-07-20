@@ -6,6 +6,7 @@ import {
   FileUploaderService,
   R2FileStorageRepository
 } from '@pda/storage'
+import { WaterAccountUpdater } from '../../application/water-account-updater.service'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
 import { WaterMeterImageUpdaterService } from '../../application/water-meter-image-updater.service'
 import { WaterMeterLastReadingUpdater } from '../../application/water-meter-last-reading-updater.service'
@@ -116,6 +117,10 @@ export class WaterAccountFactory {
       WaterAccountFactory.waterMeterPrismaRepository(),
       WaterAccountFactory.waterAccountPrismaRepository()
     )
+  }
+
+  static waterAccountUpdaterService() {
+    return new WaterAccountUpdater(WaterAccountFactory.waterAccountPrismaRepository())
   }
 
   static waterMeterImageUpdaterService() {

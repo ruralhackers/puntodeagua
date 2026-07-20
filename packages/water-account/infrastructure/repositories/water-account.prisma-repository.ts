@@ -2,6 +2,7 @@ import type { Id } from '@pda/common/domain'
 import { BasePrismaRepository } from '@pda/common/infrastructure'
 import type { client as prisma } from '@pda/database'
 import { WaterAccount } from '../../domain/entities/water-account'
+import type { WaterAccountDto } from '../../domain/entities/water-account.dto'
 import type { WaterAccountRepository } from '../../domain/repositories/water-account.repository'
 
 export class WaterAccountPrismaRepository
@@ -15,7 +16,7 @@ export class WaterAccountPrismaRepository
   }
 
   protected getModel() {
-    return this.db[this.model]
+    return this.db.waterAccount
   }
 
   async findById(id: Id): Promise<WaterAccount | undefined> {
@@ -23,14 +24,50 @@ export class WaterAccountPrismaRepository
       where: { id: id.toString() }
     })
     if (!account) return undefined
-    return WaterAccount.fromDto(account)
+    return WaterAccount.fromDto(this.fromPrismaPayload(account))
   }
 
   async findAll(): Promise<WaterAccount[]> {
     const accounts = await this.getModel().findMany({
       orderBy: { name: 'asc' }
     })
-    return accounts.map((account) => WaterAccount.fromDto(account))
+    return accounts.map((account) => WaterAccount.fromDto(this.fromPrismaPayload(account)))
+  }
+
+  async findByCommunityId(communityId: Id): Promise<WaterAccount[]> {
+    const accounts = await this.getModel().findMany({
+      where: {
+        waterMeters: {
+          some: {
+            waterPoint: {
+              communityZone: {
+                communityId: communityId.toString()
+              }
+            }
+          }
+        }
+      },
+      orderBy: { name: 'asc' }
+    })
+    return accounts.map((account) => WaterAccount.fromDto(this.fromPrismaPayload(account)))
+  }
+
+  async belongsToCommunity(id: Id, communityId: Id): Promise<boolean> {
+    const count = await this.getModel().count({
+      where: {
+        id: id.toString(),
+        waterMeters: {
+          some: {
+            waterPoint: {
+              communityZone: {
+                communityId: communityId.toString()
+              }
+            }
+          }
+        }
+      }
+    })
+    return count > 0
   }
 
   async save(waterAccount: WaterAccount): Promise<void> {
@@ -41,11 +78,13 @@ export class WaterAccountPrismaRepository
         id: dto.id,
         name: dto.name,
         nationalId: dto.nationalId,
+        phone: dto.phone ?? null,
         notes: dto.notes
       },
       update: {
         name: dto.name,
         nationalId: dto.nationalId,
+        phone: dto.phone ?? null,
         notes: dto.notes,
         updatedAt: new Date()
       }
@@ -60,5 +99,21 @@ export class WaterAccountPrismaRepository
 
   async findForTable(): Promise<any> {
     throw new Error('Not implemented')
+  }
+
+  private fromPrismaPayload(account: {
+    id: string
+    name: string
+    nationalId: string
+    phone: string | null
+    notes: string
+  }): WaterAccountDto {
+    return {
+      id: account.id,
+      name: account.name,
+      nationalId: account.nationalId,
+      phone: account.phone ?? undefined,
+      notes: account.notes
+    }
   }
 }

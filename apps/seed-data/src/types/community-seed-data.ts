@@ -25,6 +25,7 @@ export interface CommunitySeedData {
     tempId: string
     name: string
     nationalId: string
+    phone?: string
     notes: string
   }>
   waterPoints: Array<{

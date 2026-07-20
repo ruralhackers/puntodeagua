@@ -85,6 +85,8 @@ model Community {
   analyses      Analysis[]
   incidents     Incident[]
   providers     Provider[]
+  feeConfig     FeeConfig?
+  feePayments   FeePayment[]
 }
 
 model CommunityZone {
@@ -140,15 +142,17 @@ model WaterPoint {
 
   waterMeters WaterMeter[]
   incidents   Incident[]
+  feePayments FeePayment[]
 
   @@index([communityZoneId])
   @@index([waterDepositIds])
 }
 
 model WaterAccount {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   name       String
-  nationalId String @map("national_id")
+  nationalId String  @map("national_id")
+  phone      String?
 
   notes String @default("") @db.Text
 
@@ -355,4 +359,41 @@ model Provider {
   @@index([communityId])
   @@index([providerType])
   @@index([isActive])
+}
+
+model FeeConfig {
+  id           String   @id @default(cuid())
+  communityId  String   @unique @map("community_id")
+  community    Community @relation(fields: [communityId], references: [id])
+  annualAmount Decimal  @map("annual_amount") @db.Decimal(10, 2)
+  frequency    String
+  currency     String   @default("EUR")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+}
+
+model FeePayment {
+  id            String   @id @default(cuid())
+  communityId   String   @map("community_id")
+  community     Community @relation(fields: [communityId], references: [id])
+  number        Int
+  waterPointId  String   @map("water_point_id")
+  waterPoint    WaterPoint @relation(fields: [waterPointId], references: [id])
+  payerLabel    String   @map("payer_label")
+  kind          String
+  amount        Decimal  @db.Decimal(10, 2)
+  paidAt        DateTime @map("paid_at")
+  frequency     String?
+  periodYear    Int?     @map("period_year")
+  periodIndex   Int?     @map("period_index")
+  paymentMethod String   @map("payment_method")
+  notes         String   @default("") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([communityId, number])
+  @@index([communityId])
+  @@index([waterPointId])
+  @@index([paidAt])
+  @@index([kind])
 }

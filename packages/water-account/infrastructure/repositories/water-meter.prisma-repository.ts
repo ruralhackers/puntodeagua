@@ -112,7 +112,8 @@ export class WaterMeterPrismaRepository
         waterAccount: {
           select: {
             id: true,
-            name: true
+            name: true,
+            phone: true
           }
         },
         waterMeterImage: true
@@ -124,6 +125,7 @@ export class WaterMeterPrismaRepository
       id: meter.id,
       waterAccountId: meter.waterAccountId,
       waterAccountName: meter.waterAccount.name,
+      waterAccountPhone: meter.waterAccount.phone ?? undefined,
       measurementUnit: meter.measurementUnit,
       lastReadingNormalizedValue: meter.lastReadingNormalizedValue,
       lastReadingDate: meter.lastReadingDate,
@@ -212,7 +214,8 @@ export class WaterMeterPrismaRepository
         waterAccount: {
           select: {
             id: true,
-            name: true
+            name: true,
+            phone: true
           }
         },
         waterMeterImage: true
@@ -223,6 +226,7 @@ export class WaterMeterPrismaRepository
       id: meter.id,
       waterAccountId: meter.waterAccountId,
       waterAccountName: meter.waterAccount.name,
+      waterAccountPhone: meter.waterAccount.phone ?? undefined,
       measurementUnit: meter.measurementUnit,
       lastReadingNormalizedValue: meter.lastReadingNormalizedValue,
       lastReadingDate: meter.lastReadingDate,
@@ -306,7 +310,8 @@ export class WaterMeterPrismaRepository
         waterAccount: {
           select: {
             id: true,
-            name: true
+            name: true,
+            phone: true
           }
         },
         waterMeterImage: true
@@ -322,6 +327,7 @@ export class WaterMeterPrismaRepository
       id: meter.id,
       waterAccountId: meter.waterAccountId,
       waterAccountName: meter.waterAccount.name,
+      waterAccountPhone: meter.waterAccount.phone ?? undefined,
       measurementUnit: meter.measurementUnit,
       lastReadingNormalizedValue: meter.lastReadingNormalizedValue,
       lastReadingDate: meter.lastReadingDate,
@@ -376,7 +382,8 @@ export class WaterMeterPrismaRepository
         waterAccount: {
           select: {
             id: true,
-            name: true
+            name: true,
+            phone: true
           }
         },
         waterMeterImage: true
@@ -392,6 +399,7 @@ export class WaterMeterPrismaRepository
       id: meter.id,
       waterAccountId: meter.waterAccountId,
       waterAccountName: meter.waterAccount.name,
+      waterAccountPhone: meter.waterAccount.phone ?? undefined,
       measurementUnit: meter.measurementUnit,
       lastReadingNormalizedValue: meter.lastReadingNormalizedValue,
       lastReadingDate: meter.lastReadingDate,

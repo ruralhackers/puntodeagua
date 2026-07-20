@@ -1,5 +1,6 @@
 # dependencies (bun install)
 node_modules
+.venv
 
 # output
 out
@@ -56,5 +57,6 @@ notes.txt
 
 apps/seed-data/info-files/*.csv
 apps/seed-data/info-files/*.json
+apps/seed-data/info-files/*.xlsx
 !apps/seed-data/info-files/example.csv
 !apps/seed-data/info-files/example.json

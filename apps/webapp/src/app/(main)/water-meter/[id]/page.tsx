@@ -197,7 +197,9 @@ export default function WaterMeterDetailPage() {
         {/* Header */}
         <WaterMeterHeader
           waterAccountName={waterMeter.waterAccountName}
+          waterAccountPhone={waterMeter.waterAccountPhone}
           waterPointName={waterMeter.waterPoint.name}
+          waterPointId={waterMeter.waterPoint.id}
           lastReadingDate={waterMeter.lastReadingDate}
           lastReadingExcessConsumption={waterMeter.lastReadingExcessConsumption}
           onAddReading={() => setAddReadingModalOpen(true)}

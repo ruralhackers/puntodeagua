@@ -101,6 +101,8 @@ export const createMockWaterAccountRepository = (): WaterAccountRepository => {
   return {
     findById: mock(),
     findAll: mock(),
+    findByCommunityId: mock(),
+    belongsToCommunity: mock(),
     save: mock(),
     delete: mock(),
     findForTable: mock()

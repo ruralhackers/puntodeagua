@@ -9,6 +9,7 @@ export const waterMeterDisplaySchema = z.object({
   id: idSchema,
   waterAccountId: idSchema,
   waterAccountName: z.string(),
+  waterAccountPhone: z.string().optional(),
   measurementUnit: z.string(),
   lastReadingNormalizedValue: z.number().nullable(),
   lastReadingDate: z.date().nullable(),

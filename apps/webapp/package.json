@@ -24,6 +24,7 @@
     "@pda/database": "workspace:*",
     "@pda/registers": "workspace:*",
     "@pda/user": "workspace:*",
+    "@pda/fees": "workspace:*",
     "@pda/providers": "workspace:*",
     "@pda/water-account": "workspace:*",
     "@pda/storage": "workspace:*",

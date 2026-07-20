@@ -1,0 +1,3 @@
+Numero_contador,Nome,Apelidos,DNI,Telefono,Enderezo_ou_localizacion,Zona,Referencia_catastral,Residentes_fixos,Residentes_flotantes,Data_ultima_lectura,Ultima_lectura,Estado
+C-001,María,Pérez García,00000000T,666123456,Lugar da Igrexa 12,Zona 1,1234567AB1234C0001DE,3,1,30/06/2026,1250,ACTIVO
+C-002,Xosé,López Fernández,11111111H,,Lugar do Outeiro 5,Zona 2,7654321CD4321E0002FG,2,0,30/06/2026,987,ACTIVO

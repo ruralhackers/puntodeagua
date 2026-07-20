@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/select'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
+import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 
 const formSchema = z
@@ -42,6 +43,7 @@ const formSchema = z
     existingAccountId: z.string().optional(),
     newAccountName: z.string().optional(),
     newAccountNationalId: z.string().optional(),
+    newAccountPhone: z.string().optional(),
     newAccountNotes: z.string().optional()
   })
   .refine(
@@ -70,7 +72,12 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { data: meter } = api.waterAccount.getWaterMeterById.useQuery({ id: meterId })
-  const { data: allAccounts } = api.waterAccount.getAllWaterAccounts.useQuery()
+  const user = useUserStore((state) => state.user)
+  const communityId = user?.community?.id
+  const { data: allAccounts } = api.waterAccount.getWaterAccountsByCommunityId.useQuery(
+    { communityId: communityId || '' },
+    { enabled: !!communityId }
+  )
 
   const utils = api.useUtils()
   const isMobile = useIsMobile()
@@ -95,6 +102,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
       existingAccountId: '',
       newAccountName: '',
       newAccountNationalId: '',
+      newAccountPhone: '',
       newAccountNotes: ''
     }
   })
@@ -106,6 +114,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
     if (ownerType === 'existing') {
       form.setValue('newAccountName', '')
       form.setValue('newAccountNationalId', '')
+      form.setValue('newAccountPhone', '')
       form.setValue('newAccountNotes', '')
     } else {
       form.setValue('existingAccountId', '')
@@ -123,6 +132,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
             ? {
                 name: values.newAccountName!,
                 nationalId: values.newAccountNationalId!,
+                phone: values.newAccountPhone || undefined,
                 notes: values.newAccountNotes
               }
             : undefined
@@ -234,6 +244,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                               {allAccounts?.map((account) => (
                                 <SelectItem key={account.id} value={account.id}>
                                   {account.name} - {account.nationalId}
+                                  {account.phone ? ` · ${account.phone}` : ''}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -268,6 +279,20 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                             <FormLabel>DNI/NIE</FormLabel>
                             <FormControl>
                               <Input placeholder="Ej: 12345678A" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="newAccountPhone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Teléfono de contacto (opcional)</FormLabel>
+                            <FormControl>
+                              <Input type="tel" placeholder="Ej: 666123456" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -367,6 +392,7 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                             {allAccounts?.map((account) => (
                               <SelectItem key={account.id} value={account.id}>
                                 {account.name} - {account.nationalId}
+                                {account.phone ? ` · ${account.phone}` : ''}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -401,6 +427,20 @@ export default function OwnerChangeForm({ meterId, onClose, onSuccess }: OwnerCh
                           <FormLabel>DNI/NIE</FormLabel>
                           <FormControl>
                             <Input placeholder="Ej: 12345678A" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="newAccountPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono de contacto (opcional)</FormLabel>
+                          <FormControl>
+                            <Input type="tel" placeholder="Ej: 666123456" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

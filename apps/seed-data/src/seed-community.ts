@@ -94,6 +94,7 @@ export async function seedCommunity(communityName: string) {
         data: {
           name: account.name,
           nationalId: account.nationalId,
+          phone: account.phone || null,
           notes: account.notes || ''
         }
       })

@@ -113,6 +113,27 @@ describe('WaterMeterOwnerChanger', () => {
       expect(savedMeter.waterAccountId.toString()).toBe(result.newWaterAccountId)
     })
 
+    it('should create new water account with optional phone', async () => {
+      const newAccountData = {
+        name: 'Owner With Phone',
+        nationalId: '11223344C',
+        phone: '666123456'
+      }
+
+      mockWaterMeterRepository.findById = mock(() => Promise.resolve(defaultWaterMeter))
+      mockWaterAccountRepository.save = mock(() => Promise.resolve())
+      mockWaterMeterRepository.save = mock(() => Promise.resolve())
+
+      const result = await service.run({
+        waterMeterId: defaultWaterMeter.id,
+        newWaterAccountData: newAccountData
+      })
+
+      const savedAccount = (mockWaterAccountRepository.save as any).mock.calls[0][0] as WaterAccount
+      expect(savedAccount.phone).toBe('666123456')
+      expect(result.newWaterAccountId).toBeDefined()
+    })
+
     it('should create new water account without notes', async () => {
       // Arrange
       const newAccountData = {

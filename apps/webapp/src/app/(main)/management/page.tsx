@@ -1,4 +1,4 @@
-import { Home, RefreshCw, Users } from 'lucide-react'
+import { Home, Pencil, RefreshCw, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { APP_CONFIG } from '@/config/app-config'
@@ -45,6 +45,24 @@ export default function ManagementPage() {
                   </CardTitle>
                   <CardDescription className="text-green-600 text-xs mt-1">
                     Cambiar propietario
+                  </CardDescription>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/management/edit-owner" className="group">
+          <Card className="h-32 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 hover:border-amber-300">
+            <CardContent className="flex items-center justify-center h-full p-6">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <Pencil className="h-8 w-8 text-amber-600 group-hover:scale-110 transition-transform" />
+                <div>
+                  <CardTitle className="text-amber-800 text-sm font-semibold">
+                    Editar Titular
+                  </CardTitle>
+                  <CardDescription className="text-amber-600 text-xs mt-1">
+                    Nombre, DNI y teléfono
                   </CardDescription>
                 </div>
               </div>

@@ -9,6 +9,7 @@ interface ChangeOwnerParams {
   newWaterAccountData?: {
     name: string
     nationalId: string
+    phone?: string
     notes?: string
   }
 }

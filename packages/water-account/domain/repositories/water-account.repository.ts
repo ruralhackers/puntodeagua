@@ -8,5 +8,9 @@ export interface WaterAccountRepository
     FindableForTable<WaterAccount> {
   findById(id: Id): Promise<WaterAccount | undefined>
   findByCommunityId(communityId: Id): Promise<WaterAccount[]>
+  findByNationalIdInCommunity(
+    nationalId: string,
+    communityId: Id
+  ): Promise<WaterAccount | undefined>
   belongsToCommunity(id: Id, communityId: Id): Promise<boolean>
 }

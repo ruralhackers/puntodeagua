@@ -1,5 +1,6 @@
 export { WaterAccountUpdater } from './application/water-account-updater.service'
 export { WaterMeterOwnerChanger } from './application/water-meter-owner-changer.service'
 export { WaterMeterReplacer } from './application/water-meter-replacer.service'
+export { WaterPointOnboarding } from './application/water-point-onboarding.service'
 export * from './domain'
 export * from './infrastructure'

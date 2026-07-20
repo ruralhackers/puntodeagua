@@ -102,9 +102,22 @@ export const createMockWaterAccountRepository = (): WaterAccountRepository => {
     findById: mock(),
     findAll: mock(),
     findByCommunityId: mock(),
+    findByNationalIdInCommunity: mock(),
     belongsToCommunity: mock(),
     save: mock(),
     delete: mock(),
     findForTable: mock()
   } as unknown as WaterAccountRepository
+}
+
+export const createMockWaterPointRepository = () => {
+  return {
+    findById: mock(),
+    findByCommunityZonesId: mock(),
+    findByCommunityZonesIdWithAccount: mock(),
+    findByCommunityIdWithAccount: mock(),
+    save: mock(),
+    delete: mock(),
+    findForTable: mock()
+  }
 }

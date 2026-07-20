@@ -1,21 +1,68 @@
 'use client'
 
+import type { CommunityZoneDto } from '@pda/community'
 import { ArrowLeft, ArrowRight, Calendar, Gauge } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { useUserStore } from '@/stores/user/user-provider'
+import { api } from '@/trpc/react'
+
+const ALL_METERS = '__all__'
 
 export default function ReadingsExportPage() {
   const router = useRouter()
+  const user = useUserStore((state) => state.user)
+  const communityId = user?.community?.id || ''
+
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [waterMeterId, setWaterMeterId] = useState(ALL_METERS)
+  const [meterSearch, setMeterSearch] = useState('')
   const [isNavigating, setIsNavigating] = useState(false)
 
-  // Calcular fechas por defecto (último año)
+  const { data: zones } = api.community.getCommunityZones.useQuery(
+    { id: communityId },
+    { enabled: !!communityId }
+  )
+
+  const zoneIds = useMemo(
+    () => (zones as CommunityZoneDto[] | undefined)?.map((zone) => zone.id) ?? [],
+    [zones]
+  )
+
+  const { data: meters } = api.waterAccount.getActiveWaterMetersOrderedByLastReading.useQuery(
+    { zoneIds },
+    { enabled: zoneIds.length > 0 }
+  )
+
+  const filteredMeters = useMemo(() => {
+    if (!meters) return []
+    const q = meterSearch.trim().toLowerCase()
+    if (!q) return meters
+    return meters.filter((meter) => {
+      const haystack = [
+        meter.waterAccountName,
+        meter.waterPoint.name,
+        meter.waterPoint.connectionNumber ?? ''
+      ]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [meters, meterSearch])
+
   useEffect(() => {
     const today = new Date()
     const oneYearAgo = new Date()
@@ -36,14 +83,15 @@ export default function ReadingsExportPage() {
       return
     }
 
-    // Set loading state
     setIsNavigating(true)
 
-    // Navigate to results page with parameters
     const params = new URLSearchParams({
       startDate,
       endDate
     })
+    if (waterMeterId && waterMeterId !== ALL_METERS) {
+      params.set('waterMeterId', waterMeterId)
+    }
 
     router.push(`/export/readings/results?${params.toString()}`)
   }
@@ -51,7 +99,6 @@ export default function ReadingsExportPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link href="/export" className="hover:text-foreground">
             Exportar Datos
@@ -63,11 +110,10 @@ export default function ReadingsExportPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Filtros de Lecturas</h1>
           <p className="text-muted-foreground">
-            Configura el período de tiempo para exportar las lecturas de contadores
+            Configura el período y, opcionalmente, un contador concreto
           </p>
         </div>
 
-        {/* Date Range Selection */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -104,7 +150,39 @@ export default function ReadingsExportPage() {
               </div>
             </div>
 
-            {/* Date Range Info */}
+            <div className="space-y-2">
+              <Label htmlFor="meterSearch">Contador (opcional)</Label>
+              <Input
+                id="meterSearch"
+                placeholder="Buscar por titular, casa o nº enganche..."
+                value={meterSearch}
+                onChange={(e) => setMeterSearch(e.target.value)}
+              />
+              <Select value={waterMeterId} onValueChange={setWaterMeterId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Todos los contadores" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL_METERS}>Todos los contadores</SelectItem>
+                  {filteredMeters.map((meter) => (
+                    <SelectItem key={meter.id} value={meter.id}>
+                      {[
+                        meter.waterPoint.connectionNumber,
+                        meter.waterPoint.name,
+                        meter.waterAccountName
+                      ]
+                        .filter(Boolean)
+                        .join(' — ')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground">
+                Si eliges un contador, el PDF listará todas sus lecturas del período con consumo
+                total y medio.
+              </p>
+            </div>
+
             {startDate && endDate && (
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">
@@ -126,7 +204,6 @@ export default function ReadingsExportPage() {
           </CardContent>
         </Card>
 
-        {/* Navigation */}
         <div className="flex justify-between">
           <Button variant="outline" asChild>
             <Link href="/export">
@@ -150,14 +227,6 @@ export default function ReadingsExportPage() {
           </Button>
         </div>
 
-        {/* Validation Message */}
-        {(!startDate || !endDate) && (
-          <div className="text-center mt-4">
-            <p className="text-sm text-muted-foreground">Selecciona ambas fechas para continuar</p>
-          </div>
-        )}
-
-        {/* Info Card */}
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -168,21 +237,12 @@ export default function ReadingsExportPage() {
           <CardContent>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>
-                • La exportación incluirá todos los contadores con lecturas dentro del rango de
-                fechas seleccionado
-              </p>
-              <p>• Se generará un archivo PDF con una tabla detallada de las lecturas</p>
-              <p>
-                • Para cada contador se mostrará: titular, lecturas con fechas, consumo total y
-                límite máximo permitido
+                • Sin contador: PDF comunitario con todos los contadores activos (primera/última
+                lectura y consumo total)
               </p>
               <p>
-                • Los contadores sin lecturas o con menos de 2 lecturas también se incluirán con
-                indicación de datos insuficientes
-              </p>
-              <p>
-                • Si un contador tiene múltiples lecturas en el rango, se añadirán columnas
-                adicionales automáticamente
+                • Con contador: PDF detallado con todas las lecturas del período, consumo total y
+                consumo medio (L/día)
               </p>
             </div>
           </CardContent>

@@ -15,6 +15,7 @@ import { WaterMeterReadingCreator } from '../../application/water-meter-reading-
 import { WaterMeterReadingDeleter } from '../../application/water-meter-reading-deleter.service'
 import { WaterMeterReadingUpdater } from '../../application/water-meter-reading-updater.service'
 import { WaterMeterReplacer } from '../../application/water-meter-replacer.service'
+import { WaterPointOnboarding } from '../../application/water-point-onboarding.service'
 import { WaterAccountPrismaRepository } from '../repositories/water-account.prisma-repository'
 import { WaterMeterPrismaRepository } from '../repositories/water-meter.prisma-repository'
 import { WaterMeterImagePrismaRepository } from '../repositories/water-meter-image.prisma-repository'
@@ -116,6 +117,16 @@ export class WaterAccountFactory {
     return new WaterMeterOwnerChanger(
       WaterAccountFactory.waterMeterPrismaRepository(),
       WaterAccountFactory.waterAccountPrismaRepository()
+    )
+  }
+
+  static waterPointOnboardingService() {
+    return new WaterPointOnboarding(
+      CommunityFactory.communityZonePrismaRepository(),
+      CommunityFactory.waterPointPrismaRepository(),
+      WaterAccountFactory.waterAccountPrismaRepository(),
+      WaterAccountFactory.waterMeterPrismaRepository(),
+      WaterAccountFactory.waterMeterReadingCreatorService()
     )
   }
 

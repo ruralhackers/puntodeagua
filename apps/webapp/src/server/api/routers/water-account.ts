@@ -392,12 +392,14 @@ export const waterAccountRouter = createTRPCRouter({
       z.object({
         startDate: z.date(),
         endDate: z.date(),
-        communityId: z.string().optional()
+        communityId: z.string().optional(),
+        waterMeterId: z.string().optional()
       })
     )
     .query(async ({ input, ctx }) => {
       try {
         const { CommunityFactory } = await import('@pda/community')
+        const { periodConsumptionStats } = await import('@pda/water-account')
 
         // Get community ID from user session or input
         const communityId = input.communityId
@@ -428,8 +430,19 @@ export const waterAccountRouter = createTRPCRouter({
         const zoneIds = zones.map((zone) => zone.id)
 
         // Get only active water meters
-        const waterMeters =
+        let waterMeters =
           await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
+
+        if (input.waterMeterId) {
+          await assertWaterMeterBelongsToUserCommunity(
+            input.waterMeterId,
+            communityId.toString()
+          )
+          waterMeters = waterMeters.filter((meter) => meter.id === input.waterMeterId)
+          if (waterMeters.length === 0) {
+            throw new Error('Contador no encontrado o inactivo')
+          }
+        }
 
         // For each water meter, get readings in the date range
         const result = await Promise.all(
@@ -455,14 +468,20 @@ export const waterAccountRouter = createTRPCRouter({
               (z) => z.id.toString() === waterMeter.waterPoint.communityZoneId
             )
 
+            const stats = periodConsumptionStats(readingsInRange)
+
             return {
               id: waterMeter.id,
-              name: waterMeter.id, // The water meter doesn't have a name field, using ID
+              name: waterMeter.waterPoint.name,
               waterAccountName: waterMeter.waterAccountName,
               isActive: waterMeter.isActive,
               readings: readingsInRange,
+              totalConsumption: stats.totalConsumption,
+              days: stats.days,
+              averageConsumptionPerDay: stats.averageConsumptionPerDay,
               waterPoint: {
                 name: waterMeter.waterPoint.name,
+                connectionNumber: waterMeter.waterPoint.connectionNumber ?? null,
                 fixedPopulation: waterMeter.waterPoint.fixedPopulation,
                 floatingPopulation: waterMeter.waterPoint.floatingPopulation
               },

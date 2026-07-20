@@ -24,5 +24,6 @@ describe('user role helpers', () => {
     expect(canAccessAdminPanel(['COMMUNITY_ADMIN'])).toBe(true)
     expect(canAccessAdminPanel(['MANAGER'])).toBe(false)
     expect(canAccessAdminPanel(['WATER_METER_READER'])).toBe(false)
+    expect(canAccessAdminPanel(['MANAGER', 'WATER_METER_READER'])).toBe(false)
   })
 })

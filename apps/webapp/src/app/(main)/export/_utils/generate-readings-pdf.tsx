@@ -1,4 +1,5 @@
 import { pdf } from '@react-pdf/renderer'
+import { MeterReadingsDetailPDF } from '../_components/meter-readings-detail-pdf'
 import { ReadingsPDF } from '../_components/readings-pdf'
 
 interface ReadingData {
@@ -12,8 +13,12 @@ interface WaterMeterReadingData {
   waterAccountName: string
   isActive: boolean
   readings: ReadingData[]
+  totalConsumption?: number | null
+  days?: number | null
+  averageConsumptionPerDay?: number | null
   waterPoint: {
     name: string
+    connectionNumber?: string | null
     fixedPopulation: number
     floatingPopulation: number
   }
@@ -31,14 +36,42 @@ interface GenerateReadingsPDFProps {
   startDate: string
   endDate: string
   generatedAt: string
+  waterMeterId?: string
 }
 
 export async function generateReadingsPDF({
   data,
   startDate,
   endDate,
-  generatedAt
+  generatedAt,
+  waterMeterId
 }: GenerateReadingsPDFProps) {
+  if (waterMeterId && data[0]) {
+    const meter = data[0]
+    const blob = await pdf(
+      <MeterReadingsDetailPDF
+        data={{
+          id: meter.id,
+          name: meter.name,
+          waterAccountName: meter.waterAccountName,
+          readings: meter.readings,
+          totalConsumption: meter.totalConsumption ?? null,
+          days: meter.days ?? null,
+          averageConsumptionPerDay: meter.averageConsumptionPerDay ?? null,
+          waterPoint: {
+            name: meter.waterPoint.name,
+            connectionNumber: meter.waterPoint.connectionNumber
+          },
+          communityZone: meter.communityZone
+        }}
+        startDate={startDate}
+        endDate={endDate}
+        generatedAt={generatedAt}
+      />
+    ).toBlob()
+    return blob
+  }
+
   const blob = await pdf(
     <ReadingsPDF data={data} startDate={startDate} endDate={endDate} generatedAt={generatedAt} />
   ).toBlob()

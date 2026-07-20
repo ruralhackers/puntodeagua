@@ -1,11 +1,18 @@
 import { Id } from '@pda/common/domain'
 import { CommunityFactory } from '@pda/community'
+import { WaterAccountFactory } from '@pda/water-account'
+import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { createTRPCRouter, staffProcedure, waterMeterReaderAllowedProcedure } from '@/server/api/trpc'
 import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import {
   assertCommunityAccess
 } from '@/server/api/guards/water-meter-community-guard'
+import {
+  adminPanelProcedure,
+  createTRPCRouter,
+  staffProcedure,
+  waterMeterReaderAllowedProcedure
+} from '@/server/api/trpc'
 
 export const communityRouter = createTRPCRouter({
   getCommunityZones: waterMeterReaderAllowedProcedure
@@ -121,6 +128,82 @@ export const communityRouter = createTRPCRouter({
       } catch (error) {
         if (error instanceof Error) {
           throw new Error(error.message)
+        }
+        throw error
+      }
+    }),
+
+  createWaterPointOnboarding: adminPanelProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        location: z.string(),
+        connectionNumber: z.string().optional(),
+        communityZoneId: z.string().min(1),
+        fixedPopulation: z.number().int().min(0),
+        floatingPopulation: z.number().int().min(0),
+        cadastralReference: z.string().min(1),
+        notes: z.string().optional(),
+        waterDepositIds: z.array(z.string()).optional(),
+        accountName: z.string().min(1),
+        nationalId: z.string().min(1),
+        phone: z.string().optional(),
+        accountNotes: z.string().optional(),
+        meterName: z.string().min(1),
+        measurementUnit: z.enum(['L', 'M3']),
+        isActive: z.boolean().optional(),
+        initialReading: z.string().optional(),
+        initialReadingDate: z.date().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const communityId = ctx.session.user.community?.id
+      if (!communityId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'User has no community assigned'
+        })
+      }
+
+      try {
+        const service = WaterAccountFactory.waterPointOnboardingService()
+        return await service.run({
+          communityId: Id.fromString(communityId),
+          waterPoint: {
+            name: input.name,
+            location: input.location,
+            connectionNumber: input.connectionNumber,
+            communityZoneId: input.communityZoneId,
+            fixedPopulation: input.fixedPopulation,
+            floatingPopulation: input.floatingPopulation,
+            cadastralReference: input.cadastralReference,
+            notes: input.notes,
+            waterDepositIds: input.waterDepositIds
+          },
+          account: {
+            name: input.accountName,
+            nationalId: input.nationalId,
+            phone: input.phone,
+            notes: input.accountNotes
+          },
+          waterMeter: {
+            name: input.meterName,
+            measurementUnit: input.measurementUnit,
+            isActive: input.isActive
+          },
+          initialReading: input.initialReading
+            ? {
+                reading: input.initialReading,
+                date: input.initialReadingDate
+              }
+            : undefined
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: error.message
+          })
         }
         throw error
       }

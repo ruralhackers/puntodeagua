@@ -7,6 +7,7 @@ import {
   GlassWater,
   LayoutDashboard,
   type LucideIcon,
+  PlusCircle,
   Settings,
   TestTube,
   Users
@@ -67,6 +68,12 @@ export const sidebarItems: NavGroup[] = [
         title: 'Administrar puntos de agua',
         url: '/admin/water-points',
         icon: GlassWater
+      },
+      {
+        title: 'Nuevo enganche',
+        url: '/admin/water-points/new',
+        icon: PlusCircle,
+        isNew: true
       },
       {
         title: 'Contadores',

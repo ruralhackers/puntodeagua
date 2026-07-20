@@ -13,6 +13,7 @@ export default function ReadingsExportResultsPage() {
   const searchParams = useSearchParams()
   const startDateParam = searchParams.get('startDate')
   const endDateParam = searchParams.get('endDate')
+  const waterMeterIdParam = searchParams.get('waterMeterId') || ''
 
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -26,15 +27,20 @@ export default function ReadingsExportResultsPage() {
     isLoading: apiLoading
   } = useReadingsPDFGenerator({
     startDate,
-    endDate
+    endDate,
+    waterMeterId: waterMeterIdParam || undefined
   })
+
+  const isSingleMeter = Boolean(waterMeterIdParam)
 
   // Usar solo datos reales de la API
   const displayData = realData || []
   const isDataLoading = apiLoading
 
-  // Filtrar para mostrar solo contadores con datos suficientes en el preview
-  const metersToDisplay = displayData.filter((meter) => meter.readings.length >= 2)
+  // Filtrar para mostrar solo contadores con datos suficientes en el preview (community mode)
+  const metersToDisplay = isSingleMeter
+    ? displayData
+    : displayData.filter((meter) => meter.readings.length >= 2)
 
   // Parsear parámetros desde URL y establecer fechas por defecto si no hay parámetros
   useEffect(() => {
@@ -71,10 +77,14 @@ export default function ReadingsExportResultsPage() {
     })
   }
 
+  const formatNumber = (num: number) =>
+    num.toLocaleString('es-ES', { maximumFractionDigits: 2 })
+
   // Calcular estadísticas
   const totalMeters = displayData.length
   const metersWithReadings = displayData.filter((meter) => meter.readings.length >= 2).length
   const metersWithInsufficientData = displayData.filter((meter) => meter.readings.length < 2).length
+  const singleMeter = isSingleMeter ? displayData[0] : undefined
 
   // Para calcular excesos necesitamos revisar cada contador
   const metersWithExcess = displayData.filter((meter) => {
@@ -123,56 +133,91 @@ export default function ReadingsExportResultsPage() {
 
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Resultados de Exportación</h1>
-          <p className="text-muted-foreground">Vista previa de las lecturas a exportar</p>
+          <p className="text-muted-foreground">
+            {isSingleMeter
+              ? 'Vista previa del reporte por contador'
+              : 'Vista previa de las lecturas a exportar'}
+          </p>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium">Total Contadores</p>
-                  <p className="text-2xl font-bold">{totalMeters}</p>
+        {isSingleMeter && singleMeter ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-sm font-medium">Lecturas</p>
+                <p className="text-2xl font-bold">{singleMeter.readings.length}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-sm font-medium">Consumo total</p>
+                <p className="text-2xl font-bold">
+                  {singleMeter.totalConsumption === null || singleMeter.totalConsumption === undefined
+                    ? '—'
+                    : `${formatNumber(singleMeter.totalConsumption)} L`}
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-sm font-medium">Consumo medio</p>
+                <p className="text-2xl font-bold">
+                  {singleMeter.averageConsumptionPerDay === null ||
+                  singleMeter.averageConsumptionPerDay === undefined
+                    ? '—'
+                    : `${formatNumber(singleMeter.averageConsumptionPerDay)} L/día`}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Gauge className="h-4 w-4 text-blue-600" />
+                  <div>
+                    <p className="text-sm font-medium">Total Contadores</p>
+                    <p className="text-2xl font-bold">{totalMeters}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium">Con Datos</p>
-                  <p className="text-2xl font-bold text-green-600">{metersWithReadings}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Gauge className="h-4 w-4 text-green-600" />
+                  <div>
+                    <p className="text-sm font-medium">Con Datos</p>
+                    <p className="text-2xl font-bold text-green-600">{metersWithReadings}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <div>
-                  <p className="text-sm font-medium">Con Exceso</p>
-                  <p className="text-2xl font-bold text-red-600">{metersWithExcess}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <div>
+                    <p className="text-sm font-medium">Con Exceso</p>
+                    <p className="text-2xl font-bold text-red-600">{metersWithExcess}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-gray-600" />
-                <div>
-                  <p className="text-sm font-medium">Sin Datos</p>
-                  <p className="text-2xl font-bold text-gray-600">{metersWithInsufficientData}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-gray-600" />
+                  <div>
+                    <p className="text-sm font-medium">Sin Datos</p>
+                    <p className="text-2xl font-bold text-gray-600">{metersWithInsufficientData}</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Export Actions */}
         <Card className="mb-8">
@@ -183,6 +228,15 @@ export default function ReadingsExportResultsPage() {
               {startDate && endDate
                 ? `${formatDate(startDate)} - ${formatDate(endDate)}`
                 : 'Cargando fechas...'}
+              {singleMeter && (
+                <>
+                  {' · '}
+                  {singleMeter.waterPoint.connectionNumber
+                    ? `${singleMeter.waterPoint.connectionNumber} — `
+                    : ''}
+                  {singleMeter.waterPoint.name} ({singleMeter.waterAccountName})
+                </>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -227,7 +281,9 @@ export default function ReadingsExportResultsPage() {
             <CardDescription>
               {isDataLoading
                 ? 'Cargando lecturas...'
-                : `${metersToDisplay.length} contadores con datos suficientes (de ${displayData.length} totales)`}
+                : isSingleMeter
+                  ? `${singleMeter?.readings.length ?? 0} lecturas en el período`
+                  : `${metersToDisplay.length} contadores con datos suficientes (de ${displayData.length} totales)`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -236,6 +292,34 @@ export default function ReadingsExportResultsPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
                 <span className="ml-2">Cargando datos...</span>
               </div>
+            ) : isSingleMeter && singleMeter ? (
+              singleMeter.readings.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No hay lecturas en el período seleccionado</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {singleMeter.readings.map((reading, index) => {
+                    const previous = index > 0 ? singleMeter.readings[index - 1] : undefined
+                    const delta = previous
+                      ? reading.normalizedReading - previous.normalizedReading
+                      : null
+                    return (
+                      <div
+                        key={`${reading.readingDate}-${index}`}
+                        className="border rounded-lg p-3 flex justify-between text-sm"
+                      >
+                        <span>{formatDate(reading.readingDate)}</span>
+                        <span>{formatNumber(reading.normalizedReading)} L</span>
+                        <span className="text-muted-foreground">
+                          {delta === null ? '—' : `+${formatNumber(delta)} L`}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
             ) : metersToDisplay.length === 0 ? (
               <div className="text-center py-8">
                 <Gauge className="h-12 w-12 text-gray-400 mx-auto mb-4" />

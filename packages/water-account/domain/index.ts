@@ -3,6 +3,11 @@ export {
   type ConsumptionBetweenReadings,
   type ReadingForConsumption
 } from './consumption-between-readings'
+export {
+  periodConsumptionStats,
+  type PeriodConsumptionStats,
+  type ReadingForPeriodStats
+} from './period-consumption-stats'
 export { WaterAccount } from './entities/water-account'
 export type { WaterAccountDto, WaterAccountUpdateDto } from './entities/water-account.dto'
 export { waterAccountSchema, waterAccountUpdateSchema } from './entities/water-account.dto'

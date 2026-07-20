@@ -11,7 +11,7 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
-import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { isWaterMeterReaderOnly, canAccessAdminPanel } from '@/lib/user-roles'
 import { auth } from '@/server/auth'
 import { db } from '@/server/db'
 
@@ -155,6 +155,17 @@ export const staffProcedure = protectedProcedure.use(({ ctx, next }) => {
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   const roles = ctx.session.user.roles ?? []
   if (!roles.includes('ADMIN')) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+  return next({ ctx })
+})
+
+/**
+ * Admin panel procedure (ADMIN or COMMUNITY_ADMIN).
+ */
+export const adminPanelProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const roles = ctx.session.user.roles ?? []
+  if (!canAccessAdminPanel(roles)) {
     throw new TRPCError({ code: 'FORBIDDEN' })
   }
   return next({ ctx })

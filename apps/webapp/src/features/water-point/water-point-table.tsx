@@ -1,5 +1,6 @@
-'use client'
 import type { SearchParams } from 'nuqs/server'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import Table from '@/features/tables/table'
 import { IdCopy } from '../../components/id-copy'
 
@@ -11,6 +12,11 @@ export default function WaterPointTable(searchParams: SearchParams) {
       model="waterPoint"
       searchParams={searchParams}
       searchFields={['id', 'name']}
+      actions={[
+        <Button key="new-enganche" asChild>
+          <Link href="/admin/water-points/new">Nuevo enganche</Link>
+        </Button>
+      ]}
       columns={[
         {
           accessorKey: 'id',

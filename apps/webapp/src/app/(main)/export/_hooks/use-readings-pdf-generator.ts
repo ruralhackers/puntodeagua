@@ -6,17 +6,18 @@ interface UseReadingsPDFGeneratorProps {
   startDate: string
   endDate: string
   communityId?: string
+  waterMeterId?: string
 }
 
 export function useReadingsPDFGenerator({
   startDate,
   endDate,
-  communityId
+  communityId,
+  waterMeterId
 }: UseReadingsPDFGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Query para obtener datos reales de la API
   const {
     data: realData,
     isLoading,
@@ -25,7 +26,8 @@ export function useReadingsPDFGenerator({
     {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
-      communityId
+      communityId,
+      waterMeterId: waterMeterId || undefined
     },
     {
       enabled: !!startDate && !!endDate
@@ -45,21 +47,20 @@ export function useReadingsPDFGenerator({
         minute: '2-digit'
       })
 
-      // Usar solo datos reales de la API
       const dataToUse = realData || []
 
-      // Crear el PDF con los datos
       const blob = await generateReadingsPDF({
         data: dataToUse,
         startDate,
         endDate,
-        generatedAt
+        generatedAt,
+        waterMeterId: waterMeterId || undefined
       })
 
-      // Crear nombre de archivo con fecha
-      const fileName = `lecturas-export-${new Date().toISOString().split('T')[0]}.pdf`
+      const fileName = waterMeterId
+        ? `lecturas-contador-${new Date().toISOString().split('T')[0]}.pdf`
+        : `lecturas-export-${new Date().toISOString().split('T')[0]}.pdf`
 
-      // Descargar el archivo
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url

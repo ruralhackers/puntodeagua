@@ -52,6 +52,31 @@ export class WaterAccountPrismaRepository
     return accounts.map((account) => WaterAccount.fromDto(this.fromPrismaPayload(account)))
   }
 
+  async findByNationalIdInCommunity(
+    nationalId: string,
+    communityId: Id
+  ): Promise<WaterAccount | undefined> {
+    const trimmed = nationalId.trim()
+    if (!trimmed) return undefined
+
+    const account = await this.getModel().findFirst({
+      where: {
+        nationalId: trimmed,
+        waterMeters: {
+          some: {
+            waterPoint: {
+              communityZone: {
+                communityId: communityId.toString()
+              }
+            }
+          }
+        }
+      }
+    })
+    if (!account) return undefined
+    return WaterAccount.fromDto(this.fromPrismaPayload(account))
+  }
+
   async belongsToCommunity(id: Id, communityId: Id): Promise<boolean> {
     const count = await this.getModel().count({
       where: {

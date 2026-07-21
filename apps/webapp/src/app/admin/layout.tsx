@@ -34,7 +34,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
   }
 
   if (!canAccessAdminPanel(session.user.roles)) {
-    return redirect('/unauthorized')
+    return redirect('/')
   }
 
   const [sidebarVariant, sidebarCollapsible, contentLayout] = await Promise.all([

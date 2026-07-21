@@ -16,11 +16,11 @@ export default auth((req) => {
   }
 
   if (pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('/unauthorized', req.url))
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   if (!isPathAllowedForWaterMeterReader(pathname)) {
-    return NextResponse.redirect(new URL('/unauthorized', req.url))
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   return NextResponse.next()

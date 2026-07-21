@@ -100,6 +100,9 @@ export const communityRouter = createTRPCRouter({
     .input(
       z.object({
         waterPointId: z.string(),
+        name: z.string().optional(),
+        location: z.string().optional(),
+        connectionNumber: z.string().nullable().optional(),
         fixedPopulation: z.number().int().min(0).optional(),
         floatingPopulation: z.number().int().min(0).optional(),
         cadastralReference: z.string().optional(),
@@ -114,6 +117,9 @@ export const communityRouter = createTRPCRouter({
         const result = await service.run({
           waterPointId: Id.fromString(input.waterPointId),
           updatedData: {
+            name: input.name,
+            location: input.location,
+            connectionNumber: input.connectionNumber,
             fixedPopulation: input.fixedPopulation,
             floatingPopulation: input.floatingPopulation,
             cadastralReference: input.cadastralReference,

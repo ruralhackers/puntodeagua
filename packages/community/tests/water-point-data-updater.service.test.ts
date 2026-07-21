@@ -164,6 +164,73 @@ describe('WaterPointDataUpdater', () => {
       expect(savedWaterPoint.waterDepositIds[0].toString()).toBe(newDepositId.toString())
     })
 
+    it('should successfully update name', async () => {
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      const result = await service.run({
+        waterPointId: defaultWaterPoint.id,
+        updatedData: {
+          name: '  Casa Nueva  '
+        }
+      })
+
+      expect(result.updatedFields).toContain('name')
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.name).toBe('Casa Nueva')
+    })
+
+    it('should successfully update location', async () => {
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      const result = await service.run({
+        waterPointId: defaultWaterPoint.id,
+        updatedData: {
+          location: 'Calle Nova 12'
+        }
+      })
+
+      expect(result.updatedFields).toContain('location')
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.location).toBe('Calle Nova 12')
+    })
+
+    it('should successfully update connection number', async () => {
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      const result = await service.run({
+        waterPointId: defaultWaterPoint.id,
+        updatedData: {
+          connectionNumber: 'B62'
+        }
+      })
+
+      expect(result.updatedFields).toContain('connectionNumber')
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.connectionNumber).toBe('B62')
+    })
+
+    it('should clear connection number when empty string is provided', async () => {
+      const waterPointWithConnection = WaterPoint.fromDto({
+        ...defaultWaterPoint.toDto(),
+        connectionNumber: 'obra'
+      })
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(waterPointWithConnection))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      await service.run({
+        waterPointId: waterPointWithConnection.id,
+        updatedData: {
+          connectionNumber: '   '
+        }
+      })
+
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.connectionNumber).toBeNull()
+    })
+
     it('should successfully update multiple fields at once', async () => {
       // Arrange
       mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
@@ -300,6 +367,19 @@ describe('WaterPointDataUpdater', () => {
         })
       ).rejects.toThrow('Floating population cannot be negative')
     })
+
+    it('should throw error when name is empty', async () => {
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
+
+      await expect(
+        service.run({
+          waterPointId: defaultWaterPoint.id,
+          updatedData: {
+            name: '   '
+          }
+        })
+      ).rejects.toThrow('Name cannot be empty')
+    })
   })
 
   describe('Preserving unchanged fields', () => {
@@ -345,14 +425,12 @@ describe('WaterPointDataUpdater', () => {
       expect(savedWaterPoint.fixedPopulation).toBe(7)
     })
 
-    it('should not modify name or location fields', async () => {
-      // Arrange
+    it('should preserve name and location when omitted', async () => {
       const originalName = defaultWaterPoint.name
       const originalLocation = defaultWaterPoint.location
       mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
       mockWaterPointRepository.save = mock(() => Promise.resolve())
 
-      // Act
       await service.run({
         waterPointId: defaultWaterPoint.id,
         updatedData: {
@@ -361,7 +439,6 @@ describe('WaterPointDataUpdater', () => {
         }
       })
 
-      // Assert - name and location should never change
       const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
       expect(savedWaterPoint.name).toBe(originalName)
       expect(savedWaterPoint.location).toBe(originalLocation)
@@ -405,6 +482,9 @@ describe('WaterPointDataUpdater', () => {
       const result = await service.run({
         waterPointId: defaultWaterPoint.id,
         updatedData: {
+          name: 'Casa Actualizada',
+          location: 'Nova ubicación',
+          connectionNumber: 'B99',
           fixedPopulation: 12,
           floatingPopulation: 8,
           cadastralReference: 'ALL-FIELDS-001',
@@ -416,9 +496,12 @@ describe('WaterPointDataUpdater', () => {
 
       // Assert
       expect(result).toBeDefined()
-      expect(result.updatedFields).toHaveLength(6)
+      expect(result.updatedFields).toHaveLength(9)
 
       const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.name).toBe('Casa Actualizada')
+      expect(savedWaterPoint.location).toBe('Nova ubicación')
+      expect(savedWaterPoint.connectionNumber).toBe('B99')
       expect(savedWaterPoint.fixedPopulation).toBe(12)
       expect(savedWaterPoint.floatingPopulation).toBe(8)
       expect(savedWaterPoint.cadastralReference).toBe('ALL-FIELDS-001')

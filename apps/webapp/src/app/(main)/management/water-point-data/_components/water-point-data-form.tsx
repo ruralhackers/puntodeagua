@@ -36,11 +36,13 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { api } from '@/trpc/react'
 
 const formSchema = z.object({
+  name: z.string().min(1, 'El nombre es requerido'),
+  location: z.string(),
+  connectionNumber: z.string().optional(),
   fixedPopulation: z.number().int().min(0),
   floatingPopulation: z.number().int().min(0),
   cadastralReference: z.string().min(1, 'La referencia catastral es requerida'),
@@ -93,6 +95,9 @@ export default function WaterPointDataForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
+      location: '',
+      connectionNumber: '',
       fixedPopulation: 0,
       floatingPopulation: 0,
       cadastralReference: '',
@@ -106,6 +111,9 @@ export default function WaterPointDataForm({
   useEffect(() => {
     if (waterPoint) {
       form.reset({
+        name: waterPoint.name,
+        location: waterPoint.location || '',
+        connectionNumber: waterPoint.connectionNumber || '',
         fixedPopulation: waterPoint.fixedPopulation,
         floatingPopulation: waterPoint.floatingPopulation,
         cadastralReference: waterPoint.cadastralReference,
@@ -121,6 +129,9 @@ export default function WaterPointDataForm({
     try {
       await updateMutation.mutateAsync({
         waterPointId: waterPointId,
+        name: values.name,
+        location: values.location,
+        connectionNumber: values.connectionNumber?.trim() ? values.connectionNumber.trim() : null,
         fixedPopulation: values.fixedPopulation,
         floatingPopulation: values.floatingPopulation,
         cadastralReference: values.cadastralReference,
@@ -132,6 +143,55 @@ export default function WaterPointDataForm({
       setIsSubmitting(false)
     }
   }
+
+  const identityFields = (
+    <>
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Casa</FormLabel>
+            <FormControl>
+              <Input placeholder="Nombre de la casa" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="location"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Ubicación</FormLabel>
+            <FormControl>
+              <Input placeholder="Dirección o coordenadas" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="connectionNumber"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Nº enganche (opcional)</FormLabel>
+            <FormControl>
+              <Input placeholder="Ej: B62 o obra" {...field} />
+            </FormControl>
+            <FormDescription>
+              Puedes pasar de un valor temporal (obra) al número definitivo
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </>
+  )
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -167,23 +227,14 @@ export default function WaterPointDataForm({
               <div className="mb-4">
                 <h2 className="text-lg font-semibold">Editar Datos de Casa</h2>
                 <p className="text-sm text-muted-foreground">
-                  {waterPoint && (
-                    <>
-                      Casa: <strong>{waterPoint.name}</strong>
-                      <br />
-                      Ubicación: {waterPoint.location}
-                      <br />
-                      <ConnectionNumberLabel
-                        connectionNumber={waterPoint.connectionNumber}
-                        className="text-sm text-muted-foreground mt-1"
-                      />
-                    </>
-                  )}
+                  Actualiza el nombre, ubicación, nº enganche y el resto de datos
                 </p>
               </div>
 
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  {identityFields}
+
                   <FormField
                     control={form.control}
                     name="fixedPopulation"
@@ -338,24 +389,14 @@ export default function WaterPointDataForm({
             <DialogHeader>
               <DialogTitle>Editar Datos de Casa</DialogTitle>
               <DialogDescription>
-                {waterPoint && (
-                  <>
-                    Casa: <strong>{waterPoint.name}</strong>
-                    <br />
-                    Ubicación: {waterPoint.location}
-                    {waterPoint.connectionNumber && (
-                      <>
-                        <br />
-                        Nº enganche: <strong>{waterPoint.connectionNumber}</strong>
-                      </>
-                    )}
-                  </>
-                )}
+                Actualiza el nombre, ubicación, nº enganche y el resto de datos
               </DialogDescription>
             </DialogHeader>
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                {identityFields}
+
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}

@@ -4,6 +4,9 @@ import type { WaterPointRepository } from '../domain/repositories/water-point.re
 interface UpdateWaterPointDataParams {
   waterPointId: Id
   updatedData: {
+    name?: string
+    location?: string
+    connectionNumber?: string | null
     fixedPopulation?: number
     floatingPopulation?: number
     cadastralReference?: string
@@ -21,6 +24,23 @@ export class WaterPointDataUpdater {
     const waterPoint = await this.waterPointRepository.findById(params.waterPointId)
     if (!waterPoint) {
       throw new Error('Water point not found')
+    }
+
+    if (params.updatedData.name !== undefined) {
+      const trimmedName = params.updatedData.name.trim()
+      if (!trimmedName) {
+        throw new Error('Name cannot be empty')
+      }
+      waterPoint.name = trimmedName
+    }
+
+    if (params.updatedData.location !== undefined) {
+      waterPoint.location = params.updatedData.location.trim()
+    }
+
+    if (params.updatedData.connectionNumber !== undefined) {
+      const trimmed = params.updatedData.connectionNumber?.trim()
+      waterPoint.connectionNumber = trimmed ? trimmed : null
     }
 
     // Update the fields if provided

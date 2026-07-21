@@ -17,5 +17,9 @@ export function isCommunityAdmin(roles: string[]): boolean {
 }
 
 export function canAccessAdminPanel(roles: string[]): boolean {
+  return isAdmin(roles)
+}
+
+export function canCreateWaterPoint(roles: string[]): boolean {
   return isAdmin(roles) || isCommunityAdmin(roles)
 }

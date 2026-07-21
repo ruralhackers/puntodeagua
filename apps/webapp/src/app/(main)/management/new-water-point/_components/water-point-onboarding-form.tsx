@@ -69,19 +69,16 @@ export default function WaterPointOnboardingForm() {
   )
 
   const createMutation = api.community.createWaterPointOnboarding.useMutation({
-    onSuccess: (result: {
-      waterMeterId: string
-      accountReused: boolean
-    }) => {
+    onSuccess: (result: { waterMeterId: string; accountReused: boolean }) => {
       toast.success(
         result.accountReused
-          ? 'Enganche creado (titular reutilizado)'
-          : 'Enganche creado correctamente'
+          ? 'Punto de agua creado (titular reutilizado)'
+          : 'Punto de agua creado correctamente'
       )
       router.push(`/water-meter/${result.waterMeterId}`)
     },
     onError: (error: { message: string }) => {
-      toast.error('Error al crear el enganche', {
+      toast.error('Error al crear el punto de agua', {
         description: error.message
       })
     }
@@ -137,7 +134,7 @@ export default function WaterPointOnboardingForm() {
   if (!communityId) {
     return (
       <p className="text-muted-foreground">
-        No tienes una comunidad asignada. No se puede crear un enganche.
+        No tienes una comunidad asignada. No se puede crear un punto de agua.
       </p>
     )
   }
@@ -148,7 +145,7 @@ export default function WaterPointOnboardingForm() {
         <section className="space-y-4">
           <div>
             <h2 className="text-lg font-semibold">Casa / punto de agua</h2>
-            <p className="text-sm text-muted-foreground">Datos del nuevo enganche</p>
+            <p className="text-sm text-muted-foreground">Datos del nuevo punto de agua</p>
           </div>
 
           <FormField
@@ -184,7 +181,7 @@ export default function WaterPointOnboardingForm() {
             name="connectionNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nº enganche (opcional)</FormLabel>
+                <FormLabel>Nº de conexión (opcional)</FormLabel>
                 <FormControl>
                   <Input placeholder="Ej: C32" {...field} />
                 </FormControl>
@@ -465,10 +462,10 @@ export default function WaterPointOnboardingForm() {
         <div className="flex gap-3">
           <Button type="submit" disabled={createMutation.isPending}>
             {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Crear enganche
+            Crear punto de agua
           </Button>
           <Button type="button" variant="outline" asChild>
-            <Link href="/admin/water-points">Cancelar</Link>
+            <Link href="/management">Cancelar</Link>
           </Button>
         </div>
       </form>

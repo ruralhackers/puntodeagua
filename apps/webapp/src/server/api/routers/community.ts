@@ -4,14 +4,12 @@ import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { assertCommunityAccess } from '@/server/api/guards/water-meter-community-guard'
 import {
-  assertCommunityAccess
-} from '@/server/api/guards/water-meter-community-guard'
-import {
-  adminPanelProcedure,
   createTRPCRouter,
   staffProcedure,
-  waterMeterReaderAllowedProcedure
+  waterMeterReaderAllowedProcedure,
+  waterPointManagementProcedure
 } from '@/server/api/trpc'
 
 export const communityRouter = createTRPCRouter({
@@ -139,7 +137,7 @@ export const communityRouter = createTRPCRouter({
       }
     }),
 
-  createWaterPointOnboarding: adminPanelProcedure
+  createWaterPointOnboarding: waterPointManagementProcedure
     .input(
       z.object({
         name: z.string().min(1),

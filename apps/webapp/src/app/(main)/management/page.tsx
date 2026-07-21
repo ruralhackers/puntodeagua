@@ -2,7 +2,7 @@ import { Home, Pencil, RefreshCw, Users } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { APP_CONFIG } from '@/config/app-config'
-import { NewEngancheCard } from './_components/new-enganche-card'
+import { NewWaterPointCard } from './_components/new-water-point-card'
 
 export const metadata = {
   title: `${APP_CONFIG.name} | Gestión`
@@ -89,7 +89,7 @@ export default function ManagementPage() {
           </Card>
         </Link>
 
-        <NewEngancheCard />
+        <NewWaterPointCard />
       </div>
     </main>
   )

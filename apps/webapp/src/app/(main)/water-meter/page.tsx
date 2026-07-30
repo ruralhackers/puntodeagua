@@ -53,8 +53,7 @@ export default function WaterMeterListPage() {
           <SearchInput
             value={nameFilter}
             onChange={setNameFilter}
-            placeholder="Buscar por nombre o ubicación..."
-            minChars={3}
+            placeholder="Buscar por nombre, nº enganche o ubicación..."
           />
         </div>
 

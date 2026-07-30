@@ -16,7 +16,9 @@ export function SearchInput({
   value,
   onChange,
   placeholder = 'Buscar...',
-  minChars = 3,
+  // 1, not 3: connection numbers are one or two digits for anything under 100,
+  // and a 3-char floor made those meters impossible to find.
+  minChars = 1,
   debounceMs = 300
 }: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value)

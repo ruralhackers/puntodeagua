@@ -27,8 +27,8 @@ export default function OwnerChangePage() {
 
     return meters.filter((meter) => {
       // Filter by name (search in account name, water point name, and location)
-      if (nameFilter && nameFilter.length >= 3) {
-        const searchLower = nameFilter.toLowerCase()
+      if (nameFilter.trim()) {
+        const searchLower = nameFilter.trim().toLowerCase()
         const matchesName =
           meter.waterAccountName.toLowerCase().includes(searchLower) ||
           meter.waterPoint.name.toLowerCase().includes(searchLower) ||
@@ -75,8 +75,7 @@ export default function OwnerChangePage() {
           <SearchInput
             value={nameFilter}
             onChange={setNameFilter}
-            placeholder="Buscar por nombre o dirección..."
-            minChars={3}
+            placeholder="Buscar por nombre, nº enganche o dirección..."
           />
         </div>
 

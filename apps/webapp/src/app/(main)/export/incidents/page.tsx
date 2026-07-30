@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { toLocalDateString } from '@/lib/local-date'
 
 export default function IncidentsExportPage() {
   const router = useRouter()
@@ -28,8 +29,8 @@ export default function IncidentsExportPage() {
     const oneYearAgo = new Date()
     oneYearAgo.setFullYear(today.getFullYear() - 1)
 
-    setEndDate(today.toISOString().split('T')[0] || '')
-    setStartDate(oneYearAgo.toISOString().split('T')[0] || '')
+    setEndDate(toLocalDateString(today))
+    setStartDate(toLocalDateString(oneYearAgo))
   }, [])
 
   const handleExport = () => {

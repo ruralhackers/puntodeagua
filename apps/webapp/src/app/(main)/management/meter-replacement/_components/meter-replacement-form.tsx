@@ -37,6 +37,7 @@ import {
 import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { todayLocalDateString } from '@/lib/local-date'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
@@ -117,7 +118,7 @@ export default function MeterReplacementForm({
     defaultValues: {
       newWaterMeterName: '',
       measurementUnit: 'M3',
-      replacementDate: new Date().toISOString().split('T')[0],
+      replacementDate: todayLocalDateString(),
       finalReading: ''
     }
   })
@@ -131,7 +132,7 @@ export default function MeterReplacementForm({
       form.reset({
         newWaterMeterName: meter.waterPoint.name,
         measurementUnit: meter.measurementUnit as 'L' | 'M3',
-        replacementDate: new Date().toISOString().split('T')[0],
+        replacementDate: todayLocalDateString(),
         finalReading: ''
       })
     }

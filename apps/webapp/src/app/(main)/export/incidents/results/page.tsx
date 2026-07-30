@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { toLocalDateString } from '@/lib/local-date'
 import { useIncidentsPDFGenerator } from '../../_hooks/use-incidents-pdf-generator'
 
 export default function IncidentsExportResultsPage() {
@@ -50,8 +51,8 @@ export default function IncidentsExportResultsPage() {
       const oneYearAgo = new Date()
       oneYearAgo.setFullYear(today.getFullYear() - 1)
 
-      const defaultEndDate = today.toISOString().split('T')[0] || ''
-      const defaultStartDate = oneYearAgo.toISOString().split('T')[0] || ''
+      const defaultEndDate = toLocalDateString(today)
+      const defaultStartDate = toLocalDateString(oneYearAgo)
 
       setEndDate(defaultEndDate)
       setStartDate(defaultStartDate)

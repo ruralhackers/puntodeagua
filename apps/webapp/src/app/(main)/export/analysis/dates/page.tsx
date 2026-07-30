@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ANALYSIS_TYPE_OPTIONS } from '@/constants/analysis-types'
+import { toLocalDateString } from '@/lib/local-date'
 
 export default function DateRangeSelectorPage() {
   const router = useRouter()
@@ -26,8 +27,8 @@ export default function DateRangeSelectorPage() {
     const oneYearAgo = new Date()
     oneYearAgo.setFullYear(today.getFullYear() - 1)
 
-    setEndDate(today.toISOString().split('T')[0] || '')
-    setStartDate(oneYearAgo.toISOString().split('T')[0] || '')
+    setEndDate(toLocalDateString(today))
+    setStartDate(toLocalDateString(oneYearAgo))
   }, [])
 
   // Parsear tipos seleccionados desde URL

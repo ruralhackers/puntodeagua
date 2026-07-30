@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ANALYSIS_TYPE_OPTIONS } from '@/constants/analysis-types'
 import { useAnalysisForm } from '@/hooks/use-analysis-form'
 import { handleDomainError } from '@/lib/error-handler'
+import { todayLocalDateString } from '@/lib/local-date'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 
@@ -201,7 +202,7 @@ export default function NewAnalysisPage() {
                 id="analyzedAt"
                 type="date"
                 value={formData.analyzedAt}
-                max={new Date().toISOString().split('T')[0]}
+                max={todayLocalDateString()}
                 onChange={(e) => updateFormData('analyzedAt', e.target.value)}
                 className={errors.analyzedAt ? 'border-destructive' : ''}
               />

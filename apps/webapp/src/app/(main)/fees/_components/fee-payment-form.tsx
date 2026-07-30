@@ -30,6 +30,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { toLocalDateString } from '@/lib/local-date'
 import { api } from '@/trpc/react'
 import { frequencyLabels, kindLabels, paymentMethodLabels, periodOptions } from '../_lib/fee-labels'
 
@@ -151,7 +152,7 @@ export default function FeePaymentForm({
   const paidAtInputValue = useMemo(() => {
     const date = paidAtValue instanceof Date ? paidAtValue : new Date(paidAtValue)
     if (Number.isNaN(date.getTime())) return ''
-    return date.toISOString().slice(0, 10)
+    return toLocalDateString(date)
   }, [paidAtValue])
 
   return (

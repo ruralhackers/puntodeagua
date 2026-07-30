@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { AnalysisType } from '@/constants/analysis-types'
+import { todayLocalDateString } from '@/lib/local-date'
 
 export interface AnalysisFormData {
   analysisType: AnalysisType | ''
@@ -21,7 +22,7 @@ export function useAnalysisForm(initialAnalyst: string = '') {
   const [formData, setFormData] = useState<AnalysisFormData>({
     analysisType: '',
     analyst: initialAnalyst,
-    analyzedAt: new Date().toISOString().split('T')[0],
+    analyzedAt: todayLocalDateString(),
     communityZoneId: '',
     waterDepositId: '',
     ph: '',
@@ -90,7 +91,7 @@ export function useAnalysisForm(initialAnalyst: string = '') {
     setFormData({
       analysisType: '',
       analyst: initialAnalyst,
-      analyzedAt: new Date().toISOString().split('T')[0],
+      analyzedAt: todayLocalDateString(),
       communityZoneId: '',
       waterDepositId: '',
       ph: '',

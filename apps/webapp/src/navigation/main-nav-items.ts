@@ -51,6 +51,19 @@ export function getMainNavItems(roles: string[]): MainNavItem[] {
   return []
 }
 
+/**
+ * True when navigation is already covered on both form factors on its own: the
+ * sidebar on desktop (it bails out below two items) and the bottom bar on mobile
+ * (it bails out below two `primary` items). The header's account menu is the
+ * fallback for everyone else — reader-only users and users with no role at all,
+ * for whom it is the only way to navigate or sign out.
+ */
+export function hasDedicatedNav(roles: string[]): boolean {
+  const items = getMainNavItems(roles)
+
+  return items.length >= 2 && items.filter((item) => item.primary).length >= 2
+}
+
 export function isNavItemActive(url: string, pathname: string): boolean {
   if (url === '/') {
     return pathname === '/'

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import { WATER_METER_READER_ALLOWED_PATHS } from '@/lib/water-meter-reader-paths'
 import { getActiveNavUrl, getMainNavItems, isNavItemActive } from './main-nav-items'
 
 describe('getMainNavItems', () => {
@@ -39,10 +40,8 @@ describe('getMainNavItems', () => {
   })
 
   it('never offers a reader-only user a route the middleware would reject', () => {
-    // Mirrors WATER_METER_READER_ALLOWED_PATHS in lib/water-meter-reader-paths.ts
-    const allowed = ['/water-meter/new', '/unauthorized', '/privacy', '/terms']
     for (const item of getMainNavItems(['WATER_METER_READER'])) {
-      expect(allowed).toContain(item.url)
+      expect(WATER_METER_READER_ALLOWED_PATHS).toContain(item.url)
     }
   })
 

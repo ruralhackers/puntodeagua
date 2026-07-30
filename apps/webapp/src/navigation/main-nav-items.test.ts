@@ -45,6 +45,14 @@ describe('getMainNavItems', () => {
       expect(allowed).toContain(item.url)
     }
   })
+
+  it('gives an empty role list no destinations', () => {
+    expect(getMainNavItems([])).toEqual([])
+  })
+
+  it('gives an unrecognized role no destinations', () => {
+    expect(getMainNavItems(['SOME_UNKNOWN_ROLE'])).toEqual([])
+  })
 })
 
 describe('isNavItemActive', () => {
@@ -65,7 +73,7 @@ describe('isNavItemActive', () => {
     expect(isNavItemActive('/provider', '/providers')).toBe(false)
   })
 
-  it('prefers the more specific reading route over the meter list', () => {
+  it('marks both a section and its child route as active', () => {
     expect(isNavItemActive('/water-meter/new', '/water-meter/new')).toBe(true)
     expect(isNavItemActive('/water-meter', '/water-meter/new')).toBe(true)
   })

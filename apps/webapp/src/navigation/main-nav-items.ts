@@ -11,7 +11,7 @@ import {
   Settings,
   ShieldUser
 } from 'lucide-react'
-import { canAccessAdminPanel, isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { canAccessAdminPanel, isStaff, isWaterMeterReaderOnly } from '@/lib/user-roles'
 
 export interface MainNavItem {
   title: string
@@ -44,7 +44,11 @@ export function getMainNavItems(roles: string[]): MainNavItem[] {
     return READER_ONLY_ITEMS
   }
 
-  return canAccessAdminPanel(roles) ? [...STAFF_ITEMS, ADMIN_ITEM] : STAFF_ITEMS
+  if (isStaff(roles)) {
+    return canAccessAdminPanel(roles) ? [...STAFF_ITEMS, ADMIN_ITEM] : STAFF_ITEMS
+  }
+
+  return []
 }
 
 export function isNavItemActive(url: string, pathname: string): boolean {

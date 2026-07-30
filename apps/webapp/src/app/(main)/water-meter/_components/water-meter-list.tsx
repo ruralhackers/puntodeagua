@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { filterAndRankMeters } from '@/lib/water-meter-search'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
 import { formatLastReading } from './format-last-reading'
@@ -49,23 +50,10 @@ export default function WaterMeterList({
   const filteredWaterMeters = useMemo(() => {
     if (!waterMeters) return []
 
-    let filtered = waterMeters
+    const filtered = filterAndRankMeters(waterMeters, nameFilter)
 
-    // Filter by name
-    if (nameFilter.trim()) {
-      const searchTerm = nameFilter.toLowerCase().trim()
-      filtered = filtered.filter(
-        (meter) =>
-          meter.waterAccountName.toLowerCase().includes(searchTerm) ||
-          meter.waterPoint.name.toLowerCase().includes(searchTerm) ||
-          meter.waterPoint.location.toLowerCase().includes(searchTerm) ||
-          meter.waterPoint.connectionNumber?.toLowerCase().includes(searchTerm)
-      )
-    }
-
-    // Filter by excess
     if (showOnlyExcess) {
-      filtered = filtered.filter((meter) => meter.lastReadingExcessConsumption === true)
+      return filtered.filter((meter) => meter.lastReadingExcessConsumption === true)
     }
 
     return filtered

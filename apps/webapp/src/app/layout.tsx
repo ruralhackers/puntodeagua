@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html
-      lang="en"
+      lang="es"
       className={playfairDisplay.variable}
       data-theme-preset={themePreset}
       suppressHydrationWarning

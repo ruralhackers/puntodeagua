@@ -19,6 +19,7 @@ import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
+import { type ReadingValidationError, validateReading } from '@/lib/reading-validation'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
 
@@ -64,7 +65,7 @@ export function AddReadingModal({
   onClose
 }: AddReadingModalProps) {
   const [readingForm, setReadingForm] = useState(getDefaultReadingForm)
-  const [validationError, setValidationError] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<ReadingValidationError | null>(null)
 
   const utils = api.useUtils()
   const { parseSpanishNumber } = useSpanishNumberParser()
@@ -120,27 +121,25 @@ export function AddReadingModal({
   })
 
   const handleSubmitReading = async () => {
-    if (!readingForm.reading || !readingForm.readingDate || !readingForm.readingTime) return
+    if (!readingForm.readingDate || !readingForm.readingTime) {
+      setValidationError({ field: 'date', message: 'Introduce la fecha y la hora de la lectura' })
+      return
+    }
+    if (!readingForm.reading) return
 
     const readingDate = combineDateAndTime(readingForm.readingDate, readingForm.readingTime)
 
-    if (readingDate > new Date()) {
-      setValidationError('La fecha y hora no pueden ser futuras')
-      return
-    }
+    const error = validateReading({
+      normalizedReading: normalizeReading(readingForm.reading),
+      readingDate,
+      lastReadingValue,
+      lastReadingDate,
+      now: new Date()
+    })
 
-    if (lastReadingDate && readingDate <= new Date(lastReadingDate)) {
-      setValidationError('La nueva lectura debe ser posterior a la última lectura')
+    if (error) {
+      setValidationError(error)
       return
-    }
-
-    // Client-side validation: check if new reading is less than last reading
-    if (lastReadingValue !== null) {
-      const newNormalizedReading = normalizeReading(readingForm.reading)
-      if (newNormalizedReading < lastReadingValue) {
-        setValidationError('La nueva lectura no puede ser menor que la última lectura')
-        return
-      }
     }
 
     setValidationError(null)
@@ -158,6 +157,11 @@ export function AddReadingModal({
       // Type assertion needed due to ArrayBuffer vs ArrayBufferLike difference
       image: imageData as Parameters<typeof addReadingMutation.mutate>[0]['image']
     })
+  }
+
+  const updateField = (field: 'readingDate' | 'readingTime' | 'notes', value: string) => {
+    setReadingForm((prev) => ({ ...prev, [field]: value }))
+    setValidationError(null)
   }
 
   const handleReadingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,7 +196,7 @@ export function AddReadingModal({
               <Button
                 type="button"
                 onClick={handleSubmitReading}
-                disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
+                disabled={!readingForm.reading || addReadingMutation.isPending}
                 size="sm"
               >
                 {addReadingMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -241,12 +245,12 @@ export function AddReadingModal({
                     type="text"
                     inputMode="decimal"
                     placeholder={`0,00 ${measurementUnit}`}
-                    className={validationError ? 'border-red-500' : ''}
+                    className={validationError?.field === 'reading' ? 'border-red-500' : ''}
                     value={readingForm.reading}
                     onChange={handleReadingChange}
                   />
-                  {validationError && (
-                    <p className="text-sm text-red-500 mt-1">{validationError}</p>
+                  {validationError?.field === 'reading' && (
+                    <p className="text-sm text-red-500 mt-1">{validationError.message}</p>
                   )}
                 </div>
 
@@ -258,9 +262,7 @@ export function AddReadingModal({
                       type="date"
                       value={readingForm.readingDate}
                       max={getCurrentDateString()}
-                      onChange={(e) =>
-                        setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
-                      }
+                      onChange={(e) => updateField('readingDate', e.target.value)}
                     />
                   </div>
 
@@ -270,12 +272,13 @@ export function AddReadingModal({
                       id="readingTime"
                       type="time"
                       value={readingForm.readingTime}
-                      onChange={(e) =>
-                        setReadingForm((prev) => ({ ...prev, readingTime: e.target.value }))
-                      }
+                      onChange={(e) => updateField('readingTime', e.target.value)}
                     />
                   </div>
                 </div>
+                {validationError?.field === 'date' && (
+                  <p className="text-sm text-red-500 -mt-2">{validationError.message}</p>
+                )}
 
                 <div>
                   <Label htmlFor="image">Foto</Label>
@@ -283,6 +286,7 @@ export function AddReadingModal({
                     id="image"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     onChange={handleImageSelect}
                     disabled={addReadingMutation.isPending}
                   />
@@ -361,12 +365,12 @@ export function AddReadingModal({
                     type="text"
                     inputMode="decimal"
                     placeholder={`0,00 ${measurementUnit}`}
-                    className={validationError ? 'border-red-500' : ''}
+                    className={validationError?.field === 'reading' ? 'border-red-500' : ''}
                     value={readingForm.reading}
                     onChange={handleReadingChange}
                   />
-                  {validationError && (
-                    <p className="text-sm text-red-500 mt-1">{validationError}</p>
+                  {validationError?.field === 'reading' && (
+                    <p className="text-sm text-red-500 mt-1">{validationError.message}</p>
                   )}
                 </div>
               </div>
@@ -381,9 +385,7 @@ export function AddReadingModal({
                   className="col-span-3"
                   value={readingForm.readingDate}
                   max={getCurrentDateString()}
-                  onChange={(e) =>
-                    setReadingForm((prev) => ({ ...prev, readingDate: e.target.value }))
-                  }
+                  onChange={(e) => updateField('readingDate', e.target.value)}
                 />
               </div>
 
@@ -396,11 +398,14 @@ export function AddReadingModal({
                   type="time"
                   className="col-span-3"
                   value={readingForm.readingTime}
-                  onChange={(e) =>
-                    setReadingForm((prev) => ({ ...prev, readingTime: e.target.value }))
-                  }
+                  onChange={(e) => updateField('readingTime', e.target.value)}
                 />
               </div>
+              {validationError?.field === 'date' && (
+                <p className="col-span-4 text-right text-sm text-red-500">
+                  {validationError.message}
+                </p>
+              )}
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="notes" className="text-right">
@@ -425,6 +430,7 @@ export function AddReadingModal({
                     id="image"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     onChange={handleImageSelect}
                     disabled={addReadingMutation.isPending}
                   />
@@ -465,7 +471,7 @@ export function AddReadingModal({
               <Button
                 type="button"
                 onClick={handleSubmitReading}
-                disabled={!readingForm.reading || addReadingMutation.isPending || !!validationError}
+                disabled={!readingForm.reading || addReadingMutation.isPending}
               >
                 {addReadingMutation.isPending
                   ? imagePreview

@@ -332,6 +332,7 @@ export default function MeterReplacementForm({
                           id="meter-image"
                           type="file"
                           accept={ACCEPTED_FILE_TYPES}
+                          capture="environment"
                           className="hidden"
                           onChange={handleImageSelect}
                         />
@@ -493,6 +494,7 @@ export default function MeterReplacementForm({
                         id="meter-image-desktop"
                         type="file"
                         accept={ACCEPTED_FILE_TYPES}
+                        capture="environment"
                         className="hidden"
                         onChange={handleImageSelect}
                       />

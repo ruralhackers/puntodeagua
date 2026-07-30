@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import type { Session } from 'next-auth'
 import { AccountMenu } from '@/app/(main)/app/_components/account-menu'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { APP_CONFIG } from '@/config/app-config'
 
 interface HeaderProps {
@@ -12,6 +13,10 @@ export function Header({ session }: HeaderProps) {
     <header className="flex h-14 shrink-0 items-center gap-2 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 shadow-lg transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14">
       <div className="flex w-full items-center justify-between px-3 lg:px-6">
         <div className="flex items-center gap-2 lg:gap-3">
+          <SidebarTrigger
+            aria-label="Alternar barra lateral"
+            className="hidden text-white hover:bg-white/20 hover:text-white md:flex"
+          />
           <a href="/" className="flex items-center gap-2 lg:gap-3">
             <div className="relative">
               <Image

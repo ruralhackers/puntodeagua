@@ -116,7 +116,7 @@ export default function WaterMeterList({
   return (
     <div className="space-y-2">
       {filteredWaterMeters.map((waterMeter) => (
-        <Link key={waterMeter.id} href={`/water-meter/${waterMeter.id}`}>
+        <Link key={waterMeter.id} href={`/water-meter/${waterMeter.id}`} className="block">
           <Card
             className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
               !waterMeter.isActive ? 'opacity-60 border-gray-300' : ''
@@ -140,7 +140,7 @@ export default function WaterMeterList({
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-1">
                     <MapPin className="h-3 w-3" />
                     <span className="font-medium">{waterMeter.waterPoint.name}</span>
                     {waterMeter.waterPoint.connectionNumber && (

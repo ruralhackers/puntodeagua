@@ -30,6 +30,7 @@ interface ReadingsPDFProps {
   startDate: string
   endDate: string
   generatedAt: string
+  zoneName?: string
 }
 
 // Definir estilos para el PDF
@@ -175,7 +176,7 @@ const formatNumber = (num: number) => {
   return num.toLocaleString('es-ES', { maximumFractionDigits: 0 })
 }
 
-export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsPDFProps) {
+export function ReadingsPDF({ data, startDate, endDate, generatedAt, zoneName }: ReadingsPDFProps) {
   const totalMeters = data.length
   const metersWithReadings = data.filter((meter) => meter.readings.length >= 2).length
   const metersWithInsufficientData = data.filter((meter) => meter.readings.length < 2).length
@@ -227,6 +228,12 @@ export function ReadingsPDF({ data, startDate, endDate, generatedAt }: ReadingsP
               {formatDate(startDate)} - {formatDate(endDate)}
             </Text>
           </View>
+          {zoneName && (
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Zona:</Text>
+              <Text style={styles.summaryValue}>{zoneName}</Text>
+            </View>
+          )}
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Total de Contadores:</Text>
             <Text style={styles.summaryValue}>{totalMeters}</Text>

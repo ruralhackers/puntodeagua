@@ -33,7 +33,6 @@ export default function NewFeePaymentSelectPage() {
             value={nameFilter}
             onChange={setNameFilter}
             placeholder="Buscar por nombre, nº enganche o titular..."
-            minChars={2}
           />
         </div>
 

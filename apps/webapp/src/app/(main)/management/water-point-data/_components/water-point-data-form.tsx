@@ -36,11 +36,18 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { buildMapsHref } from '@/lib/maps-link'
 import { api } from '@/trpc/react'
 
 const formSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   location: z.string(),
+  mapsUrl: z
+    .string()
+    .optional()
+    .refine((value) => !value?.trim() || buildMapsHref(value) !== null, {
+      message: 'Pega un enlace de Google Maps (https://…) o coordenadas «lat,lng»'
+    }),
   connectionNumber: z.string().optional(),
   fixedPopulation: z.number().int().min(0),
   floatingPopulation: z.number().int().min(0),
@@ -96,6 +103,7 @@ export default function WaterPointDataForm({
     defaultValues: {
       name: '',
       location: '',
+      mapsUrl: '',
       connectionNumber: '',
       fixedPopulation: 0,
       floatingPopulation: 0,
@@ -112,6 +120,7 @@ export default function WaterPointDataForm({
       form.reset({
         name: waterPoint.name,
         location: waterPoint.location || '',
+        mapsUrl: waterPoint.mapsUrl || '',
         connectionNumber: waterPoint.connectionNumber || '',
         fixedPopulation: waterPoint.fixedPopulation,
         floatingPopulation: waterPoint.floatingPopulation,
@@ -130,6 +139,7 @@ export default function WaterPointDataForm({
         waterPointId: waterPointId,
         name: values.name,
         location: values.location,
+        mapsUrl: values.mapsUrl?.trim() ? values.mapsUrl.trim() : null,
         connectionNumber: values.connectionNumber?.trim() ? values.connectionNumber.trim() : null,
         fixedPopulation: values.fixedPopulation,
         floatingPopulation: values.floatingPopulation,
@@ -168,6 +178,23 @@ export default function WaterPointDataForm({
             <FormControl>
               <Input placeholder="Dirección o coordenadas" {...field} />
             </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="mapsUrl"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Enlace de Google Maps</FormLabel>
+            <FormControl>
+              <Input placeholder="https://maps.app.goo.gl/… o 42.2286,-8.4589" {...field} />
+            </FormControl>
+            <FormDescription>
+              Abre el punto en Google Maps, comparte la ubicación y pega aquí el enlace.
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}

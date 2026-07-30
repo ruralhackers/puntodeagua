@@ -4,6 +4,7 @@ export interface WaterPointWithAccountDto {
   location: string
   notes?: string
   connectionNumber?: string | null
+  mapsUrl?: string | null
   fixedPopulation: number
   floatingPopulation: number
   cadastralReference: string

@@ -43,7 +43,7 @@ export function WaterMeterDetailSkeleton() {
               <Skeleton className="h-5 w-40" /> {/* Name */}
               <Skeleton className="h-4 w-36" /> {/* Location */}
               <Skeleton className="h-4 w-24" /> {/* Population */}
-              <Skeleton className="h-9 w-28 mt-2" /> {/* Ver Punto button */}
+              <Skeleton className="h-9 w-28 mt-2" /> {/* Ver en Google Maps button */}
             </div>
 
             {/* Technical Info */}

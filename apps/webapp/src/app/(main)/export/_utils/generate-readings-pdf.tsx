@@ -37,6 +37,7 @@ interface GenerateReadingsPDFProps {
   endDate: string
   generatedAt: string
   waterMeterId?: string
+  zoneName?: string
 }
 
 export async function generateReadingsPDF({
@@ -44,7 +45,8 @@ export async function generateReadingsPDF({
   startDate,
   endDate,
   generatedAt,
-  waterMeterId
+  waterMeterId,
+  zoneName
 }: GenerateReadingsPDFProps) {
   if (waterMeterId && data[0]) {
     const meter = data[0]
@@ -73,7 +75,13 @@ export async function generateReadingsPDF({
   }
 
   const blob = await pdf(
-    <ReadingsPDF data={data} startDate={startDate} endDate={endDate} generatedAt={generatedAt} />
+    <ReadingsPDF
+      data={data}
+      startDate={startDate}
+      endDate={endDate}
+      generatedAt={generatedAt}
+      zoneName={zoneName}
+    />
   ).toBlob()
 
   return blob

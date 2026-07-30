@@ -29,8 +29,8 @@ export default function WaterPointDataPage() {
 
     return waterPoints.filter((waterPoint) => {
       // Filter by name (search in name, location, and cadastral reference)
-      if (nameFilter && nameFilter.length >= 3) {
-        const searchLower = nameFilter.toLowerCase()
+      if (nameFilter.trim()) {
+        const searchLower = nameFilter.trim().toLowerCase()
         const matchesName =
           waterPoint.name.toLowerCase().includes(searchLower) ||
           waterPoint.location.toLowerCase().includes(searchLower) ||
@@ -67,7 +67,6 @@ export default function WaterPointDataPage() {
             value={nameFilter}
             onChange={setNameFilter}
             placeholder="Buscar por nombre, nº enganche, dirección..."
-            minChars={3}
           />
         </div>
 

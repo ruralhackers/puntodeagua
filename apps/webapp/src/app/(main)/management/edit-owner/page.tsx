@@ -67,7 +67,6 @@ export default function EditOwnerPage() {
             value={nameFilter}
             onChange={setNameFilter}
             placeholder="Buscar por nombre, DNI o teléfono..."
-            minChars={2}
           />
         </div>
 

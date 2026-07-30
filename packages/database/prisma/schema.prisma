@@ -128,6 +128,8 @@ model WaterPoint {
 
   connectionNumber String? @map("connection_number")
 
+  mapsUrl String? @map("maps_url")
+
   fixedPopulation    Int    @default(0) @map("fixed_population")
   floatingPopulation Int    @default(0) @map("floating_population")
   cadastralReference String @map("cadastral_reference")

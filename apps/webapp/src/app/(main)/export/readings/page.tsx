@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -21,6 +22,8 @@ import { api } from '@/trpc/react'
 
 const ALL_METERS = '__all__'
 
+type ExportScope = 'all' | 'meter' | 'zone'
+
 export default function ReadingsExportPage() {
   const router = useRouter()
   const user = useUserStore((state) => state.user)
@@ -30,6 +33,8 @@ export default function ReadingsExportPage() {
   const [endDate, setEndDate] = useState('')
   const [waterMeterId, setWaterMeterId] = useState(ALL_METERS)
   const [meterSearch, setMeterSearch] = useState('')
+  const [scope, setScope] = useState<ExportScope>('all')
+  const [communityZoneId, setCommunityZoneId] = useState('')
   const [isNavigating, setIsNavigating] = useState(false)
 
   const { data: zones } = api.community.getCommunityZones.useQuery(
@@ -89,8 +94,12 @@ export default function ReadingsExportPage() {
       startDate,
       endDate
     })
-    if (waterMeterId && waterMeterId !== ALL_METERS) {
+    // The three scopes are exclusive: only the selected one reaches the URL.
+    if (scope === 'meter' && waterMeterId && waterMeterId !== ALL_METERS) {
       params.set('waterMeterId', waterMeterId)
+    }
+    if (scope === 'zone' && communityZoneId) {
+      params.set('communityZoneId', communityZoneId)
     }
 
     router.push(`/export/readings/results?${params.toString()}`)
@@ -110,7 +119,7 @@ export default function ReadingsExportPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Filtros de Lecturas</h1>
           <p className="text-muted-foreground">
-            Configura el período y, opcionalmente, un contador concreto
+            Configura el período y, opcionalmente, un contador concreto o una zona
           </p>
         </div>
 
@@ -150,37 +159,90 @@ export default function ReadingsExportPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="meterSearch">Contador (opcional)</Label>
-              <Input
-                id="meterSearch"
-                placeholder="Buscar por titular, casa o nº enganche..."
-                value={meterSearch}
-                onChange={(e) => setMeterSearch(e.target.value)}
-              />
-              <Select value={waterMeterId} onValueChange={setWaterMeterId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos los contadores" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL_METERS}>Todos los contadores</SelectItem>
-                  {filteredMeters.map((meter) => (
-                    <SelectItem key={meter.id} value={meter.id}>
-                      {[
-                        meter.waterPoint.connectionNumber,
-                        meter.waterPoint.name,
-                        meter.waterAccountName
-                      ]
-                        .filter(Boolean)
-                        .join(' — ')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-muted-foreground">
-                Si eliges un contador, el PDF listará todas sus lecturas del período con consumo
-                total y medio.
-              </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Alcance (opcional)</Label>
+                <RadioGroup
+                  value={scope}
+                  onValueChange={(value) => setScope(value as ExportScope)}
+                  className="space-y-1"
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="all" id="scope-all" />
+                    <Label htmlFor="scope-all" className="font-normal">
+                      Todos los contadores
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="meter" id="scope-meter" />
+                    <Label htmlFor="scope-meter" className="font-normal">
+                      Filtrar contador específico
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="zone" id="scope-zone" />
+                    <Label htmlFor="scope-zone" className="font-normal">
+                      Filtrar por zona
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {scope === 'meter' && (
+                <div className="space-y-2">
+                  <Label htmlFor="meterSearch">Contador</Label>
+                  <Input
+                    id="meterSearch"
+                    placeholder="Buscar por titular, casa o nº enganche..."
+                    value={meterSearch}
+                    onChange={(e) => setMeterSearch(e.target.value)}
+                  />
+                  <Select value={waterMeterId} onValueChange={setWaterMeterId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos los contadores" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={ALL_METERS}>Todos los contadores</SelectItem>
+                      {filteredMeters.map((meter) => (
+                        <SelectItem key={meter.id} value={meter.id}>
+                          {[
+                            meter.waterPoint.connectionNumber,
+                            meter.waterPoint.name,
+                            meter.waterAccountName
+                          ]
+                            .filter(Boolean)
+                            .join(' — ')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Si eliges un contador, el PDF listará todas sus lecturas del período con consumo
+                    total y medio.
+                  </p>
+                </div>
+              )}
+
+              {scope === 'zone' && (
+                <div className="space-y-2">
+                  <Label htmlFor="communityZone">Zona</Label>
+                  <Select value={communityZoneId} onValueChange={setCommunityZoneId}>
+                    <SelectTrigger id="communityZone">
+                      <SelectValue placeholder="Selecciona una zona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(zones as CommunityZoneDto[] | undefined)?.map((zone) => (
+                        <SelectItem key={zone.id} value={zone.id}>
+                          {zone.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    El PDF comunitario incluirá solo los contadores activos de esa zona.
+                  </p>
+                </div>
+              )}
             </div>
 
             {startDate && endDate && (
@@ -212,7 +274,12 @@ export default function ReadingsExportPage() {
             </Link>
           </Button>
 
-          <Button onClick={handleExport} disabled={!startDate || !endDate || isNavigating}>
+          <Button
+            onClick={handleExport}
+            disabled={
+              !startDate || !endDate || isNavigating || (scope === 'zone' && !communityZoneId)
+            }
+          >
             {isNavigating ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />

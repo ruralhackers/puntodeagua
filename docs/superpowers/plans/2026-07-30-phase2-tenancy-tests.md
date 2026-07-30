@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Runtime y package manager: **bun**. Nunca `npm`/`yarn`/`pnpm`.
-- `bun run test:unit` debe quedar en **0 fail** al final de cada tarea. Cuenta actual: 281 pass / 32 archivos.
+- `bun run test:unit` debe quedar en **0 fail** al final de cada tarea. Cuenta actual: **287 pass / 34 archivos**. (Eran 281/32 con el viejo `bun test packages`; `test:unit` añade `apps/webapp/src/lib`, que antes sólo se ejecutaba en el `bun test` a secas del CI.)
 - `bun run test:integration` debe quedar en **0 fail** al final de cada tarea, y con **cero `it.failing` sin comentario `HOLE:`**.
 - Formato/lint: `bunx biome check --write <archivos>` antes de cada commit. CI corre `biome ci --diagnostic-level=error`.
 - Idioma de comentarios en código: **inglés**. Los nombres de test empiezan por `should`.

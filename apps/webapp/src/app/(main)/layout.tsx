@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/header'
 import { MainSidebar } from '@/components/layout/main-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
+import { getMainNavItems } from '@/navigation/main-nav-items'
 import { auth } from '@/server/auth'
 import { getPreference } from '@/server/server-actions'
 import { UserStoreProvider } from '@/stores/user/user-provider'
@@ -27,6 +28,12 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     getPreference<ContentLayout>('content_layout', CONTENT_LAYOUT_VALUES, 'full-width')
   ])
 
+  // Mirrors BottomNav's own gating (primaryItems.length < 2 => no bar rendered), computed
+  // once here so the footer can reserve space for it without guessing at BottomNav's client
+  // state.
+  const hasBottomNav =
+    getMainNavItems(session.user.roles).filter((item) => item.primary).length >= 2
+
   return (
     <HydrateClient>
       <UserStoreProvider user={session.user}>
@@ -45,8 +52,8 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
           >
             <Header session={session} />
             <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
-              <div className="flex-1 p-4 pb-24 md:p-6 md:pb-6">{children}</div>
-              <Footer />
+              <div className="flex-1 p-4 md:p-6">{children}</div>
+              <Footer reserveBottomNavSpace={hasBottomNav} />
               <BottomNav />
             </CommunityZonesStoreProvider>
           </SidebarInset>

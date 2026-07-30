@@ -1,8 +1,9 @@
+import { idSchema } from '@pda/common/domain'
 import { communitySchema } from '@pda/community/domain'
 import { z } from 'zod'
 
 export const userClientSchema = z.object({
-  id: z.string().uuid(),
+  id: idSchema,
   email: z.string().email().nullable(),
   name: z.string().optional().nullable(),
   roles: z.array(z.string()).default([]),

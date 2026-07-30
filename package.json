@@ -13,7 +13,10 @@
     "check": "bun x biome format --write  && bun x biome ci --diagnostic-level=error",
     "check:unsafe": "biome check --write --unsafe .",
     "check:write": "biome check --write --max-diagnostics=20000 .",
-    "check:errors": "bunx biome check --max-diagnostics=20000 --diagnostic-level=error ."
+    "check:errors": "bunx biome check --max-diagnostics=20000 --diagnostic-level=error .",
+    "test:unit": "bun test packages apps/webapp/src/lib",
+    "test:integration": "PDA_INTEGRATION=1 bun --env-file=.env.test test apps/webapp/src/server --concurrency 1",
+    "test:all": "bun run test:unit && bun run test:integration"
   },
   "workspaces": {
     "packages": [

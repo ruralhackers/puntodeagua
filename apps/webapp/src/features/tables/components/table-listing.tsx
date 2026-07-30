@@ -46,8 +46,7 @@ export default function TableListingPage(props: TableListingPageProps) {
     searchFields: props.searchFields,
     includeFields: props.includeFields,
     filters: allFilters,
-    orderBy,
-    selector: props.selector
+    orderBy
   }
 
   const { data } = api.table.domainTable.useQuery(
@@ -64,8 +63,7 @@ export default function TableListingPage(props: TableListingPageProps) {
           value: filter.value,
           operator: 'equals' as const
         })),
-        orderBy: queryParams.orderBy,
-        selector: queryParams.selector
+        orderBy: queryParams.orderBy
       }
     },
     {

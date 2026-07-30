@@ -1,0 +1,97 @@
+import { execSync } from 'node:child_process'
+import { client as prisma } from '@pda/database'
+
+// Refuses to run against anything that is not a test database. The production
+// URL lives commented out in .env.local one character away from being active,
+// and packages/database has a db:sync:force script that runs --force-reset.
+function assertTestDatabase(): string {
+  const url = process.env.DATABASE_URL
+  if (!url) {
+    throw new Error('DATABASE_URL is not set. Run tests with --env-file=.env.test')
+  }
+  const databaseName = url.split('/').pop()?.split('?')[0]
+  if (!databaseName?.endsWith('_test')) {
+    throw new Error(
+      `Refusing to run tests against "${databaseName}": the database name must end in _test`
+    )
+  }
+  return databaseName
+}
+
+export async function ensureTestDatabase(): Promise<void> {
+  const databaseName = assertTestDatabase()
+  const adminUrl = (process.env.DATABASE_URL as string).replace(`/${databaseName}`, '/postgres')
+
+  // CREATE DATABASE cannot run inside a transaction, and Prisma cannot connect
+  // to a database that does not exist yet, so this goes through raw pg.
+  const { Client } = await import('pg')
+  const client = new Client({ connectionString: adminUrl })
+  await client.connect()
+  try {
+    const existing = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [
+      databaseName
+    ])
+    if (existing.rowCount === 0) {
+      await client.query(`CREATE DATABASE "${databaseName}"`)
+    }
+  } finally {
+    await client.end()
+  }
+}
+
+export async function applySchema(): Promise<void> {
+  assertTestDatabase()
+
+  // The repo has no migrations directory (it uses db push), so the DDL is
+  // generated from the schema on every run and can never drift.
+  const ddl = execSync(
+    'bunx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script',
+    { cwd: `${import.meta.dir}/../database`, encoding: 'utf-8' }
+  )
+
+  // Sent through raw pg, not Prisma: Prisma's $executeRawUnsafe uses prepared
+  // statements and rejects a multi-statement script, so it would need one round
+  // trip per statement. Forty round trips took long enough to blow bun's 5s
+  // hook timeout on a slow CI runner. pg's simple query protocol takes the
+  // whole script in one go.
+  //
+  // Dropping the schema first makes this idempotent across runs: the tables
+  // survive between runs, and re-applying the DDL on top of them would fail
+  // with "relation already exists". It also guarantees the test schema always
+  // matches schema.prisma.
+  const { Client } = await import('pg')
+  const client = new Client({ connectionString: process.env.DATABASE_URL })
+  await client.connect()
+  try {
+    await client.query(`DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public; ${ddl}`)
+  } finally {
+    await client.end()
+  }
+}
+
+export async function resetDatabase(): Promise<void> {
+  assertTestDatabase()
+  const tables = await prisma.$queryRaw<Array<{ tablename: string }>>`
+    SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+  `
+  if (tables.length === 0) return
+  const list = tables.map((table) => `"public"."${table.tablename}"`).join(', ')
+  await prisma.$executeRawUnsafe(`TRUNCATE ${list} RESTART IDENTITY CASCADE`)
+}
+
+/**
+ * Per-file setup. Only truncates: the schema is created once by the preload in
+ * bunfig.toml, before any test file runs, so no single file pays that cost
+ * inside a 5s beforeAll hook.
+ */
+export async function setupTestDatabase(): Promise<void> {
+  await resetDatabase()
+}
+
+/**
+ * One-time setup for the whole test run. Called by the preload.
+ */
+export async function prepareTestDatabase(): Promise<void> {
+  await ensureTestDatabase()
+  await applySchema()
+}

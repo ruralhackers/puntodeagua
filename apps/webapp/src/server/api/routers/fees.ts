@@ -8,7 +8,7 @@ import {
 } from '@pda/fees'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { assertCommunityAccess } from '@/server/api/guards/water-meter-community-guard'
+import { assertCommunityAccess } from '@/server/api/guards/community-scope.guards'
 import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
 
 function requireSessionCommunityId(sessionCommunityId: string | undefined) {

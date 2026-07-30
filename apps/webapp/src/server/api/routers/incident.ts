@@ -10,45 +10,55 @@ import {
 } from '@pda/storage'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
+import {
+  assertCommunityInScope,
+  assertIncidentBelongsToScope,
+  assertIncidentImageBelongsToScope
+} from '@/server/api/guards/community-scope.guards'
+import { communityScopedProcedure, createTRPCRouter, requireCommunityId } from '@/server/api/trpc'
 
 export const incidentsRouter = createTRPCRouter({
-  getIncidents: staffProcedure.query(async () => {
-    const repo = RegistersFactory.incidentPrismaRepository()
-    const incidents = await repo.findAll()
-    return incidents.map((incident) => incident.toDto())
-  }),
+  // getIncidents removed: it returned every community's incidents with no
+  // scope, and no screen called it.
 
-  getIncidentsByCommunityId: staffProcedure
+  getIncidentsByCommunityId: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      assertCommunityInScope(input.id, ctx.scope)
+
       const repo = RegistersFactory.incidentPrismaRepository()
       const incidents = await repo.findByCommunityId(Id.fromString(input.id))
       return incidents.map((incident) => incident.toDto())
     }),
 
-  getIncidentById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const repo = RegistersFactory.incidentPrismaRepository()
-    const imageRepo = RegistersFactory.incidentImagePrismaRepository()
+  getIncidentById: communityScopedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      await assertIncidentBelongsToScope(input.id, ctx.scope)
 
-    const incident = await repo.findById(Id.fromString(input.id))
-    if (!incident) return null
+      const repo = RegistersFactory.incidentPrismaRepository()
+      const imageRepo = RegistersFactory.incidentImagePrismaRepository()
 
-    const images = await imageRepo.findByIncidentId(Id.fromString(input.id))
+      const incident = await repo.findById(Id.fromString(input.id))
+      if (!incident) return null
 
-    return {
-      ...incident.toDto(),
-      images: images.map((img) => img.toDto())
-    }
-  }),
+      const images = await imageRepo.findByIncidentId(Id.fromString(input.id))
 
-  addIncident: staffProcedure
+      return {
+        ...incident.toDto(),
+        images: images.map((img) => img.toDto())
+      }
+    }),
+
+  addIncident: communityScopedProcedure
     .input(
       incidentSchema.omit({ id: true }).extend({
         images: z.array(fileUploadInputSchema).optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      assertCommunityInScope(input.communityId, ctx.scope)
+
       try {
         const service = RegistersFactory.incidentCreatorService()
 
@@ -90,14 +100,16 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  updateIncident: staffProcedure
+  updateIncident: communityScopedProcedure
     .input(
       incidentSchema.extend({
         newImages: z.array(fileUploadInputSchema).optional(),
         deleteImageIds: z.array(z.string()).optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertIncidentBelongsToScope(input.id, ctx.scope)
+
       try {
         const service = RegistersFactory.incidentUpdaterService()
 
@@ -135,13 +147,17 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  deleteIncident: staffProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
-    const repo = RegistersFactory.incidentPrismaRepository()
-    await repo.delete(Id.fromString(input.id))
-    return { success: true }
-  }),
+  deleteIncident: communityScopedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await assertIncidentBelongsToScope(input.id, ctx.scope)
 
-  exportIncidents: staffProcedure
+      const repo = RegistersFactory.incidentPrismaRepository()
+      await repo.delete(Id.fromString(input.id))
+      return { success: true }
+    }),
+
+  exportIncidents: communityScopedProcedure
     .input(
       z.object({
         startDate: z.string().transform((str) => new Date(str)),
@@ -155,15 +171,10 @@ export const incidentsRouter = createTRPCRouter({
         const repo = RegistersFactory.incidentPrismaRepository()
 
         // Si no se proporciona communityId, usar la del usuario autenticado
-        const communityId = input.communityId
-          ? Id.fromString(input.communityId)
-          : ctx.session?.user?.community?.id
-            ? Id.fromString(ctx.session.user.community.id)
-            : undefined
-
-        if (!communityId) {
-          throw new Error('No se pudo determinar la comunidad para la exportación')
+        if (input.communityId) {
+          assertCommunityInScope(input.communityId, ctx.scope)
         }
+        const communityId = Id.fromString(requireCommunityId(ctx.scope, input.communityId))
 
         const filters: {
           communityId: Id
@@ -189,9 +200,11 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  deleteIncidentImage: staffProcedure
+  deleteIncidentImage: communityScopedProcedure
     .input(z.object({ imageId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertIncidentImageBelongsToScope(input.imageId, ctx.scope)
+
       try {
         const service = RegistersFactory.fileDeleterService()
         await service.run({

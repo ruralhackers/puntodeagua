@@ -197,3 +197,52 @@ export const waterDepositManagementProcedure = protectedProcedure.use(({ ctx, ne
   }
   return next({ ctx })
 })
+
+/**
+ * The set of communities a caller may act on. 'global' is only ever produced
+ * for the ADMIN role, which is a system-wide role.
+ *
+ * This is a discriminated union rather than a nullable communityId on purpose:
+ * a nullable id can be ignored by accident, which is exactly how the
+ * cross-community holes appeared in the first place. Consumers have to handle
+ * both cases explicitly.
+ */
+export type CommunityScope = { kind: 'global' } | { kind: 'community'; communityId: string }
+
+/**
+ * Resolves the caller's community scope from their session.
+ */
+export function resolveCommunityScope(roles: string[], communityId?: string): CommunityScope {
+  if (roles.includes('ADMIN')) {
+    return { kind: 'global' }
+  }
+  if (!communityId) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
+  }
+  return { kind: 'community', communityId }
+}
+
+/**
+ * Staff procedure with the caller's community scope resolved once.
+ *
+ * Endpoints using it must take the community from ctx.scope and never from
+ * their input, which makes cross-community access impossible to express
+ * rather than merely checked.
+ */
+export const communityScopedProcedure = staffProcedure.use(({ ctx, next }) => {
+  const scope = resolveCommunityScope(ctx.session.user.roles ?? [], ctx.session.user.community?.id)
+  return next({ ctx: { ...ctx, scope } })
+})
+
+/**
+ * The single community a new resource belongs to. A global admin has to say
+ * which one, because "create it in every community" is not a thing.
+ */
+export function requireCommunityId(scope: CommunityScope, explicit?: string): string {
+  if (scope.kind === 'community') return scope.communityId
+  if (explicit) return explicit
+  throw new TRPCError({
+    code: 'BAD_REQUEST',
+    message: 'A global admin must specify the target community'
+  })
+}

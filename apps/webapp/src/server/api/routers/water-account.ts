@@ -3,15 +3,18 @@ import { FileMetadataCreatorService, fileUploadInputSchema } from '@pda/storage'
 import { WaterAccountFactory, waterAccountUpdateSchema } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { handleDomainError } from '@/server/api/error-handler'
 import {
   assertCommunityAccess,
-  assertWaterMeterBelongsToUserCommunity,
-  assertZoneIdsBelongToUserCommunity
-} from '@/server/api/guards/water-meter-community-guard'
+  assertReadingBelongsToScope,
+  assertWaterMeterBelongsToScope,
+  assertWaterPointBelongsToScope,
+  assertZoneIdsBelongToScope
+} from '@/server/api/guards/community-scope.guards'
 import {
+  communityScopedProcedure,
   createTRPCRouter,
+  resolveCommunityScope,
   staffProcedure,
   waterMeterReaderAllowedProcedure
 } from '@/server/api/trpc'
@@ -20,9 +23,13 @@ export const waterAccountRouter = createTRPCRouter({
   getWaterMeterById: waterMeterReaderAllowedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
-        await assertWaterMeterBelongsToUserCommunity(input.id, ctx.session.user.community?.id)
-      }
+      // The guard used to run only for reader-only users, which left every
+      // staff role able to read any community's meters.
+      const scope = resolveCommunityScope(
+        ctx.session.user.roles ?? [],
+        ctx.session.user.community?.id
+      )
+      await assertWaterMeterBelongsToScope(input.id, scope)
 
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const displayDto = await repo.findByIdForDisplay(Id.fromString(input.id))
@@ -32,21 +39,22 @@ export const waterAccountRouter = createTRPCRouter({
   getWaterMeterReadings: waterMeterReaderAllowedProcedure
     .input(z.object({ waterMeterId: z.string() }))
     .query(async ({ input, ctx }) => {
-      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
-        await assertWaterMeterBelongsToUserCommunity(
-          input.waterMeterId,
-          ctx.session.user.community?.id
-        )
-      }
+      const scope = resolveCommunityScope(
+        ctx.session.user.roles ?? [],
+        ctx.session.user.community?.id
+      )
+      await assertWaterMeterBelongsToScope(input.waterMeterId, scope)
 
       const repo = WaterAccountFactory.waterMeterReadingPrismaRepository()
       const readings = await repo.findByWaterMeterId(Id.fromString(input.waterMeterId))
       return readings.map((reading) => reading.toDto())
     }),
 
-  getWaterMetersByWaterPointId: staffProcedure
+  getWaterMetersByWaterPointId: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      await assertWaterPointBelongsToScope(input.id, ctx.scope)
+
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const displayDtos = await repo.findByWaterPointIdForDisplay(Id.fromString(input.id))
       return displayDtos
@@ -60,9 +68,11 @@ export const waterAccountRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
-        await assertZoneIdsBelongToUserCommunity(input.zoneIds, ctx.session.user.community?.id)
-      }
+      const scope = resolveCommunityScope(
+        ctx.session.user.roles ?? [],
+        ctx.session.user.community?.id
+      )
+      await assertZoneIdsBelongToScope(input.zoneIds, scope)
 
       const repo = WaterAccountFactory.waterMeterPrismaRepository()
       const zoneIds = input.zoneIds.map(Id.fromString)
@@ -88,12 +98,13 @@ export const waterAccountRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      try {
-        await assertWaterMeterBelongsToUserCommunity(
-          input.waterMeterId,
-          ctx.session.user.community?.id
-        )
+      const scope = resolveCommunityScope(
+        ctx.session.user.roles ?? [],
+        ctx.session.user.community?.id
+      )
+      await assertWaterMeterBelongsToScope(input.waterMeterId, scope)
 
+      try {
         const service = WaterAccountFactory.waterMeterReadingCreatorService()
 
         // Prepare image data if provided
@@ -132,7 +143,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  updateWaterMeterReading: staffProcedure
+  updateWaterMeterReading: communityScopedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -142,7 +153,10 @@ export const waterAccountRouter = createTRPCRouter({
         deleteImage: z.boolean().optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      // Outside the try: handleDomainError must not swallow a FORBIDDEN.
+      await assertReadingBelongsToScope(input.id, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterReadingUpdaterService()
 
@@ -180,9 +194,11 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  deleteWaterMeterReading: staffProcedure
+  deleteWaterMeterReading: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertReadingBelongsToScope(input.id, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterReadingDeleterService()
         await service.run(Id.fromString(input.id))
@@ -192,9 +208,11 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  recalculateWaterMeterExcess: staffProcedure
+  recalculateWaterMeterExcess: communityScopedProcedure
     .input(z.object({ waterMeterId: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertWaterMeterBelongsToScope(input.waterMeterId, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterExcessRecalculatorService()
         await service.run(Id.fromString(input.waterMeterId))
@@ -204,7 +222,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  updateWaterMeterImage: staffProcedure
+  updateWaterMeterImage: communityScopedProcedure
     .input(
       z.object({
         waterMeterId: z.string(),
@@ -212,7 +230,9 @@ export const waterAccountRouter = createTRPCRouter({
         deleteImage: z.boolean().optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertWaterMeterBelongsToScope(input.waterMeterId, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterImageUpdaterService()
 
@@ -243,7 +263,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  replaceWaterMeter: staffProcedure
+  replaceWaterMeter: communityScopedProcedure
     .input(
       z.object({
         oldWaterMeterId: z.string(),
@@ -254,7 +274,9 @@ export const waterAccountRouter = createTRPCRouter({
         image: fileUploadInputSchema.optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertWaterMeterBelongsToScope(input.oldWaterMeterId, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterReplacerService()
 
@@ -289,11 +311,9 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  getAllWaterAccounts: staffProcedure.query(async () => {
-    const repo = WaterAccountFactory.waterAccountPrismaRepository()
-    const accounts = await repo.findAll()
-    return accounts.map((account) => account.toDto())
-  }),
+  // getAllWaterAccounts was removed: it returned every community's accounts
+  // with no scope at all, and no screen called it.
+  // getWaterAccountsByCommunityId covers the legitimate case.
 
   getWaterAccountsByCommunityId: staffProcedure
     .input(z.object({ communityId: z.string() }))
@@ -356,7 +376,7 @@ export const waterAccountRouter = createTRPCRouter({
       }
     }),
 
-  changeWaterMeterOwner: staffProcedure
+  changeWaterMeterOwner: communityScopedProcedure
     .input(
       z.object({
         waterMeterId: z.string(),
@@ -371,7 +391,9 @@ export const waterAccountRouter = createTRPCRouter({
           .optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertWaterMeterBelongsToScope(input.waterMeterId, ctx.scope)
+
       try {
         const service = WaterAccountFactory.waterMeterOwnerChangerService()
         const result = await service.run({
@@ -434,7 +456,10 @@ export const waterAccountRouter = createTRPCRouter({
           await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
 
         if (input.waterMeterId) {
-          await assertWaterMeterBelongsToUserCommunity(input.waterMeterId, communityId.toString())
+          await assertWaterMeterBelongsToScope(input.waterMeterId, {
+            kind: 'community',
+            communityId: communityId.toString()
+          })
           waterMeters = waterMeters.filter((meter) => meter.id === input.waterMeterId)
           if (waterMeters.length === 0) {
             throw new Error('Contador no encontrado o inactivo')

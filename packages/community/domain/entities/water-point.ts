@@ -12,7 +12,8 @@ export class WaterPoint {
     public communityZoneId: Id,
     public waterDepositIds: Id[],
     public notes?: string,
-    public connectionNumber?: string | null
+    public connectionNumber?: string | null,
+    public mapsUrl?: string | null
   ) {}
 
   static create(dto: Omit<WaterPointDto, 'id'>) {
@@ -26,7 +27,8 @@ export class WaterPoint {
       Id.fromString(dto.communityZoneId),
       (dto.waterDepositIds ?? []).map(Id.fromString),
       dto.notes,
-      dto.connectionNumber ?? null
+      dto.connectionNumber ?? null,
+      dto.mapsUrl ?? null
     )
   }
 
@@ -41,7 +43,8 @@ export class WaterPoint {
       Id.fromString(dto.communityZoneId),
       (dto.waterDepositIds ?? []).map(Id.fromString),
       dto.notes,
-      dto.connectionNumber ?? null
+      dto.connectionNumber ?? null,
+      dto.mapsUrl ?? null
     )
   }
 
@@ -52,6 +55,7 @@ export class WaterPoint {
       location: this.location,
       notes: this.notes,
       connectionNumber: this.connectionNumber ?? undefined,
+      mapsUrl: this.mapsUrl ?? undefined,
       fixedPopulation: this.fixedPopulation,
       floatingPopulation: this.floatingPopulation,
       cadastralReference: this.cadastralReference,

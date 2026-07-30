@@ -320,6 +320,46 @@ describe('WaterPointDataUpdater', () => {
       const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
       expect(savedWaterPoint.notes).toBe('')
     })
+
+    it('should successfully update mapsUrl', async () => {
+      // Arrange
+      mockWaterPointRepository.findById = mock(() => Promise.resolve(defaultWaterPoint))
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      // Act
+      const result = await service.run({
+        waterPointId: defaultWaterPoint.id,
+        updatedData: { mapsUrl: '  https://maps.app.goo.gl/aBc123  ' }
+      })
+
+      // Assert
+      expect(result.updatedFields).toContain('mapsUrl')
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.mapsUrl).toBe('https://maps.app.goo.gl/aBc123')
+    })
+
+    it('should clear mapsUrl when an empty string is sent', async () => {
+      // Arrange
+      mockWaterPointRepository.findById = mock(() =>
+        Promise.resolve(
+          WaterPoint.fromDto({
+            ...defaultWaterPoint.toDto(),
+            mapsUrl: 'https://maps.app.goo.gl/aBc123'
+          })
+        )
+      )
+      mockWaterPointRepository.save = mock(() => Promise.resolve())
+
+      // Act
+      await service.run({
+        waterPointId: defaultWaterPoint.id,
+        updatedData: { mapsUrl: '   ' }
+      })
+
+      // Assert
+      const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
+      expect(savedWaterPoint.mapsUrl).toBeNull()
+    })
   })
 
   describe('Error handling', () => {

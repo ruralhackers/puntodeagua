@@ -7,6 +7,7 @@ interface UpdateWaterPointDataParams {
     name?: string
     location?: string
     connectionNumber?: string | null
+    mapsUrl?: string | null
     fixedPopulation?: number
     floatingPopulation?: number
     cadastralReference?: string
@@ -41,6 +42,11 @@ export class WaterPointDataUpdater {
     if (params.updatedData.connectionNumber !== undefined) {
       const trimmed = params.updatedData.connectionNumber?.trim()
       waterPoint.connectionNumber = trimmed ? trimmed : null
+    }
+
+    if (params.updatedData.mapsUrl !== undefined) {
+      const trimmed = params.updatedData.mapsUrl?.trim()
+      waterPoint.mapsUrl = trimmed ? trimmed : null
     }
 
     // Update the fields if provided

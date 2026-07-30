@@ -13,6 +13,7 @@ export interface WaterPointOnboardingParams {
     name: string
     location: string
     connectionNumber?: string | null
+    mapsUrl?: string | null
     communityZoneId: string
     fixedPopulation: number
     floatingPopulation: number
@@ -94,6 +95,7 @@ export class WaterPointOnboarding {
       name: params.waterPoint.name,
       location: params.waterPoint.location,
       connectionNumber: params.waterPoint.connectionNumber?.trim() || undefined,
+      mapsUrl: params.waterPoint.mapsUrl?.trim() || undefined,
       communityZoneId: params.waterPoint.communityZoneId,
       fixedPopulation: params.waterPoint.fixedPopulation,
       floatingPopulation: params.waterPoint.floatingPopulation,

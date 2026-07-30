@@ -50,14 +50,12 @@ export const communityRouter = createTRPCRouter({
       const waterPoints = await repo.findByCommunityIdWithAccount(Id.fromString(input.communityId))
       return waterPoints
     }),
-  getWaterPointById: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const repo = CommunityFactory.waterPointPrismaRepository()
-      const waterPoint = await repo.findById(Id.fromString(input.id))
-      if (!waterPoint) return null
-      return waterPoint.toDto()
-    }),
+  getWaterPointById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = CommunityFactory.waterPointPrismaRepository()
+    const waterPoint = await repo.findById(Id.fromString(input.id))
+    if (!waterPoint) return null
+    return waterPoint.toDto()
+  }),
 
   getWaterDepositsByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))

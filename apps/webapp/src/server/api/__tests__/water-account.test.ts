@@ -1,7 +1,11 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
 import {
   aCommunityWithFullSetup,
+  aCommunityZone,
   asManagerOf,
+  aWaterAccount,
+  aWaterMeter,
+  aWaterPoint,
   expectForbidden,
   setupTestDatabase
 } from '@pda/testing'
@@ -144,5 +148,69 @@ describe('waterAccount mutations', () => {
 
     // Assert
     expect(result).toEqual({ success: true })
+  })
+})
+
+describe('exportWaterMeterReadings zone filter', () => {
+  const wholePeriod = { startDate: new Date('2020-01-01'), endDate: new Date('2030-01-01') }
+
+  beforeAll(async () => {
+    await setupTestDatabase()
+  })
+
+  async function aSecondZoneWithMeter(communityId: string) {
+    const zone = await aCommunityZone({ communityId })
+    const waterPoint = await aWaterPoint({ communityZoneId: zone.id })
+    const account = await aWaterAccount()
+    const meter = await aWaterMeter({ waterPointId: waterPoint.id, waterAccountId: account.id })
+    return { zone, meter }
+  }
+
+  it('should return only the meters of the requested zone', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const other = await aSecondZoneWithMeter(a.community.id)
+    const caller = createCaller(asManagerOf(a.community.id))
+
+    // Act
+    const result = await caller.waterAccount.exportWaterMeterReadings({
+      ...wholePeriod,
+      communityZoneId: a.zone.id
+    })
+
+    // Assert
+    const ids = (result ?? []).map((row) => row.id)
+    expect(ids).toContain(a.meter.id)
+    expect(ids).not.toContain(other.meter.id)
+  })
+
+  it('should export every zone when no zone is given', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const other = await aSecondZoneWithMeter(a.community.id)
+    const caller = createCaller(asManagerOf(a.community.id))
+
+    // Act
+    const result = await caller.waterAccount.exportWaterMeterReadings(wholePeriod)
+
+    // Assert
+    const ids = (result ?? []).map((row) => row.id)
+    expect(ids).toContain(a.meter.id)
+    expect(ids).toContain(other.meter.id)
+  })
+
+  it('should reject a zone that belongs to another community', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const b = await aCommunityWithFullSetup()
+    const caller = createCaller(asManagerOf(a.community.id))
+
+    // Act & Assert
+    await expect(
+      caller.waterAccount.exportWaterMeterReadings({
+        ...wholePeriod,
+        communityZoneId: b.zone.id
+      })
+    ).rejects.toThrow(/Zona no encontrada/)
   })
 })

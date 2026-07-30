@@ -415,6 +415,7 @@ export const waterAccountRouter = createTRPCRouter({
         startDate: z.date(),
         endDate: z.date(),
         communityId: z.string().optional(),
+        communityZoneId: z.string().optional(),
         waterMeterId: z.string().optional()
       })
     )
@@ -449,7 +450,16 @@ export const waterAccountRouter = createTRPCRouter({
 
         // Get all zones for this community
         const zones = await communityZoneRepo.findByCommunityId(communityId)
-        const zoneIds = zones.map((zone) => zone.id)
+
+        // Optional zone filter. Resolving it against this community's own zones
+        // is also the scope guard: an id from another community finds nothing.
+        const scopedZones = input.communityZoneId
+          ? zones.filter((zone) => zone.id.toString() === input.communityZoneId)
+          : zones
+        if (input.communityZoneId && scopedZones.length === 0) {
+          throw new Error('Zona no encontrada')
+        }
+        const zoneIds = scopedZones.map((zone) => zone.id)
 
         // Get only active water meters
         let waterMeters =

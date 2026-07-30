@@ -199,6 +199,7 @@ export default function NewIncidentPage() {
                   id="images"
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,image/webp"
+                  capture="environment"
                   multiple
                   onChange={handleImageSelect}
                   className="border-blue-200"

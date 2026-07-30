@@ -205,6 +205,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                       id="edit-image"
                       type="file"
                       accept={ACCEPTED_FILE_TYPES}
+                      capture="environment"
                       onChange={handleImageSelect}
                       disabled={updateReadingMutation.isPending}
                     />
@@ -318,6 +319,7 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                     id="edit-image"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     onChange={handleImageSelect}
                     disabled={updateReadingMutation.isPending}
                   />

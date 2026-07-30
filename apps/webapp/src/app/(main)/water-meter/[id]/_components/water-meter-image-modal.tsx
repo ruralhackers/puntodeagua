@@ -135,6 +135,7 @@ export function WaterMeterImageModal({
                     id="image-upload"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     className="hidden"
                     onChange={handleImageSelect}
                   />

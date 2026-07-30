@@ -152,12 +152,14 @@ await expect(caller.waterAccount.getWaterMeterById({ id: a.meter.id })).resolves
 await expect(caller.waterAccount.getWaterMeterById({ id: b.meter.id })).rejects.toThrow(/FORBIDDEN/)
 ```
 
-Los endpoints hoy vulnerables llevan el mismo test con `it.failing` y un comentario que apunta al endpoint:
+Para los endpoints hoy vulnerables, ese segundo test se escribe primero y **falla de verdad** (el `rejects.toThrow` no se cumple porque la llamada devuelve datos). Ver ese fallo es el paso que confirma que el test prueba algo real. Acto seguido, en la misma tarea, se cierra el endpoint y el test pasa a verde. Nada se commitea en rojo y nada se commitea con la marca puesta.
+
+`it.failing` sólo aparece si hay que aplazar un hueco a conciencia — por ejemplo si cerrarlo obliga a un cambio de frontend que no cabe en la tarea — y entonces exige un comentario que explique el motivo:
 
 ```typescript
-// HOLE: staff de cualquier comunidad puede leer contadores de otra.
-// El guard sólo corre bajo isWaterMeterReaderOnly(). Se arregla en Fase 2 de seguridad.
-it.failing('should reject reading a water meter from another community', async () => { … })
+// HOLE: cerrar esto cambia la firma de getWaterPoints y rompe 3 pantallas del panel.
+// Aplazado a la tarea N; el frontend se migra allí.
+it.failing('should reject listing water points from another community', async () => { … })
 ```
 
 ### Aislamiento entre tests

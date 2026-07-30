@@ -92,11 +92,12 @@ Esta tarea no cierra ningún agujero: monta la infraestructura y la prueba de pu
   - `applySchema(): Promise<void>`
   - `resetDatabase(): Promise<void>`
   - `setupTestDatabase(): Promise<void>` — hace las tres en orden; es la que usan los tests.
-  - `asAdmin(): TestContext`
+  - `asAdmin(communityId?: string | null): TestContext`
   - `asCommunityAdminOf(communityId: string): TestContext`
   - `asManagerOf(communityId: string): TestContext`
   - `asReaderOf(communityId: string): TestContext`
   - `asAnonymous(): TestContext`
+  - `asManagerWithoutCommunity(): TestContext`
   - `type TestContext = { db: typeof prisma; session: Session | null; headers: Headers }`
 
 - [ ] **Step 1: Crear el manifest del paquete**
@@ -269,6 +270,12 @@ export function asReaderOf(communityId: string): TestContext {
 
 export function asAnonymous(): TestContext {
   return { db: prisma, session: null, headers: new Headers() }
+}
+
+// A non-admin staff user with no community: must be rejected by
+// communityScopedProcedure, unlike an ADMIN in the same situation.
+export function asManagerWithoutCommunity(): TestContext {
+  return contextFor(['MANAGER'], null)
 }
 ```
 
@@ -804,12 +811,15 @@ export class TableRepositoryProxy {
   async findForTable(
     model: string,
     params: TableQueryParams,
-    communityId: string
+    scope: CommunityScope
   ): Promise<TableQueryResult<unknown>> {
     const repository = this.repositoryFor(model)
     const scoped: TableQueryParams = {
       ...params,
-      selector: this.communityScopeFor(model, communityId)
+      // A global admin (ADMIN role) gets no community filter; everyone else is
+      // pinned to their own community.
+      selector:
+        scope.kind === 'global' ? undefined : this.communityScopeFor(model, scope.communityId)
     }
     return repository.findForTable(scoped)
   }
@@ -842,24 +852,33 @@ En `apps/webapp/src/server/api/routers/table.ts`:
 
 1. Borrar del schema de entrada la línea `selector: z.any().optional()`.
 2. Borrar de `tableParams` la línea `selector: queryParams.selector`.
-3. Cambiar `staffProcedure` por `communityScopedProcedure` — **pero ese procedure lo crea la Task 4**. Para no invertir el orden, en esta tarea se resuelve la comunidad en el handler:
+3. Cambiar `staffProcedure` por `communityScopedProcedure` — **pero ese procedure lo crea la Task 4**. Para no invertir el orden, en esta tarea se resuelve el scope en el handler con la misma regla (ADMIN es global):
 
 ```typescript
     .query(async ({ input, ctx }) => {
+      const roles = ctx.session.user.roles ?? []
       const communityId = ctx.session.user.community?.id
-      if (!communityId) {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
-      }
+      const scope: CommunityScope = roles.includes('ADMIN')
+        ? { kind: 'global' }
+        : communityId
+          ? { kind: 'community', communityId }
+          : (() => {
+              throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
+            })()
 ```
 
-y se pasa `communityId` al proxy:
+y se pasa el scope al proxy:
 
 ```typescript
       const proxy = new TableRepositoryProxy()
-      const entitiesResult = await proxy.findForTable(model, tableParams, communityId)
+      const entitiesResult = await proxy.findForTable(model, tableParams, scope)
 ```
 
-La Task 4 lo migrará a `communityScopedProcedure`.
+El tipo `CommunityScope` se define en esta tarea, en `apps/webapp/src/server/api/trpc.ts`, porque lo necesitan tanto el router como el proxy; la Task 4 añade el procedure que lo produce y migra el handler.
+
+```typescript
+export type CommunityScope = { kind: 'global' } | { kind: 'community'; communityId: string }
+```
 
 4. Sustituir el mapeo a DTO crudo por una proyección explícita por modelo, para que `passwordHash` no pueda salir ni por accidente:
 
@@ -905,7 +924,36 @@ Expected: los 3 tests de `table.domainTable` pasan. Sin `it.failing`.
 
 - [ ] **Step 7: Verificar que no se rompió el panel**
 
-Run: `bun run webapp` y abrir las 4 tablas que el proxy sirve: usuarios, comunidades, puntos de agua y análisis. Cada una debe listar, paginar, ordenar y buscar. Un `ADMIN` sin comunidad asignada verá un error de comunidad: **anotalo y reportalo**, porque implica que el panel de administración global necesita un camino distinto al del scope por comunidad (candidato a tarea aparte, no lo resuelvas acá).
+Run: `bun run webapp` y abrir las 4 tablas que el proxy sirve: usuarios, comunidades, puntos de agua y análisis. Cada una debe listar, paginar, ordenar y buscar, con dos sesiones distintas:
+
+- Como `MANAGER` o `COMMUNITY_ADMIN`: sólo ve datos de su comunidad.
+- Como `ADMIN`: ve todo, con o sin comunidad asignada.
+
+Añadir además un test para el caso global, junto a los otros tres del archivo:
+
+```typescript
+  it('should let a global admin see users from every community', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const b = await aCommunityWithFullSetup()
+    const userA = await aUser({ communityId: a.community.id })
+    const userB = await aUser({ communityId: b.community.id })
+    const caller = createCaller(asAdmin(null))
+
+    // Act
+    const result = await caller.table.domainTable({ model: 'user', queryParams: baseQuery })
+
+    // Assert
+    const ids = result.items.map((item) => (item as { id: string }).id)
+    expect(ids).toContain(userA.id)
+    expect(ids).toContain(userB.id)
+    for (const item of result.items) {
+      expect(item).not.toHaveProperty('passwordHash')
+    }
+  })
+```
+
+Nota: el admin global ve todos los usuarios, pero **sigue sin ver `passwordHash`**. Las dos cosas son independientes: el scope decide qué filas, la proyección decide qué columnas.
 
 Run: `bun run test:unit`
 Expected: `281 pass`, `0 fail`.
@@ -936,7 +984,7 @@ El mecanismo con el que se cierran las tareas 5-12. Repetir `assertCommunityAcce
 
 **Interfaces:**
 - Consumes: `staffProcedure` de `trpc.ts`.
-- Produces: `communityScopedProcedure` — procedure que garantiza `ctx.communityId: string` verificado. Lo usan todas las tareas siguientes.
+- Produces: `communityScopedProcedure` — procedure que garantiza `ctx.scope: CommunityScope` ya resuelto, más el helper `requireCommunityId(scope, explicit?)`. Los usan todas las tareas siguientes.
 
 - [ ] **Step 1: Escribir el test del procedure**
 
@@ -954,14 +1002,27 @@ describe('communityScopedProcedure', () => {
     await setupTestDatabase()
   })
 
-  it('should reject a staff user with no community assigned', async () => {
+  it('should reject a non-admin staff user with no community assigned', async () => {
     // Arrange
-    const caller = createCaller(asAdmin(null))
+    const caller = createCaller(asManagerWithoutCommunity())
 
     // Act & Assert
     await expect(
       caller.table.domainTable({ model: 'user', queryParams: baseQuery })
     ).rejects.toThrow(/community/i)
+  })
+
+  it('should give a global scope to an admin with no community assigned', async () => {
+    // Arrange
+    await aCommunity()
+    await aCommunity()
+    const caller = createCaller(asAdmin(null))
+
+    // Act
+    const result = await caller.table.domainTable({ model: 'community', queryParams: baseQuery })
+
+    // Assert
+    expect(result.totalItems).toBeGreaterThanOrEqual(2)
   })
 
   it('should reject a water meter reader', async () => {
@@ -996,26 +1057,59 @@ Expected: los 3 pasan ya, porque Task 3 dejó la comprobación en el handler. So
 
 - [ ] **Step 3: Añadir el procedure**
 
+`ADMIN` es un rol de sistema: ve todas las comunidades, tenga una asignada o no. El resto del staff queda acotado a la suya. Para que ningún consumidor pueda olvidarse del caso global, el contexto **no** lleva un `communityId | null` (que se ignora sin más) sino una unión discriminada que obliga a tratar ambos casos.
+
 Al final de `apps/webapp/src/server/api/trpc.ts`:
 
 ```typescript
 /**
- * Staff procedure with the caller's community resolved and verified once.
- * Endpoints that use it must take the community from ctx.communityId and never
- * from their input, which makes cross-community access impossible to express.
+ * The set of communities a caller may act on.
+ * 'global' is only ever produced for the ADMIN role.
+ */
+export type CommunityScope =
+  | { kind: 'global' }
+  | { kind: 'community'; communityId: string }
+
+/**
+ * Staff procedure with the caller's community scope resolved once.
+ * Endpoints that use it must take the community from ctx.scope and never from
+ * their input, which makes cross-community access impossible to express.
  */
 export const communityScopedProcedure = staffProcedure.use(({ ctx, next }) => {
+  const roles = ctx.session.user.roles ?? []
+
+  if (roles.includes('ADMIN')) {
+    return next({ ctx: { ...ctx, scope: { kind: 'global' } as CommunityScope } })
+  }
+
   const communityId = ctx.session.user.community?.id
   if (!communityId) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
   }
-  return next({ ctx: { ...ctx, communityId } })
+  return next({ ctx: { ...ctx, scope: { kind: 'community', communityId } as CommunityScope } })
 })
+```
+
+Y un helper en el mismo archivo, para que los endpoints que necesiten un `communityId` concreto (crear un recurso, por ejemplo) no lo saquen a mano:
+
+```typescript
+/**
+ * The community a new resource belongs to. A global admin has to say which one,
+ * because "create it in all communities" is not a thing.
+ */
+export function requireCommunityId(scope: CommunityScope, explicit?: string): string {
+  if (scope.kind === 'community') return scope.communityId
+  if (explicit) return explicit
+  throw new TRPCError({
+    code: 'BAD_REQUEST',
+    message: 'A global admin must specify the target community'
+  })
+}
 ```
 
 - [ ] **Step 4: Migrar `table.ts` al procedure**
 
-En `apps/webapp/src/server/api/routers/table.ts`, cambiar `staffProcedure` por `communityScopedProcedure` en el import y en `domainTable`, y borrar del handler las 4 líneas que resolvían la comunidad a mano, usando `ctx.communityId` en su lugar.
+En `apps/webapp/src/server/api/routers/table.ts`, cambiar `staffProcedure` por `communityScopedProcedure` en el import y en `domainTable`, y borrar del handler las 4 líneas que resolvían la comunidad a mano, usando `ctx.scope` en su lugar.
 
 - [ ] **Step 5: Verificar que nada cambió de comportamiento**
 
@@ -1087,10 +1181,29 @@ describe('<router>.<endpoint>', () => {
 
 **Dos formas de arreglo, según de dónde venga el id:**
 
-- **El endpoint recibe un `communityId`**: pasa a `communityScopedProcedure`, se le **quita el parámetro del input** y usa `ctx.communityId`. Cambia la firma → hay que tocar el frontend.
-- **El endpoint recibe el id de un recurso** (contador, lectura, punto de agua, incidencia…): pasa a `communityScopedProcedure` y se añade un guard que resuelve el recurso y compara su comunidad con `ctx.communityId`. No cambia la firma.
+- **El endpoint recibe un `communityId`**: pasa a `communityScopedProcedure`, se le **quita el parámetro del input** y usa `ctx.scope`. Cambia la firma → hay que tocar el frontend.
+- **El endpoint recibe el id de un recurso** (contador, lectura, punto de agua, incidencia…): pasa a `communityScopedProcedure` y se añade un guard que resuelve el recurso y compara su comunidad con `ctx.scope`. No cambia la firma.
 
-Los guards nuevos van en `apps/webapp/src/server/api/guards/`, uno por tipo de recurso, siguiendo el estilo de `water-meter-community-guard.ts` (que ya tiene `assertWaterMeterBelongsToUserCommunity` y `assertZoneIdsBelongToUserCommunity`, reutilizables).
+**Todos los guards reciben el `CommunityScope`, no un `communityId`**, y su primera línea es la salida para el admin global. Firma canónica, que todos los guards nuevos replican:
+
+```typescript
+export async function assertXBelongsToScope(xId: string, scope: CommunityScope): Promise<void> {
+  if (scope.kind === 'global') return
+  // …resolver el recurso, comparar con scope.communityId, lanzar FORBIDDEN si no coincide
+}
+```
+
+Los dos guards que ya existen en `water-meter-community-guard.ts` (`assertWaterMeterBelongsToUserCommunity` y `assertZoneIdsBelongToUserCommunity`) reciben hoy un `string | undefined`: en la primera tarea que los use se migran a esta firma. Es un cambio mecánico y sus llamadas actuales están en `water-account.ts` y `community.ts`.
+
+Para endpoints de **lectura por comunidad** (listados), el arreglo no es un guard sino construir el filtro desde el scope:
+
+```typescript
+const where = ctx.scope.kind === 'global' ? {} : { communityId: ctx.scope.communityId }
+```
+
+Un endpoint de **escritura** que necesite saber en qué comunidad crear el recurso usa `requireCommunityId(ctx.scope, input.communityId)`: para el staff normal ignora el input y usa su comunidad; para un admin global exige que lo diga explícitamente.
+
+Los guards nuevos van en `apps/webapp/src/server/api/guards/`, uno por tipo de recurso, siguiendo el estilo del existente.
 
 ---
 
@@ -1121,16 +1234,20 @@ Las seis mutaciones que hoy permiten **modificar** datos de otra comunidad. Máx
 ```typescript
 export async function assertReadingBelongsToUserCommunity(
   readingId: string,
-  userCommunityId: string
+  scope: CommunityScope
 ): Promise<void> {
+  if (scope.kind === 'global') return
+
   const readingRepo = WaterAccountFactory.waterMeterReadingPrismaRepository()
   const reading = await readingRepo.findById(Id.fromString(readingId))
   if (!reading) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Water meter reading not found' })
   }
-  await assertWaterMeterBelongsToUserCommunity(reading.waterMeterId.toString(), userCommunityId)
+  await assertWaterMeterBelongsToUserCommunity(reading.waterMeterId.toString(), scope)
 }
 ```
+
+En el mismo paso, migrar los dos guards existentes de `string | undefined` a `CommunityScope`, añadiéndoles la misma salida temprana para el admin global. Sus llamadas actuales están en `water-account.ts` (líneas 24, 36, 64, 92) y `community.ts` (línea 22): las que estaban envueltas en `if (isWaterMeterReaderOnly(...))` pasan a ejecutarse siempre, que es justo el arreglo.
 
 - [ ] **Step 4: Aplicar el arreglo a los 6 endpoints.** Cambiar `staffProcedure` por `communityScopedProcedure` y añadir la llamada al guard como primera línea del handler, dentro del `try` existente para que `handleDomainError` no se coma el `TRPCError`. Ejemplo en `deleteWaterMeterReading`:
 
@@ -1138,7 +1255,7 @@ export async function assertReadingBelongsToUserCommunity(
   deleteWaterMeterReading: communityScopedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      await assertReadingBelongsToUserCommunity(input.id, ctx.communityId)
+      await assertReadingBelongsToUserCommunity(input.id, ctx.scope)
       try {
         const service = WaterAccountFactory.waterMeterReadingDeleterService()
         await service.run(Id.fromString(input.id))
@@ -1195,14 +1312,14 @@ git commit -m "fix(security): scope water meter reads and remove unscoped getAll
 
 | Endpoint | Línea | Recibe | Arreglo |
 |---|---|---|---|
-| `getCommunityZones` | 18 | `id` de comunidad | Quitar el input, usar `ctx.communityId`. **Cambia firma** |
+| `getCommunityZones` | 18 | `id` de comunidad | Quitar el input, usar `ctx.scope`. **Cambia firma** |
 | `getWaterPoints` | 28 | `zoneIds` | `assertZoneIdsBelongToUserCommunity` |
 | `getWaterPointsWithAccount` | 36 | `zoneIds` | ídem |
-| `getWaterPointsByCommunityWithAccount` | 46 | `communityId` | Quitar el input, usar `ctx.communityId`. **Cambia firma** |
+| `getWaterPointsByCommunityWithAccount` | 46 | `communityId` | Quitar el input, usar `ctx.scope`. **Cambia firma** |
 | `getWaterPointById` | 53 | `id` de punto | `assertWaterPointBelongsToUserCommunity` (creado en Task 6) |
-| `getWaterDepositsByCommunityId` | 60 | `id` de comunidad | Quitar el input, usar `ctx.communityId`. **Cambia firma** |
+| `getWaterDepositsByCommunityId` | 60 | `id` de comunidad | Quitar el input, usar `ctx.scope`. **Cambia firma** |
 | `getDepositsByWaterPointId` | 68 | `id` de punto | `assertWaterPointBelongsToUserCommunity` |
-| `updateWaterPointDeposits` | 142 | `waterPointId` + `depositIds` | Guard del punto **y** verificar que todos los depósitos son de `ctx.communityId` |
+| `updateWaterPointDeposits` | 142 | `waterPointId` + `depositIds` | Guard del punto **y** verificar que todos los depósitos son de `ctx.scope` |
 | `updateWaterPointData` | 159 | `waterPointId` | `assertWaterPointBelongsToUserCommunity` |
 
 `createWaterDeposit` (80), `updateWaterDeposit` (107) y `createWaterPointOnboarding` (202) **ya toman la comunidad de la sesión**: sólo migran a `communityScopedProcedure` para quitar el `if (!communityId)` repetido.
@@ -1234,12 +1351,12 @@ git commit -m "fix(security): scope community router to the caller community"
 | Endpoint | Línea | Recibe | Arreglo |
 |---|---|---|---|
 | `getIncidents` | 16 | nada | **Borrarlo** si nadie lo usa (verificar con grep); `getIncidentsByCommunityId` cubre el caso |
-| `getIncidentsByCommunityId` | 22 | `id` de comunidad | Quitar input, usar `ctx.communityId`. **Cambia firma** |
+| `getIncidentsByCommunityId` | 22 | `id` de comunidad | Quitar input, usar `ctx.scope`. **Cambia firma** |
 | `getIncidentById` | 30 | `id` de incidencia | Guard nuevo `assertIncidentBelongsToUserCommunity` |
-| `addIncident` | 45 | `communityId` en el schema | Quitar del input, usar `ctx.communityId`. **Cambia firma** |
+| `addIncident` | 45 | `communityId` en el schema | Quitar del input, usar `ctx.scope`. **Cambia firma** |
 | `updateIncident` | 93 | `id` + schema completo | Guard de incidencia |
 | `deleteIncident` | 138 | `id` | Guard de incidencia |
-| `exportIncidents` | 144 | `communityId` opcional | Quitar del input, usar `ctx.communityId`. **Cambia firma** |
+| `exportIncidents` | 144 | `communityId` opcional | Quitar del input, usar `ctx.scope`. **Cambia firma** |
 | `deleteIncidentImage` | 192 | `imageId` | Resolver imagen → incidencia → comunidad |
 
 - [ ] Ciclo completo. `git commit -m "fix(security): scope incident router to the caller community"`
@@ -1256,10 +1373,10 @@ git commit -m "fix(security): scope community router to the caller community"
 | Endpoint | Línea | Recibe | Arreglo |
 |---|---|---|---|
 | `getAnalyses` | 14 | nada | **Borrarlo** si nadie lo usa |
-| `getAnalysesByCommunityId` | 20 | `id` de comunidad | Quitar input, usar `ctx.communityId`. **Cambia firma** |
+| `getAnalysesByCommunityId` | 20 | `id` de comunidad | Quitar input, usar `ctx.scope`. **Cambia firma** |
 | `getAnalysisById` | 28 | `id` de análisis | Guard nuevo |
-| `addAnalysis` | 34 | `communityId` en el schema | Quitar del input, usar `ctx.communityId`. **Cambia firma** |
-| `exportAnalyses` | 62 | `communityId` opcional | Quitar del input, usar `ctx.communityId`. **Cambia firma** |
+| `addAnalysis` | 34 | `communityId` en el schema | Quitar del input, usar `ctx.scope`. **Cambia firma** |
+| `exportAnalyses` | 62 | `communityId` opcional | Quitar del input, usar `ctx.scope`. **Cambia firma** |
 
 - [ ] Ciclo completo. `git commit -m "fix(security): scope analysis router to the caller community"`
 
@@ -1275,16 +1392,36 @@ git commit -m "fix(security): scope community router to the caller community"
 | Endpoint | Línea | Recibe | Arreglo |
 |---|---|---|---|
 | `getProviders` | 10 | nada | **Borrarlo** si nadie lo usa |
-| `getProvidersByCommunityId` | 16 | `id` de comunidad | Quitar input, usar `ctx.communityId`. **Cambia firma** |
+| `getProvidersByCommunityId` | 16 | `id` de comunidad | Quitar input, usar `ctx.scope`. **Cambia firma** |
 | `getProviderById` | 24 | `id` de proveedor | Guard nuevo |
-| `addProvider` | 30 | `communityId` en el schema | Quitar del input, usar `ctx.communityId`. **Cambia firma** |
+| `addProvider` | 30 | `communityId` en el schema | Quitar del input, usar `ctx.scope`. **Cambia firma** |
 | `updateProvider` | 43 | schema completo con `id` | Guard nuevo |
 | `deleteProvider` | 57 | `id` | Guard nuevo |
 | `toggleProviderActive` | 67 | `id` | Guard nuevo |
 
-Ojo con `Provider.communityId`, que es **opcional** en el schema Prisma (`communityId String?`). Un proveedor sin comunidad no pertenece a nadie: el guard debe rechazarlo (`FORBIDDEN`), no dejarlo pasar. Anotá cuántos proveedores sin comunidad hay en producción antes de desplegar, porque dejarán de ser accesibles.
+**Endurecer `Provider.communityId`.** Hoy es opcional en el schema Prisma (`communityId String?`), así que existe la categoría "proveedor que no pertenece a nadie" — un agujero de tenancy por diseño, no por olvido. Decisión tomada: se endurece. En producción no debería haber ninguno, pero hay que confirmarlo antes.
 
-- [ ] Ciclo completo. `git commit -m "fix(security): scope provider router to the caller community"`
+- [ ] **Step A: Contar los proveedores sin comunidad en producción.** Con la `DATABASE_URL` de producción (la que está comentada en `.env.local`), en modo **solo lectura**:
+
+```sql
+SELECT count(*) FROM "Provider" WHERE "community_id" IS NULL;
+```
+
+Verificá el nombre real de la columna en `packages/database/prisma/schema.prisma` antes de ejecutar. Si el resultado es 0, seguí al Step B. Si es mayor que 0, **pará y reportalo**: hay que decidir a qué comunidad se asignan antes de hacer el campo obligatorio, y eso es una migración de datos que no está en este plan.
+
+- [ ] **Step B: Hacer el campo obligatorio.** En `packages/database/prisma/schema.prisma`, en el modelo `Provider`, cambiar `communityId String?` por `communityId String` y la relación `community Community?` por `community Community`. Después:
+
+Run: `bun run db:sync`
+Expected: aplica sin errores. Si Postgres rechaza el `NOT NULL` es que quedan filas con `NULL` en tu base local — límpialas o vuelve al Step A.
+
+Run: `bun run typecheck`
+Expected: aparecen errores en `packages/providers` donde el código trataba `communityId` como opcional (`provider.ts`, `provider.dto.ts`, `provider.prisma-repository.ts`). Arreglalos quitando los `| undefined` y los `?? undefined` correspondientes: ahora el dominio puede confiar en que todo proveedor tiene comunidad.
+
+- [ ] **Step C: Ciclo completo** con la plantilla de test y los arreglos de la tabla. El guard de proveedor ya no necesita tratar el caso "sin comunidad", porque deja de existir.
+
+```bash
+git commit -m "fix(security): scope provider router and make Provider.communityId required"
+```
 
 ---
 
@@ -1303,12 +1440,23 @@ Arreglar la validación **sin** añadir scope abriría una vía de toma de cuent
 |---|---|---|---|
 | `getById` | 8 | `uuid` vs `cuid` + sin scope | `idSchema` de `@pda/common/domain` + guard de comunidad |
 | `update` | 15 | ídem + acepta `passwordHash` del cliente | ídem, **y** quitar `passwordHash` del input: cambiar contraseña es otro caso de uso, no un update genérico |
-| `delete` | 20 | Stub que sólo loguea | Implementarlo con scope, o borrar el endpoint y el botón. **Decidilo con el usuario antes de implementar** |
+| `delete` | 20 | Stub que sólo loguea | **Decisión tomada: no se implementa el borrado.** Dejar de mentirle a la UI: el endpoint lanza `NOT_IMPLEMENTED` y el botón se quita de la pantalla |
 
-- [ ] **Step 1: Tests**, incluyendo uno que afirme que `update` **no** puede cambiar el `passwordHash` de un usuario de otra comunidad, y uno que confirme que un id `cuid` real es aceptado.
+- [ ] **Step 1: Tests**, incluyendo uno que afirme que `update` **no** puede cambiar el `passwordHash` de un usuario de otra comunidad, uno que confirme que un id `cuid` real es aceptado, y uno que afirme que `delete` rechaza con `NOT_IMPLEMENTED`.
 - [ ] **Step 2: Verlos fallar** (el de `cuid` falla con error de validación de Zod, no con `FORBIDDEN` — asertá el error correcto).
-- [ ] **Step 3: Arreglar** `user.dto.ts` cambiando `id: z.string().uuid()` por `id: idSchema`, y los tres endpoints.
-- [ ] **Step 4: Consultar al usuario** sobre `delete` antes de implementarlo o borrarlo.
+- [ ] **Step 3: Arreglar** `user.dto.ts` cambiando `id: z.string().uuid()` por `id: idSchema`, y `getById`/`update` con scope y guard.
+- [ ] **Step 4: Cerrar `delete` de forma honesta.** No se implementa el borrado, pero un endpoint que sólo hace `console.log` hace creer al usuario que borró algo. Reemplazar el cuerpo por:
+
+```typescript
+  delete: staffProcedure.input(z.object({ id: idSchema })).mutation(() => {
+    // Deleting users is deliberately not supported yet: it needs a decision on
+    // what happens to the readings and incidents they created.
+    throw new TRPCError({ code: 'NOT_IMPLEMENTED', message: 'Deleting users is not supported yet' })
+  })
+```
+
+Y quitar el botón de borrar de `apps/webapp/src/features/user/user-actions.tsx` (línea 27 usa `api.user.delete.useMutation()`), para que la UI no ofrezca una acción que no existe.
+
 - [ ] **Step 5-7: Ciclo.**
 
 ```bash
@@ -1319,7 +1467,7 @@ git commit -m "fix(security): scope user router and repair cuid/uuid id validati
 
 ### Task 12: `fees.ts` — migrar el patrón correcto
 
-Los 7 endpoints de `fees.ts` **ya son correctos**: llaman `assertCommunityAccess` y resuelven la comunidad del recurso antes de mutar. Esta tarea no arregla un bug: elimina el parámetro `communityId` redundante ahora que `ctx.communityId` existe, para que el router no sea el único con dos formas de saber la comunidad.
+Los 7 endpoints de `fees.ts` **ya son correctos**: llaman `assertCommunityAccess` y resuelven la comunidad del recurso antes de mutar. Esta tarea no arregla un bug: elimina el parámetro `communityId` redundante ahora que `ctx.scope` existe, para que el router no sea el único con dos formas de saber la comunidad.
 
 **Files:**
 - Create: `apps/webapp/src/server/api/__tests__/fees.test.ts`
@@ -1396,10 +1544,14 @@ Y la verificación manual, porque ninguna de estas tareas prueba que la aplicaci
 2. Entrar como `WATER_METER_READER` y comprobar que el flujo de lectura funciona y que no aparece nada de gestión.
 3. Exportar lecturas y análisis.
 
+## Decisiones tomadas durante la planificación
+
+1. **`ADMIN` es global.** Ve todas las comunidades, tenga una asignada o no. Modelado como `CommunityScope = { kind: 'global' } | { kind: 'community', communityId }` en vez de un `communityId | null`, para que ningún consumidor pueda ignorar el caso global por descuido: el tipo obliga a tratar los dos. El scope decide **qué filas**; la proyección de salida decide **qué columnas**, y `passwordHash` no sale ni para el admin global.
+2. **`Provider.communityId` pasa a obligatorio** (Task 10). "Proveedor que no pertenece a nadie" era un agujero de tenancy por diseño. Requiere confirmar que en producción no hay ninguno antes de aplicar.
+3. **No se implementa el borrado de usuarios** (Task 11). El endpoint pasa a lanzar `NOT_IMPLEMENTED` y el botón se quita, en vez de seguir haciendo `console.log` y aparentar que borra.
+
 ## Apéndice — hallazgos que este plan destapa pero no arregla
 
-1. **`ADMIN` sin comunidad asignada.** `communityScopedProcedure` lo rechaza. Si el panel de administración global depende de un admin sin comunidad, necesita un camino propio. Se detecta en el Step 7 de la Task 3 y merece decisión del usuario.
-2. **`user.delete` es un stub.** El botón de la UI no borra nada. Decisión pendiente en Task 11.
-3. **Proveedores sin comunidad** (`communityId` es opcional en el schema) dejarán de ser accesibles. Hay que contarlos en producción antes de desplegar.
-4. **`table.domainTable` sigue siendo un endpoint genérico** con `model: z.string()`. El arreglo de la Task 3 es defensivo; si ese diseño es buena idea es otra discusión.
-5. **`adminProcedure` y `adminPanelProcedure` son redundantes**, y `waterMeterReaderAllowedProcedure` es un alias vacío.
+1. **`table.domainTable` sigue siendo un endpoint genérico** con `model: z.string()`. El arreglo de la Task 3 es defensivo; si ese diseño es buena idea es otra discusión.
+2. **`adminProcedure` y `adminPanelProcedure` son redundantes** entre sí (`trpc.ts:160` y `:171`), y `waterMeterReaderAllowedProcedure` (`:143`) es un alias vacío de `protectedProcedure`.
+3. **Borrar usuarios necesita una decisión de dominio**: qué pasa con las lecturas e incidencias que creó. Cuando se resuelva, el `NOT_IMPLEMENTED` de la Task 11 es el punto de entrada.

@@ -1,6 +1,19 @@
 import { beforeAll, describe, expect, it } from 'bun:test'
 import { client as prisma } from '@pda/database'
-import { asAnonymous, asManagerOf, setupTestDatabase } from '@pda/testing'
+import {
+  aCommunity,
+  aCommunityWithFullSetup,
+  aCommunityZone,
+  anAnalysis,
+  anIncident,
+  aProvider,
+  asAnonymous,
+  asManagerOf,
+  aUser,
+  aWaterDeposit,
+  aWaterPoint,
+  setupTestDatabase
+} from '@pda/testing'
 import { createCaller } from '@/server/api/root'
 
 describe('test harness', () => {
@@ -47,5 +60,38 @@ describe('test harness', () => {
 
     // Assert
     expect(zones).toEqual([])
+  })
+
+  it('should create two fully independent communities', async () => {
+    // Arrange & Act
+    const a = await aCommunityWithFullSetup()
+    const b = await aCommunityWithFullSetup()
+
+    // Assert
+    expect(a.community.id).not.toBe(b.community.id)
+    expect(a.meter.id).not.toBe(b.meter.id)
+    expect(a.reading.waterMeterId).toBe(a.meter.id)
+    expect(await prisma.community.count()).toBeGreaterThanOrEqual(2)
+  })
+
+  it('should create every standalone factory without missing required fields', async () => {
+    // Arrange
+    const community = await aCommunity()
+    const zone = await aCommunityZone({ communityId: community.id })
+    const waterPoint = await aWaterPoint({ communityZoneId: zone.id })
+
+    // Act
+    const deposit = await aWaterDeposit({ communityId: community.id })
+    const incident = await anIncident({ communityId: community.id, waterPointId: waterPoint.id })
+    const analysis = await anAnalysis({ communityId: community.id })
+    const provider = await aProvider({ communityId: community.id })
+    const user = await aUser({ communityId: community.id })
+
+    // Assert
+    expect(deposit.communityId).toBe(community.id)
+    expect(incident.waterPointId).toBe(waterPoint.id)
+    expect(analysis.ph).toBe('7')
+    expect(provider.communityId).toBe(community.id)
+    expect(user.roles).toEqual(['MANAGER'])
   })
 })

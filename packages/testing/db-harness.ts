@@ -41,6 +41,14 @@ export async function ensureTestDatabase(): Promise<void> {
 
 export async function applySchema(): Promise<void> {
   assertTestDatabase()
+
+  // Dropping the schema first makes this idempotent across runs: the tables
+  // survive in the database between test runs, and re-applying the DDL on top
+  // of them would fail with "relation already exists". It also guarantees the
+  // test schema always matches schema.prisma, even if the schema changed.
+  await prisma.$executeRawUnsafe('DROP SCHEMA IF EXISTS public CASCADE')
+  await prisma.$executeRawUnsafe('CREATE SCHEMA public')
+
   // The repo has no migrations directory (it uses db push), so the DDL is
   // generated from the schema on every run and can never drift.
   const ddl = execSync(

@@ -11,7 +11,12 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
 
-import { canAccessAdminPanel, canCreateWaterPoint, isWaterMeterReaderOnly } from '@/lib/user-roles'
+import {
+  canAccessAdminPanel,
+  canCreateWaterPoint,
+  canManageWaterDeposits,
+  isWaterMeterReaderOnly
+} from '@/lib/user-roles'
 import { auth } from '@/server/auth'
 import { db } from '@/server/db'
 
@@ -177,6 +182,17 @@ export const adminPanelProcedure = protectedProcedure.use(({ ctx, next }) => {
 export const waterPointManagementProcedure = protectedProcedure.use(({ ctx, next }) => {
   const roles = ctx.session.user.roles ?? []
   if (!canCreateWaterPoint(roles)) {
+    throw new TRPCError({ code: 'FORBIDDEN' })
+  }
+  return next({ ctx })
+})
+
+/**
+ * Water deposit management procedure (ADMIN or COMMUNITY_ADMIN).
+ */
+export const waterDepositManagementProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const roles = ctx.session.user.roles ?? []
+  if (!canManageWaterDeposits(roles)) {
     throw new TRPCError({ code: 'FORBIDDEN' })
   }
   return next({ ctx })

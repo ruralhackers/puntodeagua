@@ -25,12 +25,7 @@ import {
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 import FeePaymentActions from './_components/fee-payment-actions'
-import {
-  formatAmount,
-  formatPeriod,
-  kindLabels,
-  paymentMethodLabels
-} from './_lib/fee-labels'
+import { formatAmount, formatPeriod, kindLabels, paymentMethodLabels } from './_lib/fee-labels'
 
 export default function FeesPage() {
   const user = useUserStore((state) => state.user)
@@ -184,9 +179,7 @@ export default function FeesPage() {
                           payment.paymentMethod as keyof typeof paymentMethodLabels
                         ] ?? payment.paymentMethod}
                       </TableCell>
-                      <TableCell>
-                        {new Date(payment.paidAt).toLocaleDateString('es-ES')}
-                      </TableCell>
+                      <TableCell>{new Date(payment.paidAt).toLocaleDateString('es-ES')}</TableCell>
                       <TableCell>
                         <FeePaymentActions payment={payment} communityId={communityId} />
                       </TableCell>

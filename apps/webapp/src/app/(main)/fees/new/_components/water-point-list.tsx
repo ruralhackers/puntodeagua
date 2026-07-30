@@ -44,9 +44,7 @@ export function WaterPointList({ nameFilter }: WaterPointListProps) {
   }
 
   if (isLoading) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">Cargando puntos de agua...</div>
-    )
+    return <div className="text-center py-8 text-muted-foreground">Cargando puntos de agua...</div>
   }
 
   if (error) {

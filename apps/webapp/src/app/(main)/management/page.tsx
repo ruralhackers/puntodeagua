@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { APP_CONFIG } from '@/config/app-config'
 import { NewWaterPointCard } from './_components/new-water-point-card'
+import { WaterDepositsCard } from './_components/water-deposits-card'
 
 export const metadata = {
   title: `${APP_CONFIG.name} | Gestión`
@@ -90,6 +91,8 @@ export default function ManagementPage() {
         </Link>
 
         <NewWaterPointCard />
+
+        <WaterDepositsCard />
       </div>
     </main>
   )

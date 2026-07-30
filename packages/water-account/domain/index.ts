@@ -1,13 +1,8 @@
 export {
-  consumptionBetweenReadings,
   type ConsumptionBetweenReadings,
+  consumptionBetweenReadings,
   type ReadingForConsumption
 } from './consumption-between-readings'
-export {
-  periodConsumptionStats,
-  type PeriodConsumptionStats,
-  type ReadingForPeriodStats
-} from './period-consumption-stats'
 export { WaterAccount } from './entities/water-account'
 export type { WaterAccountDto, WaterAccountUpdateDto } from './entities/water-account.dto'
 export { waterAccountSchema, waterAccountUpdateSchema } from './entities/water-account.dto'
@@ -24,3 +19,8 @@ export type {
   WaterMeterReadingImageDto,
   WaterMeterReadingNewImageDto
 } from './entities/water-meter-reading-image.dto'
+export {
+  type PeriodConsumptionStats,
+  periodConsumptionStats,
+  type ReadingForPeriodStats
+} from './period-consumption-stats'

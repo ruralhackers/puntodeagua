@@ -21,13 +21,11 @@ export const providersRouter = createTRPCRouter({
       return providers.map((provider) => provider.toDto())
     }),
 
-  getProviderById: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const repo = ProvidersFactory.providerPrismaRepository()
-      const provider = await repo.findById(Id.fromString(input.id))
-      return provider?.toDto()
-    }),
+  getProviderById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = ProvidersFactory.providerPrismaRepository()
+    const provider = await repo.findById(Id.fromString(input.id))
+    return provider?.toDto()
+  }),
 
   addProvider: staffProcedure
     .input(providerSchema.omit({ id: true }))
@@ -56,17 +54,15 @@ export const providersRouter = createTRPCRouter({
     }
   }),
 
-  deleteProvider: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      try {
-        const service = ProvidersFactory.providerDeleterService()
-        await service.run({ id: Id.fromString(input.id) })
-        return { success: true }
-      } catch (error) {
-        handleDomainError(error)
-      }
-    }),
+  deleteProvider: staffProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+    try {
+      const service = ProvidersFactory.providerDeleterService()
+      await service.run({ id: Id.fromString(input.id) })
+      return { success: true }
+    } catch (error) {
+      handleDomainError(error)
+    }
+  }),
 
   toggleProviderActive: staffProcedure
     .input(z.object({ id: z.string() }))

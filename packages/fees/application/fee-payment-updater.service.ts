@@ -1,10 +1,7 @@
 import { Id } from '@pda/common/domain'
 import type { WaterPointRepository } from '@pda/community/domain'
 import type { FeePaymentUpdateDto } from '../domain/entities/fee-payment.dto'
-import {
-  FeePaymentNotFoundError,
-  WaterPointNotInCommunityError
-} from '../domain/errors/fee-errors'
+import { FeePaymentNotFoundError, WaterPointNotInCommunityError } from '../domain/errors/fee-errors'
 import type { FeePaymentRepository } from '../domain/repositories/fee-payment.repository'
 
 export class FeePaymentUpdater {

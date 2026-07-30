@@ -1,4 +1,4 @@
-import type { TableFieldConfig, TableQueryConfig, TableRelationConfig } from './TableQueryConfig'
+import type { TableFieldConfig, TableQueryConfig, TableRelationConfig } from './table-query-config'
 
 interface AutoTableOptions<TEntity> {
   entityFromDto?: (dto: Record<string, unknown>) => TEntity

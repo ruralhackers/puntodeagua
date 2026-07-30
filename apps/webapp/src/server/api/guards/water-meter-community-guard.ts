@@ -1,4 +1,5 @@
 import { Id } from '@pda/common/domain'
+import type { CommunityZone, WaterDeposit } from '@pda/community'
 import { CommunityFactory } from '@pda/community'
 import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
@@ -78,7 +79,7 @@ export async function assertZoneIdsBelongToScope(
 
   const zoneRepo = CommunityFactory.communityZonePrismaRepository()
   const communityZones = await zoneRepo.findByCommunityId(Id.fromString(scope.communityId))
-  const allowedZoneIds = new Set(communityZones.map((zone) => zone.id.toString()))
+  const allowedZoneIds = new Set(communityZones.map((zone: CommunityZone) => zone.id.toString()))
 
   if (!zoneIds.every((zoneId) => allowedZoneIds.has(zoneId))) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Zone does not belong to user community' })
@@ -86,9 +87,46 @@ export async function assertZoneIdsBelongToScope(
 }
 
 /**
+ * Asserts a community id received as input is the caller's own.
+ *
+ * Taking the community from ctx.scope and dropping the input parameter would be
+ * stronger, since cross-community access would stop being expressible at all.
+ * That is a follow-up: it changes the signature of endpoints with a dozen
+ * call sites in the frontend.
+ */
+export function assertCommunityInScope(communityId: string, scope: CommunityScope): void {
+  if (scope.kind === 'global') return
+  if (communityId !== scope.communityId) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Community access denied' })
+  }
+}
+
+/**
+ * Asserts every deposit belongs to the caller's community.
+ */
+export async function assertDepositsBelongToScope(
+  depositIds: string[],
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global' || depositIds.length === 0) return
+
+  const depositRepo = CommunityFactory.waterDepositPrismaRepository()
+  const deposits = await depositRepo.findByIds(depositIds.map((id) => Id.fromString(id)))
+  const allOwned =
+    deposits.length === depositIds.length &&
+    deposits.every((deposit: WaterDeposit) => deposit.communityId.toString() === scope.communityId)
+
+  if (!allOwned) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Water deposit does not belong to user community'
+    })
+  }
+}
+
+/**
  * Asserts a community id taken from an input matches the caller's own.
- * Prefer taking the community from ctx.scope; this exists for the endpoints
- * that have not been migrated yet.
+ * Prefer assertCommunityInScope, which understands the global admin scope.
  */
 export function assertCommunityAccess(
   requestedCommunityId: string,

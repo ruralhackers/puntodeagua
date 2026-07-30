@@ -3,12 +3,17 @@ import { CommunityFactory, WaterDeposit } from '@pda/community'
 import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { handleDomainError } from '@/server/api/error-handler'
-import { assertCommunityAccess } from '@/server/api/guards/water-meter-community-guard'
 import {
+  assertCommunityInScope,
+  assertDepositsBelongToScope,
+  assertWaterPointBelongsToScope,
+  assertZoneIdsBelongToScope
+} from '@/server/api/guards/water-meter-community-guard'
+import {
+  communityScopedProcedure,
   createTRPCRouter,
-  staffProcedure,
+  resolveCommunityScope,
   waterDepositManagementProcedure,
   waterMeterReaderAllowedProcedure,
   waterPointManagementProcedure
@@ -18,64 +23,62 @@ export const communityRouter = createTRPCRouter({
   getCommunityZones: waterMeterReaderAllowedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      if (isWaterMeterReaderOnly(ctx.session.user.roles)) {
-        assertCommunityAccess(input.id, ctx.session.user.community?.id)
-      }
+      // The check used to run only for reader-only users, leaving every staff
+      // role able to list another community's zones.
+      const scope = resolveCommunityScope(
+        ctx.session.user.roles ?? [],
+        ctx.session.user.community?.id
+      )
+      assertCommunityInScope(input.id, scope)
+
       const repo = CommunityFactory.communityZonePrismaRepository()
       const zones = await repo.findByCommunityId(Id.fromString(input.id))
       return zones.map((zone) => zone.toDto())
     }),
-  getWaterPoints: staffProcedure
+  getWaterPoints: communityScopedProcedure
     .input(z.object({ zoneIds: z.array(z.string()) }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      await assertZoneIdsBelongToScope(input.zoneIds, ctx.scope)
+
       const repo = CommunityFactory.waterPointPrismaRepository()
       const waterPoints = await repo.findByCommunityZonesId(input.zoneIds.map(Id.fromString))
       return waterPoints.map((waterPoint) => waterPoint.toDto())
     }),
 
-  getWaterPointsWithAccount: staffProcedure
-    .input(z.object({ zoneIds: z.array(z.string()) }))
-    .query(async ({ input }) => {
-      const repo = CommunityFactory.waterPointPrismaRepository()
-      const waterPoints = await repo.findByCommunityZonesIdWithAccount(
-        input.zoneIds.map(Id.fromString)
-      )
-      return waterPoints
-    }),
+  // getWaterPointsWithAccount removed: unscoped and called by no screen.
+  // getWaterPointsByCommunityWithAccount covers the legitimate case.
 
-  getWaterPointsByCommunityWithAccount: staffProcedure
+  getWaterPointsByCommunityWithAccount: communityScopedProcedure
     .input(z.object({ communityId: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      assertCommunityInScope(input.communityId, ctx.scope)
+
       const repo = CommunityFactory.waterPointPrismaRepository()
       const waterPoints = await repo.findByCommunityIdWithAccount(Id.fromString(input.communityId))
       return waterPoints
     }),
-  getWaterPointById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const repo = CommunityFactory.waterPointPrismaRepository()
-    const waterPoint = await repo.findById(Id.fromString(input.id))
-    if (!waterPoint) return null
-    return waterPoint.toDto()
-  }),
-
-  getWaterDepositsByCommunityId: staffProcedure
+  getWaterPointById: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      await assertWaterPointBelongsToScope(input.id, ctx.scope)
+
+      const repo = CommunityFactory.waterPointPrismaRepository()
+      const waterPoint = await repo.findById(Id.fromString(input.id))
+      if (!waterPoint) return null
+      return waterPoint.toDto()
+    }),
+
+  getWaterDepositsByCommunityId: communityScopedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      assertCommunityInScope(input.id, ctx.scope)
+
       const repo = CommunityFactory.waterDepositPrismaRepository()
       const waterDeposits = await repo.findByCommunityId(Id.fromString(input.id))
       return waterDeposits.map((waterDeposit) => waterDeposit.toDto())
     }),
 
-  getDepositsByWaterPointId: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const waterPointRepo = CommunityFactory.waterPointPrismaRepository()
-      const waterPoint = await waterPointRepo.findById(Id.fromString(input.id))
-      if (!waterPoint || waterPoint.waterDepositIds.length === 0) return []
-
-      const depositRepo = CommunityFactory.waterDepositPrismaRepository()
-      const deposits = await depositRepo.findByIds(waterPoint.waterDepositIds)
-      return deposits.map((deposit) => deposit.toDto())
-    }),
+  // getDepositsByWaterPointId removed: unscoped and called by no screen.
 
   createWaterDeposit: waterDepositManagementProcedure
     .input(
@@ -139,24 +142,11 @@ export const communityRouter = createTRPCRouter({
       }
     }),
 
-  updateWaterPointDeposits: staffProcedure
-    .input(
-      z.object({
-        waterPointId: z.string(),
-        depositIds: z.array(z.string())
-      })
-    )
-    .mutation(async ({ input }) => {
-      const repo = CommunityFactory.waterPointPrismaRepository()
-      const waterPoint = await repo.findById(Id.fromString(input.waterPointId))
-      if (!waterPoint) throw new Error('Water point not found')
+  // updateWaterPointDeposits removed: unscoped, called by no screen, and it
+  // mutated the entity straight from the router. updateWaterPointData already
+  // accepts waterDepositIds through its application service.
 
-      waterPoint.waterDepositIds = input.depositIds.map(Id.fromString)
-      await repo.save(waterPoint)
-      return waterPoint.toDto()
-    }),
-
-  updateWaterPointData: staffProcedure
+  updateWaterPointData: communityScopedProcedure
     .input(
       z.object({
         waterPointId: z.string(),
@@ -171,7 +161,10 @@ export const communityRouter = createTRPCRouter({
         waterDepositIds: z.array(z.string()).optional()
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertWaterPointBelongsToScope(input.waterPointId, ctx.scope)
+      await assertDepositsBelongToScope(input.waterDepositIds ?? [], ctx.scope)
+
       try {
         const service = CommunityFactory.waterPointDataUpdaterService()
         const result = await service.run({

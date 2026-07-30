@@ -121,7 +121,11 @@ export function AddReadingModal({
   })
 
   const handleSubmitReading = async () => {
-    if (!readingForm.reading || !readingForm.readingDate || !readingForm.readingTime) return
+    if (!readingForm.readingDate || !readingForm.readingTime) {
+      setValidationError({ field: 'date', message: 'Introduce la fecha y la hora de la lectura' })
+      return
+    }
+    if (!readingForm.reading) return
 
     const readingDate = combineDateAndTime(readingForm.readingDate, readingForm.readingTime)
 

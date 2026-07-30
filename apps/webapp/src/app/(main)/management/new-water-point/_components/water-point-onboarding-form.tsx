@@ -30,12 +30,19 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { buildMapsHref } from '@/lib/maps-link'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 
 const formSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   location: z.string(),
+  mapsUrl: z
+    .string()
+    .optional()
+    .refine((value) => !value?.trim() || buildMapsHref(value) !== null, {
+      message: 'Pega un enlace de Google Maps (https://…) o coordenadas «lat,lng»'
+    }),
   connectionNumber: z.string().optional(),
   communityZoneId: z.string().min(1, 'La zona es requerida'),
   fixedPopulation: z.number().int().min(0),
@@ -90,6 +97,7 @@ export default function WaterPointOnboardingForm() {
     defaultValues: {
       name: '',
       location: '',
+      mapsUrl: '',
       connectionNumber: '',
       communityZoneId: '',
       fixedPopulation: 0,
@@ -112,6 +120,7 @@ export default function WaterPointOnboardingForm() {
     await createMutation.mutateAsync({
       name: values.name,
       location: values.location,
+      mapsUrl: values.mapsUrl?.trim() || undefined,
       connectionNumber: values.connectionNumber?.trim() || undefined,
       communityZoneId: values.communityZoneId,
       fixedPopulation: values.fixedPopulation,
@@ -181,6 +190,23 @@ export default function WaterPointOnboardingForm() {
                   <FormControl>
                     <Input placeholder="Dirección o coordenadas" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mapsUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Enlace de Google Maps</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://maps.app.goo.gl/… o 42.2286,-8.4589" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Abre el punto en Google Maps, comparte la ubicación y pega aquí el enlace.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

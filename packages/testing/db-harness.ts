@@ -42,13 +42,6 @@ export async function ensureTestDatabase(): Promise<void> {
 export async function applySchema(): Promise<void> {
   assertTestDatabase()
 
-  // Dropping the schema first makes this idempotent across runs: the tables
-  // survive in the database between test runs, and re-applying the DDL on top
-  // of them would fail with "relation already exists". It also guarantees the
-  // test schema always matches schema.prisma, even if the schema changed.
-  await prisma.$executeRawUnsafe('DROP SCHEMA IF EXISTS public CASCADE')
-  await prisma.$executeRawUnsafe('CREATE SCHEMA public')
-
   // The repo has no migrations directory (it uses db push), so the DDL is
   // generated from the schema on every run and can never drift.
   const ddl = execSync(
@@ -56,20 +49,23 @@ export async function applySchema(): Promise<void> {
     { cwd: `${import.meta.dir}/../database`, encoding: 'utf-8' }
   )
 
-  // $executeRawUnsafe runs one statement at a time, so the script is split.
-  // Comment lines are stripped first: prisma prefixes every statement with a
-  // "-- CreateTable" style comment, so splitting on ';' would otherwise leave
-  // every chunk starting with a comment.
-  const statements = ddl
-    .split('\n')
-    .filter((line) => !line.trim().startsWith('--'))
-    .join('\n')
-    .split(';')
-    .map((statement) => statement.trim())
-    .filter((statement) => statement.length > 0)
-
-  for (const statement of statements) {
-    await prisma.$executeRawUnsafe(statement)
+  // Sent through raw pg, not Prisma: Prisma's $executeRawUnsafe uses prepared
+  // statements and rejects a multi-statement script, so it would need one round
+  // trip per statement. Forty round trips took long enough to blow bun's 5s
+  // hook timeout on a slow CI runner. pg's simple query protocol takes the
+  // whole script in one go.
+  //
+  // Dropping the schema first makes this idempotent across runs: the tables
+  // survive between runs, and re-applying the DDL on top of them would fail
+  // with "relation already exists". It also guarantees the test schema always
+  // matches schema.prisma.
+  const { Client } = await import('pg')
+  const client = new Client({ connectionString: process.env.DATABASE_URL })
+  await client.connect()
+  try {
+    await client.query(`DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public; ${ddl}`)
+  } finally {
+    await client.end()
   }
 }
 
@@ -83,13 +79,19 @@ export async function resetDatabase(): Promise<void> {
   await prisma.$executeRawUnsafe(`TRUNCATE ${list} RESTART IDENTITY CASCADE`)
 }
 
-let schemaApplied = false
-
+/**
+ * Per-file setup. Only truncates: the schema is created once by the preload in
+ * bunfig.toml, before any test file runs, so no single file pays that cost
+ * inside a 5s beforeAll hook.
+ */
 export async function setupTestDatabase(): Promise<void> {
-  await ensureTestDatabase()
-  if (!schemaApplied) {
-    await applySchema()
-    schemaApplied = true
-  }
   await resetDatabase()
+}
+
+/**
+ * One-time setup for the whole test run. Called by the preload.
+ */
+export async function prepareTestDatabase(): Promise<void> {
+  await ensureTestDatabase()
+  await applySchema()
 }

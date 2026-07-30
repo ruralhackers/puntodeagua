@@ -25,7 +25,7 @@ import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { getInitials } from '@/lib/utils'
 import { useUserStore } from '../../../../stores/user/user-provider'
 
-export function AccountMenu() {
+export function AccountMenuItems() {
   const user = useUserStore((state) => state.user)
 
   if (!user) return null
@@ -33,13 +33,100 @@ export function AccountMenu() {
   const readerOnly = isWaterMeterReaderOnly(user.roles)
 
   return (
+    <>
+      <DropdownMenuItem className="cursor-default focus:bg-transparent hover:bg-transparent">
+        <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
+          <Avatar className="size-9 rounded-lg">
+            <AvatarImage src={'/favicon/32x32.png'} />
+            <AvatarFallback className="rounded-lg">{getInitials(user.email || '')}</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">{user.name}</span>
+            <span className="truncate text-xs capitalize">{user.roles[0]}</span>
+          </div>
+        </div>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {readerOnly ? (
+          <DropdownMenuItem asChild>
+            <Link href="/water-meter/new" className="flex items-center gap-2 cursor-pointer">
+              <Droplets />
+              Crear lectura
+            </Link>
+          </DropdownMenuItem>
+        ) : (
+          <>
+            {user.roles.includes('ADMIN') && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
+                    <ShieldUser />
+                    Admin
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem asChild>
+              <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
+                <Gauge />
+                Contadores
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
+                <Settings />
+                Gestión
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
+                <ShieldUser />
+                Proveedores
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/fees`} className="flex items-center gap-2 cursor-pointer">
+                <Receipt />
+                Cobros
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
+                <Download />
+                Exportar
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        onClick={() => {
+          signOut()
+        }}
+        className="cursor-pointer"
+      >
+        <LogOut />
+        Log out
+      </DropdownMenuItem>
+    </>
+  )
+}
+
+export function AccountMenu() {
+  const user = useUserStore((state) => state.user)
+
+  if (!user) return null
+
+  return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          data-account-menu-trigger
           aria-label="Abrir menú de cuenta"
-          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
+          className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
         >
           <Menu className="h-5 w-5 text-white" />
         </button>
@@ -50,85 +137,7 @@ export function AccountMenu() {
         align="end"
         sideOffset={4}
       >
-        <DropdownMenuItem className="cursor-default focus:bg-transparent hover:bg-transparent">
-          <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
-            <Avatar className="size-9 rounded-lg">
-              <AvatarImage src={'/favicon/32x32.png'} />
-              <AvatarFallback className="rounded-lg">
-                {getInitials(user.email || '')}
-              </AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user.name}</span>
-              <span className="truncate text-xs capitalize">{user.roles[0]}</span>
-            </div>
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {readerOnly ? (
-            <DropdownMenuItem asChild>
-              <Link href="/water-meter/new" className="flex items-center gap-2 cursor-pointer">
-                <Droplets />
-                Crear lectura
-              </Link>
-            </DropdownMenuItem>
-          ) : (
-            <>
-              {user.roles.includes('ADMIN') && (
-                <>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
-                      <ShieldUser />
-                      Admin
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem asChild>
-                <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
-                  <Gauge />
-                  Contadores
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
-                  <Settings />
-                  Gestión
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
-                  <ShieldUser />
-                  Proveedores
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/fees`} className="flex items-center gap-2 cursor-pointer">
-                  <Receipt />
-                  Cobros
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
-                  <Download />
-                  Exportar
-                </Link>
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            signOut()
-          }}
-          className="cursor-pointer"
-        >
-          <LogOut />
-          Log out
-        </DropdownMenuItem>
+        <AccountMenuItems />
       </DropdownMenuContent>
     </DropdownMenu>
   )

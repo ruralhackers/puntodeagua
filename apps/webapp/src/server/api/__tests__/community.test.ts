@@ -116,4 +116,20 @@ describe('community router', () => {
     // Assert
     expect(result?.waterPointId).toBe(a.waterPoint.id)
   })
+
+  it('should persist the maps url of a water point', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const caller = createCaller(asManagerOf(a.community.id))
+
+    // Act
+    await caller.community.updateWaterPointData({
+      waterPointId: a.waterPoint.id,
+      mapsUrl: 'https://maps.app.goo.gl/aBc123'
+    })
+    const stored = await caller.community.getWaterPointById({ id: a.waterPoint.id })
+
+    // Assert
+    expect(stored?.mapsUrl).toBe('https://maps.app.goo.gl/aBc123')
+  })
 })

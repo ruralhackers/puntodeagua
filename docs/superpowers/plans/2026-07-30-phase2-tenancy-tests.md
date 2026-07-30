@@ -1467,6 +1467,13 @@ git commit -m "fix(security): scope user router and repair cuid/uuid id validati
 
 ### Task 12: `fees.ts` — migrar el patrón correcto
 
+> **No ejecutada, a conciencia.** Los 7 endpoints de `fees.ts` ya validan la
+> comunidad correctamente con `assertCommunityAccess`: esta tarea no cerraba
+> ningún agujero, sólo unificaba el estilo con `ctx.scope`. Tocar código de
+> autorización que funciona tiene riesgo sin ganancia de seguridad, así que
+> queda para cuando alguien pueda verificar las pantallas de cuotas en
+> navegador. El resto del plan (tareas 1-11 y 13) sí está hecho.
+
 Los 7 endpoints de `fees.ts` **ya son correctos**: llaman `assertCommunityAccess` y resuelven la comunidad del recurso antes de mutar. Esta tarea no arregla un bug: elimina el parámetro `communityId` redundante ahora que `ctx.scope` existe, para que el router no sea el único con dos formas de saber la comunidad.
 
 **Files:**

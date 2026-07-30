@@ -210,7 +210,8 @@ export class WaterMeterPrismaRepository
             communityZoneId: true,
             waterDepositIds: true,
             notes: true,
-            connectionNumber: true
+            connectionNumber: true,
+            mapsUrl: true
           }
         },
         waterAccount: {
@@ -244,7 +245,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes,
-        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined,
+        mapsUrl: meter.waterPoint.mapsUrl ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))
@@ -306,7 +308,8 @@ export class WaterMeterPrismaRepository
             communityZoneId: true,
             waterDepositIds: true,
             notes: true,
-            connectionNumber: true
+            connectionNumber: true,
+            mapsUrl: true
           }
         },
         waterAccount: {
@@ -345,7 +348,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes,
-        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined,
+        mapsUrl: meter.waterPoint.mapsUrl ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))
@@ -378,7 +382,8 @@ export class WaterMeterPrismaRepository
             communityZoneId: true,
             waterDepositIds: true,
             notes: true,
-            connectionNumber: true
+            connectionNumber: true,
+            mapsUrl: true
           }
         },
         waterAccount: {
@@ -417,7 +422,8 @@ export class WaterMeterPrismaRepository
         communityZoneId: meter.waterPoint.communityZoneId,
         waterDepositIds: meter.waterPoint.waterDepositIds,
         notes: meter.waterPoint.notes,
-        connectionNumber: meter.waterPoint.connectionNumber ?? undefined
+        connectionNumber: meter.waterPoint.connectionNumber ?? undefined,
+        mapsUrl: meter.waterPoint.mapsUrl ?? undefined
       },
       waterMeterImage: meter.waterMeterImage || null
     }))

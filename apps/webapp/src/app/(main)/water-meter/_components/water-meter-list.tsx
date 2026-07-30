@@ -4,7 +4,9 @@ import { AlertTriangle, Clock, Droplets, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { buildMapsHref } from '@/lib/maps-link'
 import { filterAndRankMeters } from '@/lib/water-meter-search'
 import { useCommunityZonesStore } from '@/stores/community/community-zones-provider'
 import { api } from '@/trpc/react'
@@ -103,16 +105,26 @@ export default function WaterMeterList({
 
   return (
     <div className="space-y-2">
-      {filteredWaterMeters.map((waterMeter) => (
-        <Link key={waterMeter.id} href={`/water-meter/${waterMeter.id}`} className="block">
+      {filteredWaterMeters.map((waterMeter) => {
+        // Same fallback as the meter detail: mapsUrl first, then a coordinate `location`.
+        const mapsHref =
+          buildMapsHref(waterMeter.waterPoint.mapsUrl) ??
+          buildMapsHref(waterMeter.waterPoint.location)
+
+        return (
           <Card
-            className={`p-4 cursor-pointer hover:bg-accent transition-colors ${
+            key={waterMeter.id}
+            className={`p-4 hover:bg-accent transition-colors ${
               !waterMeter.isActive ? 'opacity-60 border-gray-300' : ''
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              {/* Información principal */}
-              <div className="flex-1 space-y-2">
+              {/* Información principal. El enlace envuelve solo esta columna: el
+                  botón de mapa es otro enlace y no puede ir anidado dentro. */}
+              <Link
+                href={`/water-meter/${waterMeter.id}`}
+                className="flex-1 space-y-2 cursor-pointer"
+              >
                 <div className="flex items-center gap-3 flex-wrap">
                   <h3 className="font-semibold text-lg">{waterMeter.waterAccountName}</h3>
                   {!waterMeter.isActive && (
@@ -155,11 +167,25 @@ export default function WaterMeterList({
                     <span>Ultima lectura: {formatLastReading(waterMeter.lastReadingDate)}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
+
+              {mapsHref && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="self-start shrink-0 md:self-auto"
+                >
+                  <a href={mapsHref} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    Mapa
+                  </a>
+                </Button>
+              )}
             </div>
           </Card>
-        </Link>
-      ))}
+        )
+      })}
     </div>
   )
 }

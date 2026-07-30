@@ -214,3 +214,36 @@ describe('exportWaterMeterReadings zone filter', () => {
     ).rejects.toThrow(/Zona no encontrada/)
   })
 })
+
+describe('meter list maps url', () => {
+  beforeAll(async () => {
+    await setupTestDatabase()
+  })
+
+  it('should expose the water point maps url to the meter list', async () => {
+    // Arrange
+    const a = await aCommunityWithFullSetup()
+    const caller = createCaller(asManagerOf(a.community.id))
+    await caller.community.updateWaterPointData({
+      waterPointId: a.waterPoint.id,
+      mapsUrl: 'https://maps.app.goo.gl/aBc123'
+    })
+
+    // Act
+    const active = await caller.waterAccount.getActiveWaterMetersOrderedByLastReading({
+      zoneIds: [a.zone.id]
+    })
+    const withInactive = await caller.waterAccount.getActiveWaterMetersOrderedByLastReading({
+      zoneIds: [a.zone.id],
+      includeInactive: true
+    })
+
+    // Assert
+    expect(active.find((row) => row.id === a.meter.id)?.waterPoint.mapsUrl).toBe(
+      'https://maps.app.goo.gl/aBc123'
+    )
+    expect(withInactive.find((row) => row.id === a.meter.id)?.waterPoint.mapsUrl).toBe(
+      'https://maps.app.goo.gl/aBc123'
+    )
+  })
+})

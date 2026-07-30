@@ -14,6 +14,7 @@ interface MeterInfoCardProps {
     name: string
     location: string
     connectionNumber?: string | null
+    mapsUrl?: string | null
     fixedPopulation: number
     floatingPopulation: number
   }

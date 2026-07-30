@@ -1,6 +1,6 @@
 import { MapPin } from 'lucide-react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { buildMapsHref } from '@/lib/maps-link'
 
 interface WaterPointSectionProps {
   waterPoint: {
@@ -8,13 +8,19 @@ interface WaterPointSectionProps {
     name: string
     location: string
     connectionNumber?: string | null
+    mapsUrl?: string | null
     fixedPopulation: number
     floatingPopulation: number
   }
   readOnly?: boolean
 }
 
-export function WaterPointSection({ waterPoint, readOnly = false }: WaterPointSectionProps) {
+// `readOnly` stays in the props because the card passes it, but it no longer
+// gates anything here: whoever reads meters in the field needs the map most.
+export function WaterPointSection({ waterPoint }: WaterPointSectionProps) {
+  // Fall back to `location`: it predates mapsUrl and often already holds "lat,lng".
+  const mapsHref = buildMapsHref(waterPoint.mapsUrl) ?? buildMapsHref(waterPoint.location)
+
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Punto de Agua</h3>
@@ -30,12 +36,12 @@ export function WaterPointSection({ waterPoint, readOnly = false }: WaterPointSe
           {waterPoint.fixedPopulation + waterPoint.floatingPopulation} personas
         </div>
       </div>
-      {!readOnly && (
+      {mapsHref && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/water-point/${waterPoint.id}`}>
+          <a href={mapsHref} target="_blank" rel="noopener noreferrer">
             <MapPin className="h-3 w-3 mr-1" />
-            Ver Punto
-          </Link>
+            Ver en Google Maps
+          </a>
         </Button>
       )}
     </div>

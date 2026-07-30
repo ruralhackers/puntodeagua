@@ -84,11 +84,11 @@ Keeping the hook as a thin wrapper means `add-reading-modal.tsx` and `edit-readi
  *  Comma is the decimal separator; dots are thousands separators. */
 export function parseSpanishNumber(value: string): number
 
-/** Formats a number for DISPLAY, grouped, always 2 decimals: 1234 -> "1.234,00" */
+/** Formats a number for DISPLAY, grouped, always 2 decimals: 12345 -> "12.345,00" */
 export function formatToSpanish(value: number): string
 
 /** Formats a number to seed a text INPUT: ungrouped, always 2 decimals:
- *  1234 -> "1234,00". Never contains a dot, so normalizeDecimalInput is
+ *  12345 -> "12345,00". Never contains a dot, so normalizeDecimalInput is
  *  idempotent over it. */
 export function formatForInput(value: number): string
 
@@ -97,7 +97,9 @@ export function formatForInput(value: number): string
 export function normalizeDecimalInput(value: string): string
 ```
 
-**Why `formatForInput` exists.** `formatToSpanish` groups thousands with dots, and `edit-reading-modal.tsx:74` currently uses it to seed the form field. If a grouped value like `"1.234,00"` sat in an input guarded by `normalizeDecimalInput`, the user's next keystroke would re-normalise the whole string and destroy the grouping (`"1.234,00"` → `"1,23400"`) — silently changing the value by 1000×, which is the very class of bug this work exists to remove. Seeding the input ungrouped keeps the invariant simple: **an input's value contains only digits and at most one comma**, so normalisation is idempotent and cannot corrupt anything.
+**Why `formatForInput` exists.** `formatToSpanish` groups thousands with dots, and `edit-reading-modal.tsx:74` currently uses it to seed the form field. If a grouped value sat in an input guarded by `normalizeDecimalInput`, the user's next keystroke would re-normalise the whole string and destroy the grouping — silently changing the value by 1000×, which is the very class of bug this work exists to remove. Seeding the input ungrouped keeps the invariant simple: **an input's value contains only digits and at most one comma**, so normalisation is idempotent and cannot corrupt anything.
+
+Note on the grouping threshold: Intl's `es-ES` locale sets `minimumGroupingDigits: 2`, so four-digit integers are *not* grouped (`1234` → `"1234,00"`) while five-digit ones are (`12345` → `"12.345,00"`). Meter readings in litres routinely exceed five digits, so the hazard is real rather than theoretical: seeding an input with `"12.345,00"` and normalising one keystroke yields `12.345` instead of `12345`. This is pinned by a test.
 
 `formatToSpanish` is retained unchanged for read-only display; `edit-reading-modal.tsx:74` switches to `formatForInput`. That is its only call site today, so the change is contained.
 

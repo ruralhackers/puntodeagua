@@ -1,4 +1,4 @@
-import { Id } from '@pda/common/domain'
+import type { Id } from '@pda/common/domain'
 import { WaterAccount } from '../domain/entities/water-account'
 import type { WaterAccountRepository } from '../domain/repositories/water-account.repository'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'

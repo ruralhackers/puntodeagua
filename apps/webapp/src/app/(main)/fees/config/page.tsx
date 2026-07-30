@@ -1,11 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  expectedAmountPerPeriod,
-  FeeFrequency,
-  feeConfigUpsertSchema
-} from '@pda/fees/domain'
+import { expectedAmountPerPeriod, FeeFrequency, feeConfigUpsertSchema } from '@pda/fees/domain'
 import { ArrowLeft, Save } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -86,9 +82,7 @@ export default function FeeConfigPage() {
   const annualAmount = form.watch('annualAmount')
   const frequency = form.watch('frequency')
   const suggested =
-    annualAmount && frequency
-      ? expectedAmountPerPeriod(annualAmount, frequency).toString()
-      : null
+    annualAmount && frequency ? expectedAmountPerPeriod(annualAmount, frequency).toString() : null
 
   if (!communityId) {
     return (

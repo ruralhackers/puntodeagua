@@ -4,9 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   buildDefaultPayerLabel,
   expectedAmountPerPeriod,
-  feePaymentCreateSchema,
   type FeePaymentCreateDto,
-  type FeePaymentDto
+  type FeePaymentDto,
+  feePaymentCreateSchema
 } from '@pda/fees/domain'
 import { Save } from 'lucide-react'
 import { useEffect, useMemo, useRef } from 'react'
@@ -31,12 +31,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/trpc/react'
-import {
-  frequencyLabels,
-  kindLabels,
-  paymentMethodLabels,
-  periodOptions
-} from '../_lib/fee-labels'
+import { frequencyLabels, kindLabels, paymentMethodLabels, periodOptions } from '../_lib/fee-labels'
 
 const formSchema = feePaymentCreateSchema
 type FormData = z.infer<typeof formSchema>
@@ -274,7 +269,10 @@ export default function FeePaymentForm({
             <FormItem>
               <FormLabel>Frecuencia</FormLabel>
               <Input
-                value={frequencyLabels[effectiveFrequency as keyof typeof frequencyLabels] ?? effectiveFrequency}
+                value={
+                  frequencyLabels[effectiveFrequency as keyof typeof frequencyLabels] ??
+                  effectiveFrequency
+                }
                 disabled
               />
             </FormItem>

@@ -136,8 +136,7 @@ const formatDate = (date: string | Date) => {
   })
 }
 
-const formatNumber = (num: number) =>
-  num.toLocaleString('es-ES', { maximumFractionDigits: 2 })
+const formatNumber = (num: number) => num.toLocaleString('es-ES', { maximumFractionDigits: 2 })
 
 export function MeterReadingsDetailPDF({
   data,
@@ -191,9 +190,7 @@ export function MeterReadingsDetailPDF({
             </View>
             {data.readings.map((reading, index) => {
               const previous = index > 0 ? data.readings[index - 1] : undefined
-              const delta = previous
-                ? reading.normalizedReading - previous.normalizedReading
-                : null
+              const delta = previous ? reading.normalizedReading - previous.normalizedReading : null
               const rowStyle = index % 2 === 0 ? styles.tableRow : styles.tableRowAlt
               return (
                 <View key={`${reading.readingDate}-${index}`} style={rowStyle}>
@@ -217,9 +214,7 @@ export function MeterReadingsDetailPDF({
           </View>
           <View style={styles.metaRow}>
             <Text style={styles.metaLabel}>Días</Text>
-            <Text style={styles.metaValue}>
-              {data.days === null ? '—' : String(data.days)}
-            </Text>
+            <Text style={styles.metaValue}>{data.days === null ? '—' : String(data.days)}</Text>
           </View>
           <View style={styles.metaRow}>
             <Text style={styles.metaLabel}>Consumo medio</Text>

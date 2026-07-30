@@ -20,10 +20,7 @@ function createWaterPoint(overrides: Partial<ReturnType<WaterPoint['toDto']>> = 
   })
 }
 
-function createMockDb(options: {
-  communityId?: string
-  duplicateId?: string | null
-}) {
+function createMockDb(options: { communityId?: string; duplicateId?: string | null }) {
   const upsert = mock(() => Promise.resolve({}))
   const findFirst = mock(() =>
     Promise.resolve(options.duplicateId ? { id: options.duplicateId } : null)
@@ -46,7 +43,11 @@ function createMockDb(options: {
     upsert,
     findFirst,
     findUniqueZone
-  } as unknown as PrismaClient & { upsert: typeof upsert; findFirst: typeof findFirst; findUniqueZone: typeof findUniqueZone }
+  } as unknown as PrismaClient & {
+    upsert: typeof upsert
+    findFirst: typeof findFirst
+    findUniqueZone: typeof findUniqueZone
+  }
 }
 
 describe('WaterPoint connectionNumber', () => {

@@ -27,22 +27,20 @@ export const incidentsRouter = createTRPCRouter({
       return incidents.map((incident) => incident.toDto())
     }),
 
-  getIncidentById: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const repo = RegistersFactory.incidentPrismaRepository()
-      const imageRepo = RegistersFactory.incidentImagePrismaRepository()
+  getIncidentById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = RegistersFactory.incidentPrismaRepository()
+    const imageRepo = RegistersFactory.incidentImagePrismaRepository()
 
-      const incident = await repo.findById(Id.fromString(input.id))
-      if (!incident) return null
+    const incident = await repo.findById(Id.fromString(input.id))
+    if (!incident) return null
 
-      const images = await imageRepo.findByIncidentId(Id.fromString(input.id))
+    const images = await imageRepo.findByIncidentId(Id.fromString(input.id))
 
-      return {
-        ...incident.toDto(),
-        images: images.map((img) => img.toDto())
-      }
-    }),
+    return {
+      ...incident.toDto(),
+      images: images.map((img) => img.toDto())
+    }
+  }),
 
   addIncident: staffProcedure
     .input(
@@ -137,13 +135,11 @@ export const incidentsRouter = createTRPCRouter({
       }
     }),
 
-  deleteIncident: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      const repo = RegistersFactory.incidentPrismaRepository()
-      await repo.delete(Id.fromString(input.id))
-      return { success: true }
-    }),
+  deleteIncident: staffProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+    const repo = RegistersFactory.incidentPrismaRepository()
+    await repo.delete(Id.fromString(input.id))
+    return { success: true }
+  }),
 
   exportIncidents: staffProcedure
     .input(

@@ -24,9 +24,7 @@ export function WaterPointItem({
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-lg truncate">
-            {waterAccountName || 'Sin titular'}
-          </div>
+          <div className="font-medium text-lg truncate">{waterAccountName || 'Sin titular'}</div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-1">
             <span className="truncate">{name}</span>
             {connectionNumber && (

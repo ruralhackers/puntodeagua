@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
+import type { CommunityZoneRepository, WaterPointRepository } from '@pda/community'
 import { CommunityZone } from '@pda/community/domain'
 import { DuplicateConnectionNumberError } from '@pda/community/domain/errors/water-point-errors'
-import type { CommunityZoneRepository, WaterPointRepository } from '@pda/community'
-import { WaterPointOnboarding } from '../application/water-point-onboarding.service'
 import type { WaterMeterReadingCreator } from '../application/water-meter-reading-creator.service'
+import { WaterPointOnboarding } from '../application/water-point-onboarding.service'
 import { WaterAccount } from '../domain'
 import type { WaterAccountRepository } from '../domain/repositories/water-account.repository'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
@@ -154,9 +154,7 @@ describe('WaterPointOnboarding', () => {
   })
 
   it('propagates duplicate connection number and cleans up created account', async () => {
-    mockWaterPointRepo.save = mock(() =>
-      Promise.reject(new DuplicateConnectionNumberError('C99'))
-    )
+    mockWaterPointRepo.save = mock(() => Promise.reject(new DuplicateConnectionNumberError('C99')))
 
     await expect(service.run(baseParams())).rejects.toThrow(DuplicateConnectionNumberError)
     expect(mockAccountRepo.delete).toHaveBeenCalledTimes(1)

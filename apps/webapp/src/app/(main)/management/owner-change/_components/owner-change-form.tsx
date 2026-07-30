@@ -32,8 +32,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useUserStore } from '@/stores/user/user-provider'
 import { api } from '@/trpc/react'
 

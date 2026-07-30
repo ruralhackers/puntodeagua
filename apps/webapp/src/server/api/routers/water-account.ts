@@ -434,10 +434,7 @@ export const waterAccountRouter = createTRPCRouter({
           await waterMeterRepo.findActiveByCommunityZonesIdOrderedByLastReading(zoneIds)
 
         if (input.waterMeterId) {
-          await assertWaterMeterBelongsToUserCommunity(
-            input.waterMeterId,
-            communityId.toString()
-          )
+          await assertWaterMeterBelongsToUserCommunity(input.waterMeterId, communityId.toString())
           waterMeters = waterMeters.filter((meter) => meter.id === input.waterMeterId)
           if (waterMeters.length === 0) {
             throw new Error('Contador no encontrado o inactivo')

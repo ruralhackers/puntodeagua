@@ -407,10 +407,15 @@ git commit -m "fix(webapp): set document language to Spanish"
 
 **Why:** Meter photos are taken in the field. Without `capture`, the OS shows a file picker instead of the camera, costing 2-3 extra taps per reading. `capture="environment"` requests the rear camera; desktop browsers ignore the attribute, so there is no desktop regression.
 
-**Files:**
-- Modify: `apps/webapp/src/app/(main)/water-meter/new/_components/add-reading-modal.tsx` (1 input)
-- Modify: `apps/webapp/src/app/(main)/water-meter/[id]/_components/edit-reading-modal.tsx` (1 input)
-- Modify: `apps/webapp/src/app/(main)/incident/new/page.tsx` (1 input)
+**Files — 8 inputs across 5 files.** Several components render the photo input twice (once in a mobile branch, once in a desktop branch); every occurrence must be changed.
+
+- Modify: `apps/webapp/src/app/(main)/water-meter/new/_components/add-reading-modal.tsx` (2 inputs, lines ~284 and ~426)
+- Modify: `apps/webapp/src/app/(main)/water-meter/[id]/_components/edit-reading-modal.tsx` (2 inputs, lines ~206 and ~319)
+- Modify: `apps/webapp/src/app/(main)/management/meter-replacement/_components/meter-replacement-form.tsx` (2 inputs, lines ~333 and ~494)
+- Modify: `apps/webapp/src/app/(main)/water-meter/[id]/_components/water-meter-image-modal.tsx` (1 input, line ~136)
+- Modify: `apps/webapp/src/app/(main)/incident/new/page.tsx` (1 input, line ~200)
+
+All eight capture a photo of a physical thing in the field — a meter face, a meter being replaced, or an incident — so all eight get the attribute.
 
 **Interfaces:**
 - Consumes: nothing. Produces: nothing.
@@ -422,7 +427,9 @@ cd /home/agustin/src/puntodeagua
 grep -rn 'type="file"' "apps/webapp/src/app/(main)"
 ```
 
-Expected: one match in each of the three files above. `add-reading-modal.tsx` has the input inside **both** the mobile and desktop branches — check whether `grep` returns one or two hits for that file and handle every hit.
+Expected: exactly 8 matches across the 5 files listed above. If the count differs, stop and report — do not guess which ones to change.
+
+Note two shapes exist in this codebase: the shadcn `<Input …/>` wrapper (add-reading, edit-reading, incident) and a bare `<input … className="hidden"/>` inside a `<label>` (meter-replacement, image-modal). Both accept `capture` identically.
 
 - [ ] **Step 2: Add the attribute to each match**
 
@@ -451,12 +458,32 @@ Add `capture="environment"` directly after the `accept` prop:
 />
 ```
 
-Note: prop names and the `disabled` expression differ slightly between the three files (the incident page uses a different mutation variable). Only add the `capture` attribute — leave every other prop exactly as it is.
+The bare-`<input>` shape gets the same treatment:
 
-- [ ] **Step 3: Verify the types compile**
+```tsx
+<input
+  id="meter-image"
+  type="file"
+  accept={ACCEPTED_FILE_TYPES}
+  capture="environment"
+  className="hidden"
+  onChange={handleImageSelect}
+/>
+```
+
+Note: `id`, `className` and the `disabled` expression differ between files. Only add the `capture` attribute — leave every other prop exactly as it is.
+
+- [ ] **Step 3: Verify the count and that the types compile**
 
 ```bash
-cd /home/agustin/src/puntodeagua && bun x tsc --noEmit -p apps/webapp/tsconfig.json 2>&1 | grep -E "add-reading-modal|edit-reading-modal|incident/new"
+cd /home/agustin/src/puntodeagua
+grep -rc 'capture="environment"' "apps/webapp/src/app/(main)" | grep -v ':0'
+```
+
+Expected: 8 total across the 5 files (2+2+2+1+1).
+
+```bash
+cd /home/agustin/src/puntodeagua && bun x tsc --noEmit -p apps/webapp/tsconfig.json 2>&1 | grep -E "add-reading-modal|edit-reading-modal|meter-replacement-form|water-meter-image-modal|incident/new"
 ```
 
 Expected: no output. (`capture` is a valid React DOM attribute; if it errors, the `Input` component is over-narrowing its props — report that rather than casting.)
@@ -534,7 +561,7 @@ Change to:
 
 - [ ] **Step 3: Let the card metadata row wrap too**
 
-In `apps/webapp/src/app/(main)/water-meter/_components/water-meter-list.tsx`, line 133 currently reads:
+In `apps/webapp/src/app/(main)/water-meter/_components/water-meter-list.tsx`, **line 143** currently reads:
 
 ```tsx
                   <div className="flex items-center gap-1">
@@ -545,6 +572,8 @@ This is the inner row holding the MapPin icon, point name, connection number and
 ```tsx
                   <div className="flex flex-wrap items-center gap-1">
 ```
+
+**Change line 143 only.** There is a second, visually identical `<div className="flex items-center gap-1">` at **line 165** — that one holds just a Clock icon and a single span, already sits inside a `flex-wrap` parent, and must be left alone. Confirm you have the right one by checking that the line you edit is followed within two lines by `<MapPin`.
 
 - [ ] **Step 4: Verify at 375px**
 

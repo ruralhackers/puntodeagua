@@ -17,7 +17,8 @@ This project follows Domain-Driven Design (DDD) with a ports and adapters (hexag
 ```
 puntodeagua/
 ├── apps/
-│   └── admin/          # NextJS 14 admin dashboard
+│   ├── webapp/         # NextJS admin & management dashboard
+│   └── seed-data/      # Data import and seeding tooling
 ├── packages/
 │   ├── common/         # @pda/common - Shared domain utilities
 │   ├── user/           # @pda/user - User management bounded context
@@ -49,6 +50,10 @@ Examples:
 - `@pda/community` - Community management bounded context
 - `@pda/water-account` - Water infrastructure and monitoring
 - `@pda/registers` - Incident tracking and water analysis management
+- `@pda/fees` - Community fee configuration and payments
+- `@pda/providers` - Maintenance provider management
+- `@pda/storage` - File storage infrastructure
+- `@pda/testing` - Test harness for integration tests
 
 ## 🚀 Quick Start
 
@@ -83,17 +88,17 @@ Examples:
 
 5. **Seed the database** (optional):
    ```bash
-   bun run db:seed
+   bun run -F @pda/database db:seed
    ```
    > Populates the database with sample communities and users
 
 ## 🎯 Available Applications
 
-### Admin Dashboard
+### Webapp
 Water management admin interface built with NextJS 14 and shadcn/ui components. Allows communities to manage their water infrastructure, users, and monitor consumption.
 
 ```bash
-bun run admin
+bun run webapp
 ```
 
 ## 🌊 Water Management Features
@@ -138,8 +143,8 @@ This project includes automated workflows:
 | `bun install` | Install all dependencies |
 | `bun run dbs` | Start database services (PostgreSQL) |
 | `bun run db:sync` | Synchronize database schema |
-| `bun run db:seed` | Seed database with sample data |
-| `bun run admin` | Start admin dashboard |
+| `bun run -F @pda/database db:seed` | Seed database with sample data |
+| `bun run webapp` | Start the webapp |
 
 ### Code Guidelines
 

@@ -1,13 +1,15 @@
 import { Id } from '@pda/common/domain'
-import { CommunityFactory } from '@pda/community'
+import { CommunityFactory, WaterDeposit } from '@pda/community'
 import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { isWaterMeterReaderOnly } from '@/lib/user-roles'
+import { handleDomainError } from '@/server/api/error-handler'
 import { assertCommunityAccess } from '@/server/api/guards/water-meter-community-guard'
 import {
   createTRPCRouter,
   staffProcedure,
+  waterDepositManagementProcedure,
   waterMeterReaderAllowedProcedure,
   waterPointManagementProcedure
 } from '@/server/api/trpc'
@@ -48,14 +50,12 @@ export const communityRouter = createTRPCRouter({
       const waterPoints = await repo.findByCommunityIdWithAccount(Id.fromString(input.communityId))
       return waterPoints
     }),
-  getWaterPointById: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const repo = CommunityFactory.waterPointPrismaRepository()
-      const waterPoint = await repo.findById(Id.fromString(input.id))
-      if (!waterPoint) return null
-      return waterPoint.toDto()
-    }),
+  getWaterPointById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = CommunityFactory.waterPointPrismaRepository()
+    const waterPoint = await repo.findById(Id.fromString(input.id))
+    if (!waterPoint) return null
+    return waterPoint.toDto()
+  }),
 
   getWaterDepositsByCommunityId: staffProcedure
     .input(z.object({ id: z.string() }))
@@ -75,6 +75,68 @@ export const communityRouter = createTRPCRouter({
       const depositRepo = CommunityFactory.waterDepositPrismaRepository()
       const deposits = await depositRepo.findByIds(waterPoint.waterDepositIds)
       return deposits.map((deposit) => deposit.toDto())
+    }),
+
+  createWaterDeposit: waterDepositManagementProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        location: z.string(),
+        notes: z.string().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const communityId = ctx.session.user.community?.id
+      if (!communityId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'User has no community assigned'
+        })
+      }
+
+      try {
+        const service = CommunityFactory.waterDepositCreatorService()
+        const deposit = WaterDeposit.create({ ...input, communityId })
+        const savedDeposit = await service.run({ deposit })
+        return savedDeposit.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
+  updateWaterDeposit: waterDepositManagementProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1).optional(),
+        location: z.string().optional(),
+        notes: z.string().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const communityId = ctx.session.user.community?.id
+      if (!communityId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'User has no community assigned'
+        })
+      }
+
+      try {
+        const service = CommunityFactory.waterDepositUpdaterService()
+        const savedDeposit = await service.run({
+          id: Id.fromString(input.id),
+          communityId: Id.fromString(communityId),
+          updatedData: {
+            name: input.name,
+            location: input.location,
+            notes: input.notes
+          }
+        })
+        return savedDeposit.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
     }),
 
   updateWaterPointDeposits: staffProcedure

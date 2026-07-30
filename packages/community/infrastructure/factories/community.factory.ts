@@ -1,4 +1,6 @@
 import { client as prisma } from '@pda/database'
+import { WaterDepositCreator } from '../../application/water-deposit-creator.service'
+import { WaterDepositUpdater } from '../../application/water-deposit-updater.service'
 import { WaterPointDataUpdater } from '../../application/water-point-data-updater.service'
 import { CommunityPrismaRepository } from '../repositories/community.prisma-repository'
 import { CommunityZonePrismaRepository } from '../repositories/community-zone.prisma-repository'
@@ -14,6 +16,14 @@ export class CommunityFactory {
   // SERVICES
   static waterPointDataUpdaterService() {
     return new WaterPointDataUpdater(CommunityFactory.waterPointPrismaRepository())
+  }
+
+  static waterDepositCreatorService() {
+    return new WaterDepositCreator(CommunityFactory.waterDepositPrismaRepository())
+  }
+
+  static waterDepositUpdaterService() {
+    return new WaterDepositUpdater(CommunityFactory.waterDepositPrismaRepository())
   }
 
   // REPOSITORIES

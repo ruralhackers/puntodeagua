@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import { FileMetadata } from '@pda/storage'
-import type { FileDeleterService } from '../application/file-deleter.service'
-import type { FileUploaderService } from '../application/file-uploader.service'
+import { type FileDeleterService, FileMetadata, type FileUploaderService } from '@pda/storage'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingUpdater } from '../application/water-meter-reading-updater.service'
 import { WaterMeter, WaterMeterReading, WaterMeterReadingImage } from '../domain'
@@ -22,6 +20,10 @@ import {
   createMockWaterMeterReadingRepository,
   createMockWaterMeterRepository
 } from './helpers/mocks'
+
+// Entities have private constructors by design, which expect.any's signature
+// does not accept even though its runtime instanceof check works fine.
+const anyInstanceOf = (ctor: unknown) => expect.any(ctor as new (...args: never[]) => unknown)
 
 describe('WaterMeterReadingUpdater', () => {
   let service: WaterMeterReadingUpdater
@@ -246,7 +248,9 @@ describe('WaterMeterReadingUpdater', () => {
     // Verify repository calls
     expect(mockWaterMeterReadingRepository.findById).toHaveBeenCalledWith(readingId)
     expect(mockWaterMeterRepository.findById).toHaveBeenCalledWith(defaultWaterMeter.id)
-    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(
+      anyInstanceOf(WaterMeterReading)
+    )
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       defaultWaterMeter,
       expect.any(Array)
@@ -286,7 +290,9 @@ describe('WaterMeterReadingUpdater', () => {
     expect(result.reading.notes).toBe('Updated notes') // Should be updated
 
     // Verify repository calls
-    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(
+      anyInstanceOf(WaterMeterReading)
+    )
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       defaultWaterMeter,
       expect.any(Array)
@@ -326,7 +332,9 @@ describe('WaterMeterReadingUpdater', () => {
     expect(result.reading.notes).toBe('Updated notes')
 
     // Verify repository calls
-    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(
+      anyInstanceOf(WaterMeterReading)
+    )
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       defaultWaterMeter,
       expect.any(Array)
@@ -377,7 +385,9 @@ describe('WaterMeterReadingUpdater', () => {
     expect(result.reading.normalizedReading).toBe(2000) // 2 M3 = 2000 L
 
     // Verify repository calls
-    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(
+      anyInstanceOf(WaterMeterReading)
+    )
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       waterMeterM3,
       expect.any(Array)
@@ -459,7 +469,9 @@ describe('WaterMeterReadingUpdater', () => {
     expect(result.reading.normalizedReading).toBe(600)
 
     // Verify repository calls
-    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(expect.any(WaterMeterReading))
+    expect(mockWaterMeterReadingRepository.save).toHaveBeenCalledWith(
+      anyInstanceOf(WaterMeterReading)
+    )
     expect(mockWaterMeterLastReadingUpdater.run).toHaveBeenCalledWith(
       defaultWaterMeter,
       expect.any(Array)

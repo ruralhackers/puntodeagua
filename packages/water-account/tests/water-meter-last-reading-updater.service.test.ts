@@ -66,6 +66,7 @@ describe('ReadingCreatorService', () => {
       fixedPopulation: defaultWaterPoint.fixedPopulation,
       floatingPopulation: defaultWaterPoint.floatingPopulation,
       cadastralReference: defaultWaterPoint.cadastralReference,
+      waterDepositIds: [],
       communityZoneId: defaultWaterPoint.communityZoneId.toString(),
       notes: defaultWaterPoint.notes
     }

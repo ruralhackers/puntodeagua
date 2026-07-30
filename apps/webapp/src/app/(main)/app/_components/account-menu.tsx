@@ -1,15 +1,6 @@
 'use client'
 
-import {
-  Download,
-  Droplets,
-  Gauge,
-  LogOut,
-  Menu,
-  Receipt,
-  Settings,
-  ShieldUser
-} from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -21,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { isWaterMeterReaderOnly } from '@/lib/user-roles'
 import { getInitials } from '@/lib/utils'
+import { getMainNavItems } from '@/navigation/main-nav-items'
 import { useUserStore } from '../../../../stores/user/user-provider'
 
 export function AccountMenuItems() {
@@ -30,7 +21,14 @@ export function AccountMenuItems() {
 
   if (!user) return null
 
-  const readerOnly = isWaterMeterReaderOnly(user.roles)
+  const items = getMainNavItems(user.roles)
+
+  // Mirrors BottomNav's own gating: a bar only renders once there are 2+ primary
+  // destinations. When it does, drop those from this menu to avoid duplicating them;
+  // when it doesn't (reader-only, or no role), show everything the config returns so
+  // that destination stays reachable here.
+  const hasBottomNav = items.filter((item) => item.primary).length >= 2
+  const navItems = hasBottomNav ? items.filter((item) => !item.primary) : items
 
   return (
     <>
@@ -47,61 +45,21 @@ export function AccountMenuItems() {
         </div>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuGroup>
-        {readerOnly ? (
-          <DropdownMenuItem asChild>
-            <Link href="/water-meter/new" className="flex items-center gap-2 cursor-pointer">
-              <Droplets />
-              Crear lectura
-            </Link>
-          </DropdownMenuItem>
-        ) : (
-          <>
-            {user.roles.includes('ADMIN') && (
-              <>
-                <DropdownMenuItem asChild>
-                  <Link href={`/admin`} className="flex items-center gap-2 cursor-pointer">
-                    <ShieldUser />
-                    Admin
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem asChild>
-              <Link href={`/water-meter`} className="flex items-center gap-2 cursor-pointer">
-                <Gauge />
-                Contadores
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/management`} className="flex items-center gap-2 cursor-pointer">
-                <Settings />
-                Gestión
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/provider`} className="flex items-center gap-2 cursor-pointer">
-                <ShieldUser />
-                Proveedores
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/fees`} className="flex items-center gap-2 cursor-pointer">
-                <Receipt />
-                Cobros
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/export`} className="flex items-center gap-2 cursor-pointer">
-                <Download />
-                Exportar
-              </Link>
-            </DropdownMenuItem>
-          </>
-        )}
-      </DropdownMenuGroup>
-      <DropdownMenuSeparator />
+      {navItems.length > 0 && (
+        <>
+          <DropdownMenuGroup>
+            {navItems.map((item) => (
+              <DropdownMenuItem key={item.url} asChild>
+                <Link href={item.url} className="flex items-center gap-2 cursor-pointer">
+                  <item.icon />
+                  {item.title}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+        </>
+      )}
       <DropdownMenuItem
         onClick={() => {
           signOut()
@@ -109,7 +67,7 @@ export function AccountMenuItems() {
         className="cursor-pointer"
       >
         <LogOut />
-        Log out
+        Cerrar sesión
       </DropdownMenuItem>
     </>
   )

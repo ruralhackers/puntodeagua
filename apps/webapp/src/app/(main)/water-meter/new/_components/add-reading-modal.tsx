@@ -19,6 +19,7 @@ import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useSpanishNumberParser } from '@/hooks/use-spanish-number-parser'
 import { handleDomainError } from '@/lib/error-handler'
+import { todayLocalDateString } from '@/lib/local-date'
 import { type ReadingValidationError, validateReading } from '@/lib/reading-validation'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
@@ -33,7 +34,7 @@ interface AddReadingModalProps {
 }
 
 function getCurrentDateString(): string {
-  return new Date().toISOString().split('T')[0] ?? ''
+  return todayLocalDateString()
 }
 
 function getCurrentTimeString(): string {
@@ -68,7 +69,7 @@ export function AddReadingModal({
   const [validationError, setValidationError] = useState<ReadingValidationError | null>(null)
 
   const utils = api.useUtils()
-  const { parseSpanishNumber } = useSpanishNumberParser()
+  const { parseSpanishNumber, normalizeDecimalInput } = useSpanishNumberParser()
   const { imagePreview, imageError, handleImageSelect, handleRemoveImage, getImageData } =
     useImageUpload('image')
   const isMobile = useIsMobile()
@@ -165,15 +166,10 @@ export function AddReadingModal({
   }
 
   const handleReadingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-
-    // Allow only: digits, comma (one only), dots, and empty string
-    const validPattern = /^[0-9]*[.,]?[0-9]*$/
-
-    if (validPattern.test(value) || value === '') {
-      setReadingForm((prev) => ({ ...prev, reading: value }))
-      setValidationError(null)
-    }
+    // Normalising rather than gating: a typed "." becomes the decimal comma,
+    // so "1234.5" can no longer be stored as 12345.
+    setReadingForm((prev) => ({ ...prev, reading: normalizeDecimalInput(e.target.value) }))
+    setValidationError(null)
   }
 
   const handleClose = () => {

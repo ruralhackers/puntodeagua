@@ -53,7 +53,7 @@ interface EditReadingModalProps {
 }
 
 export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditReadingModalProps) {
-  const { parseSpanishNumber, formatToSpanish } = useSpanishNumberParser()
+  const { parseSpanishNumber, formatForInput, normalizeDecimalInput } = useSpanishNumberParser()
   const isMobile = useIsMobile()
 
   // Image state management
@@ -71,7 +71,9 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   const form = useForm<EditReadingFormData>({
     resolver: zodResolver(editReadingSchema),
     defaultValues: {
-      reading: formatToSpanish(parseFloat(reading.reading)),
+      // Ungrouped on purpose: a grouped value like "12.345,00" would be
+      // mangled to 12,345 by the first keystroke through normalizeDecimalInput.
+      reading: formatForInput(Number.parseFloat(reading.reading)),
       notes: reading.notes || ''
     }
   })
@@ -189,7 +191,9 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                         <FormControl>
                           <Input
                             placeholder="Ingresa la nueva lectura"
+                            inputMode="decimal"
                             {...field}
+                            onChange={(e) => field.onChange(normalizeDecimalInput(e.target.value))}
                             disabled={updateReadingMutation.isPending}
                           />
                         </FormControl>
@@ -282,7 +286,9 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
                       <FormControl>
                         <Input
                           placeholder="Ingresa la nueva lectura"
+                          inputMode="decimal"
                           {...field}
+                          onChange={(e) => field.onChange(normalizeDecimalInput(e.target.value))}
                           disabled={updateReadingMutation.isPending}
                         />
                       </FormControl>

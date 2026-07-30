@@ -54,7 +54,34 @@ Three approaches were considered:
 - **B — normalise at the input (chosen):** typing `.` inserts `,`. The parser then treats comma as the only decimal separator and dots strictly as thousands, with no special cases.
 - **C — one separator always means decimal:** rejected, silently breaks `1.234` = 1234.
 
-**B is chosen.** It resolves the ambiguity where the intent exists — at the keystroke — rather than inferring it later. On a mobile numeric keypad the decimal key is commonly `.`, and converting it to `,` matches the format the app already displays (`formatToSpanish` always emits a comma, e.g. `1234` → `"1234,00"`). The user sees immediately what will be recorded.
+**B was chosen initially, then reversed during implementation. A is what shipped.**
+
+Option B normalised the separator as the user typed. Review of the implementation showed this
+trades one silent corruption for a worse one — it commits to an interpretation before the number
+is finished, so a Spanish user typing the grouped form loses a factor of 1000:
+
+| typed | before this work | under option B | correct |
+|---|---|---|---|
+| `12.345` | 12345 ✅ | **12,345** ❌ | 12345 |
+| `1234.5` | **12345** ❌ | 1234,5 ✅ | 1234,5 |
+| `1.234` | 1234 ✅ | **1,234** ❌ | 1234 |
+| `12.34` | **1234** ❌ | 12,34 ✅ | 12,34 |
+
+Option B is right for two of the four shapes and wrong for the other two — a lateral move, with a
+larger failure magnitude (1000× under-report rather than 10× over-report). Worse, the under-report
+is the one the server cannot catch: editing the *previous* of two readings only has to stay below
+the last one, so a 1000×-low value passes validation and inflates computed consumption.
+
+**Option A shipped instead.** `parseSpanishNumber` disambiguates at parse time, once the number is
+complete: a dot followed by exactly three digits (and not in leading position) groups thousands,
+anything else is a decimal point. This is the standard locale heuristic and it is correct for all
+four shapes above, plus `1.234.567` → 1234567, `.5` → 0.5 and `1.2345` → 1.2345. It is still a
+heuristic — `1.234` meaning one-point-two-three-four is unreachable — but a meter reading of 1.234
+litres is not a real case, whereas 1234 is.
+
+`normalizeDecimalInput` remains, reduced to a character filter (digits, dots, at most one comma).
+It no longer rewrites the separator. Its value is that `edit-reading-modal` gains input filtering
+it never had.
 
 ### Decision 2 — Use date-fns for local dates
 
@@ -97,7 +124,11 @@ export function formatForInput(value: number): string
 export function normalizeDecimalInput(value: string): string
 ```
 
-**Why `formatForInput` exists.** `formatToSpanish` groups thousands with dots, and `edit-reading-modal.tsx:74` currently uses it to seed the form field. If a grouped value sat in an input guarded by `normalizeDecimalInput`, the user's next keystroke would re-normalise the whole string and destroy the grouping — silently changing the value by 1000×, which is the very class of bug this work exists to remove. Seeding the input ungrouped keeps the invariant simple: **an input's value contains only digits and at most one comma**, so normalisation is idempotent and cannot corrupt anything.
+**Why `formatForInput` exists.** Two reasons, both about not corrupting the value the edit modal resubmits.
+
+First, precision. `reading` is `Decimal(10, 3)` in the schema, but the previous seed used `maximumFractionDigits: 2`. The edit modal always sends `reading`, even when the user only changed a note or a photo — so a stored `1234.567` was seeded as `"1234,57"` and written back as `1234.57`, losing the third decimal silently. `formatForInput` uses three.
+
+Second, shape. Seeding ungrouped keeps the field free of thousands dots, so the value the user sees is the value the parser reads back with no heuristic involved.
 
 Note on the grouping threshold: Intl's `es-ES` locale sets `minimumGroupingDigits: 2`, so four-digit integers are *not* grouped (`1234` → `"1234,00"`) while five-digit ones are (`12345` → `"12.345,00"`). Meter readings in litres routinely exceed five digits, so the hazard is real rather than theoretical: seeding an input with `"12.345,00"` and normalising one keystroke yields `12.345` instead of `12345`. This is pinned by a test.
 

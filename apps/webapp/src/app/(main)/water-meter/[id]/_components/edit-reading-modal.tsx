@@ -71,8 +71,10 @@ export function EditReadingModal({ isOpen, onClose, reading, onSuccess }: EditRe
   const form = useForm<EditReadingFormData>({
     resolver: zodResolver(editReadingSchema),
     defaultValues: {
-      // Ungrouped on purpose: a grouped value like "12.345,00" would be
-      // mangled to 12,345 by the first keystroke through normalizeDecimalInput.
+      // Ungrouped and to three decimals on purpose: the column is
+      // Decimal(10, 3), and this value is resubmitted verbatim even when the
+      // user only edits a note, so any rounding here silently rewrites the
+      // stored reading.
       reading: formatForInput(Number.parseFloat(reading.reading)),
       notes: reading.notes || ''
     }

@@ -166,8 +166,9 @@ export function AddReadingModal({
   }
 
   const handleReadingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Normalising rather than gating: a typed "." becomes the decimal comma,
-    // so "1234.5" can no longer be stored as 12345.
+    // Filter rather than gate: keep what the user typed (dots included) and
+    // let parseSpanishNumber decide whether a dot groups thousands or marks
+    // decimals, once the number is complete.
     setReadingForm((prev) => ({ ...prev, reading: normalizeDecimalInput(e.target.value) }))
     setValidationError(null)
   }

@@ -17,10 +17,9 @@ describe('parseSpanishNumber', () => {
     expect(parseSpanishNumber(',5')).toBe(0.5)
   })
 
-  it('treats dots as thousands separators', () => {
+  it('treats dots as thousands separators when a comma is present', () => {
     expect(parseSpanishNumber('1.234,56')).toBe(1234.56)
     expect(parseSpanishNumber('1.234.567,89')).toBe(1234567.89)
-    expect(parseSpanishNumber('1.234')).toBe(1234)
   })
 
   it('returns 0 for empty or non-numeric input', () => {
@@ -28,55 +27,70 @@ describe('parseSpanishNumber', () => {
     expect(parseSpanishNumber('   ')).toBe(0)
     expect(parseSpanishNumber('abc')).toBe(0)
   })
+
+  // The disambiguation that matters. A dot followed by exactly three digits
+  // groups thousands; anything else is a decimal point. These four rows are
+  // the shapes a field worker actually types.
+  describe('a lone dot, disambiguated by what follows it', () => {
+    it('groups thousands when exactly three digits follow', () => {
+      expect(parseSpanishNumber('12.345')).toBe(12345)
+      expect(parseSpanishNumber('1.234')).toBe(1234)
+      expect(parseSpanishNumber('1.234.567')).toBe(1234567)
+      expect(parseSpanishNumber('12.345.678')).toBe(12345678)
+    })
+
+    it('is a decimal point otherwise', () => {
+      expect(parseSpanishNumber('1234.5')).toBe(1234.5)
+      expect(parseSpanishNumber('12.34')).toBe(12.34)
+      expect(parseSpanishNumber('1.2345')).toBe(1.2345)
+      expect(parseSpanishNumber('0.5')).toBe(0.5)
+    })
+
+    it('treats a leading dot as a decimal point, never as grouping', () => {
+      expect(parseSpanishNumber('.5')).toBe(0.5)
+      expect(parseSpanishNumber('.500')).toBe(0.5)
+    })
+
+    it('keeps earlier dots as grouping when the last one is decimal', () => {
+      expect(parseSpanishNumber('1.234.56')).toBe(1234.56)
+    })
+  })
 })
 
 describe('normalizeDecimalInput', () => {
-  it('converts a typed dot into the decimal comma', () => {
-    // This is the 10x-corruption bug: "1234.5" used to parse as 12345.
-    expect(normalizeDecimalInput('1234.5')).toBe('1234,5')
+  it('keeps digits, dots and one comma', () => {
+    expect(normalizeDecimalInput('1234.5')).toBe('1234.5')
+    expect(normalizeDecimalInput('1.234,56')).toBe('1.234,56')
+    expect(normalizeDecimalInput('12.345')).toBe('12.345')
   })
 
-  it('leaves an already-normal value untouched', () => {
-    expect(normalizeDecimalInput('1234,5')).toBe('1234,5')
-    expect(normalizeDecimalInput('1234,00')).toBe('1234,00')
+  it('does not rewrite the separator', () => {
+    // Interpreting the separator is parseSpanishNumber's job, once the number
+    // is complete. Rewriting here would commit too early.
+    expect(normalizeDecimalInput('12.3')).toBe('12.3')
   })
 
-  it('keeps only the first separator', () => {
+  it('drops a second comma', () => {
     expect(normalizeDecimalInput('1,2,3')).toBe('1,23')
-    expect(normalizeDecimalInput('12.34.5')).toBe('12,345')
   })
 
   it('strips non-numeric characters', () => {
     expect(normalizeDecimalInput('abc12')).toBe('12')
+    expect(normalizeDecimalInput('-5')).toBe('5')
+    expect(normalizeDecimalInput('1 234')).toBe('1234')
     expect(normalizeDecimalInput('')).toBe('')
   })
 
-  it('keeps a leading separator', () => {
-    expect(normalizeDecimalInput(',5')).toBe(',5')
-    expect(normalizeDecimalInput('.5')).toBe(',5')
-  })
-
   it('is idempotent', () => {
-    for (const raw of [
-      '1234.5',
-      '1234,5',
-      '1,2,3',
-      '12.34.5',
-      'abc12',
-      ',5',
-      '.5',
-      '',
-      '1234,00'
-    ]) {
+    for (const raw of ['1234.5', '1.234,56', '1,2,3', 'abc12', ',5', '.5', '', '1234,00', '-5']) {
       const once = normalizeDecimalInput(raw)
       expect(normalizeDecimalInput(once)).toBe(once)
     }
   })
 
-  it('only ever emits digits and at most one comma', () => {
-    for (const raw of ['1.234,56', 'a1b2.3c,4', '...,,,', '9']) {
-      const out = normalizeDecimalInput(raw)
-      expect(out).toMatch(/^[0-9]*,?[0-9]*$/)
+  it('only ever emits digits, dots and at most one comma', () => {
+    for (const raw of ['1.234,56', 'a1b2.3c,4', '...,,,', '9', '€12,50']) {
+      expect(normalizeDecimalInput(raw)).toMatch(/^[0-9.]*,?[0-9.]*$/)
     }
   })
 })
@@ -89,10 +103,15 @@ describe('formatForInput', () => {
     expect(formatForInput(1234567.89)).toBe('1234567,89')
   })
 
-  it('produces a value normalizeDecimalInput leaves untouched', () => {
-    for (const v of [0, 5, 1234, 12345, 1234.56, 1234567.89]) {
-      const seeded = formatForInput(v)
-      expect(normalizeDecimalInput(seeded)).toBe(seeded)
+  it('keeps the third decimal the schema stores', () => {
+    // reading is Decimal(10, 3). At two decimals, opening the edit modal to
+    // change only a note would silently round the stored reading.
+    expect(formatForInput(1234.567)).toBe('1234,567')
+  })
+
+  it('round-trips through the parser', () => {
+    for (const v of [0, 0.5, 5, 1234, 12345, 1234.56, 1234.567, 1234567.89]) {
+      expect(parseSpanishNumber(formatForInput(v))).toBe(v)
     }
   })
 })
@@ -104,39 +123,30 @@ describe('formatToSpanish', () => {
   })
 
   it('omits grouping below five integer digits, as es-ES does', () => {
-    // Intl's es-ES minimumGroupingDigits is 2, so four-digit integers are
-    // not grouped. Pinned here because the formatForInput split below only
-    // matters for values that DO get grouped.
     expect(formatToSpanish(1234)).toBe('1234,00')
-    expect(formatToSpanish(999)).toBe('999,00')
-  })
-})
-
-describe('why formatForInput exists', () => {
-  it('normalising a grouped display value would corrupt it by 1000x', () => {
-    // A realistic meter reading. Seeding an input with the *display* format
-    // and then normalising one keystroke would silently divide it by 1000.
-    const reading = 12345
-    const grouped = formatToSpanish(reading)
-    expect(grouped).toBe('12.345,00')
-    expect(parseSpanishNumber(normalizeDecimalInput(grouped))).toBe(12.345)
-
-    // Seeding with the input format is stable under the same keystroke.
-    const seeded = formatForInput(reading)
-    expect(parseSpanishNumber(normalizeDecimalInput(seeded))).toBe(reading)
-  })
-})
-
-describe('round trips', () => {
-  it('survives the input format', () => {
-    for (const v of [0, 0.5, 5, 1234, 1234.56, 1234567.89]) {
-      expect(parseSpanishNumber(formatForInput(v))).toBe(v)
-    }
   })
 
-  it('survives the display format', () => {
-    for (const v of [0, 0.5, 5, 1234, 1234.56, 1234567.89]) {
+  it('round-trips through the parser', () => {
+    for (const v of [0, 0.5, 5, 1234, 12345, 1234.56, 1234.567, 1234567.89]) {
       expect(parseSpanishNumber(formatToSpanish(v))).toBe(v)
     }
+  })
+})
+
+describe('the corruption paths this module exists to close', () => {
+  it('no longer multiplies a keypad decimal by ten', () => {
+    // Was: every dot stripped as grouping, so "1234.5" became 12345.
+    expect(parseSpanishNumber('1234.5')).toBe(1234.5)
+  })
+
+  it('still reads a Spanish grouped integer correctly', () => {
+    // A live-normalising input would have turned this into 12,345.
+    expect(parseSpanishNumber('12.345')).toBe(12345)
+  })
+
+  it('survives an edit-modal round trip for a three-decimal reading', () => {
+    const stored = 12345.678
+    const seeded = formatForInput(stored)
+    expect(parseSpanishNumber(normalizeDecimalInput(seeded))).toBe(stored)
   })
 })

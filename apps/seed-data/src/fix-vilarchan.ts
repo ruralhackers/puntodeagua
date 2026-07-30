@@ -189,7 +189,13 @@ function planRowUpdate(
   }
 
   pushChange(changes, `account:${account.id}`, 'name', account.name, expected.accountName)
-  pushChange(changes, `account:${account.id}`, 'nationalId', account.nationalId, expected.nationalId)
+  pushChange(
+    changes,
+    `account:${account.id}`,
+    'nationalId',
+    account.nationalId,
+    expected.nationalId
+  )
   pushChange(changes, `account:${account.id}`, 'phone', account.phone ?? '', expected.phone)
   pushChange(
     changes,
@@ -219,8 +225,7 @@ async function applyChanges(changes: FieldChange[]) {
     const [entityType, entityId] = change.entity.split(':')
 
     if (entityType === 'account') {
-      const value =
-        change.field === 'phone' ? change.to || null : change.to
+      const value = change.field === 'phone' ? change.to || null : change.to
       await prisma.waterAccount.update({
         where: { id: entityId },
         data: { [change.field]: value }
@@ -244,7 +249,9 @@ async function applyChanges(changes: FieldChange[]) {
 
     if (entityType === 'meter') {
       const data =
-        change.field === 'isActive' ? { isActive: change.to === 'true' } : { [change.field]: change.to }
+        change.field === 'isActive'
+          ? { isActive: change.to === 'true' }
+          : { [change.field]: change.to }
       await prisma.waterMeter.update({
         where: { id: entityId },
         data

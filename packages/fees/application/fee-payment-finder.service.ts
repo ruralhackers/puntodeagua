@@ -1,5 +1,7 @@
-import type { FeePaymentListFilters } from '../domain/repositories/fee-payment.repository'
-import type { FeePaymentRepository } from '../domain/repositories/fee-payment.repository'
+import type {
+  FeePaymentListFilters,
+  FeePaymentRepository
+} from '../domain/repositories/fee-payment.repository'
 
 export class FeePaymentFinder {
   constructor(private readonly feePaymentRepository: FeePaymentRepository) {}

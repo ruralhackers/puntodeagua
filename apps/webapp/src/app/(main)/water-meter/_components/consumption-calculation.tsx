@@ -34,7 +34,10 @@ export function ConsumptionCalculation({
     readingDate: new Date(previousReading.readingDate)
   }
 
-  const { consumptionLiters, hoursBetween, daysBetween } = consumptionBetweenReadings(last, previous)
+  const { consumptionLiters, hoursBetween, daysBetween } = consumptionBetweenReadings(
+    last,
+    previous
+  )
 
   // Calcular consumo máximo permitido según el tipo de regla
   let maxAllowedConsumption = 0

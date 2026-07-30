@@ -221,3 +221,28 @@ export function resolveCommunityScope(roles: string[], communityId?: string): Co
   }
   return { kind: 'community', communityId }
 }
+
+/**
+ * Staff procedure with the caller's community scope resolved once.
+ *
+ * Endpoints using it must take the community from ctx.scope and never from
+ * their input, which makes cross-community access impossible to express
+ * rather than merely checked.
+ */
+export const communityScopedProcedure = staffProcedure.use(({ ctx, next }) => {
+  const scope = resolveCommunityScope(ctx.session.user.roles ?? [], ctx.session.user.community?.id)
+  return next({ ctx: { ...ctx, scope } })
+})
+
+/**
+ * The single community a new resource belongs to. A global admin has to say
+ * which one, because "create it in every community" is not a thing.
+ */
+export function requireCommunityId(scope: CommunityScope, explicit?: string): string {
+  if (scope.kind === 'community') return scope.communityId
+  if (explicit) return explicit
+  throw new TRPCError({
+    code: 'BAD_REQUEST',
+    message: 'A global admin must specify the target community'
+  })
+}

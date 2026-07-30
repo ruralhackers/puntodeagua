@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { createTRPCRouter, resolveCommunityScope, staffProcedure } from '@/server/api/trpc'
+import { communityScopedProcedure, createTRPCRouter } from '@/server/api/trpc'
 import { TableRepositoryProxy } from '@/server/repositories/table-proxy.repository'
 
 export const tableRouter = createTRPCRouter({
-  domainTable: staffProcedure
+  domainTable: communityScopedProcedure
     .input(
       z.object({
         model: z.string(),
@@ -36,13 +36,6 @@ export const tableRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { model, queryParams } = input
 
-      // The community scope comes from the session, never from the input, so a
-      // caller cannot ask for another community's rows.
-      const scope = resolveCommunityScope(
-        ctx.session.user.roles ?? [],
-        ctx.session.user.community?.id
-      )
-
       const tableParams = {
         page: queryParams.page,
         limit: queryParams.limit,
@@ -69,8 +62,10 @@ export const tableRouter = createTRPCRouter({
         include: queryParams.includeFields
       }
 
+      // The scope comes from the session via communityScopedProcedure, never
+      // from the input, so a caller cannot ask for another community's rows.
       const proxy = new TableRepositoryProxy()
-      const entitiesResult = await proxy.findForTable(model, tableParams, scope)
+      const entitiesResult = await proxy.findForTable(model, tableParams, ctx.scope)
 
       return {
         items: entitiesResult.items.map((entity) => toTableDto(model, entity)),

@@ -12,7 +12,8 @@
 
 - **UI language is Spanish.** Every user-visible string added must be Spanish. Code identifiers and comments stay English, matching the existing codebase.
 - **Test runner is `bun:test`.** Import from `'bun:test'`. Run with `bun test <path>`. There is no jsdom, no React Testing Library, and no component-test infrastructure — **do not add any**. Only pure functions get automated tests; markup changes are verified manually per the steps below.
-- **Formatter/linter is Biome 2.2.2.** Run `bun x biome check --write <paths>` before each commit. Config is `biome.jsonc` at the repo root.
+- **Formatter/linter is Biome 2.2.2.** Run `bun x biome check --write <paths>` before each commit, passing **the exact files you changed and nothing else**. Never pass a directory: much of this repo is unformatted, and `--write` on a directory rewrites files your task never touched, burying the real change. If a `git diff --stat` after formatting lists files outside your task's file list, revert them. Config is `biome.jsonc` at the repo root.
+- **`git add` explicit file lists only.** Never `git add -A` or `git add <dir>`. Every commit's file list must match the task's declared Files section — if it doesn't, one of the two is wrong; stop and say so.
 - **Mobile breakpoint is 768px** (`md:` in Tailwind, `MOBILE_BREAKPOINT` in `src/hooks/use-mobile.ts`). Prefer CSS breakpoints over the `useIsMobile()` JS hook for new code — the hook returns `false` on first render and causes a visible layout flash.
 - **Reader-only users are route-restricted.** `src/lib/water-meter-reader-paths.ts` limits `WATER_METER_READER`-only users to `/water-meter/new`, `/water-meter/[id]`, `/unauthorized`, `/privacy`, `/terms`. Navigation must never show them a link they cannot open.
 - **Do not touch `src/app/admin/**`.** The admin area is a separate template-derived surface and is out of scope.
@@ -505,10 +506,15 @@ document.querySelector('#image').getAttribute('capture')  // → "environment"
 
 ```bash
 cd /home/agustin/src/puntodeagua
-bun x biome check --write "apps/webapp/src/app/(main)"
-git add "apps/webapp/src/app/(main)/water-meter/new/_components/add-reading-modal.tsx" \
-        "apps/webapp/src/app/(main)/water-meter/[id]/_components/edit-reading-modal.tsx" \
-        "apps/webapp/src/app/(main)/incident/new/page.tsx"
+FILES=(
+  "apps/webapp/src/app/(main)/water-meter/new/_components/add-reading-modal.tsx"
+  "apps/webapp/src/app/(main)/water-meter/[id]/_components/edit-reading-modal.tsx"
+  "apps/webapp/src/app/(main)/management/meter-replacement/_components/meter-replacement-form.tsx"
+  "apps/webapp/src/app/(main)/water-meter/[id]/_components/water-meter-image-modal.tsx"
+  "apps/webapp/src/app/(main)/incident/new/page.tsx"
+)
+bun x biome check --write "${FILES[@]}"
+git add "${FILES[@]}"
 git commit -m "feat(webapp): open rear camera directly for meter and incident photos"
 ```
 
@@ -591,7 +597,8 @@ In Chrome DevTools set the device to iPhone SE (375px wide), then:
 
 ```bash
 cd /home/agustin/src/puntodeagua
-bun x biome check --write "apps/webapp/src/app/(main)/water-meter"
+bun x biome check --write "apps/webapp/src/app/(main)/water-meter/_components/water-meter-list.tsx" \
+                          "apps/webapp/src/app/(main)/water-meter/new/_components/water-meter-item.tsx"
 git add "apps/webapp/src/app/(main)/water-meter/_components/water-meter-list.tsx" \
         "apps/webapp/src/app/(main)/water-meter/new/_components/water-meter-item.tsx"
 git commit -m "fix(webapp): restore card spacing and wrap meter metadata on mobile"
@@ -983,7 +990,10 @@ In DevTools at 375px, logged in as a staff user:
 
 ```bash
 cd /home/agustin/src/puntodeagua
-bun x biome check --write apps/webapp/src/components/layout "apps/webapp/src/app/(main)/layout.tsx" "apps/webapp/src/app/(main)/app/_components/account-menu.tsx"
+bun x biome check --write apps/webapp/src/components/layout/bottom-nav.tsx \
+                          apps/webapp/src/components/layout/footer.tsx \
+                          "apps/webapp/src/app/(main)/layout.tsx" \
+                          "apps/webapp/src/app/(main)/app/_components/account-menu.tsx"
 git add apps/webapp/src/components/layout/bottom-nav.tsx \
         apps/webapp/src/components/layout/footer.tsx \
         "apps/webapp/src/app/(main)/layout.tsx" \
@@ -1196,7 +1206,9 @@ Log in as (or temporarily stub) a user whose only role is `WATER_METER_READER`:
 
 ```bash
 cd /home/agustin/src/puntodeagua
-bun x biome check --write apps/webapp/src/components/layout "apps/webapp/src/app/(main)/layout.tsx"
+bun x biome check --write apps/webapp/src/components/layout/main-sidebar.tsx \
+                          apps/webapp/src/components/layout/header.tsx \
+                          "apps/webapp/src/app/(main)/layout.tsx"
 git add apps/webapp/src/components/layout/main-sidebar.tsx \
         apps/webapp/src/components/layout/header.tsx \
         "apps/webapp/src/app/(main)/layout.tsx"

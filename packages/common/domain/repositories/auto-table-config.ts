@@ -1,7 +1,7 @@
 import type { TableFieldConfig, TableQueryConfig, TableRelationConfig } from './table-query-config'
 
-interface AutoTableOptions<TEntity> {
-  entityFromDto?: (dto: Record<string, unknown>) => TEntity
+interface AutoTableOptions<TEntity, TDto> {
+  entityFromDto?: (dto: TDto) => TEntity
   databaseType: 'prisma' | 'mongo'
   modelName?: string
   collectionName?: string
@@ -43,11 +43,10 @@ function generateRelationsConfig(relations: string[]): Record<string, TableRelat
   )
 }
 
-export function createAutoTableConfig<TEntity>(options: AutoTableOptions<TEntity>): Omit<
-  TableQueryConfig<TEntity, TEntity>,
-  'entityFromDto'
-> & {
-  entityFromDto?: (dto: Record<string, unknown>) => TEntity
+export function createAutoTableConfig<TEntity, TDto = Record<string, unknown>>(
+  options: AutoTableOptions<TEntity, TDto>
+): Omit<TableQueryConfig<TEntity, TDto>, 'entityFromDto'> & {
+  entityFromDto?: (dto: TDto) => TEntity
 } {
   return {
     entityFromDto: options.entityFromDto,

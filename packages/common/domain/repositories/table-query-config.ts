@@ -20,9 +20,9 @@ export interface TableRelationConfig {
   nested?: TableRelationConfig[]
 }
 
-export interface TableQueryConfig<TEntity, _TDto = unknown> {
-  /** Entity constructor/factory function */
-  entityFromDto?: (dto: Record<string, unknown>) => TEntity
+export interface TableQueryConfig<TEntity, TDto = Record<string, unknown>> {
+  /** Builds the entity from a raw database row */
+  entityFromDto?: (dto: TDto) => TEntity
   /** Default sort field and direction */
   defaultSort: { field: string; direction: 'asc' | 'desc' }
   /** Field configurations */

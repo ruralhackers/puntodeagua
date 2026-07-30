@@ -10,7 +10,10 @@ export class CommunityZonePrismaRepository
   implements CommunityZoneRepository
 {
   protected readonly model = 'communityZone'
-  private readonly tableBuilder: PrismaTableQueryBuilder<CommunityZone, CommunityZone>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    CommunityZone,
+    Prisma.CommunityZoneGetPayload<null>
+  >
   protected getModel() {
     return this.db[this.model]
   }

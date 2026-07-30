@@ -58,10 +58,12 @@ export class WaterMeter {
     }
   }
 
+  // Nullable on purpose: deleting the only reading of a meter has to clear
+  // these, and the fields themselves are nullable.
   updateLastReading(params: {
-    normalizedReading: number
-    readingDate: Date
-    excessConsumption: boolean
+    normalizedReading: number | null
+    readingDate: Date | null
+    excessConsumption: boolean | null
   }) {
     this.lastReadingNormalizedValue = params.normalizedReading
     this.lastReadingDate = params.readingDate

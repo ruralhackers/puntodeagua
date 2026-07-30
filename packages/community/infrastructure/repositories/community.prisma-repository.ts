@@ -14,7 +14,10 @@ export const fromCommunityPrismaPayload = (payload: Prisma.CommunityGetPayload<n
 }
 export class CommunityPrismaRepository extends BasePrismaRepository implements CommunityRepository {
   protected readonly model = 'community'
-  private readonly tableBuilder: PrismaTableQueryBuilder<Community, Community>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    Community,
+    Prisma.CommunityGetPayload<null>
+  >
   protected getModel() {
     return this.db[this.model]
   }

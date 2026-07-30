@@ -7,7 +7,7 @@ import { providerTableConfig } from './provider-table-config'
 
 export class ProviderPrismaRepository extends BasePrismaRepository implements ProviderRepository {
   protected readonly model = 'provider'
-  private readonly tableBuilder: PrismaTableQueryBuilder<Provider, Provider>
+  private readonly tableBuilder: PrismaTableQueryBuilder<Provider, Prisma.ProviderGetPayload<null>>
   protected getModel() {
     return this.db[this.model]
   }

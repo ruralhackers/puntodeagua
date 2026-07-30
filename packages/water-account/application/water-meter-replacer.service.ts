@@ -84,7 +84,10 @@ export class WaterMeterReplacer {
       waterAccountId: oldWaterMeter.waterAccountId.toString(),
       measurementUnit: newMeasurementUnit.toString(),
       waterPoint: oldWaterMeter.waterPoint.toDto(),
-      isActive: true
+      isActive: true,
+      lastReadingNormalizedValue: null,
+      lastReadingDate: null,
+      lastReadingExcessConsumption: null
     })
     await this.waterMeterRepository.save(newWaterMeter)
 

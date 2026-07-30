@@ -30,7 +30,7 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
     ])
 
     const { entityFromDto } = this.config
-    const entities = items.map((item: unknown) => entityFromDto(item as Record<string, unknown>))
+    const entities = items.map((item: unknown) => entityFromDto(item as TDto))
 
     return {
       items: entities,

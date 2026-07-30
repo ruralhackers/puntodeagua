@@ -1,8 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { CommunityZoneDto } from '@pda/community'
-import type { WaterDepositDto } from '@pda/community/domain/entities/water-deposit.dto'
+import type { CommunityZoneDto, WaterDepositDto } from '@pda/community'
 import { Loader2, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'

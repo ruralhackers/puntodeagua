@@ -23,3 +23,7 @@ export function canAccessAdminPanel(roles: string[]): boolean {
 export function canCreateWaterPoint(roles: string[]): boolean {
   return isAdmin(roles) || isCommunityAdmin(roles)
 }
+
+export function canManageWaterDeposits(roles: string[]): boolean {
+  return isAdmin(roles) || isCommunityAdmin(roles)
+}

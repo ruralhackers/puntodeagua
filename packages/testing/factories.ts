@@ -139,6 +139,21 @@ export async function aUser(
   })
 }
 
+export async function anIncidentImage(params: { incidentId: string } & Record<string, unknown>) {
+  const { incidentId, ...overrides } = params
+  return prisma.incidentImage.create({
+    data: {
+      url: `https://example.test/image-${next()}.jpg`,
+      fileName: `image-${next()}.jpg`,
+      fileSize: 1024,
+      mimeType: 'image/jpeg',
+      externalKey: `key-${next()}`,
+      incidentId,
+      ...overrides
+    }
+  })
+}
+
 // Two of these give you two fully independent communities, which is what every
 // cross-tenant test needs.
 export async function aCommunityWithFullSetup() {

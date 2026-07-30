@@ -9,7 +9,7 @@ import {
   assertDepositsBelongToScope,
   assertWaterPointBelongsToScope,
   assertZoneIdsBelongToScope
-} from '@/server/api/guards/water-meter-community-guard'
+} from '@/server/api/guards/community-scope.guards'
 import {
   communityScopedProcedure,
   createTRPCRouter,

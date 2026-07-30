@@ -4,32 +4,43 @@ import { Provider } from '@pda/providers/domain/entities/provider'
 import { providerSchema } from '@pda/providers/domain/entities/provider.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
+import {
+  assertCommunityInScope,
+  assertProviderBelongsToScope
+} from '@/server/api/guards/community-scope.guards'
+import { communityScopedProcedure, createTRPCRouter, requireCommunityId } from '@/server/api/trpc'
 
 export const providersRouter = createTRPCRouter({
-  getProviders: staffProcedure.query(async () => {
-    const repo = ProvidersFactory.providerPrismaRepository()
-    const providers = await repo.findAll()
-    return providers.map((provider) => provider.toDto())
-  }),
+  // getProviders removed: it returned every community's providers with no
+  // scope, and no screen called it.
 
-  getProvidersByCommunityId: staffProcedure
+  getProvidersByCommunityId: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      assertCommunityInScope(input.id, ctx.scope)
+
       const repo = ProvidersFactory.providerPrismaRepository()
       const providers = await repo.findByCommunityId(Id.fromString(input.id))
       return providers.map((provider) => provider.toDto())
     }),
 
-  getProviderById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const repo = ProvidersFactory.providerPrismaRepository()
-    const provider = await repo.findById(Id.fromString(input.id))
-    return provider?.toDto()
-  }),
+  getProviderById: communityScopedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      await assertProviderBelongsToScope(input.id, ctx.scope)
 
-  addProvider: staffProcedure
+      const repo = ProvidersFactory.providerPrismaRepository()
+      const provider = await repo.findById(Id.fromString(input.id))
+      return provider?.toDto()
+    }),
+
+  addProvider: communityScopedProcedure
     .input(providerSchema.omit({ id: true }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      // A provider always belongs to the caller's community: the schema allows a
+      // null communityId, which would create one reachable by nobody.
+      const communityId = requireCommunityId(ctx.scope, input.communityId ?? undefined)
+
       try {
         const service = ProvidersFactory.providerCreatorService()
         const provider = Provider.create(input)
@@ -40,33 +51,43 @@ export const providersRouter = createTRPCRouter({
       }
     }),
 
-  updateProvider: staffProcedure.input(providerSchema).mutation(async ({ input }) => {
-    try {
-      const service = ProvidersFactory.providerUpdaterService()
-      const { id, ...updateData } = input
-      const savedProvider = await service.run({
-        id: Id.fromString(id),
-        updatedProviderData: updateData
-      })
-      return savedProvider.toDto()
-    } catch (error) {
-      handleDomainError(error)
-    }
-  }),
+  updateProvider: communityScopedProcedure
+    .input(providerSchema)
+    .mutation(async ({ input, ctx }) => {
+      await assertProviderBelongsToScope(input.id, ctx.scope)
 
-  deleteProvider: staffProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
-    try {
-      const service = ProvidersFactory.providerDeleterService()
-      await service.run({ id: Id.fromString(input.id) })
-      return { success: true }
-    } catch (error) {
-      handleDomainError(error)
-    }
-  }),
+      try {
+        const service = ProvidersFactory.providerUpdaterService()
+        const { id, ...updateData } = input
+        const savedProvider = await service.run({
+          id: Id.fromString(id),
+          updatedProviderData: updateData
+        })
+        return savedProvider.toDto()
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
 
-  toggleProviderActive: staffProcedure
+  deleteProvider: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      await assertProviderBelongsToScope(input.id, ctx.scope)
+
+      try {
+        const service = ProvidersFactory.providerDeleterService()
+        await service.run({ id: Id.fromString(input.id) })
+        return { success: true }
+      } catch (error) {
+        handleDomainError(error)
+      }
+    }),
+
+  toggleProviderActive: communityScopedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      await assertProviderBelongsToScope(input.id, ctx.scope)
+
       try {
         const repo = ProvidersFactory.providerPrismaRepository()
         const provider = await repo.findById(Id.fromString(input.id))

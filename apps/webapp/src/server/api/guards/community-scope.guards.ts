@@ -1,6 +1,8 @@
 import { Id } from '@pda/common/domain'
 import type { CommunityZone, WaterDeposit } from '@pda/community'
 import { CommunityFactory } from '@pda/community'
+import { ProvidersFactory } from '@pda/providers'
+import { RegistersFactory } from '@pda/registers'
 import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import type { CommunityScope } from '@/server/api/trpc'
@@ -135,4 +137,68 @@ export function assertCommunityAccess(
   if (!userCommunityId || requestedCommunityId !== userCommunityId) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Community access denied' })
   }
+}
+
+export async function assertIncidentBelongsToScope(
+  incidentId: string,
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global') return
+
+  const incidentRepo = RegistersFactory.incidentPrismaRepository()
+  const incident = await incidentRepo.findById(Id.fromString(incidentId))
+  if (!incident) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Incident not found' })
+  }
+  assertCommunityInScope(incident.communityId.toString(), scope)
+}
+
+export async function assertIncidentImageBelongsToScope(
+  imageId: string,
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global') return
+
+  const imageRepo = RegistersFactory.incidentImagePrismaRepository()
+  const image = await imageRepo.findById(Id.fromString(imageId))
+  if (!image) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Incident image not found' })
+  }
+  await assertIncidentBelongsToScope(image.incidentId.toString(), scope)
+}
+
+export async function assertAnalysisBelongsToScope(
+  analysisId: string,
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global') return
+
+  const analysisRepo = RegistersFactory.analysisPrismaRepository()
+  const analysis = await analysisRepo.findById(Id.fromString(analysisId))
+  if (!analysis) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Analysis not found' })
+  }
+  assertCommunityInScope(analysis.communityId.toString(), scope)
+}
+
+export async function assertProviderBelongsToScope(
+  providerId: string,
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global') return
+
+  const providerRepo = ProvidersFactory.providerPrismaRepository()
+  const provider = await providerRepo.findById(Id.fromString(providerId))
+  if (!provider) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Provider not found' })
+  }
+  // Provider.communityId is optional in the schema, so a provider can belong to
+  // nobody. Those are not reachable from a community-scoped caller.
+  if (!provider.communityId) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Provider does not belong to any community'
+    })
+  }
+  assertCommunityInScope(provider.communityId.toString(), scope)
 }

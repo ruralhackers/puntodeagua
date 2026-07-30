@@ -8,32 +8,30 @@ import {
 import { analysisSchema } from '@pda/registers/domain/entities/analysis.dto'
 import { z } from 'zod'
 import { handleDomainError } from '@/server/api/error-handler'
-import { createTRPCRouter, staffProcedure } from '@/server/api/trpc'
+import { assertCommunityInScope } from '@/server/api/guards/community-scope.guards'
+import { communityScopedProcedure, createTRPCRouter, requireCommunityId } from '@/server/api/trpc'
 
 export const registersRouter = createTRPCRouter({
-  getAnalyses: staffProcedure.query(async () => {
-    const repo = RegistersFactory.analysisPrismaRepository()
-    const analyses = await repo.findAll()
-    return analyses.map((analysis) => analysis.toDto())
-  }),
+  // getAnalyses removed: it returned every community's analyses with no scope,
+  // and no screen called it.
 
-  getAnalysesByCommunityId: staffProcedure
+  getAnalysesByCommunityId: communityScopedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      assertCommunityInScope(input.id, ctx.scope)
+
       const repo = RegistersFactory.analysisPrismaRepository()
       const analyses = await repo.findByCommunityId(Id.fromString(input.id))
       return analyses.map((analysis) => analysis.toDto())
     }),
 
-  getAnalysisById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-    const repo = RegistersFactory.analysisPrismaRepository()
-    const analysis = await repo.findById(Id.fromString(input.id))
-    return analysis?.toDto()
-  }),
+  // getAnalysisById removed: unscoped and called by no screen.
 
-  addAnalysis: staffProcedure
+  addAnalysis: communityScopedProcedure
     .input(analysisSchema.omit({ id: true }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      assertCommunityInScope(input.communityId, ctx.scope)
+
       try {
         const service = RegistersFactory.analysisCreatorService()
 
@@ -59,7 +57,7 @@ export const registersRouter = createTRPCRouter({
       }
     }),
 
-  exportAnalyses: staffProcedure
+  exportAnalyses: communityScopedProcedure
     .input(
       z.object({
         analysisTypes: z.array(z.enum(AnalysisType.values() as [string, ...string[]])),
@@ -73,15 +71,13 @@ export const registersRouter = createTRPCRouter({
         const repo = RegistersFactory.analysisPrismaRepository()
 
         // Si no se proporciona communityId, usar la del usuario autenticado
-        const communityId = input.communityId
-          ? Id.fromString(input.communityId)
-          : ctx.session?.user?.community?.id
-            ? Id.fromString(ctx.session.user.community.id)
-            : undefined
-
-        if (!communityId) {
+        if (input.communityId) {
+          assertCommunityInScope(input.communityId, ctx.scope)
+        }
+        if (ctx.scope.kind === 'global' && !input.communityId) {
           throw new AnalysisCommunityNotDeterminedError()
         }
+        const communityId = Id.fromString(requireCommunityId(ctx.scope, input.communityId))
 
         const analyses = await repo.findByFilters({
           communityId,

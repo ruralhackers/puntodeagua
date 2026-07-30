@@ -3,6 +3,7 @@ import type { CommunityZone, WaterDeposit } from '@pda/community'
 import { CommunityFactory } from '@pda/community'
 import { ProvidersFactory } from '@pda/providers'
 import { RegistersFactory } from '@pda/registers'
+import { UserFactory } from '@pda/user'
 import { WaterAccountFactory } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
 import type { CommunityScope } from '@/server/api/trpc'
@@ -201,4 +202,21 @@ export async function assertProviderBelongsToScope(
     })
   }
   assertCommunityInScope(provider.communityId.toString(), scope)
+}
+
+export async function assertUserBelongsToScope(
+  userId: string,
+  scope: CommunityScope
+): Promise<void> {
+  if (scope.kind === 'global') return
+
+  const userRepo = UserFactory.userPrismaRepository()
+  const user = await userRepo.findById(Id.fromString(userId))
+  if (!user) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+  }
+  if (!user.community) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'User does not belong to any community' })
+  }
+  assertCommunityInScope(user.community.id.toString(), scope)
 }

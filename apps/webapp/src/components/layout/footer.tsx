@@ -5,9 +5,9 @@ export function Footer() {
 
   return (
     <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4">
-      <div className="flex justify-center sm:justify-between items-center text-sm text-muted-foreground max-w-7xl mx-auto px-6 sm:px-8 md:px-0">
+      <div className="flex flex-col gap-2 sm:flex-row justify-center sm:justify-between items-center text-sm text-muted-foreground max-w-7xl mx-auto px-6 sm:px-8 md:px-0">
         <p className="text-center">Punto de Agua &copy; {currentYear}</p>
-        <div className="hidden sm:flex gap-4 items-center">
+        <div className="flex flex-wrap justify-center gap-4 items-center">
           <a href="/privacy" className="hover:text-foreground transition-colors">
             Política de privacidad
           </a>

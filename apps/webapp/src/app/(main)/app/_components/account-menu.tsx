@@ -1,6 +1,15 @@
 'use client'
 
-import { Download, Droplets, Gauge, LogOut, Menu, Receipt, Settings, ShieldUser } from 'lucide-react'
+import {
+  Download,
+  Droplets,
+  Gauge,
+  LogOut,
+  Menu,
+  Receipt,
+  Settings,
+  ShieldUser
+} from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -28,9 +37,11 @@ export function AccountMenu() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
+          data-account-menu-trigger
+          aria-label="Abrir menú de cuenta"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 transition-colors"
         >
-          <Menu className="h-5 w-5 text-slate-700" />
+          <Menu className="h-5 w-5 text-white" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

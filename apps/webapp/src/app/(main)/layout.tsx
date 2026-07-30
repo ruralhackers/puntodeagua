@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
+import { BottomNav } from '@/components/layout/bottom-nav'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
@@ -42,8 +43,9 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
           >
             <Header session={session} />
             <CommunityZonesStoreProvider communityId={session.user.community?.id || ''}>
-              <div className="flex-1 p-4 md:p-6">{children}</div>
+              <div className="flex-1 p-4 pb-24 md:p-6 md:pb-6">{children}</div>
               <Footer />
+              <BottomNav />
             </CommunityZonesStoreProvider>
           </SidebarInset>
         </SidebarProvider>

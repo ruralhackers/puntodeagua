@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
+import { MainSidebar } from '@/components/layout/main-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 import { auth } from '@/server/auth'
@@ -30,6 +31,7 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     <HydrateClient>
       <UserStoreProvider user={session.user}>
         <SidebarProvider defaultOpen={defaultOpen}>
+          <MainSidebar />
           <SidebarInset
             data-content-layout={contentLayout}
             className={cn(

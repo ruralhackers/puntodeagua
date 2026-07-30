@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { getMainNavItems, isNavItemActive } from './main-nav-items'
+import { getActiveNavUrl, getMainNavItems, isNavItemActive } from './main-nav-items'
 
 describe('getMainNavItems', () => {
   it('gives staff the full set of destinations', () => {
@@ -76,5 +76,29 @@ describe('isNavItemActive', () => {
   it('marks both a section and its child route as active', () => {
     expect(isNavItemActive('/water-meter/new', '/water-meter/new')).toBe(true)
     expect(isNavItemActive('/water-meter', '/water-meter/new')).toBe(true)
+  })
+})
+
+describe('getActiveNavUrl', () => {
+  const items = getMainNavItems(['MANAGER'])
+
+  it('picks the more specific descendant over its ancestor', () => {
+    expect(getActiveNavUrl(items, '/water-meter/new')).toBe('/water-meter/new')
+  })
+
+  it('picks the section itself when visiting it directly', () => {
+    expect(getActiveNavUrl(items, '/water-meter')).toBe('/water-meter')
+  })
+
+  it('picks the section for one of its descendants', () => {
+    expect(getActiveNavUrl(items, '/management/deposits')).toBe('/management')
+  })
+
+  it('picks the home route only for an exact match', () => {
+    expect(getActiveNavUrl(items, '/')).toBe('/')
+  })
+
+  it('returns null when nothing matches', () => {
+    expect(getActiveNavUrl(items, '/privacy')).toBeNull()
   })
 })

@@ -58,3 +58,23 @@ export function isNavItemActive(url: string, pathname: string): boolean {
 
   return pathname === url || pathname.startsWith(`${url}/`)
 }
+
+/**
+ * `isNavItemActive` is pairwise: it has no visibility into sibling items, so two
+ * ancestor/descendant routes (e.g. `/water-meter` and `/water-meter/new`) can both
+ * report active for the same pathname. Callers that render the full nav list at once
+ * (unlike the bottom bar, which only shows `primary` items) need a single winner.
+ * Among all matching items, the one with the longest `url` is the most specific.
+ */
+export function getActiveNavUrl(items: MainNavItem[], pathname: string): string | null {
+  let best: string | null = null
+
+  for (const item of items) {
+    if (!isNavItemActive(item.url, pathname)) continue
+    if (best === null || item.url.length > best.length) {
+      best = item.url
+    }
+  }
+
+  return best
+}

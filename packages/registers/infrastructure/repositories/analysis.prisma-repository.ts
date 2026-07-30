@@ -7,7 +7,7 @@ import { analysisTableConfig } from './analysis-table-config'
 
 export class AnalysisPrismaRepository extends BasePrismaRepository implements AnalysisRepository {
   protected readonly model = 'analysis'
-  private readonly tableBuilder: PrismaTableQueryBuilder<Analysis, Analysis>
+  private readonly tableBuilder: PrismaTableQueryBuilder<Analysis, Prisma.AnalysisGetPayload<null>>
   protected getModel() {
     return this.db[this.model]
   }

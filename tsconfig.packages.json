@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@pda/common/*": ["./packages/common/*"],
+      "@pda/community": ["./packages/community/index.ts"],
+      "@pda/community/*": ["./packages/community/*"],
+      "@pda/database": ["./packages/database/index.ts"],
+      "@pda/database/*": ["./packages/database/*"],
+      "@pda/fees": ["./packages/fees/index.ts"],
+      "@pda/fees/*": ["./packages/fees/*"],
+      "@pda/providers": ["./packages/providers/index.ts"],
+      "@pda/providers/*": ["./packages/providers/*"],
+      "@pda/registers": ["./packages/registers/index.ts"],
+      "@pda/registers/*": ["./packages/registers/*"],
+      "@pda/storage": ["./packages/storage/index.ts"],
+      "@pda/storage/*": ["./packages/storage/*"],
+      "@pda/testing": ["./packages/testing/index.ts"],
+      "@pda/testing/*": ["./packages/testing/*"],
+      "@pda/user": ["./packages/user/index.ts"],
+      "@pda/user/*": ["./packages/user/*"],
+      "@pda/water-account": ["./packages/water-account/index.ts"],
+      "@pda/water-account/*": ["./packages/water-account/*"]
+    }
+  },
+  "include": ["packages/**/*.ts"],
+  "exclude": ["node_modules", "**/node_modules", "packages/database/prisma/generated"]
+}

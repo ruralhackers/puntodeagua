@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import { ImageEntityType } from '@pda/storage'
-import type { FileDeleterService } from '../application/file-deleter.service'
+import { type FileDeleterService, ImageEntityType } from '@pda/storage'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingDeleter } from '../application/water-meter-reading-deleter.service'
 import { WaterMeter, WaterMeterReading } from '../domain'

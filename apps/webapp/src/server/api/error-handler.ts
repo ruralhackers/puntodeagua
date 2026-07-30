@@ -18,19 +18,3 @@ export function handleDomainError(error: unknown): never {
   // Re-throw the original error if it's not a domain error
   throw error
 }
-
-/**
- * Wraps a tRPC procedure with domain error handling
- * This is a convenience function to avoid repeating try-catch blocks
- */
-export function withDomainErrorHandling<T extends unknown[], R>(
-  procedure: (...args: T) => Promise<R>
-) {
-  return async (...args: T): Promise<R> => {
-    try {
-      return await procedure(...args)
-    } catch (error) {
-      handleDomainError(error)
-    }
-  }
-}

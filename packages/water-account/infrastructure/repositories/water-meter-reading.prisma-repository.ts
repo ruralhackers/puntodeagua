@@ -11,7 +11,10 @@ export class WaterMeterReadingPrismaRepository
   implements WaterMeterReadingRepository
 {
   protected readonly model = 'waterMeterReading'
-  private readonly tableBuilder: PrismaTableQueryBuilder<WaterMeterReading, WaterMeterReading>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    WaterMeterReading,
+    Prisma.WaterMeterReadingGetPayload<null>
+  >
   protected getModel() {
     return this.db[this.model]
   }

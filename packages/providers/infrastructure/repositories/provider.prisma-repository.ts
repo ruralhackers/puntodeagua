@@ -7,7 +7,7 @@ import { providerTableConfig } from './provider-table-config'
 
 export class ProviderPrismaRepository extends BasePrismaRepository implements ProviderRepository {
   protected readonly model = 'provider'
-  private readonly tableBuilder: PrismaTableQueryBuilder<Provider, Provider>
+  private readonly tableBuilder: PrismaTableQueryBuilder<Provider, Prisma.ProviderGetPayload<null>>
   protected getModel() {
     return this.db[this.model]
   }
@@ -60,7 +60,6 @@ export class ProviderPrismaRepository extends BasePrismaRepository implements Pr
       postalCode: provider.postalCode ?? undefined,
       province: provider.province ?? undefined,
       providerType: provider.providerType.toString(),
-      customProviderType: provider.customProviderType ?? undefined,
       isActive: provider.isActive,
       notes: provider.notes ?? undefined,
       businessHours: provider.businessHours ?? undefined,
@@ -102,7 +101,6 @@ export class ProviderPrismaRepository extends BasePrismaRepository implements Pr
       city: payload.city ?? undefined,
       postalCode: payload.postalCode ?? undefined,
       province: payload.province ?? undefined,
-      customProviderType: payload.customProviderType ?? undefined,
       notes: payload.notes ?? undefined,
       businessHours: payload.businessHours ?? undefined,
       emergencyPhone: payload.emergencyPhone ?? undefined,

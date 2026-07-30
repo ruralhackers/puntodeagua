@@ -9,7 +9,10 @@ import { userTableConfig } from './user-table-config'
 
 export class UserPrismaRepository extends BasePrismaRepository implements UserRepository {
   protected readonly model = 'user'
-  private readonly tableBuilder: PrismaTableQueryBuilder<User, User>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    User,
+    Prisma.UserGetPayload<{ include: { community: true } }>
+  >
 
   constructor(db: typeof prisma) {
     super(db)

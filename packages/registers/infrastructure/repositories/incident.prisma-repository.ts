@@ -7,7 +7,7 @@ import { incidentTableConfig } from './incident-table-config'
 
 export class IncidentPrismaRepository extends BasePrismaRepository implements IncidentRepository {
   protected readonly model = 'incident'
-  private readonly tableBuilder: PrismaTableQueryBuilder<Incident, Incident>
+  private readonly tableBuilder: PrismaTableQueryBuilder<Incident, Prisma.IncidentGetPayload<null>>
   protected getModel() {
     return this.db[this.model]
   }

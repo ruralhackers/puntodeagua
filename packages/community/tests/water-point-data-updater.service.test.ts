@@ -161,7 +161,7 @@ describe('WaterPointDataUpdater', () => {
 
       const savedWaterPoint = (mockWaterPointRepository.save as any).mock.calls[0][0] as WaterPoint
       expect(savedWaterPoint.waterDepositIds).toHaveLength(2)
-      expect(savedWaterPoint.waterDepositIds[0].toString()).toBe(newDepositId.toString())
+      expect(savedWaterPoint.waterDepositIds[0]?.toString()).toBe(newDepositId.toString())
     })
 
     it('should successfully update name', async () => {

@@ -10,7 +10,10 @@ export class WaterDepositPrismaRepository
   implements WaterDepositRepository
 {
   protected readonly model = 'waterDeposit'
-  private readonly tableBuilder: PrismaTableQueryBuilder<WaterDeposit, WaterDeposit>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    WaterDeposit,
+    Prisma.WaterDepositGetPayload<null>
+  >
   protected getModel() {
     return this.db[this.model]
   }

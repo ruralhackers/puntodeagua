@@ -43,7 +43,7 @@ function createMockDb(options: { communityId?: string; duplicateId?: string | nu
     upsert,
     findFirst,
     findUniqueZone
-  } as unknown as PrismaClient & {
+  } as unknown as typeof PrismaClient & {
     upsert: typeof upsert
     findFirst: typeof findFirst
     findUniqueZone: typeof findUniqueZone

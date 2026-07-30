@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
+import type { FileUploaderService } from '@pda/storage'
 import type { WaterMeterReadingCreator } from '../application/water-meter-reading-creator.service'
 import { WaterMeterReplacer } from '../application/water-meter-replacer.service'
 import { WaterMeter } from '../domain'
@@ -15,6 +16,7 @@ describe('WaterMeterReplacer', () => {
   let service: WaterMeterReplacer
   let mockWaterMeterRepository: WaterMeterRepository
   let mockWaterMeterReadingCreator: WaterMeterReadingCreator
+  let mockFileUploaderService: FileUploaderService
 
   // Default test entities
   const defaultWaterPoint = {
@@ -47,7 +49,15 @@ describe('WaterMeterReplacer', () => {
       run: mock()
     } as unknown as WaterMeterReadingCreator
 
-    service = new WaterMeterReplacer(mockWaterMeterRepository, mockWaterMeterReadingCreator)
+    mockFileUploaderService = {
+      run: mock()
+    } as unknown as FileUploaderService
+
+    service = new WaterMeterReplacer(
+      mockWaterMeterRepository,
+      mockWaterMeterReadingCreator,
+      mockFileUploaderService
+    )
   })
 
   describe('Successful replacement', () => {

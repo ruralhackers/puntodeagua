@@ -7,6 +7,10 @@ import { IncidentNotFoundError } from '../../domain/errors/incident-errors'
 import type { IncidentRepository } from '../../domain/repositories/incident.repository'
 import { createMockIncidentRepository } from '../helpers/mocks'
 
+// Entities have private constructors by design, which expect.any's signature
+// does not accept even though its runtime instanceof check works fine.
+const anyInstanceOf = (ctor: unknown) => expect.any(ctor as new (...args: never[]) => unknown)
+
 describe('IncidentUpdater Service', () => {
   let mockRepository: IncidentRepository
   let incidentUpdater: IncidentUpdater
@@ -20,18 +24,14 @@ describe('IncidentUpdater Service', () => {
     it('should throw error when incident is not found', async () => {
       // Arrange
       const incidentId = Id.generateUniqueId()
-      const updatedIncident = Incident.create({
-        title: 'Updated Title',
-        reporterName: 'Jane Doe',
-        startAt: new Date('2024-01-16T10:00:00Z'),
-        communityId: Id.generateUniqueId().toString(),
+      const updatedIncidentData: IncidentUpdateDto = {
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
-      })
+      }
       mockRepository.findById = mock().mockResolvedValue(undefined)
 
       // Act & Assert
-      await expect(incidentUpdater.run({ id: incidentId, updatedIncident })).rejects.toThrow(
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncidentData })).rejects.toThrow(
         IncidentNotFoundError
       )
       expect(mockRepository.save).not.toHaveBeenCalled()
@@ -65,7 +65,7 @@ describe('IncidentUpdater Service', () => {
         communityId: Id.generateUniqueId().toString(),
         status: 'open'
       })
-      const updatedIncident: IncidentUpdateDto = {
+      const updatedIncidentData: IncidentUpdateDto = {
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z'),
         closingDescription: undefined
@@ -75,9 +75,9 @@ describe('IncidentUpdater Service', () => {
       mockRepository.save = mock().mockRejectedValue(error)
 
       // Act & Assert
-      await expect(
-        incidentUpdater.run({ id: incidentId, updatedIncidentData: updatedIncident })
-      ).rejects.toThrow('Database connection failed')
+      await expect(incidentUpdater.run({ id: incidentId, updatedIncidentData })).rejects.toThrow(
+        'Database connection failed'
+      )
     })
 
     it('should update an existing incident', async () => {
@@ -92,7 +92,7 @@ describe('IncidentUpdater Service', () => {
         description: 'Original description',
         status: 'open'
       })
-      const updatedIncident: IncidentUpdateDto = {
+      const updatedIncidentData: IncidentUpdateDto = {
         closingDescription: 'Updated description',
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
@@ -103,12 +103,12 @@ describe('IncidentUpdater Service', () => {
       // Act
       const result = await incidentUpdater.run({
         id: incidentId,
-        updatedIncidentData: updatedIncident
+        updatedIncidentData
       })
 
       // Assert
       expect(mockRepository.findById).toHaveBeenCalledWith(incidentId)
-      expect(mockRepository.save).toHaveBeenCalledWith(expect.any(Incident))
+      expect(mockRepository.save).toHaveBeenCalledWith(anyInstanceOf(Incident))
       expect(result.incident.closingDescription).toBe('Updated description')
       expect(result.incident.status.toString()).toBe('closed')
       expect(result.imageUploadErrors).toBeUndefined()
@@ -128,7 +128,7 @@ describe('IncidentUpdater Service', () => {
         description: 'Original description',
         status: 'open'
       })
-      const updatedIncident: IncidentUpdateDto = {
+      const updatedIncidentData: IncidentUpdateDto = {
         closingDescription: undefined, // This should fall back to existing
         status: 'closed',
         endAt: new Date('2024-01-16T12:00:00Z')
@@ -139,7 +139,7 @@ describe('IncidentUpdater Service', () => {
       // Act
       const result = await incidentUpdater.run({
         id: incidentId,
-        updatedIncidentData: updatedIncident
+        updatedIncidentData
       })
 
       // Assert

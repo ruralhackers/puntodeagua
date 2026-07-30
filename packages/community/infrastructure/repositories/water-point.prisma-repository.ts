@@ -12,7 +12,10 @@ export class WaterPointPrismaRepository
   implements WaterPointRepository
 {
   protected readonly model = 'waterPoint'
-  private readonly tableBuilder: PrismaTableQueryBuilder<WaterPoint, WaterPoint>
+  private readonly tableBuilder: PrismaTableQueryBuilder<
+    WaterPoint,
+    Prisma.WaterPointGetPayload<null>
+  >
   protected getModel() {
     return this.db[this.model]
   }
@@ -160,9 +163,20 @@ export class WaterPointPrismaRepository
     })
   }
 
+  // Explicit projection, not a spread: the row carries createdAt/updatedAt that
+  // the domain has no business seeing, and its notes/connectionNumber nullability
+  // does not match the DTO.
   private fromPrismaPayload(payload: Prisma.WaterPointGetPayload<null>) {
     return {
-      ...payload,
+      id: payload.id,
+      name: payload.name,
+      location: payload.location,
+      notes: payload.notes ?? undefined,
+      connectionNumber: payload.connectionNumber ?? undefined,
+      fixedPopulation: payload.fixedPopulation,
+      floatingPopulation: payload.floatingPopulation,
+      cadastralReference: payload.cadastralReference,
+      communityZoneId: payload.communityZoneId,
       waterDepositIds: payload.waterDepositIds ?? []
     }
   }

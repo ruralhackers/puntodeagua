@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
 import { Id } from '@pda/common/domain'
-import { FileMetadata } from '@pda/storage'
-import type { FileUploaderService } from '../application/file-uploader.service'
+import { FileMetadata, type FileUploaderService } from '@pda/storage'
 import type { WaterMeterLastReadingUpdater } from '../application/water-meter-last-reading-updater.service'
 import { WaterMeterReadingCreator } from '../application/water-meter-reading-creator.service'
 import { WaterMeter, WaterMeterReading } from '../domain'

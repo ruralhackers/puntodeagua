@@ -5,15 +5,16 @@
   "private": false,
   "license": "AGPL-3.0",
   "scripts": {
-    "start": "concurrently -k --prefix-colors 'red,green,blue,yellow' --names 'admin,webapp' --prefix '[{name}]' 'bun run admin' 'bun run webapp'",
+    "start": "bun run webapp",
     "webapp": "bun run -F webapp dev --port 3005",
     "dbs": "docker-compose -f docker-compose.yml up -d",
-    "db:sync": "bun run -F @pta/database db:sync",
+    "db:sync": "bun run -F @pda/database db:sync",
     "format": "bunx biome format --write .",
     "check": "bun x biome format --write  && bun x biome ci --diagnostic-level=error",
     "check:unsafe": "biome check --write --unsafe .",
     "check:write": "biome check --write --max-diagnostics=20000 .",
     "check:errors": "bunx biome check --max-diagnostics=20000 --diagnostic-level=error .",
+    "typecheck": "tsc --noEmit -p tsconfig.packages.json",
     "test:unit": "bun test packages apps/webapp/src/lib",
     "test:integration": "PDA_INTEGRATION=1 bun --env-file=.env.test test apps/webapp/src/server --concurrency 1",
     "test:all": "bun run test:unit && bun run test:integration"

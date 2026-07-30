@@ -282,6 +282,7 @@ export function AddReadingModal({
                     id="image"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     onChange={handleImageSelect}
                     disabled={addReadingMutation.isPending}
                   />
@@ -425,6 +426,7 @@ export function AddReadingModal({
                     id="image"
                     type="file"
                     accept={ACCEPTED_FILE_TYPES}
+                    capture="environment"
                     onChange={handleImageSelect}
                     disabled={addReadingMutation.isPending}
                   />

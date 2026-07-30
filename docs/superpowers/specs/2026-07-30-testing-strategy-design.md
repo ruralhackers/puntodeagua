@@ -1,8 +1,10 @@
-# Estrategia de tests — Fase 2a: tenancy y autorización
+# Fase 2 — Tenancy y autorización: tests y cierre de agujeros
 
 **Fecha:** 2026-07-30
 **Estado:** diseño aprobado, pendiente de plan de implementación
-**Alcance de este spec:** solo Fase 2a. Las fases 2b (repositorios) y 2c (casos de uso huérfanos) tendrán su propio spec, pero la infraestructura que se construye acá está diseñada para servirles.
+**Alcance de este spec:** los tests de caso de uso de tenancy **y el cierre de los agujeros que destapan**, endpoint por endpoint. Las fases 2b (tests de repositorio) y 2c (casos de uso huérfanos) tendrán su propio spec, pero la infraestructura que se construye acá está diseñada para servirles.
+
+> **Cambio respecto a la primera versión de este spec:** originalmente separaba "escribir todos los tests" de "cerrar todos los agujeros" en dos fases, dejando los ~18 endpoints marcados con `it.failing` mientras durase. Se descartó: no hay razón técnica para mergear un agujero conocido cuando el arreglo de cada endpoint es una línea, y son vías de acceso entre clientes en producción. Ahora el ciclo es por endpoint: test rojo → cerrar → verde → commit.
 
 ---
 
@@ -29,15 +31,35 @@ La capa sin cobertura es exactamente donde vive el riesgo de producción:
 
 Este spec ataca el punto 1, que es el de mayor riesgo y menor coste, y de paso construye el harness que los otros dos necesitan.
 
+## Hallazgo crítico: `table.domainTable`
+
+Detectado al enumerar los endpoints para este spec. No estaba en el review inicial y **es el de mayor severidad de todo el backend**, así que es la primera tarea del plan.
+
+`apps/webapp/src/server/api/routers/table.ts:6-75` es un `staffProcedure` — cualquier `MANAGER`/`COMMUNITY_ADMIN`/`ADMIN` de cualquier comunidad — que encadena tres fallos:
+
+1. **`selector: z.any()`** (línea 26) se pasa directo al `where` de Prisma (`packages/common/infrastructure/repositories/prisma-table-query-builder.ts:56-57`). El cliente puede enviar cualquier fragmento de query.
+2. **Cero scope de comunidad.** `TableRepositoryProxy` rutea `user`, `community`, `waterPoint` y `analysis` sin filtrar por comunidad en ningún punto.
+3. **Devuelve `entity.toDto()` crudo** (línea 68), y `User.toDto()` incluye **`passwordHash`** (`packages/user/domain/entities/user.ts:37`).
+
+Encadenado: un usuario staff autenticado de cualquier cliente puede enumerar todos los usuarios de todos los clientes con sus hashes bcrypt, y filtrar con queries arbitrarias sobre esas cuatro tablas.
+
+Calibración honesta: requiere sesión staff válida (no es accesible sin autenticar) y los hashes son bcrypt salteado, no texto plano. Sigue siendo exposición de credenciales más lectura cruzada entre clientes en un único endpoint, en producción, con 3 clientes.
+
+Arreglo, tres cambios independientes y pequeños:
+- Un DTO de salida explícito para el modelo `user` en el router de tabla, sin `passwordHash`. No confiar en `toDto()`, que existe para persistencia.
+- Quitar `selector` de la entrada pública del procedure. Si alguna pantalla lo necesita, se sustituye por filtros declarados y validados.
+- Scope de comunidad en el proxy: cada modelo declara cómo se ancla a una comunidad, y el proxy exige el `communityId` verificado del contexto.
+
 ## Objetivo
 
-Una suite de tests de caso de uso que ejerza los procedures tRPC contra una base Postgres real, y que:
+Cerrar el aislamiento entre comunidades en la capa tRPC, con un test de caso de uso que preceda a cada arreglo. Concretamente:
 
-- Verifique que el aislamiento entre comunidades se cumple donde ya se cumple (evita regresiones).
-- Documente de forma **ejecutable** los ~18 endpoints donde no se cumple, de modo que arreglarlos en la fase de seguridad consista en quitar una marca y ver el test pasar.
-- Cubra la matriz de roles: `ADMIN`, `COMMUNITY_ADMIN`, `MANAGER`, `WATER_METER_READER`.
+- Un test por endpoint sensible que afirme que un usuario de la comunidad A no puede leer ni mutar recursos de la comunidad B, escrito **antes** del arreglo y verde **después**.
+- Cerrar los ~18 endpoints identificados, empezando por `table.domainTable`.
+- Cubrir la matriz de roles: `ADMIN`, `COMMUNITY_ADMIN`, `MANAGER`, `WATER_METER_READER`.
+- Dejar tests de caracterización verdes sobre el comportamiento legítimo, para que la Fase 3 pueda refactorizar con red.
 
-**Criterio de éxito:** `bun run test:integration` verde, con cada endpoint sensible del backend representado por al menos un test de tenancy, y cada agujero conocido marcado con `it.failing`.
+**Criterio de éxito:** `bun run test:integration` verde con cero `it.failing` pendientes, y cada endpoint sensible con al menos un test de acceso legítimo y uno de acceso cruzado rechazado.
 
 ## Restricciones técnicas descubiertas
 
@@ -56,7 +78,7 @@ Cuatro hechos verificados que condicionan el diseño:
 | Decisión | Elegido | Descartado y por qué |
 |---|---|---|
 | Substrato de la base | **Base separada `puntodeagua2_test` en el Postgres del `docker-compose`** | PGlite en proceso: viable (existe `pglite-prisma-adapter` v0.7.2 y el DDL se puede generar), pero es un adapter de terceros no oficial y exige habilitar `driverAdapters` en el `generator`, lo que cambia el cliente Prisma **que usa producción**. Con 3 clientes en prod, no vale el ahorro de evitar Docker, que ya está en el loop de desarrollo. |
-| Rojo o verde | **Mixto**: caracterización verde + agujeros con `it.failing` | TDD puro (todo rojo hasta arreglar) bloquea otros merges. Caracterización pura cementaría el bug de tenancy como comportamiento esperado. |
+| Rojo o verde | **Test rojo → arreglo inmediato, endpoint por endpoint** | Dos fases (marcar todo con `it.failing` y cerrar después) dejaría agujeros conocidos mergeados en producción sin ninguna ganancia técnica: el arreglo de cada endpoint es una línea. `it.failing` queda reservado para huecos que se aplacen a conciencia, y cada uno exige un comentario `HOLE:` que explique por qué. Caracterización pura queda descartada: cementaría el bug como comportamiento esperado. |
 | Ubicación de los helpers | **`packages/testing` como workspace** | Un `test/helpers/` en la raíz obligaría a imports relativos cruzando fronteras de paquete cuando la Fase 2b escriba tests dentro de `packages/*`. |
 | Umbral de cobertura en CI | **Ninguno por ahora** | Un porcentaje global invita a escribir tests que suben el número en vez de tests que atrapan bugs. Se reevalúa cuando 2b y 2c estén hechas. |
 
@@ -92,6 +114,26 @@ Paquete privado, sólo para desarrollo. Cuatro responsabilidades, un archivo cad
 - Cada uno devuelve el objeto de contexto completo que `createCaller` espera: `{ db, session, headers }`.
 
 **`index.ts`** — barrel.
+
+### `communityScopedProcedure` — el mecanismo de arreglo
+
+Los arreglos no se hacen repitiendo `assertCommunityAccess` en 18 handlers: eso es exactamente el patrón que falló. Se añade a `apps/webapp/src/server/api/trpc.ts` un procedure que resuelve la comunidad **una vez** y la inyecta ya verificada:
+
+```typescript
+export const communityScopedProcedure = staffProcedure.use(({ ctx, next }) => {
+  const communityId = ctx.session.user.community?.id
+  if (!communityId) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'User has no community assigned' })
+  }
+  return next({ ctx: { ...ctx, communityId } })
+})
+```
+
+Con eso, un endpoint que hoy acepta `communityId` por input deja de aceptarlo y usa `ctx.communityId`, lo que hace el acceso cruzado **imposible de expresar** en vez de meramente comprobado. Para los endpoints cuyo id de entrada es un recurso (un contador, una lectura, un pago), se sigue necesitando un guard que resuelva el recurso y compare su comunidad: se reutilizan los de `guards/water-meter-community-guard.ts`, extendidos a los recursos que falten.
+
+Los endpoints que hoy reciben `communityId` por input y lo validan con `assertCommunityAccess` (los 7 de `fees.ts`, que son los que estaban bien) migran también, porque `ctx.communityId` elimina el parámetro redundante.
+
+**Nota de alcance:** cambiar la firma de un endpoint que hoy recibe `communityId` obliga a tocar sus llamadas en el frontend. Cada tarea del plan que lo haga incluye la actualización de los callers, verificada con `bun run typecheck` del webapp.
 
 ### Forma de los tests de tenancy
 
@@ -159,19 +201,20 @@ Las aserciones usan el código de tRPC cuando existe, y el mensaje sólo cuando 
 | Un test apunta por error a la base de desarrollo o a producción | Guarda en `db-harness.ts`: aborta si `DATABASE_URL` no termina en `_test` |
 | Los tests de integración hacen la suite lenta y la gente deja de correrla | Job y script separados; `test:unit` sigue en ~1s y es lo que se corre en el loop de desarrollo |
 | El DDL generado se desincroniza del schema | Se genera al vuelo desde `schema.prisma` en cada arranque, no se commitea |
-| `it.failing` se usa como alfombra para esconder tests que fallan por otras razones | Cada `it.failing` exige un comentario `HOLE:` que apunte al endpoint y a la fase que lo arregla. Cuando el bug se arregla el test se pone rojo solo |
+| `it.failing` se usa como alfombra para esconder tests que fallan por otras razones | El plan no crea ninguno: cada test se cierra en su propia tarea. Si aparece un hueco que haya que aplazar, exige un comentario `HOLE:` con el motivo, y el mecanismo se auto-limpia (cuando el bug se arregla, `it.failing` se pone rojo solo) |
+| Cerrar un endpoint rompe una pantalla del frontend | Cada tarea que cambie la firma de un procedure actualiza sus callers y lo verifica con el typecheck del webapp. Los endpoints que sólo pasan a rechazar accesos cruzados no cambian firma y no pueden romper nada legítimo |
 | El harness se convierte en un monolito | Cuatro archivos con una responsabilidad cada uno; las factories no saben de tRPC y las sesiones no saben de la base |
 
 ## Fuera de alcance
 
 - Tests de UI, de componentes React, y E2E de navegador.
 - Fase 2b (repositorios) y 2c (casos de uso huérfanos): specs propios, reutilizando este harness.
-- Arreglar los agujeros de tenancy. Este spec los **documenta**; cerrarlos es la Fase 2 de seguridad, cuyo enfoque ya está decidido (middleware `communityScopedProcedure` + guards explícitos).
 - Unificar las carpetas `test/` vs `tests/` de los paquetes: cosmético, está en el backlog de Fase 1.
 - Umbral de cobertura en CI.
+- Rediseñar el sistema de tablas dinámicas. El arreglo de `table.domainTable` es defensivo (quitar `selector`, DTO explícito, scope); que un endpoint genérico con `model: z.string()` sea una buena idea es otra discusión, y va al backlog.
 
 ## Fases siguientes que este trabajo habilita
 
-1. **Fase 2 de seguridad**: cerrar los ~18 endpoints. Los `it.failing` de este spec son su especificación ejecutable y su criterio de aceptación.
-2. **Fase 2b**: tests de repositorio, empezando por `WaterMeterPrismaRepository` (el del `WaterPoint` falso con `'Unknown'`) y `WaterPointPrismaRepository` (unicidad de `connectionNumber`).
-3. **Fase 3**: refactors de arquitectura (transacciones, romper el embebido `WaterMeter`→`WaterPoint`), ahora con red.
+1. **Fase 2b**: tests de repositorio, empezando por `WaterMeterPrismaRepository` (el del `WaterPoint` falso con `'Unknown'`) y `WaterPointPrismaRepository` (unicidad de `connectionNumber`). Reutiliza el harness, las factories y la base de test de este spec.
+2. **Fase 2c**: casos de uso sin cobertura — `exportWaterMeterReadings` (110 líneas dentro del router), los 10 servicios de aplicación sin test, y `packages/storage`, que hoy sólo existe como mock.
+3. **Fase 3**: refactors de arquitectura (`TransactionPort`, romper el embebido `WaterMeter`→`WaterPoint`, mover reglas de negocio a domain services), ahora con red.

@@ -1,4 +1,7 @@
 import { Id } from '@pda/common/domain'
+// Type-only: the runtime value comes from the dynamic import inside the handler,
+// which is untyped, so the zone callbacks below would otherwise be implicitly any.
+import type { CommunityZone } from '@pda/community/domain'
 import { FileMetadataCreatorService, fileUploadInputSchema } from '@pda/storage'
 import { WaterAccountFactory, waterAccountUpdateSchema } from '@pda/water-account'
 import { TRPCError } from '@trpc/server'
@@ -453,8 +456,8 @@ export const waterAccountRouter = createTRPCRouter({
 
         // Optional zone filter. Resolving it against this community's own zones
         // is also the scope guard: an id from another community finds nothing.
-        const scopedZones = input.communityZoneId
-          ? zones.filter((zone) => zone.id.toString() === input.communityZoneId)
+        const scopedZones: CommunityZone[] = input.communityZoneId
+          ? zones.filter((zone: CommunityZone) => zone.id.toString() === input.communityZoneId)
           : zones
         if (input.communityZoneId && scopedZones.length === 0) {
           throw new Error('Zona no encontrada')

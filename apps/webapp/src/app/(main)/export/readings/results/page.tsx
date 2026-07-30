@@ -14,6 +14,7 @@ export default function ReadingsExportResultsPage() {
   const startDateParam = searchParams.get('startDate')
   const endDateParam = searchParams.get('endDate')
   const waterMeterIdParam = searchParams.get('waterMeterId') || ''
+  const communityZoneIdParam = searchParams.get('communityZoneId') || ''
 
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -28,7 +29,8 @@ export default function ReadingsExportResultsPage() {
   } = useReadingsPDFGenerator({
     startDate,
     endDate,
-    waterMeterId: waterMeterIdParam || undefined
+    waterMeterId: waterMeterIdParam || undefined,
+    communityZoneId: communityZoneIdParam || undefined
   })
 
   const isSingleMeter = Boolean(waterMeterIdParam)
@@ -84,6 +86,8 @@ export default function ReadingsExportResultsPage() {
   const metersWithReadings = displayData.filter((meter) => meter.readings.length >= 2).length
   const metersWithInsufficientData = displayData.filter((meter) => meter.readings.length < 2).length
   const singleMeter = isSingleMeter ? displayData[0] : undefined
+  // Every row of a zone export shares the zone, so the name needs no extra query.
+  const zoneName = communityZoneIdParam ? displayData[0]?.communityZone.name : undefined
 
   // Para calcular excesos necesitamos revisar cada contador
   const metersWithExcess = displayData.filter((meter) => {
@@ -235,6 +239,11 @@ export default function ReadingsExportResultsPage() {
                     ? `${singleMeter.waterPoint.connectionNumber} — `
                     : ''}
                   {singleMeter.waterPoint.name} ({singleMeter.waterAccountName})
+                </>
+              )}
+              {zoneName && (
+                <>
+                  {' · '}Zona: {zoneName}
                 </>
               )}
             </CardDescription>

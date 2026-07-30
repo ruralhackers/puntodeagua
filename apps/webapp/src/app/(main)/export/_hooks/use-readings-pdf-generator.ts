@@ -6,6 +6,7 @@ interface UseReadingsPDFGeneratorProps {
   startDate: string
   endDate: string
   communityId?: string
+  communityZoneId?: string
   waterMeterId?: string
 }
 
@@ -13,6 +14,7 @@ export function useReadingsPDFGenerator({
   startDate,
   endDate,
   communityId,
+  communityZoneId,
   waterMeterId
 }: UseReadingsPDFGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -27,6 +29,7 @@ export function useReadingsPDFGenerator({
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       communityId,
+      communityZoneId: communityZoneId || undefined,
       waterMeterId: waterMeterId || undefined
     },
     {
@@ -54,12 +57,16 @@ export function useReadingsPDFGenerator({
         startDate,
         endDate,
         generatedAt,
-        waterMeterId: waterMeterId || undefined
+        waterMeterId: waterMeterId || undefined,
+        zoneName: communityZoneId ? dataToUse[0]?.communityZone.name : undefined
       })
 
+      const today = new Date().toISOString().split('T')[0]
       const fileName = waterMeterId
-        ? `lecturas-contador-${new Date().toISOString().split('T')[0]}.pdf`
-        : `lecturas-export-${new Date().toISOString().split('T')[0]}.pdf`
+        ? `lecturas-contador-${today}.pdf`
+        : communityZoneId
+          ? `lecturas-zona-${today}.pdf`
+          : `lecturas-export-${today}.pdf`
 
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')

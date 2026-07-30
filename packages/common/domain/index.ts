@@ -1,5 +1,4 @@
 export * from './errors/domain-errors'
-export { DomainEvent } from './events/domain-event'
 export { createAutoTableConfig } from './repositories/auto-table-config'
 export type { Deletable } from './repositories/deletable'
 export type { FindableAll } from './repositories/findable-all'
@@ -18,4 +17,3 @@ export { saltAndHashPassword, verifyPassword } from './utils/salt-and-hash-passw
 export { Decimal } from './value-objects/decimal'
 export { Email } from './value-objects/email'
 export { Id, idSchema } from './value-objects/id'
-export { Uuid } from './value-objects/uuid'

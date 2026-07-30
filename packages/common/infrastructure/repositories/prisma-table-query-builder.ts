@@ -17,7 +17,6 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
     const where = this.buildWhereClause(params)
     const orderBy = this.buildOrderBy(params)
     const include = this.buildInclude(params.include)
-    console.log({ include, where, orderBy })
 
     const [items, totalItems] = await Promise.all([
       this.getModel().findMany({
@@ -31,7 +30,7 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
     ])
 
     const { entityFromDto } = this.config
-    const entities = items.map((item) => entityFromDto(item as Record<string, unknown>))
+    const entities = items.map((item: unknown) => entityFromDto(item as Record<string, unknown>))
 
     return {
       items: entities,
@@ -57,8 +56,9 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
       conditions.push(params.selector)
     }
 
-    if (!conditions.length) return {}
-    if (conditions.length === 1) return conditions[0]
+    const [firstCondition] = conditions
+    if (!firstCondition) return {}
+    if (conditions.length === 1) return firstCondition
     return { AND: conditions }
   }
 
@@ -88,12 +88,14 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
   ): Record<string, unknown>[] {
     const grouped = this.groupFiltersByField(filters)
 
-    return Object.entries(grouped).map(([, fieldFilters]) => {
+    return Object.entries(grouped).flatMap(([, fieldFilters]) => {
       if (fieldFilters.length > 1) {
         const conditions = fieldFilters.map((f) => this.buildSingleFilterCondition(f))
-        return { OR: conditions }
+        return [{ OR: conditions }]
       }
-      return this.buildSingleFilterCondition(fieldFilters[0])
+      const [singleFilter] = fieldFilters
+      if (!singleFilter) return []
+      return [this.buildSingleFilterCondition(singleFilter)]
     })
   }
 
@@ -117,6 +119,7 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
   ): Record<string, unknown> | undefined {
     if (field.includes('.')) {
       const [relation, subField] = field.split('.')
+      if (!relation || !subField) return undefined
       const leaf = subField
       if (this.isIdLike(leaf)) {
         const idCond = this.buildIdFieldSearch(leaf, searchTerm)
@@ -197,9 +200,11 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
 
     if (field.includes('.')) {
       const [relation, subField] = field.split('.')
-      return {
-        [relation]: {
-          [subField]: direction
+      if (relation && subField) {
+        return {
+          [relation]: {
+            [subField]: direction
+          }
         }
       }
     }
@@ -221,8 +226,9 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
   private groupFiltersByField(filters: NonNullable<TableQueryParams['filters']>) {
     return filters.reduce(
       (grouped, filter) => {
-        if (!grouped[filter.field]) grouped[filter.field] = []
-        grouped[filter.field].push(filter)
+        const bucket = grouped[filter.field] ?? []
+        bucket.push(filter)
+        grouped[filter.field] = bucket
         return grouped
       },
       {} as Record<string, NonNullable<TableQueryParams['filters']>>
@@ -243,7 +249,18 @@ export class PrismaTableQueryBuilder<TEntity, TDto> {
   }
 
   private getModel() {
-    // @ts-expect-error dynamic model
-    return this.db[this.modelName]
+    // Dynamic model access by string name; Prisma exposes no index signature.
+    const models = this.db as unknown as Record<
+      string,
+      {
+        findMany: (args: Record<string, unknown>) => Promise<unknown[]>
+        count: (args: Record<string, unknown>) => Promise<number>
+      }
+    >
+    const model = models[this.modelName]
+    if (!model) {
+      throw new Error(`PrismaTableQueryBuilder: unknown model "${this.modelName}"`)
+    }
+    return model
   }
 }

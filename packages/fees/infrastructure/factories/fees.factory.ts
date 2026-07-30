@@ -1,5 +1,5 @@
-import { client as prisma } from '@pda/database'
 import { CommunityFactory } from '@pda/community'
+import { client as prisma } from '@pda/database'
 import { FeeConfigFinder } from '../../application/fee-config-finder.service'
 import { FeeConfigUpserter } from '../../application/fee-config-upserter.service'
 import { FeePaymentCreator } from '../../application/fee-payment-creator.service'

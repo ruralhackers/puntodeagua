@@ -34,9 +34,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { useImageUpload } from '@/hooks/use-image-upload'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { ConnectionNumberLabel } from '@/components/water-point/connection-number-label'
 import { api } from '@/trpc/react'
 import { ACCEPTED_FILE_TYPES } from '@/types/image'
 

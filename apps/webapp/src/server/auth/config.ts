@@ -1,6 +1,6 @@
 import type { CommunityDto } from '@pda/community'
-import type { DefaultSession, NextAuthConfig } from 'next-auth'
 import type { UserClientDto } from '@pda/user/domain'
+import type { DefaultSession, NextAuthConfig } from 'next-auth'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

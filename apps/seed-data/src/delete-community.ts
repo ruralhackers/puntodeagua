@@ -62,9 +62,7 @@ async function deleteCommunity(communityId: string) {
   console.log(`    water points:   ${waterPointIds.length}`)
   console.log(`    water accounts: ${accountIds.length} (only if unused after)`)
   console.log(`    zones:          ${zoneIds.length}`)
-  console.log(
-    `    deposits:       ${await prisma.waterDeposit.count({ where: { communityId } })}`
-  )
+  console.log(`    deposits:       ${await prisma.waterDeposit.count({ where: { communityId } })}`)
 
   await prisma.$transaction(async (tx) => {
     await tx.feePayment.deleteMany({ where: { communityId } })
@@ -157,9 +155,7 @@ async function main() {
     console.error(`\n⚠️  This will permanently delete community "${community.name}" and its data.`)
     console.error('Other communities will not be touched.')
     console.error('❌ Re-run with --confirm or -y to proceed.')
-    console.error(
-      `Example: bun run src/delete-community.ts "${community.name}" --confirm\n`
-    )
+    console.error(`Example: bun run src/delete-community.ts "${community.name}" --confirm\n`)
     process.exit(1)
   }
 

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { Decimal } from '@pda/common/domain'
+import { Decimal, Id } from '@pda/common/domain'
+import { FeePayment } from '../../domain/entities/fee-payment'
 import {
   buildDefaultPayerLabel,
   expectedAmountPerPeriod
 } from '../../domain/value-objects/fee-defaults'
 import { FeeFrequency } from '../../domain/value-objects/fee-frequency'
-import { FeePayment } from '../../domain/entities/fee-payment'
-import { Id } from '@pda/common/domain'
 
 describe('FeeFrequency', () => {
   it('validates period indexes', () => {

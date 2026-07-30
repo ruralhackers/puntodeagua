@@ -1,6 +1,6 @@
 import type { CommunityRepository, CommunityZoneRepository } from '@pda/community'
-import { consumptionBetweenReadings } from '../domain/consumption-between-readings'
 import type { WaterMeter } from '../domain'
+import { consumptionBetweenReadings } from '../domain/consumption-between-readings'
 import type { WaterMeterReading } from '../domain/entities/water-meter-reading'
 import type { WaterMeterRepository } from '../domain/repositories/water-meter.repository'
 

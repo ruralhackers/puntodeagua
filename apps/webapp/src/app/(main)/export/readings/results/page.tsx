@@ -77,8 +77,7 @@ export default function ReadingsExportResultsPage() {
     })
   }
 
-  const formatNumber = (num: number) =>
-    num.toLocaleString('es-ES', { maximumFractionDigits: 2 })
+  const formatNumber = (num: number) => num.toLocaleString('es-ES', { maximumFractionDigits: 2 })
 
   // Calcular estadísticas
   const totalMeters = displayData.length
@@ -152,7 +151,8 @@ export default function ReadingsExportResultsPage() {
               <CardContent className="p-4">
                 <p className="text-sm font-medium">Consumo total</p>
                 <p className="text-2xl font-bold">
-                  {singleMeter.totalConsumption === null || singleMeter.totalConsumption === undefined
+                  {singleMeter.totalConsumption === null ||
+                  singleMeter.totalConsumption === undefined
                     ? '—'
                     : `${formatNumber(singleMeter.totalConsumption)} L`}
                 </p>

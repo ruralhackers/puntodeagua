@@ -4,10 +4,7 @@ import type { Prisma, client as prisma } from '@pda/database'
 import { FeeConfig } from '../../domain/entities/fee-config'
 import type { FeeConfigRepository } from '../../domain/repositories/fee-config.repository'
 
-export class FeeConfigPrismaRepository
-  extends BasePrismaRepository
-  implements FeeConfigRepository
-{
+export class FeeConfigPrismaRepository extends BasePrismaRepository implements FeeConfigRepository {
   protected readonly model = 'feeConfig'
 
   protected getModel() {

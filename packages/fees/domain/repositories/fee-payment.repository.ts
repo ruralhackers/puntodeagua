@@ -17,10 +17,7 @@ export interface FeePaymentRepository
   findById(id: Id): Promise<FeePayment | undefined>
   findByCommunityId(filters: FeePaymentListFilters): Promise<FeePayment[]>
   getNextNumber(communityId: Id): Promise<number>
-  createWithNextNumber(
-    communityId: Id,
-    build: (number: number) => FeePayment
-  ): Promise<FeePayment>
+  createWithNextNumber(communityId: Id, build: (number: number) => FeePayment): Promise<FeePayment>
   save(feePayment: FeePayment): Promise<void>
   delete(id: Id): Promise<void>
 }

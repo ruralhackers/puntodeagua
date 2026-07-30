@@ -52,6 +52,11 @@ packages/database/prisma/generated/
 
 .debug/
 
+# Claude Code: personal settings and local worktrees.
+# Listed individually so a shared .claude/settings.json can still be committed.
+.claude/settings.local.json
+.claude/worktrees/
+
 notes.txt
 
 

@@ -1,7 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "files": {
-    "includes": ["**", "!lib-docs", "!**/*.css"]
+    // "!**/.claude" keeps Biome from discovering the nested root biome.jsonc
+    // inside the git worktrees under .claude/worktrees, which aborts the run.
+    "includes": ["**", "!lib-docs", "!**/*.css", "!**/.claude"]
   },
   "vcs": {
     "enabled": true,

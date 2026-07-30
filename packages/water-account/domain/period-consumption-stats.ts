@@ -13,9 +13,7 @@ export interface PeriodConsumptionStats {
  * Total and average daily consumption between first and last reading in a period.
  * Days use whole calendar days (same basis as the community readings PDF).
  */
-export function periodConsumptionStats(
-  readings: ReadingForPeriodStats[]
-): PeriodConsumptionStats {
+export function periodConsumptionStats(readings: ReadingForPeriodStats[]): PeriodConsumptionStats {
   if (readings.length < 2) {
     return {
       totalConsumption: null,

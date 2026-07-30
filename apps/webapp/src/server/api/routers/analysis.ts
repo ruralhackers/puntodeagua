@@ -25,13 +25,11 @@ export const registersRouter = createTRPCRouter({
       return analyses.map((analysis) => analysis.toDto())
     }),
 
-  getAnalysisById: staffProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const repo = RegistersFactory.analysisPrismaRepository()
-      const analysis = await repo.findById(Id.fromString(input.id))
-      return analysis?.toDto()
-    }),
+  getAnalysisById: staffProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const repo = RegistersFactory.analysisPrismaRepository()
+    const analysis = await repo.findById(Id.fromString(input.id))
+    return analysis?.toDto()
+  }),
 
   addAnalysis: staffProcedure
     .input(analysisSchema.omit({ id: true }))

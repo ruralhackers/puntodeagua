@@ -18,7 +18,10 @@ const feePaymentBaseSchema = z.object({
   kind: z.enum(FeePaymentKind.values() as [string, ...string[]]),
   amount: amountSchema,
   paidAt: z.coerce.date(),
-  frequency: z.enum(FeeFrequency.values() as [string, ...string[]]).nullable().optional(),
+  frequency: z
+    .enum(FeeFrequency.values() as [string, ...string[]])
+    .nullable()
+    .optional(),
   periodYear: z.number().int().nullable().optional(),
   periodIndex: z.number().int().nullable().optional(),
   paymentMethod: z.enum(PaymentMethod.values() as [string, ...string[]]),

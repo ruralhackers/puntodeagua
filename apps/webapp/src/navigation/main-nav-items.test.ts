@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'bun:test'
 import { WATER_METER_READER_ALLOWED_PATHS } from '@/lib/water-meter-reader-paths'
-import { getActiveNavUrl, getMainNavItems, isNavItemActive } from './main-nav-items'
+import {
+  getActiveNavUrl,
+  getMainNavItems,
+  hasDedicatedNav,
+  isNavItemActive
+} from './main-nav-items'
 
 describe('getMainNavItems', () => {
   it('gives staff the full set of destinations', () => {
@@ -99,5 +104,33 @@ describe('getActiveNavUrl', () => {
 
   it('returns null when nothing matches', () => {
     expect(getActiveNavUrl(items, '/privacy')).toBeNull()
+  })
+})
+
+describe('hasDedicatedNav', () => {
+  it('is true for staff, who get both the sidebar and the bottom bar', () => {
+    for (const role of ['ADMIN', 'COMMUNITY_ADMIN', 'MANAGER']) {
+      expect(hasDedicatedNav([role])).toBe(true)
+    }
+  })
+
+  it('is false for reader-only users, whose single destination renders neither', () => {
+    expect(hasDedicatedNav(['WATER_METER_READER'])).toBe(false)
+  })
+
+  it('is false when the user has no role at all', () => {
+    expect(hasDedicatedNav([])).toBe(false)
+  })
+
+  it('mirrors the thresholds MainSidebar and BottomNav gate on', () => {
+    // If either component's own `< 2` check ever changes, this is the pair that has
+    // to change with it, or the header menu stops being the right fallback.
+    const staff = getMainNavItems(['MANAGER'])
+    expect(staff.length).toBeGreaterThanOrEqual(2)
+    expect(staff.filter((item) => item.primary).length).toBeGreaterThanOrEqual(2)
+
+    const reader = getMainNavItems(['WATER_METER_READER'])
+    expect(reader.length).toBeLessThan(2)
+    expect(reader.filter((item) => item.primary).length).toBeLessThan(2)
   })
 })

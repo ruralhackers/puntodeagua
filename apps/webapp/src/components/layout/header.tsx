@@ -3,12 +3,18 @@ import type { Session } from 'next-auth'
 import { AccountMenu } from '@/app/(main)/app/_components/account-menu'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { APP_CONFIG } from '@/config/app-config'
+import { hasDedicatedNav } from '@/navigation/main-nav-items'
 
 interface HeaderProps {
   session: Session
 }
 
 export function Header({ session }: HeaderProps) {
+  // Only render the account menu when nothing else covers navigation. Otherwise it
+  // duplicates the sidebar on desktop and the bottom bar's "Más" on mobile — the
+  // latter renders the very same AccountMenuItems.
+  const isOnlyNav = !hasDedicatedNav(session.user.roles ?? [])
+
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 bg-gradient-to-r from-blue-500 via-blue-400 to-blue-300 shadow-lg transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-14">
       <div className="flex w-full items-center justify-between px-3 lg:px-6">
@@ -43,11 +49,13 @@ export function Header({ session }: HeaderProps) {
             </>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
-            <AccountMenu />
+        {isOnlyNav && (
+          <div className="flex items-center gap-3">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/10">
+              <AccountMenu />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </header>
   )

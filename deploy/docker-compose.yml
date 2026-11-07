@@ -1,0 +1,50 @@
+# Self-hosted production stack (anceu-vps, /opt/apps/puntodeagua).
+# Exposed only through the Cloudflare tunnel; ports bound to 127.0.0.1.
+#   puntodeagua.com         -> 127.0.0.1:8112 (web)
+#   images.puntodeagua.com  -> 127.0.0.1:8113 (images)
+# Backups: the nightly anceu-backup job picks this stack up with no extra
+# config. It runs pg_dumpall on the postgres container (and skips the raw
+# ./data/postgres dir) and restic copies /opt/apps, which includes ./data/images.
+name: puntodeagua
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: puntodeagua
+      POSTGRES_USER: puntodeagua
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U puntodeagua -d puntodeagua"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    image: ${WEB_IMAGE:-puntodeagua-web:latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://puntodeagua:${POSTGRES_PASSWORD}@db:5432/puntodeagua
+      STORAGE_DRIVER: local
+      STORAGE_LOCAL_DIR: /data/images
+      CLOUDFLARE_R2_PUBLIC_URL: https://images.puntodeagua.com
+    volumes:
+      - ./data/images:/data/images
+    ports:
+      - 127.0.0.1:8112:3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  images:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data/images:/usr/share/nginx/html:ro
+      - ./nginx-images.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - 127.0.0.1:8113:80

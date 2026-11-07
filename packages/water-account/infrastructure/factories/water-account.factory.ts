@@ -3,10 +3,10 @@ import { client as prisma } from '@pda/database'
 import {
   FileDeleterService,
   FileEntityType,
-  FileUploaderService,
   type FileStorageRepository,
-  createFileStorageRepository
+  FileUploaderService
 } from '@pda/storage'
+import { createFileStorageRepository } from '@pda/storage/infrastructure'
 import { WaterAccountUpdater } from '../../application/water-account-updater.service'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
 import { WaterMeterImageUpdaterService } from '../../application/water-meter-image-updater.service'

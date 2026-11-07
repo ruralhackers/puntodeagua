@@ -2,10 +2,10 @@ import { client as prisma } from '@pda/database'
 import {
   FileDeleterService,
   FileEntityType,
-  FileUploaderService,
   type FileStorageRepository,
-  createFileStorageRepository
+  FileUploaderService
 } from '@pda/storage'
+import { createFileStorageRepository } from '@pda/storage/infrastructure'
 import { AnalysisCreator } from '../../application/analysis-creator.service'
 import { IncidentCreator } from '../../application/incident-creator.service'
 import { IncidentUpdater } from '../../application/incident-updater.service'

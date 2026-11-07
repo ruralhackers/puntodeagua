@@ -3,9 +3,10 @@ import { client as prisma } from '@pda/database'
 import {
   FileDeleterService,
   FileEntityType,
-  FileUploaderService,
-  R2FileStorageRepository
+  type FileStorageRepository,
+  FileUploaderService
 } from '@pda/storage'
+import { createFileStorageRepository } from '@pda/storage/infrastructure'
 import { WaterAccountUpdater } from '../../application/water-account-updater.service'
 import { WaterMeterExcessRecalculator } from '../../application/water-meter-excess-recalculator.service'
 import { WaterMeterImageUpdaterService } from '../../application/water-meter-image-updater.service'
@@ -28,7 +29,7 @@ export class WaterAccountFactory {
   private static waterMeterReadingImagePrismaRepositoryInstance: WaterMeterReadingImagePrismaRepository
   private static waterMeterImagePrismaRepositoryInstance: WaterMeterImagePrismaRepository
   private static waterAccountPrismaRepositoryInstance: WaterAccountPrismaRepository
-  private static r2FileStorageRepositoryInstance: R2FileStorageRepository
+  private static fileStorageRepositoryInstance: FileStorageRepository
 
   // SERVICES
   static waterMeterReadingCreatorService() {
@@ -72,7 +73,7 @@ export class WaterAccountFactory {
       WaterAccountFactory.waterMeterReadingImagePrismaRepository()
     )
 
-    return new FileUploaderService(WaterAccountFactory.r2FileStorageRepository(), repositoryMap)
+    return new FileUploaderService(WaterAccountFactory.fileStorageRepository(), repositoryMap)
   }
 
   static fileDeleterService() {
@@ -86,7 +87,7 @@ export class WaterAccountFactory {
       WaterAccountFactory.waterMeterReadingImagePrismaRepository()
     )
 
-    return new FileDeleterService(WaterAccountFactory.r2FileStorageRepository(), repositoryMap)
+    return new FileDeleterService(WaterAccountFactory.fileStorageRepository(), repositoryMap)
   }
 
   static waterMeterExcessRecalculatorService() {
@@ -169,17 +170,11 @@ export class WaterAccountFactory {
     return WaterAccountFactory.waterMeterReadingImagePrismaRepositoryInstance
   }
 
-  static r2FileStorageRepository() {
-    if (!WaterAccountFactory.r2FileStorageRepositoryInstance) {
-      WaterAccountFactory.r2FileStorageRepositoryInstance = new R2FileStorageRepository({
-        accountId: process.env.CLOUDFLARE_ACCOUNT_ID || '',
-        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
-        bucketName: process.env.CLOUDFLARE_R2_BUCKET_NAME || '',
-        publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL || ''
-      })
+  static fileStorageRepository() {
+    if (!WaterAccountFactory.fileStorageRepositoryInstance) {
+      WaterAccountFactory.fileStorageRepositoryInstance = createFileStorageRepository()
     }
-    return WaterAccountFactory.r2FileStorageRepositoryInstance
+    return WaterAccountFactory.fileStorageRepositoryInstance
   }
 
   static waterAccountPrismaRepository() {

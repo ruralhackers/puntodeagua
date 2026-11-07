@@ -1,6 +1,6 @@
 # Self-hosted production stack (anceu-vps, /opt/apps/puntodeagua).
 # Exposed only through the Cloudflare tunnel; ports bound to 127.0.0.1.
-#   puntodeagua.com         -> 127.0.0.1:8112 (web)
+#   panel.puntodeagua.com   -> 127.0.0.1:8112 (web)
 #   images.puntodeagua.com  -> 127.0.0.1:8113 (images)
 # Backups: the nightly anceu-backup job picks this stack up with no extra
 # config. It runs pg_dumpall on the postgres container (and skips the raw
